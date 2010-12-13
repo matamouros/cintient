@@ -1,0 +1,1693 @@
+<html>
+<head>
+<title>Docs For Class FileSystem</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">phing-system-io</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  		  [ <a href="../classtrees_phing-system-io.html" class="menu">class tree: phing-system-io</a> ]
+		  [ <a href="../elementindex_phing-system-io.html" class="menu">index: phing-system-io</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_phing.html">phing</a><br />
+              <a href="../li_JSMin.html">JSMin</a><br />
+              <a href="../li_phing-filters.html">phing-filters</a><br />
+              <a href="../li_phing-filters-util.html">phing-filters-util</a><br />
+              <a href="../li_phing-input.html">phing-input</a><br />
+              <a href="../li_phing-lib.html">phing-lib</a><br />
+              <a href="../li_phing-listener.html">phing-listener</a><br />
+              <a href="../li_phing-mappers.html">phing-mappers</a><br />
+              <a href="../li_phing-parser.html">phing-parser</a><br />
+              <a href="../li_phing-system-io.html">phing-system-io</a><br />
+              <a href="../li_phing-system-lang.html">phing-system-lang</a><br />
+              <a href="../li_phing-system-util.html">phing-system-util</a><br />
+              <a href="../li_phing-tasks-ext.html">phing-tasks-ext</a><br />
+              <a href="../li_phing-tasks-ext-coverage.html">phing-tasks-ext-coverage</a><br />
+              <a href="../li_phing-tasks-ext-creole.html">phing-tasks-ext-creole</a><br />
+              <a href="../li_phing-tasks-ext-dbdeploy.html">phing-tasks-ext-dbdeploy</a><br />
+              <a href="../li_phing-tasks-ext-formatter.html">phing-tasks-ext-formatter</a><br />
+              <a href="../li_phing-tasks-ext-ioncube.html">phing-tasks-ext-ioncube</a><br />
+              <a href="../li_phing-tasks-ext-pdo.html">phing-tasks-ext-pdo</a><br />
+              <a href="../li_phing-tasks-ext-pearpackage.html">phing-tasks-ext-pearpackage</a><br />
+              <a href="../li_phing-tasks-ext-phar.html">phing-tasks-ext-phar</a><br />
+              <a href="../li_phing-tasks-ext-phk.html">phing-tasks-ext-phk</a><br />
+              <a href="../li_phing-tasks-ext-phpdoc.html">phing-tasks-ext-phpdoc</a><br />
+              <a href="../li_phing-tasks-ext-phpunit.html">phing-tasks-ext-phpunit</a><br />
+              <a href="../li_phing-tasks-ext-phpunit-formatter.html">phing-tasks-ext-phpunit-formatter</a><br />
+              <a href="../li_phing-tasks-ext-simpletest.html">phing-tasks-ext-simpletest</a><br />
+              <a href="../li_phing-tasks-ext-svn.html">phing-tasks-ext-svn</a><br />
+              <a href="../li_phing-tasks-system.html">phing-tasks-system</a><br />
+              <a href="../li_phing-tasks-system-condition.html">phing-tasks-system-condition</a><br />
+              <a href="../li_phing-types.html">phing-types</a><br />
+              <a href="../li_phing-types-selecctors.html">phing-types-selecctors</a><br />
+              <a href="../li_phing-types-selectors.html">phing-types-selectors</a><br />
+              <a href="../li_phing-util.html">phing-util</a><br />
+              <a href="../li_phing-util-regex.html">phing-util-regex</a><br />
+              <a href="../li_phing-util-regexp.html">phing-util-regexp</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../phing-system-io/_system---io---BufferedReader.php.html">		BufferedReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---BufferedWriter.php.html">		BufferedWriter.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---ConsoleReader.php.html">		ConsoleReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FileInputStream.php.html">		FileInputStream.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FileOutputStream.php.html">		FileOutputStream.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FileReader.php.html">		FileReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FileSystem.php.html">		FileSystem.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FileWriter.php.html">		FileWriter.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---FilterReader.php.html">		FilterReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---InputStream.php.html">		InputStream.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---InputStreamReader.php.html">		InputStreamReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---IOException.php.html">		IOException.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---OutputStream.php.html">		OutputStream.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---OutputStreamWriter.php.html">		OutputStreamWriter.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---PhingFile.php.html">		PhingFile.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---Reader.php.html">		Reader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---StringReader.php.html">		StringReader.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---UnixFileSystem.php.html">		UnixFileSystem.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---Win32FileSystem.php.html">		Win32FileSystem.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---WinNTFileSystem.php.html">		WinNTFileSystem.php
+		</a><br>
+			<a href="../phing-system-io/_system---io---Writer.php.html">		Writer.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../phing-system-io/BufferedReader.html">BufferedReader</a><br />
+	    		<a href="../phing-system-io/BufferedWriter.html">BufferedWriter</a><br />
+	    		<a href="../phing-system-io/ConsoleReader.html">ConsoleReader</a><br />
+	    		<a href="../phing-system-io/FileInputStream.html">FileInputStream</a><br />
+	    		<a href="../phing-system-io/FileOutputStream.html">FileOutputStream</a><br />
+	    		<a href="../phing-system-io/FileReader.html">FileReader</a><br />
+	    		<a href="../phing-system-io/FileSystem.html">FileSystem</a><br />
+	    		<a href="../phing-system-io/FileWriter.html">FileWriter</a><br />
+	    		<a href="../phing-system-io/FilterReader.html">FilterReader</a><br />
+	    		<a href="../phing-system-io/InputStream.html">InputStream</a><br />
+	    		<a href="../phing-system-io/InputStreamReader.html">InputStreamReader</a><br />
+	    		<a href="../phing-system-io/IOException.html">IOException</a><br />
+	    		<a href="../phing-system-io/OutputStream.html">OutputStream</a><br />
+	    		<a href="../phing-system-io/OutputStreamWriter.html">OutputStreamWriter</a><br />
+	    		<a href="../phing-system-io/PhingFile.html">PhingFile</a><br />
+	    		<a href="../phing-system-io/Reader.html">Reader</a><br />
+	    		<a href="../phing-system-io/StringReader.html">StringReader</a><br />
+	    		<a href="../phing-system-io/UnixFileSystem.html">UnixFileSystem</a><br />
+	    		<a href="../phing-system-io/Win32FileSystem.html">Win32FileSystem</a><br />
+	    		<a href="../phing-system-io/WinNTFileSystem.html">WinNTFileSystem</a><br />
+	    		<a href="../phing-system-io/Writer.html">Writer</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: FileSystem</h1>
+Source Location: /system/io/FileSystem.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre></pre><br />
+<div class="description">This is an abstract class for platform specific filesystem implementations  you have to implement each method in the platform specific filesystem implementation  classes Your local filesytem implementation must extend this class.</div><br /><br />
+<h4>Author(s):</h4>
+<ul>
+          <li>Hans Lellelid &lt;<a href="mailto:hans@xmpl.org">hans@xmpl.org</a>&gt;</li>
+              <li>Charlie Killian &lt;<a href="mailto:charlie@tizac.com">charlie@tizac.com</a>&gt;</li>
+                  </ul>
+
+
+
+
+            
+        
+<h4>Version:</h4>
+<ul>
+  <li>$Revision: 552 $</li>
+</ul>
+
+        
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_consts">Constants</a></h3>
+<ul>
+    <li><a href="../phing-system-io/FileSystem.html#constBA_DIRECTORY">BA_DIRECTORY</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#constBA_EXISTS">BA_EXISTS</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#constBA_HIDDEN">BA_HIDDEN</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#constBA_REGULAR">BA_REGULAR</a></li>
+  </ul>
+</td>
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../phing-system-io/FileSystem.html#methodcanDelete">canDelete</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcanonicalize">canonicalize</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcheckAccess">checkAccess</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodchmod">chmod</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodchown">chown</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcompare">compare</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcompareMTimes">compareMTimes</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcopy">copy</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcreateDirectory">createDirectory</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodcreateNewFile">createNewFile</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methoddelete">delete</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methoddeleteOnExit">deleteOnExit</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodfromURIPath">fromURIPath</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetBooleanAttributes">getBooleanAttributes</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetDefaultParent">getDefaultParent</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetFileSystem">getFileSystem</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetLastModifiedTime">getLastModifiedTime</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetLength">getLength</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetPathSeparator">getPathSeparator</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodgetSeparator">getSeparator</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodisAbsolute">isAbsolute</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodlistDir">listDir</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodlistRoots">listRoots</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodlock">lock</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodnormalize">normalize</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodprefixLength">prefixLength</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodrename">rename</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodresolve">resolve</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodresolveFile">resolveFile</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodrmdir">rmdir</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodsetLastModifiedTime">setLastModifiedTime</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodsetReadOnly">setReadOnly</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodsymlink">symlink</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodtouch">touch</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodumask">umask</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodunlink">unlink</a></li>
+    <li><a href="../phing-system-io/FileSystem.html#methodunlock">unlock</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+<td valign="top">
+<h3>Child classes:</h3>
+<div class="tags">
+<dl>
+<dt><a href="../phing-system-io/Win32FileSystem.html">Win32FileSystem</a></dt>
+	<dd></dd>
+</dl>
+<dl>
+<dt><a href="../phing-system-io/UnixFileSystem.html">UnixFileSystem</a></dt>
+	<dd>UnixFileSystem class. This class encapsulates the basic file system functions  for platforms using the unix (posix)-stylish filesystem. It wraps php native  functions suppressing normal PHP error reporting and instead uses Exception  to report and error.</dd>
+</dl>
+</div>
+</td>
+
+
+
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line 41]<br />
+This is an abstract class for platform specific filesystem implementations  you have to implement each method in the platform specific filesystem implementation  classes Your local filesytem implementation must extend this class.<br /><br /><p>You should also use this class as a template to write your local implementation  Some native PHP filesystem specific methods are abstracted here as well. Anyway  you _must_ always use this methods via a PhingFile object (that by nature uses the  *FileSystem drivers to access the real filesystem via this class using natives.</p><p>FIXME: <ul><li>Error handling reduced to min fallthrough runtime excetions
+    more precise errorhandling is done by the PhingFile class</li></ul></p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Hans Lellelid &lt;<a href="mailto:hans@xmpl.org">hans@xmpl.org</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Charlie Killian &lt;<a href="mailto:charlie@tizac.com">charlie@tizac.com</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>$Revision: 552 $</td>
+  </tr>
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+</div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+  <hr />
+	<a name="methodgetFileSystem"></a>
+	<h3>static method getFileSystem <span class="smalllinenumber">[line 57]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>static <a href="../phing-system-io/FileSystem.html">FileSystem</a> getFileSystem(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Static method to return the FileSystem singelton representing  this platform's local filesystem driver.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+
+  <hr />
+	<a name="methodcanDelete"></a>
+	<h3>method canDelete <span class="smalllinenumber">[line 199]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>boolean canDelete(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Whether file can be deleted.<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodcanDelete">UnixFileSystem::canDelete()</a></dt>
+		<dd>Whether file can be deleted.</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcanonicalize"></a>
+	<h3>method canonicalize <span class="smalllinenumber">[line 142]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>mixed canonicalize(
+
+$strPath)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		canonicalize filename by checking on disk<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Canonical path or false if the file doesn't exist.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$strPath</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcheckAccess"></a>
+	<h3>method checkAccess <span class="smalllinenumber">[line 165]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void checkAccess(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f, [
+$write = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Check whether the file or directory denoted by the given abstract<br /><br /><p>pathname may be accessed by this process.  If the second argument is  false, then a check for read access is made; if the second  argument is true, then a check for write (not read-write)  access is made.  Return false if access is denied or an I/O error  occurs.</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$write</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodchmod"></a>
+	<h3>method chmod <span class="smalllinenumber">[line 443]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void chmod(
+pathname
+$pathname, mode
+$mode)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Change the permissions on a file or directory.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception if operation failed.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">pathname&nbsp;&nbsp;</td>
+        <td><b>$pathname</b>&nbsp;&nbsp;</td>
+        <td>String. Path and name of file or directory.</td>
+      </tr>
+          <tr>
+        <td class="type">mode&nbsp;&nbsp;</td>
+        <td><b>$mode</b>&nbsp;&nbsp;</td>
+        <td>Int. The mode (permissions) of the file or                         directory. If using octal add leading 0. eg. 0777.                         Mode is affected by the umask system setting.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodchown"></a>
+	<h3>method chown <span class="smalllinenumber">[line 425]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void chown(
+string
+$pathname, string
+$user)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Change the ownership on a file or directory.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception if operation failed.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$pathname</b>&nbsp;&nbsp;</td>
+        <td>Path and name of file or directory.</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$user</b>&nbsp;&nbsp;</td>
+        <td>The user name or number of the file or directory. See http://us.php.net/chown</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcompare"></a>
+	<h3>method compare <span class="smalllinenumber">[line 384]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void compare(
+
+$f1, 
+$f2)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Compare two abstract pathnames lexicographically.<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodcompare">Win32FileSystem::compare()</a></dt>
+		<dd>compares file paths lexicographically</dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodcompare">UnixFileSystem::compare()</a></dt>
+		<dd>compares file paths lexicographically</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$f1</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$f2</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcompareMTimes"></a>
+	<h3>method compareMTimes <span class="smalllinenumber">[line 668]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Int. compareMTimes(
+file1
+$file1, file2
+$file2)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Compare the modified time of two files.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>1 if file1 is newer.                  -1 if file2 is newer. <ol><li>if files have the same time.</li></ol>                  Err object on failure.</td>
+  </tr>
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception - if cannot get modified time of either file.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">file1&nbsp;&nbsp;</td>
+        <td><b>$file1</b>&nbsp;&nbsp;</td>
+        <td>String. Path and name of file1.</td>
+      </tr>
+          <tr>
+        <td class="type">file2&nbsp;&nbsp;</td>
+        <td><b>$file2</b>&nbsp;&nbsp;</td>
+        <td>String. Path and name of file2.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcopy"></a>
+	<h3>method copy <span class="smalllinenumber">[line 397]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void copy(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$src, <a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$dest)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Copy a file.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception if file cannot be copied.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodcopy">UnixFileSystem::copy()</a></dt>
+		<dd>Copy a file, takes care of symbolic links</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$src</b>&nbsp;&nbsp;</td>
+        <td>Source path and name file to copy.</td>
+      </tr>
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$dest</b>&nbsp;&nbsp;</td>
+        <td>Destination path and name of new file.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcreateDirectory"></a>
+	<h3>method createDirectory <span class="smalllinenumber">[line 319]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void createDirectory(
+
+&$f, [
+$mode = 0755])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Create a new directory denoted by the given abstract pathname,  returning true if and only if the operation succeeds.<br /><br /><p>NOTE: umask() is reset to 0 while executing mkdir(), and restored afterwards</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$mode</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcreateNewFile"></a>
+	<h3>method createNewFile <span class="smalllinenumber">[line 257]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void createNewFile(
+string
+$strPathname)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Create a new empty file with the given pathname.  Return  true if the file was created and false if a  file or directory with the given pathname already exists.  Throw an  IOException if an I/O error occurs.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>IOException</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$strPathname</b>&nbsp;&nbsp;</td>
+        <td>Path of the file to be created.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddelete"></a>
+	<h3>method delete <span class="smalllinenumber">[line 274]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void delete(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Delete the file or directory denoted by the given abstract pathname,  returning true if and only if the operation succeeds.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddeleteOnExit"></a>
+	<h3>method deleteOnExit <span class="smalllinenumber">[line 287]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void deleteOnExit(
+
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Arrange for the file or directory denoted by the given abstract  pathname to be deleted when Phing::shutdown is called, returning  true if and only if the operation succeeds.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfromURIPath"></a>
+	<h3>method fromURIPath <span class="smalllinenumber">[line 129]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void fromURIPath(
+
+$path)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Post-process the given URI path string if necessary.  This is used on  win32, e.g., to transform &quot;/c:/foo&quot; into &quot;c:/foo&quot;.  The path string  still has slash separators; code in the PhingFile class will translate them  after this method returns.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodfromURIPath">Win32FileSystem::fromURIPath()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodfromURIPath">UnixFileSystem::fromURIPath()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetBooleanAttributes"></a>
+	<h3>method getBooleanAttributes <span class="smalllinenumber">[line 153]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getBooleanAttributes(
+
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the simple boolean attributes for the file or directory denoted  by the given abstract pathname, or zero if it does not exist or some  other I/O error occurs.<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodgetBooleanAttributes">UnixFileSystem::getBooleanAttributes()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetDefaultParent"></a>
+	<h3>method getDefaultParent <span class="smalllinenumber">[line 121]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getDefaultParent(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the parent pathname string to be used when the parent-directory  argument in one of the two-argument PhingFile constructors is the empty  pathname.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodgetDefaultParent">Win32FileSystem::getDefaultParent()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodgetDefaultParent">UnixFileSystem::getDefaultParent()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLastModifiedTime"></a>
+	<h3>method getLastModifiedTime <span class="smalllinenumber">[line 211]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getLastModifiedTime(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the time at which the file or directory denoted by the given  abstract pathname was last modified, or zero if it does not exist or  some other I/O error occurs.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLength"></a>
+	<h3>method getLength <span class="smalllinenumber">[line 234]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getLength(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the length in bytes of the file denoted by the given abstract  pathname, or zero if it does not exist, is a directory, or some other  I/O error occurs.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetPathSeparator"></a>
+	<h3>method getPathSeparator <span class="smalllinenumber">[line 89]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getPathSeparator(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the local filesystem's path-separator character.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodgetPathSeparator">Win32FileSystem::getPathSeparator()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodgetPathSeparator">UnixFileSystem::getPathSeparator()</a></dt>
+		<dd>returns OS dependant directory separator char</dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetSeparator"></a>
+	<h3>method getSeparator <span class="smalllinenumber">[line 84]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getSeparator(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the local filesystem's name-separator character.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodgetSeparator">Win32FileSystem::getSeparator()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodgetSeparator">UnixFileSystem::getSeparator()</a></dt>
+		<dd>returns OS dependant path separator char</dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodisAbsolute"></a>
+	<h3>method isAbsolute <span class="smalllinenumber">[line 136]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void isAbsolute(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Tell whether or not the given abstract pathname is absolute.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodisAbsolute">Win32FileSystem::isAbsolute()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodisAbsolute">UnixFileSystem::isAbsolute()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlistDir"></a>
+	<h3>method listDir <span class="smalllinenumber">[line 296]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void listDir(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		List the elements of the directory denoted by the given abstract  pathname.  Return an array of strings naming the elements of the  directory if successful; otherwise, return <ol><li><div class="src-line"><span class="src-id">null</span></div></li>
+</ol>.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlistRoots"></a>
+	<h3>method listRoots <span class="smalllinenumber">[line 375]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void listRoots(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		List the available filesystem roots, return array of PhingFile objects<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodlistRoots">Win32FileSystem::listRoots()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodlistRoots">UnixFileSystem::listRoots()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlock"></a>
+	<h3>method lock <span class="smalllinenumber">[line 456]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void lock(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Locks a file and throws an Exception if this is not possible.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodnormalize"></a>
+	<h3>method normalize <span class="smalllinenumber">[line 95]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void normalize(
+
+$strPath)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Convert the given pathname string to normal form.  If the string is  already in normal form then it is simply returned.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodnormalize">Win32FileSystem::normalize()</a></dt>
+		<dd>Check that the given pathname is normal.  If not, invoke the real  normalizer on the part of the pathname that requires normalization.</dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodnormalize">UnixFileSystem::normalize()</a></dt>
+		<dd>A normal Unix pathname contains no duplicate slashes and does not end  with a slash.  It may be the empty string.</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$strPath</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodprefixLength"></a>
+	<h3>method prefixLength <span class="smalllinenumber">[line 101]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void prefixLength(
+
+$pathname)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Compute the length of this pathname string's prefix.  The pathname  string must be in normal form.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodprefixLength">Win32FileSystem::prefixLength()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodprefixLength">UnixFileSystem::prefixLength()</a></dt>
+		<dd>Compute the length of the pathname string's prefix.  The pathname  string must be in normal form.</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$pathname</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodrename"></a>
+	<h3>method rename <span class="smalllinenumber">[line 336]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void rename(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f1, <a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f2)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Rename the file or directory denoted by the first abstract pathname to  the second abstract pathname, returning true if and only if  the operation succeeds.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception if rename cannot be performed</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f1</b>&nbsp;&nbsp;</td>
+        <td>abstract source file</td>
+      </tr>
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f2</b>&nbsp;&nbsp;</td>
+        <td>abstract destination file</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodresolve"></a>
+	<h3>method resolve <span class="smalllinenumber">[line 108]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void resolve(
+
+$parent, 
+$child)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Resolve the child pathname string against the parent.<br /><br /><p>Both strings must be in normal form, and the result  will be a string in normal form.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodresolve">Win32FileSystem::resolve()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodresolve">UnixFileSystem::resolve()</a></dt>
+		<dd>Resolve the child pathname string against the parent.</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$parent</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$child</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodresolveFile"></a>
+	<h3>method resolveFile <span class="smalllinenumber">[line 114]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void resolveFile(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Resolve the given abstract pathname into absolute form.  Invoked by the  getAbsolutePath and getCanonicalPath methods in the PhingFile class.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodresolveFile">Win32FileSystem::resolveFile()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodresolveFile">UnixFileSystem::resolveFile()</a></dt>
+		<dd>the file resolver</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodrmdir"></a>
+	<h3>method rmdir <span class="smalllinenumber">[line 552]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void rmdir(
+dir
+$dir, [children
+$children = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Delete an empty directory OR a directory and all of its contents.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">dir&nbsp;&nbsp;</td>
+        <td><b>$dir</b>&nbsp;&nbsp;</td>
+        <td>String. Path and/or name of directory to delete.</td>
+      </tr>
+          <tr>
+        <td class="type">children&nbsp;&nbsp;</td>
+        <td><b>$children</b>&nbsp;&nbsp;</td>
+        <td>Boolean.    False: don't delete directory contents.                                     True: delete directory contents.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetLastModifiedTime"></a>
+	<h3>method setLastModifiedTime <span class="smalllinenumber">[line 353]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setLastModifiedTime(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f, 
+$time)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Set the last-modified time of the file or directory denoted by the  given abstract pathname returning true if and only if the  operation succeeds.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$time</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetReadOnly"></a>
+	<h3>method setReadOnly <span class="smalllinenumber">[line 366]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setReadOnly(
+
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Mark the file or directory denoted by the given abstract pathname as  read-only, returning <ol><li><div class="src-line"><span class="src-id">true</span></div></li>
+</ol> if and only if the operation  succeeds.<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-system-io/Win32FileSystem.html#methodsetReadOnly">Win32FileSystem::setReadOnly()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-system-io/UnixFileSystem.html#methodsetReadOnly">UnixFileSystem::setReadOnly()</a></dt>
+		<dd>set file readonly on unix</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsymlink"></a>
+	<h3>method symlink <span class="smalllinenumber">[line 507]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void symlink(
+string
+$target, string
+$link)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Symbolically link a file to another name.<br /><br /><p>Currently symlink is not implemented on Windows. Don't use if the application is to be portable.</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$target</b>&nbsp;&nbsp;</td>
+        <td>Path and/or name of file to link.</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Path and/or name of link to be created.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtouch"></a>
+	<h3>method touch <span class="smalllinenumber">[line 527]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void touch(
+string
+$file, [int
+$time = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Set the modification and access time on a file to the present time.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$file</b>&nbsp;&nbsp;</td>
+        <td>Path and/or name of file to touch.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$time</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodumask"></a>
+	<h3>method umask <span class="smalllinenumber">[line 639]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void umask(
+mode
+$mode)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Set the umask for file and directory creation.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception if there is an error performing operation.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mode&nbsp;&nbsp;</td>
+        <td><b>$mode</b>&nbsp;&nbsp;</td>
+        <td>Int. Permissions ususally in ocatal. Use leading 0 for                     octal. Number between 0 and 0777.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunlink"></a>
+	<h3>method unlink <span class="smalllinenumber">[line 490]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void unlink(
+file
+$file)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Delete a file.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception - if an error is encountered.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">file&nbsp;&nbsp;</td>
+        <td><b>$file</b>&nbsp;&nbsp;</td>
+        <td>String. Path and/or name of file to delete.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunlock"></a>
+	<h3>method unlock <span class="smalllinenumber">[line 472]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void unlock(
+<a href="../phing-system-io/PhingFile.html">PhingFile</a>
+$f)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Unlocks a file and throws an IO Error if this is not possible.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>throws:</b>&nbsp;&nbsp;</td><td>Exception</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/PhingFile.html">PhingFile</a>&nbsp;&nbsp;</td>
+        <td><b>$f</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+<hr />
+<a name="class_consts"></a>
+<h3>Class Constants</h3>
+<div class="tags">
+	<a name="constBA_DIRECTORY"></a>
+	<p></p>
+	<h4>BA_DIRECTORY = <span class="value">&nbsp;0x04</span></h4>
+	<p>[line 46]</p>
+  
+  <br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="constBA_EXISTS"></a>
+	<p></p>
+	<h4>BA_EXISTS = <span class="value">&nbsp;0x01</span></h4>
+	<p>[line 44]</p>
+  
+  <br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="constBA_HIDDEN"></a>
+	<p></p>
+	<h4>BA_HIDDEN = <span class="value">&nbsp;0x08</span></h4>
+	<p>[line 47]</p>
+  
+  <br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="constBA_REGULAR"></a>
+	<p></p>
+	<h4>BA_REGULAR = <span class="value">&nbsp;0x02</span></h4>
+	<p>[line 45]</p>
+  
+  <br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Mon, 19 Oct 2009 10:50:58 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

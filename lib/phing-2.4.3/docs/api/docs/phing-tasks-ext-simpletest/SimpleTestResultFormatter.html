@@ -1,0 +1,736 @@
+<html>
+<head>
+<title>Docs For Class SimpleTestResultFormatter</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">phing-tasks-ext-simpletest</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                  		  [ <a href="../classtrees_phing-tasks-ext-simpletest.html" class="menu">class tree: phing-tasks-ext-simpletest</a> ]
+		  [ <a href="../elementindex_phing-tasks-ext-simpletest.html" class="menu">index: phing-tasks-ext-simpletest</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_phing.html">phing</a><br />
+              <a href="../li_JSMin.html">JSMin</a><br />
+              <a href="../li_phing-filters.html">phing-filters</a><br />
+              <a href="../li_phing-filters-util.html">phing-filters-util</a><br />
+              <a href="../li_phing-input.html">phing-input</a><br />
+              <a href="../li_phing-lib.html">phing-lib</a><br />
+              <a href="../li_phing-listener.html">phing-listener</a><br />
+              <a href="../li_phing-mappers.html">phing-mappers</a><br />
+              <a href="../li_phing-parser.html">phing-parser</a><br />
+              <a href="../li_phing-system-io.html">phing-system-io</a><br />
+              <a href="../li_phing-system-lang.html">phing-system-lang</a><br />
+              <a href="../li_phing-system-util.html">phing-system-util</a><br />
+              <a href="../li_phing-tasks-ext.html">phing-tasks-ext</a><br />
+              <a href="../li_phing-tasks-ext-coverage.html">phing-tasks-ext-coverage</a><br />
+              <a href="../li_phing-tasks-ext-creole.html">phing-tasks-ext-creole</a><br />
+              <a href="../li_phing-tasks-ext-dbdeploy.html">phing-tasks-ext-dbdeploy</a><br />
+              <a href="../li_phing-tasks-ext-formatter.html">phing-tasks-ext-formatter</a><br />
+              <a href="../li_phing-tasks-ext-ioncube.html">phing-tasks-ext-ioncube</a><br />
+              <a href="../li_phing-tasks-ext-pdo.html">phing-tasks-ext-pdo</a><br />
+              <a href="../li_phing-tasks-ext-pearpackage.html">phing-tasks-ext-pearpackage</a><br />
+              <a href="../li_phing-tasks-ext-phar.html">phing-tasks-ext-phar</a><br />
+              <a href="../li_phing-tasks-ext-phk.html">phing-tasks-ext-phk</a><br />
+              <a href="../li_phing-tasks-ext-phpdoc.html">phing-tasks-ext-phpdoc</a><br />
+              <a href="../li_phing-tasks-ext-phpunit.html">phing-tasks-ext-phpunit</a><br />
+              <a href="../li_phing-tasks-ext-phpunit-formatter.html">phing-tasks-ext-phpunit-formatter</a><br />
+              <a href="../li_phing-tasks-ext-simpletest.html">phing-tasks-ext-simpletest</a><br />
+              <a href="../li_phing-tasks-ext-svn.html">phing-tasks-ext-svn</a><br />
+              <a href="../li_phing-tasks-system.html">phing-tasks-system</a><br />
+              <a href="../li_phing-tasks-system-condition.html">phing-tasks-system-condition</a><br />
+              <a href="../li_phing-types.html">phing-types</a><br />
+              <a href="../li_phing-types-selecctors.html">phing-types-selecctors</a><br />
+              <a href="../li_phing-types-selectors.html">phing-types-selectors</a><br />
+              <a href="../li_phing-util.html">phing-util</a><br />
+              <a href="../li_phing-util-regex.html">phing-util-regex</a><br />
+              <a href="../li_phing-util-regexp.html">phing-util-regexp</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestCountResultFormatter.php.html">		SimpleTestCountResultFormatter.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestDebugResultFormatter.php.html">		SimpleTestDebugResultFormatter.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestFormatterElement.php.html">		SimpleTestFormatterElement.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestPlainResultFormatter.php.html">		SimpleTestPlainResultFormatter.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestResultFormatter.php.html">		SimpleTestResultFormatter.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestSummaryResultFormatter.php.html">		SimpleTestSummaryResultFormatter.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestTask.php.html">		SimpleTestTask.php
+		</a><br>
+			<a href="../phing-tasks-ext-simpletest/_tasks---ext---simpletest---SimpleTestXmlResultFormatter.php.html">		SimpleTestXmlResultFormatter.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../phing-tasks-ext-simpletest/SimpleTestCountResultFormatter.html">SimpleTestCountResultFormatter</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html">SimpleTestDebugResultFormatter</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestFormatterElement.html">SimpleTestFormatterElement</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html">SimpleTestPlainResultFormatter</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html">SimpleTestResultFormatter</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestSummaryResultFormatter.html">SimpleTestSummaryResultFormatter</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestTask.html">SimpleTestTask</a><br />
+	    		<a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html">SimpleTestXmlResultFormatter</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: SimpleTestResultFormatter</h1>
+Source Location: /tasks/ext/simpletest/SimpleTestResultFormatter.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre>SimpleReporter
+   |
+   --SimpleTestResultFormatter</pre><br />
+<div class="description">This abstract class describes classes that format the results of a SimpleTest testrun.</div><br /><br />
+<h4>Author(s):</h4>
+<ul>
+          <li>Michiel Rook &lt;<a href="mailto:michiel.rook@gmail.com">michiel.rook@gmail.com</a>&gt;</li>
+                        </ul>
+
+
+
+
+        
+            
+<h4>Version:</h4>
+<ul>
+  <li>$Id: SimpleTestResultFormatter.php 552 2009-08-29 12:18:13Z mrook $</li>
+</ul>
+
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#var$out">$out</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#var$project">$project</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetElapsedTime">getElapsedTime</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetErrorCount">getErrorCount</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetExtension">getExtension</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetFailureCount">getFailureCount</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetPreferredOutfile">getPreferredOutfile</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetRunCount">getRunCount</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodgetTestName">getTestName</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintCaseEnd">paintCaseEnd</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintCaseStart">paintCaseStart</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintError">paintError</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintFail">paintFail</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintMethodEnd">paintMethodEnd</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodpaintMethodStart">paintMethodStart</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodsetOutput">setOutput</a></li>
+    <li><a href="../phing-tasks-ext-simpletest/SimpleTestResultFormatter.html#methodsetProject">setProject</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+<td valign="top">
+<h3>Child classes:</h3>
+<div class="tags">
+<dl>
+<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html">SimpleTestDebugResultFormatter</a></dt>
+	<dd>Prints plain text output of the test to a specified Writer.</dd>
+</dl>
+<dl>
+<dt><a href="../phing-tasks-ext-simpletest/SimpleTestCountResultFormatter.html">SimpleTestCountResultFormatter</a></dt>
+	<dd>Dummy result formatter used to count SimpleTest results</dd>
+</dl>
+<dl>
+<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html">SimpleTestPlainResultFormatter</a></dt>
+	<dd>Prints plain text output of the test to a specified Writer.</dd>
+</dl>
+<dl>
+<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html">SimpleTestXmlResultFormatter</a></dt>
+	<dd>Prints plain text output of the test to a specified Writer.</dd>
+</dl>
+<dl>
+<dt><a href="../phing-tasks-ext-simpletest/SimpleTestSummaryResultFormatter.html">SimpleTestSummaryResultFormatter</a></dt>
+	<dd>Prints short summary output of the test to Phing's logging system.</dd>
+</dl>
+</div>
+</td>
+
+
+
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line 34]<br />
+This abstract class describes classes that format the results of a SimpleTest testrun.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Michiel Rook &lt;<a href="mailto:michiel.rook@gmail.com">michiel.rook@gmail.com</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>$Id: SimpleTestResultFormatter.php 552 2009-08-29 12:18:13Z mrook $</td>
+  </tr>
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+  <tr>
+    <td><b>since:</b>&nbsp;&nbsp;</td><td>2.2.0</td>
+  </tr>
+</table>
+</div>
+</div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$out"></a>
+	<p></p>
+	<h4>$out = <span class="value">&nbsp;NULL</span></h4>
+	<p>[line 36]</p>
+  <br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>mixed</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$project"></a>
+	<p></p>
+	<h4>$project = <span class="value">&nbsp;NULL</span></h4>
+	<p>[line 38]</p>
+  <br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>mixed</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="methodgetElapsedTime"></a>
+	<h3>method getElapsedTime <span class="smalllinenumber">[line 150]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getElapsedTime(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetErrorCount"></a>
+	<h3>method getErrorCount <span class="smalllinenumber">[line 140]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getErrorCount(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetExtension"></a>
+	<h3>method getExtension <span class="smalllinenumber">[line 63]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getExtension(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the extension used for this formatter<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>the extension</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodgetExtension">SimpleTestPlainResultFormatter::getExtension()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodgetExtension">SimpleTestXmlResultFormatter::getExtension()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetFailureCount"></a>
+	<h3>method getFailureCount <span class="smalllinenumber">[line 135]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getFailureCount(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetPreferredOutfile"></a>
+	<h3>method getPreferredOutfile <span class="smalllinenumber">[line 78]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getPreferredOutfile(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodgetPreferredOutfile">SimpleTestPlainResultFormatter::getPreferredOutfile()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodgetPreferredOutfile">SimpleTestXmlResultFormatter::getPreferredOutfile()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetRunCount"></a>
+	<h3>method getRunCount <span class="smalllinenumber">[line 130]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getRunCount(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetTestName"></a>
+	<h3>method getTestName <span class="smalllinenumber">[line 145]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getTestName(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintCaseEnd"></a>
+	<h3>method paintCaseEnd <span class="smalllinenumber">[line 109]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintCaseEnd(
+
+$test_name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintCaseEnd">SimpleTestDebugResultFormatter::paintCaseEnd()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodpaintCaseEnd">SimpleTestPlainResultFormatter::paintCaseEnd()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintCaseEnd">SimpleTestXmlResultFormatter::paintCaseEnd()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestSummaryResultFormatter.html#methodpaintCaseEnd">SimpleTestSummaryResultFormatter::paintCaseEnd()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$test_name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintCaseStart"></a>
+	<h3>method paintCaseStart <span class="smalllinenumber">[line 97]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintCaseStart(
+
+$test_name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintCaseStart">SimpleTestDebugResultFormatter::paintCaseStart()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodpaintCaseStart">SimpleTestPlainResultFormatter::paintCaseStart()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintCaseStart">SimpleTestXmlResultFormatter::paintCaseStart()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$test_name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintError"></a>
+	<h3>method paintError <span class="smalllinenumber">[line 116]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintError(
+
+$message)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintError">SimpleTestDebugResultFormatter::paintError()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodpaintError">SimpleTestPlainResultFormatter::paintError()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintError">SimpleTestXmlResultFormatter::paintError()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$message</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintFail"></a>
+	<h3>method paintFail <span class="smalllinenumber">[line 123]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintFail(
+
+$message)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintFail">SimpleTestDebugResultFormatter::paintFail()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestPlainResultFormatter.html#methodpaintFail">SimpleTestPlainResultFormatter::paintFail()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintFail">SimpleTestXmlResultFormatter::paintFail()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$message</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintMethodEnd"></a>
+	<h3>method paintMethodEnd <span class="smalllinenumber">[line 90]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintMethodEnd(
+
+$test_name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintMethodEnd">SimpleTestDebugResultFormatter::paintMethodEnd()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintMethodEnd">SimpleTestXmlResultFormatter::paintMethodEnd()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$test_name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpaintMethodStart"></a>
+	<h3>method paintMethodStart <span class="smalllinenumber">[line 83]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void paintMethodStart(
+
+$test_name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestDebugResultFormatter.html#methodpaintMethodStart">SimpleTestDebugResultFormatter::paintMethodStart()</a></dt>
+		<dd></dd>
+	</dl>
+		<dl>
+	<dt><a href="../phing-tasks-ext-simpletest/SimpleTestXmlResultFormatter.html#methodpaintMethodStart">SimpleTestXmlResultFormatter::paintMethodStart()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$test_name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetOutput"></a>
+	<h3>method setOutput <span class="smalllinenumber">[line 53]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setOutput(
+
+$out)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Sets the writer the formatter is supposed to write its results to.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing-system-io/Writer.html">Writer</a>&nbsp;&nbsp;</td>
+        <td><b>$out</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetProject"></a>
+	<h3>method setProject <span class="smalllinenumber">[line 73]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setProject(
+
+$project)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Sets the project<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/Project.html">Project</a>&nbsp;&nbsp;</td>
+        <td><b>$project</b>&nbsp;&nbsp;</td>
+        <td>the project</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Mon, 19 Oct 2009 10:52:00 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

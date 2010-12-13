@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot methodcount="2" methodscovered="1" statementcount="5" statementscovered="2" totalcount="7" totalcovered="3">
+  <package name="hello.world" methodcount="2" methodscovered="1" statementcount="5" statementscovered="2" totalcount="7" totalcovered="3">
+    <class name="HelloWorld" methodcount="2" methodscovered="1" statementcount="5" statementscovered="2" totalcount="7" totalcovered="3">
+      <sourcefile name="HelloWorld.php" sourcefile="/home/druid/dev/phing/trunk/docs/example/src/HelloWorld.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    /**</sourceline>
+        <sourceline coveredcount="0">     * The Hello World class!</sourceline>
+        <sourceline coveredcount="0">     *</sourceline>
+        <sourceline coveredcount="0">     * @author Michiel Rook</sourceline>
+        <sourceline coveredcount="0">     * @version $Id: HelloWorld.php 552 2009-08-29 12:18:13Z mrook $</sourceline>
+        <sourceline coveredcount="0">     * @package hello.world</sourceline>
+        <sourceline coveredcount="0">     */</sourceline>
+        <sourceline coveredcount="0" startclass="1">    class HelloWorld</sourceline>
+        <sourceline coveredcount="0">    {</sourceline>
+        <sourceline coveredcount="0">        public function foo($silent = true)</sourceline>
+        <sourceline coveredcount="0">        {</sourceline>
+        <sourceline coveredcount="-1">            if ($silent) {</sourceline>
+        <sourceline coveredcount="-1">                return;</sourceline>
+        <sourceline coveredcount="-2">            }</sourceline>
+        <sourceline coveredcount="-1">            return 'foo';</sourceline>
+        <sourceline coveredcount="0">        }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">        function sayHello()</sourceline>
+        <sourceline coveredcount="0">        {</sourceline>
+        <sourceline coveredcount="1">            return "Hello World!";</sourceline>
+        <sourceline coveredcount="0">        }</sourceline>
+        <sourceline coveredcount="0">    };</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">?&gt;</sourceline>
+      </sourcefile>
+    </class>
+  </package>
+</snapshot>

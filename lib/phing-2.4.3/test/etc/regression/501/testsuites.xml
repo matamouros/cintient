@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Phing Batchtest" tests="2" assertions="3" failures="0" errors="0" time="0.110816">
+    <testsuite name="FileOutputStreamTest" file="/home/druid/dev/phing/trunk/test/classes/phing/system/FileOutputStreamTest.php" fullPackage="phing.system" package="phing.system" tests="2" assertions="3" failures="0" errors="0" time="0.110816">
+      <testcase name="testWrite" class="FileOutputStreamTest" file="/home/druid/dev/phing/trunk/test/classes/phing/system/FileOutputStreamTest.php" line="55" assertions="3" time="0.071554"/>
+      <testcase name="testFlush" class="FileOutputStreamTest" file="/home/druid/dev/phing/trunk/test/classes/phing/system/FileOutputStreamTest.php" line="79" assertions="0" time="0.039262"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

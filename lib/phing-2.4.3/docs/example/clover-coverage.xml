@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1289396611">
+  <project timestamp="1289396611">
+    <file name="/home/druid/dev/phing/trunk/docs/example/src/HelloWorld.php">
+      <class name="HelloWorld" namespace="global" fullPackage="hello.world" package="hello.world">
+        <metrics methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="1" elements="6" coveredelements="2"/>
+      </class>
+      <line num="12" type="method" name="foo" crap="6" count="0"/>
+      <line num="14" type="stmt" count="0"/>
+      <line num="15" type="stmt" count="0"/>
+      <line num="17" type="stmt" count="0"/>
+      <line num="20" type="method" name="sayHello" crap="1" count="1"/>
+      <line num="22" type="stmt" count="1"/>
+      <metrics loc="26" ncloc="19" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="1" elements="6" coveredelements="2"/>
+    </file>
+    <metrics files="1" loc="26" ncloc="19" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="1" elements="6" coveredelements="2"/>
+  </project>
+</coverage>

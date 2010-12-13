@@ -1,0 +1,1078 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Unit Test Results</title>
+<style type="text/css">
+    body {
+        font-family: verdana,arial,helvetica;
+        color:#000000;
+        font-size: 12px;
+    }
+    table tr td, table tr th {
+        font-family: verdana,arial,helvetica;
+        font-size: 12px;
+    }
+    table.details tr th{
+        font-family: verdana,arial,helvetica;
+        font-weight: bold;
+        text-align:left;
+        background:#a6caf0;
+    }
+    table.details tr td{
+        background:#eeeee0;
+    }
+
+    p {
+        line-height:1.5em;
+        margin-top:0.5em; margin-bottom:1.0em;
+        font-size: 12px;
+    }
+    h1 {
+        margin: 0px 0px 5px;
+        font-family: verdana,arial,helvetica;
+    }
+    h2 {
+        margin-top: 1em; margin-bottom: 0.5em;
+        font-family: verdana,arial,helvetica;
+    }
+    h3 {
+        margin-bottom: 0.5em;
+        font-family: verdana,arial,helvetica;
+    }
+    h4 {
+        margin-bottom: 0.5em;
+        font-family: verdana,arial,helvetica;
+    }
+    h5 {
+        margin-bottom: 0.5em;
+        font-family: verdana,arial,helvetica;
+    }
+    h6 {
+        margin-bottom: 0.5em;
+        font-family: verdana,arial,helvetica;
+    }
+    .Error {
+        font-weight:bold; color:red;
+    }
+    .Failure {
+        font-weight:bold; color:purple;
+    }
+    .small {
+       font-size: 9px;
+    }
+    a {
+      color: #003399;
+    }
+    a:hover {
+      color: #888888;
+    }
+    </style>
+</head>
+<body>
+<a name="top"></a><h1>Unit Test Results</h1>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right">Designed for use with <a href="http://www.phpunit.de">PHPUnit</a> and <a href="http://www.phing.info/">Phing</a>.</td>
+</tr></table>
+<hr size="1">
+<h2>Summary</h2>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Tests</th>
+<th>Failures</th>
+<th>Errors</th>
+<th>Success rate</th>
+<th>Time</th>
+</tr>
+<tr valign="top" class="">
+<td>55</td>
+<td>0</td>
+<td>0</td>
+<td>100.00%</td>
+<td>3.792</td>
+</tr>
+</table>
+<table border="0" width="95%"><tr><td style="text-align: justify;">
+        Note: <i>failures</i> are anticipated and checked for with assertions while <i>errors</i> are unanticipated.
+        </td></tr></table>
+<hr size="1" width="95%" align="left">
+<h2>Packages</h2>
+        Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.
+        <table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing">phing</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.009</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.filters">phing.filters</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.054</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.mappers">phing.mappers</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.567</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.regression">phing.regression</a></td>
+<td>14</td>
+<td>0</td>
+<td>0</td>
+<td>1.294</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.system">phing.system</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.379</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.tasks.ext">phing.tasks.ext</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>0.076</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.tasks.system">phing.tasks.system</a></td>
+<td>23</td>
+<td>0</td>
+<td>0</td>
+<td>0.836</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.tasks.system.condition">phing.tasks.system.condition</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.007</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#phing.types">phing.types</a></td>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>0.570</td>
+</tr>
+</table>
+<hr size="1" width="95%" align="left">
+<a name="phing"></a><h3>Package phing</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#IntrospectionHelperTest">IntrospectionHelperTest</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.009</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.filters"></a><h3>Package phing.filters</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#LineContainsTest">LineContainsTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.054</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.mappers"></a><h3>Package phing.mappers</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#TaskdefForCopyTest">TaskdefForCopyTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.567</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.regression"></a><h3>Package phing.regression</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#PearPkg2CompatibilityTest">PearPkg2CompatibilityTest</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.471</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#PhpUnit34Test">PhpUnit34Test</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.271</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#PearStyleNamingTest">PearStyleNamingTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.023</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#RecursivePropertyTest">RecursivePropertyTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.027</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#MoveReplaceRegexpTest">MoveReplaceRegexpTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.041</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#ExcludeZipTest">ExcludeZipTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.128</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#CustomTaskFileSetTest">CustomTaskFileSetTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.093</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#HtmlEntitiesTest">HtmlEntitiesTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#ForeachFileSetTest">ForeachFileSetTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.074</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#CopyTaskFileListTest">CopyTaskFileListTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.043</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#ReplaceTokenBooleanTest">ReplaceTokenBooleanTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.032</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#PhingCallAdhocTest">PhingCallAdhocTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.055</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.system"></a><h3>Package phing.system</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#TargetTest">TargetTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.373</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#FileOutputStreamTest">FileOutputStreamTest</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>0.006</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.tasks.ext"></a><h3>Package phing.tasks.ext</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#UpToDateTaskTest">UpToDateTaskTest</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>0.076</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.tasks.system"></a><h3>Package phing.tasks.system</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#PropertyTaskTest">PropertyTaskTest</a></td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0.181</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#ImportTaskTest">ImportTaskTest</a></td>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>0.220</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#TypedefTaskTest">TypedefTaskTest</a></td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0.202</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#TaskdefTaskTest">TaskdefTaskTest</a></td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0.232</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.tasks.system.condition"></a><h3>Package phing.tasks.system.condition</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#EqualsConditionTest">EqualsConditionTest</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>0.006</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#ContainsConditionTest">ContainsConditionTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.001</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<a name="phing.types"></a><h3>Package phing.types</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td><a href="#MapperTest">MapperTest</a></td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0.555</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#FileSetTest">FileSetTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.010</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#CommandlineTest">CommandlineTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.005</td>
+</tr>
+</table>
+<a href="#top">Back to top</a><p></p>
+<p></p>
+<hr size="1" width="95%" align="left">
+<a name="CommandlineTest"></a><h3>TestCase CommandlineTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testTranslateCommandline</td>
+<td>Success</td>
+<td></td>
+<td>0.005</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="ContainsConditionTest"></a><h3>TestCase ContainsConditionTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCaseSensitive</td>
+<td>Success</td>
+<td></td>
+<td>0.001</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="CopyTaskFileListTest"></a><h3>TestCase CopyTaskFileListTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCopyTask</td>
+<td>Success</td>
+<td></td>
+<td>0.043</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="CustomTaskFileSetTest"></a><h3>TestCase CustomTaskFileSetTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCustomTask</td>
+<td>Success</td>
+<td></td>
+<td>0.093</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="EqualsConditionTest"></a><h3>TestCase EqualsConditionTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testTrim</td>
+<td>Success</td>
+<td></td>
+<td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testCaseSensitive</td>
+<td>Success</td>
+<td></td>
+<td>0.001</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="ExcludeZipTest"></a><h3>TestCase ExcludeZipTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testZipTask</td>
+<td>Success</td>
+<td></td>
+<td>0.128</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="FileOutputStreamTest"></a><h3>TestCase FileOutputStreamTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testWrite</td>
+<td>Success</td>
+<td></td>
+<td>0.003</td>
+</tr>
+<tr valign="top" class="">
+<td>testFlush</td>
+<td>Success</td>
+<td></td>
+<td>0.003</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="FileSetTest"></a><h3>TestCase FileSetTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testEmptyElementIfIsReference</td>
+<td>Success</td>
+<td></td>
+<td>0.010</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="ForeachFileSetTest"></a><h3>TestCase ForeachFileSetTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCustomTask</td>
+<td>Success</td>
+<td></td>
+<td>0.074</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="HtmlEntitiesTest"></a><h3>TestCase HtmlEntitiesTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCopyTask</td>
+<td>Success</td>
+<td></td>
+<td>0.035</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="ImportTaskTest"></a><h3>TestCase ImportTaskTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testOverloadedTarget</td>
+<td>Success</td>
+<td></td>
+<td>0.045</td>
+</tr>
+<tr valign="top" class="">
+<td>testImportedTarget</td>
+<td>Success</td>
+<td></td>
+<td>0.044</td>
+</tr>
+<tr valign="top" class="">
+<td>testImported2Target</td>
+<td>Success</td>
+<td></td>
+<td>0.043</td>
+</tr>
+<tr valign="top" class="">
+<td>testCascadeTarget</td>
+<td>Success</td>
+<td></td>
+<td>0.044</td>
+</tr>
+<tr valign="top" class="">
+<td>testFlipFlopTarget</td>
+<td>Success</td>
+<td></td>
+<td>0.044</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="IntrospectionHelperTest"></a><h3>TestCase IntrospectionHelperTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testAddText</td>
+<td>Success</td>
+<td></td>
+<td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testSupportsCharacters</td>
+<td>Success</td>
+<td></td>
+<td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testElementCreators</td>
+<td>Success</td>
+<td></td>
+<td>0.004</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="LineContainsTest"></a><h3>TestCase LineContainsTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testLineContains</td>
+<td>Success</td>
+<td></td>
+<td>0.054</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="MapperTest"></a><h3>TestCase MapperTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testEmptyElementIfIsReference</td>
+<td>Success</td>
+<td></td>
+<td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testCircularReferenceCheck</td>
+<td>Success</td>
+<td></td>
+<td>0.006</td>
+</tr>
+<tr valign="top" class="">
+<td>testCopyTaskWithTwoFilesets</td>
+<td>Success</td>
+<td></td>
+<td>0.544</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="MoveReplaceRegexpTest"></a><h3>TestCase MoveReplaceRegexpTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testPhingCallTask</td>
+<td>Success</td>
+<td></td>
+<td>0.041</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="PearPkg2CompatibilityTest"></a><h3>TestCase PearPkg2CompatibilityTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testInactiveMaintainers</td>
+<td>Success</td>
+<td></td>
+<td>0.229</td>
+</tr>
+<tr valign="top" class="">
+<td>testActiveMaintainers</td>
+<td>Success</td>
+<td></td>
+<td>0.121</td>
+</tr>
+<tr valign="top" class="">
+<td>testNotSetMaintainers</td>
+<td>Success</td>
+<td></td>
+<td>0.121</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="PearStyleNamingTest"></a><h3>TestCase PearStyleNamingTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testPhingCallTask</td>
+<td>Success</td>
+<td></td>
+<td>0.023</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="PhingCallAdhocTest"></a><h3>TestCase PhingCallAdhocTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testPhingCallTask</td>
+<td>Success</td>
+<td></td>
+<td>0.055</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="PhpUnit34Test"></a><h3>TestCase PhpUnit34Test</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testPhingCallTask</td>
+<td>Success</td>
+<td></td>
+<td>0.271</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="PropertyTaskTest"></a><h3>TestCase PropertyTaskTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>test1</td>
+<td>Success</td>
+<td></td>
+<td>0.031</td>
+</tr>
+<tr valign="top" class="">
+<td>test2</td>
+<td>Success</td>
+<td></td>
+<td>0.031</td>
+</tr>
+<tr valign="top" class="">
+<td>test3</td>
+<td>Success</td>
+<td></td>
+<td>0.030</td>
+</tr>
+<tr valign="top" class="">
+<td>test4</td>
+<td>Success</td>
+<td></td>
+<td>0.030</td>
+</tr>
+<tr valign="top" class="">
+<td>testPrefixSuccess</td>
+<td>Success</td>
+<td></td>
+<td>0.029</td>
+</tr>
+<tr valign="top" class="">
+<td>testPrefixFailure</td>
+<td>Success</td>
+<td></td>
+<td>0.029</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="RecursivePropertyTest"></a><h3>TestCase RecursivePropertyTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCopyTask</td>
+<td>Success</td>
+<td></td>
+<td>0.027</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="ReplaceTokenBooleanTest"></a><h3>TestCase ReplaceTokenBooleanTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testCustomTask</td>
+<td>Success</td>
+<td></td>
+<td>0.032</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="TargetTest"></a><h3>TestCase TargetTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testHiddenTargets</td>
+<td>Success</td>
+<td></td>
+<td>0.373</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="TaskdefForCopyTest"></a><h3>TestCase TaskdefForCopyTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>test1</td>
+<td>Success</td>
+<td></td>
+<td>0.567</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="TaskdefTaskTest"></a><h3>TestCase TaskdefTaskTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testEmpty</td>
+<td>Success</td>
+<td></td>
+<td>0.041</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoName</td>
+<td>Success</td>
+<td></td>
+<td>0.038</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoClassname</td>
+<td>Success</td>
+<td></td>
+<td>0.038</td>
+</tr>
+<tr valign="top" class="">
+<td>testClassNotFound</td>
+<td>Success</td>
+<td></td>
+<td>0.039</td>
+</tr>
+<tr valign="top" class="">
+<td>testGlobal</td>
+<td>Success</td>
+<td></td>
+<td>0.037</td>
+</tr>
+<tr valign="top" class="">
+<td>testLocal</td>
+<td>Success</td>
+<td></td>
+<td>0.040</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="TypedefTaskTest"></a><h3>TestCase TypedefTaskTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testEmpty</td>
+<td>Success</td>
+<td></td>
+<td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoName</td>
+<td>Success</td>
+<td></td>
+<td>0.033</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoClassname</td>
+<td>Success</td>
+<td></td>
+<td>0.033</td>
+</tr>
+<tr valign="top" class="">
+<td>testClassNotFound</td>
+<td>Success</td>
+<td></td>
+<td>0.034</td>
+</tr>
+<tr valign="top" class="">
+<td>testGlobal</td>
+<td>Success</td>
+<td></td>
+<td>0.034</td>
+</tr>
+<tr valign="top" class="">
+<td>testLocal</td>
+<td>Success</td>
+<td></td>
+<td>0.034</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><a name="UpToDateTaskTest"></a><h3>TestCase UpToDateTaskTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th>
+<th>Status</th>
+<th width="80%">Type</th>
+<th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testOverrideNoPropertySet</td>
+<td>Success</td>
+<td></td>
+<td>0.039</td>
+</tr>
+<tr valign="top" class="">
+<td>testOverridePropertySet</td>
+<td>Success</td>
+<td></td>
+<td>0.037</td>
+</tr>
+</table>
+<p></p>
+<a href="#top">Back to top</a><table width="100%">
+<tr><td><hr noshade size="1"></td></tr>
+<tr><td class="small">Report generated at 2010-10-30T12:08:20+02:00</td></tr>
+</table>
+</body>
+</html>

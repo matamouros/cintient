@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry kind="src" path="bin"/>
+	<buildpathentry kind="src" path="classes/phing"/>
+	<buildpathentry kind="src" path="test"/>
+</buildpath>

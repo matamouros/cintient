@@ -1,0 +1,691 @@
+<html>
+<head>
+<title>Docs For Class PearLogListener</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">phing-listener</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              		  [ <a href="../classtrees_phing-listener.html" class="menu">class tree: phing-listener</a> ]
+		  [ <a href="../elementindex_phing-listener.html" class="menu">index: phing-listener</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_phing.html">phing</a><br />
+              <a href="../li_JSMin.html">JSMin</a><br />
+              <a href="../li_phing-filters.html">phing-filters</a><br />
+              <a href="../li_phing-filters-util.html">phing-filters-util</a><br />
+              <a href="../li_phing-input.html">phing-input</a><br />
+              <a href="../li_phing-lib.html">phing-lib</a><br />
+              <a href="../li_phing-listener.html">phing-listener</a><br />
+              <a href="../li_phing-mappers.html">phing-mappers</a><br />
+              <a href="../li_phing-parser.html">phing-parser</a><br />
+              <a href="../li_phing-system-io.html">phing-system-io</a><br />
+              <a href="../li_phing-system-lang.html">phing-system-lang</a><br />
+              <a href="../li_phing-system-util.html">phing-system-util</a><br />
+              <a href="../li_phing-tasks-ext.html">phing-tasks-ext</a><br />
+              <a href="../li_phing-tasks-ext-coverage.html">phing-tasks-ext-coverage</a><br />
+              <a href="../li_phing-tasks-ext-creole.html">phing-tasks-ext-creole</a><br />
+              <a href="../li_phing-tasks-ext-dbdeploy.html">phing-tasks-ext-dbdeploy</a><br />
+              <a href="../li_phing-tasks-ext-formatter.html">phing-tasks-ext-formatter</a><br />
+              <a href="../li_phing-tasks-ext-ioncube.html">phing-tasks-ext-ioncube</a><br />
+              <a href="../li_phing-tasks-ext-pdo.html">phing-tasks-ext-pdo</a><br />
+              <a href="../li_phing-tasks-ext-pearpackage.html">phing-tasks-ext-pearpackage</a><br />
+              <a href="../li_phing-tasks-ext-phar.html">phing-tasks-ext-phar</a><br />
+              <a href="../li_phing-tasks-ext-phk.html">phing-tasks-ext-phk</a><br />
+              <a href="../li_phing-tasks-ext-phpdoc.html">phing-tasks-ext-phpdoc</a><br />
+              <a href="../li_phing-tasks-ext-phpunit.html">phing-tasks-ext-phpunit</a><br />
+              <a href="../li_phing-tasks-ext-phpunit-formatter.html">phing-tasks-ext-phpunit-formatter</a><br />
+              <a href="../li_phing-tasks-ext-simpletest.html">phing-tasks-ext-simpletest</a><br />
+              <a href="../li_phing-tasks-ext-svn.html">phing-tasks-ext-svn</a><br />
+              <a href="../li_phing-tasks-system.html">phing-tasks-system</a><br />
+              <a href="../li_phing-tasks-system-condition.html">phing-tasks-system-condition</a><br />
+              <a href="../li_phing-types.html">phing-types</a><br />
+              <a href="../li_phing-types-selecctors.html">phing-types-selecctors</a><br />
+              <a href="../li_phing-types-selectors.html">phing-types-selectors</a><br />
+              <a href="../li_phing-util.html">phing-util</a><br />
+              <a href="../li_phing-util-regex.html">phing-util-regex</a><br />
+              <a href="../li_phing-util-regexp.html">phing-util-regexp</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../phing-listener/_listener---AnsiColorLogger.php.html">		AnsiColorLogger.php
+		</a><br>
+			<a href="../phing-listener/_listener---DefaultLogger.php.html">		DefaultLogger.php
+		</a><br>
+			<a href="../phing-listener/_listener---NoBannerLogger.php.html">		NoBannerLogger.php
+		</a><br>
+			<a href="../phing-listener/_listener---PearLogListener.php.html">		PearLogListener.php
+		</a><br>
+			<a href="../phing-listener/_listener---XmlLogger.php.html">		XmlLogger.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../phing-listener/AnsiColorLogger.html">AnsiColorLogger</a><br />
+	    		<a href="../phing-listener/DefaultLogger.html">DefaultLogger</a><br />
+	    		<a href="../phing-listener/NoBannerLogger.html">NoBannerLogger</a><br />
+	    		<a href="../phing-listener/PearLogListener.html">PearLogListener</a><br />
+	    		<a href="../phing-listener/XmlLogger.html">XmlLogger</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: PearLogListener</h1>
+Source Location: /listener/PearLogListener.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre></pre><br />
+<div class="description">Writes build messages to PEAR Log.</div><br /><br />
+<h4>Author(s):</h4>
+<ul>
+          <li>Hans Lellelid &lt;<a href="mailto:hans@xmpl.org">hans@xmpl.org</a>&gt;</li>
+                  </ul>
+
+
+
+
+        
+        
+<h4>Version:</h4>
+<ul>
+  <li>$Revision: 552 $ $Date: 2009-08-29 14:18:13 +0200 (Sat, 29 Aug 2009) $</li>
+</ul>
+
+                <p class="implements">
+            Implements interfaces:
+            <ul>
+                <li><a href="../phing/BuildListener.html">BuildListener</a></li>            </ul>
+        </p>
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../phing-listener/PearLogListener.html#var$levelMap">$levelMap</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#var$logConfigured">$logConfigured</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#var$logger">$logger</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#var$startTime">$startTime</a></li>
+  </ul>
+</td>
+
+<td valign="top">
+<h3><a href="#class_consts">Constants</a></h3>
+<ul>
+    <li><a href="../phing-listener/PearLogListener.html#constLEFT_COLUMN_SIZE">LEFT_COLUMN_SIZE</a></li>
+  </ul>
+</td>
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../phing-listener/PearLogListener.html#methodbuildFinished">buildFinished</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodbuildStarted">buildStarted</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodconfigureLogging">configureLogging</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodlogger">logger</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodmessageLogged">messageLogged</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodtargetFinished">targetFinished</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodtargetStarted">targetStarted</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodtaskFinished">taskFinished</a></li>
+    <li><a href="../phing-listener/PearLogListener.html#methodtaskStarted">taskStarted</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+
+
+
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line 43]<br />
+Writes build messages to PEAR Log.<br /><br /><p>By default it will log to file in current directory w/ name 'phing.log'.  You can customize  this behavior by setting properties: <ul><li>pear.log.type</li><li>pear.log.name</li><li>pear.log.ident (note that this class changes ident to project name)</li><li>pear.log.conf (note that array values are currently unsupported in Phing property files)</li></ul>  <ol><li><div class="src-line">&nbsp;&nbsp;<span class="src-id">phing&nbsp;</span>-<span class="src-id">f&nbsp;build</span>.<span class="src-id">xml&nbsp;</span>-<a href="../phing-listener/PearLogListener.html#methodlogger">logger</a>&nbsp;<span class="src-id">phing</span>.<span class="src-id">listener</span>.<span class="src-id">PearLogger&nbsp;</span>-<span class="src-id">Dpear</span>.<a href="http://www.php.net/log">log</a>.<span class="src-id">type</span>=<a href="http://www.php.net/file">file</a>&nbsp;-<span class="src-id">Dpear</span>.<a href="http://www.php.net/log">log</a>.<span class="src-id">name</span>=/<span class="src-id">path</span>/<span class="src-id">to</span>/<a href="http://www.php.net/log">log</a>.<a href="http://www.php.net/log">log</a></div></li>
+</ol></p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Hans Lellelid &lt;<a href="mailto:hans@xmpl.org">hans@xmpl.org</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>$Revision: 552 $ $Date: 2009-08-29 14:18:13 +0200 (Sat, 29 Aug 2009) $</td>
+  </tr>
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html">BuildEvent</a></td>
+  </tr>
+</table>
+</div>
+</div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$levelMap"></a>
+	<p></p>
+	<h4>static $levelMap = <span class="value">array(&nbsp;Project::MSG_DEBUG&nbsp;=&gt;&nbsp;PEAR_LOG_DEBUG,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Project::MSG_INFO&nbsp;=&gt;&nbsp;PEAR_LOG_INFO,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Project::MSG_VERBOSE&nbsp;=&gt;&nbsp;PEAR_LOG_NOTICE,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Project::MSG_WARN&nbsp;=&gt;&nbsp;PEAR_LOG_WARNING,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Project::MSG_ERR&nbsp;=&gt;&nbsp;PEAR_LOG_ERR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span></h4>
+	<p>[line 61]</p>
+  Maps Phing Project::MSG_* constants to PEAR_LOG_* constants.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$logConfigured"></a>
+	<p></p>
+	<h4>$logConfigured = <span class="value">&nbsp;false</span></h4>
+	<p>[line 71]</p>
+  Whether logging has been configured.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>boolean</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$logger"></a>
+	<p></p>
+	<h4>$logger = <span class="value"></span></h4>
+	<p>[line 76]</p>
+  <br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>var:</b>&nbsp;&nbsp;</td><td>PEAR Log object.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>Log</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$startTime"></a>
+	<p></p>
+	<h4>$startTime = <span class="value"></span></h4>
+	<p>[line 55]</p>
+  Time that the build started<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="methodbuildFinished"></a>
+	<h3>method buildFinished <span class="smalllinenumber">[line 132]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void buildFinished(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Logs whether the build succeeded or failed, and any errors that   occured during the build. Also outputs the total build-time.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetException">BuildEvent::getException()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::buildFinished</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbuildStarted"></a>
+	<h3>method buildStarted <span class="smalllinenumber">[line 119]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void buildStarted(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Sets the start-time when the build started. Used for calculating   the build-time.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::buildStarted</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodconfigureLogging"></a>
+	<h3>method configureLogging <span class="smalllinenumber">[line 81]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void configureLogging(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Configure the logger.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlogger"></a>
+	<h3>method logger <span class="smalllinenumber">[line 106]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Log logger(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Get the configured PEAR logger to use.<br /><br /><p>This method just ensures that logging has been configured and returns the configured logger.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodmessageLogged"></a>
+	<h3>method messageLogged <span class="smalllinenumber">[line 185]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void messageLogged(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Logs a message to the configured PEAR logger.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetMessage">BuildEvent::getMessage()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::messageLogged</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtargetFinished"></a>
+	<h3>method targetFinished <span class="smalllinenumber">[line 158]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void targetFinished(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Fired when a target has finished. We don't need specific action on this   event. So the methods are empty.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetException">BuildEvent::getException()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::targetFinished</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtargetStarted"></a>
+	<h3>method targetStarted <span class="smalllinenumber">[line 148]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void targetStarted(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Logs the current target name<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetTarget">BuildEvent::getTarget()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::targetStarted</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtaskFinished"></a>
+	<h3>method taskFinished <span class="smalllinenumber">[line 177]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void taskFinished(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Fired when a task has finished. We don't need specific action on this   event. So the methods are empty.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetException">BuildEvent::getException()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::taskFinished</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtaskStarted"></a>
+	<h3>method taskStarted <span class="smalllinenumber">[line 168]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void taskStarted(
+
+$event)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Fired when a task is started. We don't need specific action on this   event. So the methods are empty.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../phing/BuildEvent.html#methodgetTask">BuildEvent::getTask()</a></td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+			<hr class="separator" />
+		<div class="notes">Implementation of:</div>
+			<dl>
+			<dt>BuildListener::taskStarted</dt>
+					</dl>
+		
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../phing/BuildEvent.html">BuildEvent</a>&nbsp;&nbsp;</td>
+        <td><b>$event</b>&nbsp;&nbsp;</td>
+        <td>The BuildEvent</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+<hr />
+<a name="class_consts"></a>
+<h3>Class Constants</h3>
+<div class="tags">
+	<a name="constLEFT_COLUMN_SIZE"></a>
+	<p></p>
+	<h4>LEFT_COLUMN_SIZE = <span class="value">&nbsp;12</span></h4>
+	<p>[line 49]</p>
+  Size of the left column in output. The default char width is 12.<br /><br />
+  <br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Mon, 19 Oct 2009 10:51:27 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
