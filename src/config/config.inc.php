@@ -44,12 +44,10 @@ define('LOCAL_WORKING_COPY_DIR', WORK_DIR . 'local/');
 
 define('DEFAULT_DIR_MASK', 0777);
 
-define('INSTALL_DIR', '');
+define('INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
 
 define('AUTH_METHOD', 'local'); // Taken from src/core/Auth/
 
-define('SCM_DEFAULT_USERNAME', '');
-define('SCM_DEFAULT_PASSWORD', '');
 define('SCM_DEFAULT_CONNECTOR', 'svn'); // Taken from src/core/ScmConnector/
 
 define('SMARTY_DEBUG', false);
@@ -62,4 +60,16 @@ define('PASSWORD_SALT', 'rOTA4spNYI3yXvAL');
 
 define('SERVER', 'localhost');
 
-define('DATABASE_FILE', '/tmp/cintient.sqlite');
+define('DATABASE_FILE', '/var/run/cintient/cintient.sqlite');
+
+//
+// The following is a workaround on the fact that the translation of this
+// serialized object to the database gets all broken, due to the fact of PHP
+// introducing NULL bytes around the '*' that is prepended before protected
+// variable members, in the serialized mode. This method replaces those
+// problematic NULL bytes with an identifier string '==',
+// rendering serialization and unserialization of these specific kinds of
+// object safe. Credits to travis@travishegner.com on:
+// http://pt.php.net/manual/en/function.serialize.php#96504
+//
+define('CINTIENT_NULL_BYTE_TOKEN', '==');

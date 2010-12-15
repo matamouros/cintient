@@ -66,4 +66,9 @@ class BuilderElement_Project extends BuilderElementAbstract
   {
     $this->_targets[] = $o;
   }
+  
+  public function isEmpty()
+  {
+    return empty($this->_targets);
+  }
 }

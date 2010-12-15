@@ -64,7 +64,7 @@ class Project
   private $_users;                 // An array of users and corresponding permissions, taken from projectuser table
   private $_visits;                // Counter of accesses, for hotness
   //
-  // Builder
+  // Builders
   //
   private $_integrationBuilder;    // The builder used for continuous integration builds and package creation (serialized)
   private $_deploymentBuilder;     // The builder available inside a package, for deployment (serialized)
@@ -117,6 +117,55 @@ class Project
     $this->_title = '';
     $this->_users = array();
     //
+    // Builders
+    //
+    $this->_integrationBuilder = new BuilderElement_Project();
+    //TODO: test code - every new project gets pre-generated integration builder
+    $exec = new BuilderElement_Task_Exec();
+    $exec->setExecutable('ls -la');
+    $exec->setArgs(array('extra/'));
+    $exec->setDir('/tmp/apache');
+    $exec->setOutputProperty('xpto');
+    
+    $delete = new BuilderElement_Task_Delete();
+    $delete->setIncludeEmptyDirs(true);
+    $delete->setFailOnError(true);
+    $fileset = new BuilderElement_Type_Fileset();
+    $fileset->setDir('/tmp/apache');
+    //$fileset->setDefaultExcludes(false);
+    $fileset->setInclude(array('extra/**/*.conf'));
+    $delete->setFilesets(array($fileset));
+    //echo $delete->toString('ant');
+    
+    $echo = new BuilderElement_Task_Echo();
+    $echo->setMessage('About to do an exec!');
+    
+    $echo2 = new BuilderElement_Task_Echo();
+    $echo2->setMessage('About to do an exec2!');
+    $echo2->setFile('/tmp/test.log');
+    $echo2->setAppend(true);
+    
+    $mkdir = new BuilderElement_Task_Mkdir();
+    //$mkdir->setDir('/tmp/tmp2/tmp3');
+    $mkdir->setDir('/lixo');
+    
+    $target = new BuilderElement_Target();
+    $target->setName('tests');
+    $target->setTasks(array($exec));
+    //echo $target->toString('php');
+    
+    $target2 = new BuilderElement_Target();
+    $target2->setName('tests2');
+    //$target->setTasks(array($delete, $exec));
+    $target2->setTasks(array($echo, $mkdir));
+    //echo $target->toString('php');
+    
+    $this->_integrationBuilder->addTarget($target);
+    $this->_integrationBuilder->addTarget($target2);
+    $this->_integrationBuilder->setDefaultTarget($target->getName());
+    
+    $this->_deploymentBuilder = new BuilderElement_Project();
+    //
     // Options
     //
     $this->_optionPackageOnSuccess = false;
@@ -127,7 +176,7 @@ class Project
     $this->_save();
   }
   
-  public function build()
+  public function build($force = false)
   {
     $params = array();
     $params['type'] = $this->getScmConnectorType();
@@ -174,7 +223,15 @@ class Project
       SystemEvent::raise(SystemEvent::DEBUG, "No valid integration builder specified. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
-    $this->_integrationBuilder->execute();
+    if ($this->_integrationBuilder->isEmpty()) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!$this->_integrationBuilder->execute()) {
+      SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
+      $this->setStatus(self::ERROR);
+      return false;
+    }
     
     
     
@@ -325,8 +382,10 @@ CREATE TABLE IF NOT EXISTS project(
   datecheckedforchanges DATETIME,
   datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
   datemodification DATETIME,
+  deploymentbuilder TEXT,
   description TEXT DEFAULT '',
   history TEXT,
+  integrationbuilder TEXT,
   title VARCHAR(255) DEFAULT '',
   visits INTEGER DEFAULT 0
 );
@@ -363,10 +422,22 @@ EOT;
     if (!Database::beginTransaction()) {
       return false;
     }
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $serializedIntegrationBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getIntegrationBuilder()));
+    $serializedDeploymentBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getDeploymentBuilder()));
     $sql = 'REPLACE INTO project'
          . ' (id,datebuild,datecheckedforchanges,datecreation,datemodification,'
-         . ' description,title,visits)'
-         . " VALUES (?,?,?,?,?,?,?,?)";
+         . ' description,title,visits,integrationbuilder,deploymentbuilder)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
       $this->getDateBuild(),
@@ -376,6 +447,8 @@ EOT;
       $this->getDescription(),
       $this->getTitle(),
       $this->getVisits(),
+      /*SQLite3::escapeString*/($serializedIntegrationBuilder),
+      /*SQLite3::escapeString*/($serializedDeploymentBuilder),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -539,6 +612,31 @@ EOT;
     $ret->setId($rs->getId());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
+    //
+    // Builders
+    //
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $unsafeSerializedIntegrationBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getIntegrationBuilder()); 
+    if (($integrationBuilder = unserialize($unsafeSerializedIntegrationBuilder)) === false) {
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize integration builder for this project [PID={$ret->getId()}]");
+      $integrationBuilder = new BuilderElement_Project();
+    }
+    $ret->setIntegrationBuilder($integrationBuilder);
+    $unsafeSerializedDeploymentBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getDeploymentBuilder()); 
+    if (($deploymentBuilder = unserialize($unsafeSerializedDeploymentBuilder)) === false) {
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize deployment builder for this project [PID={$ret->getId()}]");
+      $deploymentBuilder = new BuilderElement_Project();
+    }
+    $ret->setDeploymentBuilder($deploymentBuilder);
     if ($options['loadUsers']) {
       $ret->loadUsers();
     }
