@@ -23,6 +23,8 @@ SCM Remote Repository <input type="text" name="scmRemoteRepository">
 {else}
 Title: {$smarty.session.project->getTitle()}
 <br>
+Status: {$smarty.session.project->getStatus()}
+<br>
 Description: {$smarty.session.project->getDescription()}
 <br>
 Connector: {$smarty.session.project->getScmConnectorType()}
@@ -30,7 +32,9 @@ Connector: {$smarty.session.project->getScmConnectorType()}
 SCM Username: {$smarty.session.project->getScmUsername()}
 <br>
 SCM Password: {*$smarty.session.project->getScmUsername()*}
-<br>
+<br><br>
+<a href="{URLManager::getForProjectBuild($smarty.session.project)}">Build!!</a>
+<br><br>
 <a href="{URLManager::getForProjectEdit($smarty.session.project)}">clique aqui para editar</a>
 {/if}
 {include file='includes/footer.inc.tpl'}
