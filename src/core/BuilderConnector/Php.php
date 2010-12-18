@@ -66,6 +66,9 @@ class BuilderConnector_Php
       SystemEvent::raise(SystemEvent::ERROR, 'No default target set for the project.', __METHOD__);
       return false;
     }
+    $php .= <<<EOT
+error_reporting(0);
+EOT;
     if ($o->getBaseDir() !== null) {
       $php .= <<<EOT
 set_include_path(get_include_path() . PATH_SEPARATOR . {$o->getBaseDir()});
@@ -210,7 +213,7 @@ fclose(\$fp);
 EOT;
     } else {
       $php .= <<<EOT
-echo \"{$o->getMessage()}\n\";
+echo "{$o->getMessage()}\n";
 EOT;
     }
     return $php;
@@ -257,10 +260,14 @@ return true;
       return false;
     }
     $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-if (mkdir('{$o->getDir()}', " . DEFAULT_DIR_MASK . ", true) === false) {
-  \$GLOBALS['result']['ok'] = false;
-  return false;
+if (!file_exists('{$o->getDir()}')) {
+  if (mkdir('{$o->getDir()}', " . DEFAULT_DIR_MASK . ", true) === false) {
+    \$GLOBALS['result']['ok'] = false;
+    return false;
+  }
 }
+\$GLOBALS['result']['ok'] = true;
+return true;
 ";
     return $php;
   }
