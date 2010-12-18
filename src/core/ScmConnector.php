@@ -45,9 +45,16 @@ class ScmConnector
   static public function delete(array $params = array())
   {
     if (isset($params['local']) && !empty($params['local'])) {
-      return unlink($params['local']);
+      $ret = unlink($params['local']);
     }
-    return false;
+    #if DEBUG
+    if ($ret) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Deleted local working copy. [DIR={$params['local']}]", __METHOD__);
+    } else {
+      SystemEvent::raise(SystemEvent::DEBUG, "Could not delete local working copy. [DIR={$params['local']}]", __METHOD__);
+    }
+    #endif
+    return $ret;
   }
   
   static public function checkout(array $params = array())
@@ -66,8 +73,7 @@ class ScmConnector
       }
     }
     $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    $ret = $scmConnectorObject::checkout($params);
-    if (!$ret) {
+    if (!$scmConnectorObject::checkout($params)) {
       SystemEvent::raise(SystemEvent::DEBUG, "Could not check out remote repository. [REPOSITORY={$params['remote']}]", __METHOD__);
       return false;
     } else {
@@ -80,14 +86,27 @@ class ScmConnector
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
     $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    return $scmConnectorObject::isModified($params);
+    SystemEvent::raise(SystemEvent::DEBUG, "Checking remote repository for modifications... [REPOSITORY={$params['remote']}]", __METHOD__);
+    if (!$scmConnectorObject::isModified($params)) {
+      SystemEvent::raise(SystemEvent::DEBUG, "No modifications found. [REPOSITORY={$params['remote']}]", __METHOD__);
+      return false;
+    } else {
+      SystemEvent::raise(SystemEvent::DEBUG, "Modifications were found! [REPOSITORY={$params['remote']}]", __METHOD__);
+      return true;
+    }
   }
   
   static public function update(array $params = array())
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
-    $scmConnectorObject = 'ScmConnector_' . ucfirst($type);
-    return $scmConnectorObject::update($params);
+    $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
+    if (!$scmConnectorObject::update($params)) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Could not update local working copy. [DIR={$params['local']}]", __METHOD__);
+      return false;
+    } else {
+      SystemEvent::raise(SystemEvent::DEBUG, "Updated local working copy. [DIR={$params['local']}]", __METHOD__);
+      return true;
+    }
   }
   
   static public function tag() {}
