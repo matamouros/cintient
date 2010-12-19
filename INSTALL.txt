@@ -1,0 +1,88 @@
+  
+  Cintient, Continuous Integration made simple.
+  Copyright (c) 2011, Pedro Mata-Mouros Fonseca
+  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  
+  . Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  
+  . Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following
+    disclaimer in the documentation and/or other materials provided
+    with the distribution.
+    
+  . Neither the name of Pedro Mata-Mouros Fonseca, Cintient, nor
+    the names of its contributors may be used to endorse or promote
+    products derived from this software without specific prior
+    written permission.
+    
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS
+  AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
+
+
+
+
+[ REQUIREMENTS ]
+1. Apache HTTPD (or your other webserver of choice)
+
+2. PHP 5.3.x
+
+
+[ INSTALLATION ]
+1. For now just configure a vhost in your webserver to handle this. Try the
+   following for starters:
+
+  <VirtualHost *:80>
+      DocumentRoot /servers/cintient/www
+      ServerName cintient.localsite.com
+      ErrorLog /var/log/httpd.error
+      RewriteEngine on
+      RewriteRule ^(?!/js/)(.*)$ /WebHandler.php [L]
+      php_value include_path /servers/cintient
+      <Directory "/servers/cintient/www">
+          Options FollowSymLinks
+          AllowOverride FileInfo
+          Order allow,deny
+          Allow from all
+      </Directory>
+  </VirtualHost>
+  
+2. As for PHP, no special configuration is required - for now!
+
+3. Open up src/config/config.php and change what you must - we still don't have
+   an automatic process for this. Make sure pretty much all dirs specified there
+   have the proper writing and execution permissions for your webserver process
+   that will be running Cintient. 
+
+4. Locate src/core/TemplateManager.php's method install() and within it make
+   sure you specify your root account and password. This will be used for your
+   first access into the platform.
+
+
+[ STARTUP ]
+1. Access your configured vhost:
+
+  http://cintient.localsite.com/install
+
+  This starts up Cintient on your local setup, installs the database and sets
+  up the starting tables. You should only run this the first time 'round.
+  
+2. Enter the platform with the credentials you provided in the install() method.
+
+3. Have fun taking it up for a ride. Wanna join us? We need your contribution!
+
+  
