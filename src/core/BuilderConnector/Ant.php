@@ -203,6 +203,31 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
   
+  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
+  {
+    $xml = new XmlBuilderElement();
+    $xml->startElement('apply');
+    if (!$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files set for task php lint.', __METHOD__);
+      return false;
+    }
+    $xml->writeAttribute('executable', 'php');
+    if ($o->getFailOnError() !== null) {
+      $xml->writeAttribute('failonerror', ($o->getFailOnError()?'true':'false'));
+    }
+    $xml->startElement('arg');
+    $xml->writeAttribute('value', '-l');
+    $xml->endElement();
+    if ($o->getFilesets()) {
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+      }
+    }
+    $xml->endElement();
+    return $xml->flush();
+  }
+  
   static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o)
   {
     $xml = new XmlBuilderElement();
