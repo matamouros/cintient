@@ -43,7 +43,7 @@
 class Config
 {
   //TODO: this should instead be in /etc/
-  const CONFIGURATION_FILE;// = BASE_DIR . 'etc/ci.ini';
+  const CONFIGURATION_FILE = "";// = BASE_DIR . 'etc/ci.ini';
   
   /**
    * 

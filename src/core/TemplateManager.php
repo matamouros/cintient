@@ -203,6 +203,7 @@ class TemplateManager
       
       $project = new Project();
       $project->setTitle($_POST['title']);
+      $project->setBuildLabel($_POST['buildLabel']);
       $project->setDescription($_POST['description']);
       $project->setScmConnectorType($_POST['scmConnectorType']);
       $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
@@ -247,6 +248,12 @@ class TemplateManager
       // TODO: this should really be a redirect to the previous page.
       //
       return false;
+    }
+    //
+    // Building
+    //
+    if (isset($_GET['build'])) {
+      $_SESSION['project']->build();
     }
   }
   

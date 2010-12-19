@@ -52,7 +52,7 @@ class BuilderElementAbstract
       $this->$var = $args[0];
       return true;
     }
-    trigger_error("No valid method available for calling", E_USER_ERROR);
+    trigger_error("No valid method available for calling [METHOD={$name}]", E_USER_ERROR);
     exit;
   }
   

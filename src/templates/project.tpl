@@ -5,6 +5,8 @@ Title <input type="text" name="title">
 <br>
 Description <textarea rows="3" cols="30" name="description"></textarea>
 <br>
+Build label <input type="text" name="buildLabel">
+<br>
 Connector
 <select name="scmConnectorType">
 {foreach from=$project_availableConnectors item=connector}
@@ -22,6 +24,8 @@ SCM Remote Repository <input type="text" name="scmRemoteRepository">
 </form>
 {else}
 Title: {$smarty.session.project->getTitle()}
+<br>
+Build label: {$smarty.session.project->getBuildLabel()}
 <br>
 Status: {$smarty.session.project->getStatus()}
 <br>

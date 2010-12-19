@@ -52,6 +52,11 @@ class UrlManager
     return '/dashboard/';
   }
   
+  static public function getForProjectBuild()
+  {
+    return '/project/?build';   
+  }
+  
   static public function getForProjectEdit()
   {
     return '/project/?pid=' . $_SESSION['project']->getId();

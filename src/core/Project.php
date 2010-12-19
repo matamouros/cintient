@@ -120,51 +120,23 @@ class Project
     // Builders
     //
     $this->_integrationBuilder = new BuilderElement_Project();
-    //TODO: test code - every new project gets pre-generated integration builder
-    $exec = new BuilderElement_Task_Exec();
-    $exec->setExecutable('ls -la');
-    $exec->setArgs(array('extra/'));
-    $exec->setDir('/tmp/apache');
-    $exec->setOutputProperty('xpto');
+    $this->_deploymentBuilder = new BuilderElement_Project();
     
-    $delete = new BuilderElement_Task_Delete();
-    $delete->setIncludeEmptyDirs(true);
-    $delete->setFailOnError(true);
-    $fileset = new BuilderElement_Type_Fileset();
-    $fileset->setDir('/tmp/apache');
-    //$fileset->setDefaultExcludes(false);
-    $fileset->setInclude(array('extra/**/*.conf'));
-    $delete->setFilesets(array($fileset));
-    //echo $delete->toString('ant');
-    
+    //
+    //TODO: test code - every new project gets a pre-loaded integration builder
+    //
     $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage('About to do an exec!');
-    
+    $echo->setMessage('This is an echo!');
     $echo2 = new BuilderElement_Task_Echo();
-    $echo2->setMessage('About to do an exec2!');
-    $echo2->setFile('/tmp/test.log');
-    $echo2->setAppend(true);
-    
+    $echo2->setMessage('This is another echo!');
     $mkdir = new BuilderElement_Task_Mkdir();
-    //$mkdir->setDir('/tmp/tmp2/tmp3');
-    $mkdir->setDir('/lixo');
-    
+    $mkdir->setDir('/tmp/lixo');
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($exec));
-    //echo $target->toString('php');
-    
-    $target2 = new BuilderElement_Target();
-    $target2->setName('tests2');
-    //$target->setTasks(array($delete, $exec));
-    $target2->setTasks(array($echo, $mkdir));
-    //echo $target->toString('php');
-    
+    $target->setTasks(array($echo, $mkdir, $echo2));
     $this->_integrationBuilder->addTarget($target);
-    $this->_integrationBuilder->addTarget($target2);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
-    
-    $this->_deploymentBuilder = new BuilderElement_Project();
+
     //
     // Options
     //
@@ -200,21 +172,21 @@ class Project
           $this->setStatus(self::ERROR);
           return false;
         }
+        $this->setStatus(self::MODIFIED);
       } else {
-        if (!ScmConnector::isModified($params)) {
+        /*if (!ScmConnector::isModified($params)) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
           $this->setStatus(self::OK);
           return false;
-        }
+        }*/
+        $this->setStatus(self::MODIFIED);
         if (!ScmConnector::update($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
           $this->setStatus(self::ERROR);
           return false;
         }
       }
-      $this->setStatus(self::MODIFIED);
     }
-    
     
     
     
@@ -227,14 +199,13 @@ class Project
       SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!$this->_integrationBuilder->execute()) {
+    $php = $this->_integrationBuilder->toString('php');
+    if (!BuilderConnector_Php::execute($php)) {
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
       $this->setStatus(self::ERROR);
       return false;
     }
-    
-    
-    
+    $this->setStatus(self::OK);
     
     // 4. Update the build counter
     if (empty($this->_buildLabel)) {
@@ -378,6 +349,8 @@ EOT;
     $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  buildcounter INT DEFAULT 0,
+  buildlabel TEXT,
   datebuild DATETIME,
   datecheckedforchanges DATETIME,
   datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -386,6 +359,7 @@ CREATE TABLE IF NOT EXISTS project(
   description TEXT DEFAULT '',
   history TEXT,
   integrationbuilder TEXT,
+  status TINYINT DEFAULT 0,
   title VARCHAR(255) DEFAULT '',
   visits INTEGER DEFAULT 0
 );
@@ -436,8 +410,9 @@ EOT;
     $serializedDeploymentBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getDeploymentBuilder()));
     $sql = 'REPLACE INTO project'
          . ' (id,datebuild,datecheckedforchanges,datecreation,datemodification,'
-         . ' description,title,visits,integrationbuilder,deploymentbuilder)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?)";
+         . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
+         . ' buildcounter,buildlabel)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
       $this->getDateBuild(),
@@ -449,6 +424,9 @@ EOT;
       $this->getVisits(),
       /*SQLite3::escapeString*/($serializedIntegrationBuilder),
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
+      $this->getStatus(),
+      $this->getBuildCounter(),
+      $this->getBuildLabel()
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -604,12 +582,15 @@ EOT;
     $ret->setScmUsername($rs->getScmUsername());
     $ret->setScmPassword($rs->getScmPassword());
     $ret->setScmLocalWorkingCopy($rs->getScmLocalWorkingCopy());
+    $ret->setBuildCounter($rs->getBuildCounter());
+    $ret->setBuildLabel($rs->getBuildLabel());
     $ret->setDateBuild($rs->getDateBuild());
     $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDateCreation($rs->getDateCreation());
     $ret->setDateModification($rs->getDateModification());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
+    $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
     //
