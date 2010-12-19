@@ -133,7 +133,12 @@ class Project
     $mkdir->setDir('/tmp/lixo');
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($echo, $mkdir, $echo2));
+    $lint = new BuilderElement_Task_PhpLint();
+    $fileset = new BuilderElement_Type_Fileset();
+    $fileset->setDir('/tmp/');
+    $fileset->addInclude('*.php');
+    $lint->setFilesets(array($fileset));
+    $target->setTasks(array($echo, $mkdir, $echo2, $lint));
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
 
@@ -174,21 +179,23 @@ class Project
         }
         $this->setStatus(self::MODIFIED);
       } else {
-        /*if (!ScmConnector::isModified($params)) {
+        if (!ScmConnector::isModified($params)) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
-          $this->setStatus(self::OK);
-          return false;
-        }*/
+          if (!$force) {
+            $this->setStatus(self::OK);
+            return false;
+          }
+        }
         $this->setStatus(self::MODIFIED);
         if (!ScmConnector::update($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
-          $this->setStatus(self::ERROR);
-          return false;
+          if (!$force) {
+            $this->setStatus(self::ERROR);
+            return false;
+          }
         }
       }
     }
-    
-    
     
     // 3. trigger unit tests and all the rules specified in the rules engine
     if (!($this->_integrationBuilder instanceof BuilderElement_Project)) {
@@ -206,7 +213,7 @@ class Project
       return false;
     }
     $this->setStatus(self::OK);
-    
+
     // 4. Update the build counter
     if (empty($this->_buildLabel)) {
       SystemEvent::raise(SystemEvent::ERROR, "Empty build label, could not complete project build. [PROJECTID={$this->getId()}]", __METHOD__);
@@ -232,7 +239,6 @@ class Project
     }
     
     // 6. tag the sources on the built revision
-    
   }
  
   public function delete()
@@ -336,7 +342,7 @@ EOT;
       'password' => $this->getScmPassword(),
     );
     if (!ScmConnector::checkout($params)) {
-      $this->setStatus(self::ERROR);
+      $this->setStatus(self::UNINITIALIZED);
       return false;
     }
     $this->setStatus(self::OK);

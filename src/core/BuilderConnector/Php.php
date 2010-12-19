@@ -67,7 +67,7 @@ class BuilderConnector_Php
       return false;
     }
     $php .= <<<EOT
-error_reporting(0);
+//error_reporting(0);
 EOT;
     if ($o->getBaseDir() !== null) {
       $php .= <<<EOT
@@ -168,8 +168,8 @@ EOT;
       foreach ($filesets as $fileset) {
         $php .= self::BuilderElement_Type_Fileset($fileset);
         //
-        // In the following callback we assume that the fileset *always* returns
-        // a directory *after* all it's content.
+        // In the following callback we assume that the fileset returns a
+        // directory only *after* all it's content.
         //
         $php .= "
 \$callback = function (\$entry) {
@@ -266,9 +266,52 @@ if (!file_exists('{$o->getDir()}')) {
     return false;
   }
 }
-\$GLOBALS['result']['ok'] = true;
-return true;
 ";
+    return $php;
+  }
+  
+  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
+  {
+    $php = '';
+    if (!$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHP lint.', __METHOD__);
+      return false;
+    }
+    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';";
+    if ($o->getFilesets()) {
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $php .= self::BuilderElement_Type_Fileset($fileset);
+        //
+        // In the following callback we assume that the fileset returns a
+        // directory only *after* all it's content.
+        //
+        $php .= "
+\$callback = function (\$entry) {
+  if (is_file(\$entry)) {
+    \$ret = null;
+    \$output = array();
+    exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
+    if (\$ret > 0) {
+      \$GLOBALS['result']['ok'] = false;
+      \$GLOBALS['result']['stacktrace'][] = '[phplint] Errors parsing ' . \$entry . '.';
+      return false;
+    } else {
+      \$GLOBALS['result']['stacktrace'][] = '[phplint] No syntax errors detected in ' . \$entry . '.';
+    }
+  }
+  return true;
+};
+if (!fileset{$fileset->getId()}(\$callback)) {
+  if ({$o->getFailOnError()}) { // failonerror
+    return false;
+  }
+}
+";
+      }
+    }
+    
+    
     return $php;
   }
   
@@ -399,17 +442,19 @@ return true;
     $php .= "function fileset{$o->getId()}(\$callback)
 {
   try {
-//    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST) as \$entry) {
     foreach (new FilesetFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST), '{$o->getId()}') as \$entry) {
       if (!\$callback(\$entry, '{$o->getDir()}')) {
         \$GLOBALS['result']['ok'] = false;
-        \$GLOBALS['result']['output'] = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}]';
+        \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}]';
+        \$GLOBALS['result']['output'] = \$msg;
+        \$GLOBALS['result']['stacktrace'][] = '[' . __METHOD__ . '] ' . \$msg;
         return false;
       }
     }
   } catch (UnexpectedValueException \$e) { // Typical permission denied
     \$GLOBALS['result']['ok'] = false;
     \$GLOBALS['result']['output'] = \$e->getMessage();
+    \$GLOBALS['result']['stacktrace'][] = '[' . __METHOD__ . '] ' . \$e->getMessage();
     return false;
   }
 ";
@@ -438,6 +483,7 @@ EOT;
     if ($GLOBALS['result']['ok'] !== true) {
       if (!empty($GLOBALS['result']['task'])) {
         SystemEvent::raise(SystemEvent::INFO, "Failed on specific task. [TASK={$GLOBALS['result']['task']}] [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::DEBUG, "Stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
       } else {
         SystemEvent::raise(SystemEvent::INFO, "Failed for unknown reasons. [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
       }

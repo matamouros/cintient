@@ -73,3 +73,5 @@ define('DATABASE_FILE', '/var/run/cintient/cintient.sqlite');
 // http://pt.php.net/manual/en/function.serialize.php#96504
 //
 define('CINTIENT_NULL_BYTE_TOKEN', '==');
+
+define('CINTIENT_PHP_BINARY', 'php');

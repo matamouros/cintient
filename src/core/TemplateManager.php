@@ -253,7 +253,7 @@ class TemplateManager
     // Building
     //
     if (isset($_GET['build'])) {
-      $_SESSION['project']->build();
+      $_SESSION['project']->build(true);
     }
   }
   
