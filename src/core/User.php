@@ -207,12 +207,12 @@ class User
 CREATE TABLE IF NOT EXISTS user(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username VARCHAR(20),
-  enabled TINYINT,
-  creationdate DATETIME,
+  enabled TINYINT NOT NULL DEFAULT 1,
+  creationdate DATETIME DEFAULT CURRENT_TIMESTAMP,
   email VARCHAR(255),
   cos TINYINT,
-  name VARCHAR(255),
-  notificationemails TEXT
+  name VARCHAR(255) NOT NULL DEFAULT '',
+  notificationemails TEXT NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS userauth(
   userid INTEGER PRIMARY KEY,
