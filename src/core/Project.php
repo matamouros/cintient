@@ -247,12 +247,6 @@ class Project
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    $sql = "DELETE FROM projectscmconnector WHERE projectid=?";
-    if (!Database::execute($sql, array($this->getId()))) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
-      return false;
-    }
     if (!ScmConnector::delete($this->getScmLocalWorkingCopy())) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project sources. [ID={$this->getId()}] [DIR={$this->getScmLocalWorkingCopy()}]", __METHOD__);
     }
@@ -320,14 +314,15 @@ CREATE TABLE IF NOT EXISTS projectlog{$this->getId()} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   type TINYINT,
-  description TEXT DEFAULT ''
+  message TEXT DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS projectbuild{$this->getId()} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
-  history TEXT NOT NULL DEFAULT ''
+  output TEXT NOT NULL DEFAULT '',
+  status TINYINT DEFAULT 0
 );
 EOT;
     if (!Database::execute($sql)) {
@@ -357,25 +352,18 @@ CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   buildcounter INT DEFAULT 0,
   buildlabel TEXT,
-  datebuild DATETIME,
-  datecheckedforchanges DATETIME,
   datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
-  datemodification DATETIME,
   deploymentbuilder TEXT,
   description TEXT DEFAULT '',
-  history TEXT,
   integrationbuilder TEXT,
+  scmconnectortype VARCHAR(20) DEFAULT '',
+  scmlocalworkingcopy VARCHAR(255) DEFAULT '',
+  scmpassword VARCHAR(255) DEFAULT '',
+  scmremoterepository VARCHAR(255) DEFAULT '',
+  scmusername VARCHAR(255) DEFAULT '',
   status TINYINT DEFAULT 0,
   title VARCHAR(255) DEFAULT '',
   visits INTEGER DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS projectscmconnector(
-  projectid INTEGER PRIMARY KEY NOT NULL,
-  scmpassword VARCHAR(255) DEFAULT '',
-  scmusername VARCHAR(255) DEFAULT '',
-  scmlocalworkingcopy VARCHAR(255) DEFAULT '',
-  scmremoterepository VARCHAR(255) DEFAULT '',
-  scmconnectortype VARCHAR(255) DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS projectuser(
   projectid INTEGER NOT NULL,
@@ -415,16 +403,14 @@ EOT;
     $serializedIntegrationBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getIntegrationBuilder()));
     $serializedDeploymentBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getDeploymentBuilder()));
     $sql = 'REPLACE INTO project'
-         . ' (id,datebuild,datecheckedforchanges,datecreation,datemodification,'
+         . ' (id,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildcounter,buildlabel)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' buildcounter,buildlabel,scmpassword,scmusername,scmlocalworkingcopy,'
+         . ' scmremoterepository,scmconnectortype)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
-      $this->getDateBuild(),
-      $this->getDateCheckedForChanges(),
       $this->getDateCreation(),
-      $this->getDateModification(),
       $this->getDescription(),
       $this->getTitle(),
       $this->getVisits(),
@@ -432,7 +418,12 @@ EOT;
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
       $this->getStatus(),
       $this->getBuildCounter(),
-      $this->getBuildLabel()
+      $this->getBuildLabel(),
+      $this->getScmPassword(),
+      $this->getScmUsername(),
+      $this->getScmLocalWorkingCopy(),
+      $this->getScmRemoteRepository(),
+      $this->getScmConnectorType(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -470,23 +461,6 @@ EOT;
       }
     }
     
-    $sql = 'REPLACE INTO projectscmconnector'
-         . ' (projectid,scmpassword,scmusername,scmlocalworkingcopy,'
-         . ' scmremoterepository,scmconnectortype)'
-         . ' VALUES (?,?,?,?,?,?)';
-    $val = array(
-      $this->getId(),
-      $this->getScmPassword(),
-      $this->getScmUsername(),
-      $this->getScmLocalWorkingCopy(),
-      $this->getScmRemoteRepository(),
-      $this->getScmConnectorType(),
-    );
-    if (!Database::insert($sql, $val)) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project's scm connector to db.", __METHOD__);
-      return false;
-    }
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project might not have been saved. [ID={$this->getId()}]", __METHOD__);
       return false;
@@ -525,13 +499,12 @@ EOT;
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $id = (int)$id;
-    $sql = 'SELECT p.*, pc.*'
-         . ' FROM project p, projectuser pu, projectscmconnector pc'
+    $sql = 'SELECT p.*'
+         . ' FROM project p, projectuser pu'
          . ' WHERE p.id=?'
          . ' AND p.id=pu.projectid'
          . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' AND p.id=pc.projectid';
+         . ' AND pu.access & ?';
     $val = array($id, $user->getId(), $access);
     if ($rs = Database::query($sql, $val)) {
       $ret = null;
@@ -548,12 +521,11 @@ EOT;
     
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $sql = 'SELECT p.*, pc.*'
-         . ' FROM project p, projectuser pu, projectscmconnector pc'
+    $sql = 'SELECT p.*'
+         . ' FROM project p, projectuser pu'
          . ' WHERE p.id=pu.projectid'
          . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' AND p.id=pc.projectid';
+         . ' AND pu.access & ?';
     if ($options['sortType'] != Sort::NONE) {
       $sql .= ' ORDER BY';
       switch ($options['sortType']) {
@@ -590,10 +562,7 @@ EOT;
     $ret->setScmLocalWorkingCopy($rs->getScmLocalWorkingCopy());
     $ret->setBuildCounter($rs->getBuildCounter());
     $ret->setBuildLabel($rs->getBuildLabel());
-    $ret->setDateBuild($rs->getDateBuild());
-    $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDateCreation($rs->getDateCreation());
-    $ret->setDateModification($rs->getDateModification());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
     $ret->setStatus($rs->getStatus());
