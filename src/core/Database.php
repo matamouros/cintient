@@ -78,6 +78,7 @@ class Database
     if (!$db) {
       return false;
     }
+    $starttime = microtime(true);
     if (empty($values)) {
       if ($db->exec($query) === false) {
         SystemEvent::raise(SystemEvent::ERROR, 'Error executing query. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
@@ -93,6 +94,10 @@ class Database
         return false;
       }
     }
+    $proctime = microtime(true)-$starttime;
+    #if DEBUG
+    SystemEvent::raise(SystemEvent::DEBUG, 'Executed. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    #endif
     return true;
   }
   
@@ -165,9 +170,6 @@ class Database
     $proctime = microtime(true)-$starttime;
     $tmp = '';
     if (!$rs = new Resultset($ret)) {
-      if (!empty($values)) {
-        $tmp = implode(' | ',$values);
-      }
       SystemEvent::raise(SystemEvent::ERROR, 'Error executing. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
       return false;
     }
