@@ -1,5 +1,6 @@
 {include file='includes/header.inc.tpl'}
 {if isset($smarty.get.new)}
+{* PROJECT NEW *}
 <form action="{URLManager::getForProjectNew()}" method="post">
 Title <input type="text" name="title">
 <br>
@@ -23,6 +24,7 @@ SCM Remote Repository <input type="text" name="scmRemoteRepository">
 <input type="submit">
 </form>
 {else}
+{* PROJECT DETAILS *}
 Title: {$smarty.session.project->getTitle()}
 <br>
 Build label: {$smarty.session.project->getBuildLabel()}
@@ -38,7 +40,21 @@ SCM Username: {$smarty.session.project->getScmUsername()}
 SCM Password: {*$smarty.session.project->getScmUsername()*}
 <br><br>
 <a href="{URLManager::getForProjectBuild($smarty.session.project)}">Build!!</a>
-<br><br>
+<br>
 <a href="{URLManager::getForProjectEdit($smarty.session.project)}">clique aqui para editar</a>
+<br><br>
+<b>Builds</b>
+{foreach from=$project_buildList item=build}
+  <br><br>
+  build #{$build->getId()}
+  <br>
+  status: {$build->getStatus()}
+  <br>
+  output:
+  {if $build->getOutput()}
+  <textarea cols="120" rows="10">{$build->getOutput()}</textarea>
+  {/if}
+  <a href="#">(details)</a>
+{/foreach}
 {/if}
 {include file='includes/footer.inc.tpl'}

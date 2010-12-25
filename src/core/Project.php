@@ -45,7 +45,6 @@
  */
 class Project
 {
-  private $_buildCounter;          // An incremental integer build counter with the last known good build number
   private $_buildLabel;            // The build label to be used in the packages' and builds' nomenclature (together with the counter)
   private $_dateBuild;             // Last *success* build date
   private $_dateCheckedForChanges; // Last status check on the project (not necessarily originating a build)
@@ -53,6 +52,9 @@ class Project
   private $_dateModification;      // Last settings modification date
   private $_description;
   private $_id;
+  private $_releasemajor;          // The current release major number
+  private $_releaseminor;          // The current release minor number
+  private $_releasecounter;        // the *last* number assigned to a successful created release package. Should be incremental
   private $_scmConnectorType;      // * Always * loaded from the available modules on core/ScmConnector
   private $_scmLocalWorkingCopy;
   private $_scmPassword;
@@ -73,13 +75,11 @@ class Project
   //
   private $_optionPackageOnSuccess;  // Generate a release package on every successful build?
 
-  const UNINITIALIZED = 0;
-  const ERROR = 1;
-  const OK = 2;
-  const BUILDING = 3;
-  const MODIFIED = 4;
-  const BUILD_SUCCESS = 5;
-  const BUILD_FAILED = 6;
+  const STATUS_UNINITIALIZED = 0;
+  const STATUS_ERROR = 1;
+  const STATUS_OK = 2;
+  const STATUS_BUILDING = 3;
+  const STATUS_MODIFIED = 4;
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -104,7 +104,6 @@ class Project
   
   public function __construct()
   {
-    $this->_buildCounter = 0;
     $this->_buildLabel = '';
     $this->_description = '';
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
@@ -113,7 +112,7 @@ class Project
     $this->_scmUsername = '';
     $this->_scmPassword = '';
     $this->_signature = null;
-    $this->_status = self::UNINITIALIZED;
+    $this->_status = self::STATUS_UNINITIALIZED;
     $this->_title = '';
     $this->_users = array();
     //
@@ -162,35 +161,35 @@ class Project
     $params['username'] = $this->getScmUsername();
     $params['password'] = $this->getScmPassword();
 
-    if ($this->getStatus() == self::BUILDING) {
+    if ($this->getStatus() == self::STATUS_BUILDING) {
       SystemEvent::raise(SystemEvent::INFO, "Project is currently building, or is queued for building. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
     
-    if ($this->getStatus() != self::MODIFIED) {
+    if ($this->getStatus() != self::STATUS_MODIFIED) {
       //
       // Checkout required?
       //
-      if ($this->getStatus() == self::UNINITIALIZED || !file_exists($this->getScmLocalWorkingCopy())) {
+      if ($this->getStatus() == self::STATUS_UNINITIALIZED || !file_exists($this->getScmLocalWorkingCopy())) {
         if (!ScmConnector::checkout($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't checkout sources. [PROJECTID={$this->getId()}]", __METHOD__);
-          $this->setStatus(self::ERROR);
+          $this->setStatus(self::STATUS_ERROR);
           return false;
         }
-        $this->setStatus(self::MODIFIED);
+        $this->setStatus(self::STATUS_MODIFIED);
       } else {
         if (!ScmConnector::isModified($params)) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
           if (!$force) {
-            $this->setStatus(self::OK);
+            $this->setStatus(self::STATUS_OK);
             return false;
           }
         }
-        $this->setStatus(self::MODIFIED);
+        $this->setStatus(self::STATUS_MODIFIED);
         if (!ScmConnector::update($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
           if (!$force) {
-            $this->setStatus(self::ERROR);
+            $this->setStatus(self::STATUS_ERROR);
             return false;
           }
         }
@@ -206,57 +205,58 @@ class Project
       SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
-    $php = $this->_integrationBuilder->toString('php');
-    if (!BuilderConnector_Php::execute($php)) {
-      SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
-      $this->setStatus(self::ERROR);
-      return false;
-    }
-    $this->setStatus(self::OK);
-
-    // 4. Update the build counter
+    
+    //
+    // Ok. After this, we're dealing with a full-fledged build here.
+    //
     if (empty($this->_buildLabel)) {
       SystemEvent::raise(SystemEvent::ERROR, "Empty build label, could not complete project build. [PROJECTID={$this->getId()}]", __METHOD__);
-      $this->setStatus(self::MODIFIED);
+      $this->setStatus(self::STATUS_MODIFIED);
       return false;
     }
-    $sql = "INSERT INTO projectbuild{$this->getId()}"
-         . " (label, description)"
-         . " VALUES (?,?)";
-    $val = array(
-      $this->getBuildLabel() . '-' . (++$this->_buildCounter),
-      '',
-    );
-    if (!Database::insert($sql, $val)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not save build to database. [PROJECTID={$this->getId()}]", __METHOD__);
-      //$this->setStatus(self::ERROR);
+    $this->setStatus(self::STATUS_OK); // Even if the build fails, it's not really an error of the project
+    $php = $this->_integrationBuilder->toString('php');
+    $buildOk = BuilderConnector_Php::execute($php);
+    $build = new ProjectBuild($this->getId());
+    $build->setOutput(implode("\n", $GLOBALS['result']['stacktrace']));
+    if (!$buildOk) {
+      $build->setStatus(ProjectBuild::STATUS_FAIL);
+      SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
+    //
+    // Success. Increment the build counter to prepare it for next version
+    //
+    $this->setReleaseCounter(((int)$this->getReleaseCounter()+1));
+    $build->setLabel($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
     
-    // 5. generate release package
+    // 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {
-      
+      $status = self::BUILD_STATUS_OK_WITH_PACKAGE;
+    } else {
+      $status = self::BUILD_STATUS_OK_WITHOUT_PACKAGE;
     }
     
     // 6. tag the sources on the built revision
+
+    return true;
   }
- 
+    
   public function delete()
   {
     if (!Database::beginTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!ScmConnector::delete($this->getScmLocalWorkingCopy())) {
+    if (!ScmConnector::delete(array('local' => $this->getScmLocalWorkingCopy()))) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project sources. [ID={$this->getId()}] [DIR={$this->getScmLocalWorkingCopy()}]", __METHOD__);
     }
-    $sql = "DROP TABLE projectlog{$this->getId()}";
-    if (!Database::execute($sql)) {
+    if (!ProjectBuild::delete($this->getId())) {
       Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    $sql = "DROP TABLE projectbuild{$this->getId()}";
+    $sql = "DROP TABLE projectlog{$this->getId()}";
     if (!Database::execute($sql)) {
       Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
@@ -316,16 +316,12 @@ CREATE TABLE IF NOT EXISTS projectlog{$this->getId()} (
   type TINYINT,
   message TEXT DEFAULT ''
 );
-CREATE TABLE IF NOT EXISTS projectbuild{$this->getId()} (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  label VARCHAR(255) NOT NULL DEFAULT '',
-  description TEXT NOT NULL DEFAULT '',
-  output TEXT NOT NULL DEFAULT '',
-  status TINYINT DEFAULT 0
-);
 EOT;
     if (!Database::execute($sql)) {
+      $this->delete();
+      return false;
+    }
+    if (!ProjectBuild::install($this->getId())) {
       $this->delete();
       return false;
     }
@@ -337,10 +333,10 @@ EOT;
       'password' => $this->getScmPassword(),
     );
     if (!ScmConnector::checkout($params)) {
-      $this->setStatus(self::UNINITIALIZED);
+      $this->setStatus(self::STATUS_UNINITIALIZED);
       return false;
     }
-    $this->setStatus(self::OK);
+    $this->setStatus(self::STATUS_OK);
     return true;
   }
   
@@ -350,25 +346,27 @@ EOT;
     $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  buildcounter INT DEFAULT 0,
   buildlabel TEXT,
   datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
   deploymentbuilder TEXT,
   description TEXT DEFAULT '',
   integrationbuilder TEXT,
+  releasemajor MEDIUMINT UNSIGNED DEFAULT 0,
+  releaseminor MEDIUMINT UNSIGNED DEFAULT 0,
+  releasecounter INT UNSIGNED DEFAULT 0,
   scmconnectortype VARCHAR(20) DEFAULT '',
   scmlocalworkingcopy VARCHAR(255) DEFAULT '',
   scmpassword VARCHAR(255) DEFAULT '',
   scmremoterepository VARCHAR(255) DEFAULT '',
   scmusername VARCHAR(255) DEFAULT '',
-  status TINYINT DEFAULT 0,
+  status TINYINT UNSIGNED DEFAULT 0,
   title VARCHAR(255) DEFAULT '',
-  visits INTEGER DEFAULT 0
+  visits INTEGER UNSIGNED DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS projectuser(
-  projectid INTEGER NOT NULL,
-  userid INTEGER NOT NULL,
-  access TINYINT NOT NULL DEFAULT {$access},
+  projectid INTEGER UNSIGNED NOT NULL,
+  userid INTEGER UNSIGNED NOT NULL,
+  access TINYINT UNSIGNED NOT NULL DEFAULT {$access},
   PRIMARY KEY (projectid, userid)
 );
 EOT;
@@ -405,9 +403,9 @@ EOT;
     $sql = 'REPLACE INTO project'
          . ' (id,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildcounter,buildlabel,scmpassword,scmusername,scmlocalworkingcopy,'
+         . ' buildlabel,scmpassword,scmusername,scmlocalworkingcopy,'
          . ' scmremoterepository,scmconnectortype)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
       $this->getDateCreation(),
@@ -417,7 +415,6 @@ EOT;
       /*SQLite3::escapeString*/($serializedIntegrationBuilder),
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
       $this->getStatus(),
-      $this->getBuildCounter(),
       $this->getBuildLabel(),
       $this->getScmPassword(),
       $this->getScmUsername(),
@@ -517,7 +514,7 @@ EOT;
   
   static public function &getList(User $user, $access = Access::READ, array $options = array())
   {
-    isset($options['sortType'])?:$options['sortType']=Sort::ALPHA_ASC;
+    isset($options['sort'])?:$options['sort']=Sort::ALPHA_ASC;
     
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
@@ -526,9 +523,9 @@ EOT;
          . ' WHERE p.id=pu.projectid'
          . ' AND pu.userid=?'
          . ' AND pu.access & ?';
-    if ($options['sortType'] != Sort::NONE) {
+    if ($options['sort'] != Sort::NONE) {
       $sql .= ' ORDER BY';
-      switch ($options['sortType']) {
+      switch ($options['sort']) {
         case Sort::ALPHA_ASC:
           $sql .= ' title ASC';
           break;
@@ -560,11 +557,13 @@ EOT;
     $ret->setScmUsername($rs->getScmUsername());
     $ret->setScmPassword($rs->getScmPassword());
     $ret->setScmLocalWorkingCopy($rs->getScmLocalWorkingCopy());
-    $ret->setBuildCounter($rs->getBuildCounter());
     $ret->setBuildLabel($rs->getBuildLabel());
     $ret->setDateCreation($rs->getDateCreation());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
+    $ret->setReleaseMajor($rs->getReleaseMajor());
+    $ret->setReleaseMinor($rs->getReleaseMinor());
+    $ret->setReleaseCounter($rs->getReleaseCounter());
     $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());

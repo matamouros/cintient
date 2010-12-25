@@ -75,3 +75,5 @@ define('DATABASE_FILE', '/var/run/cintient/cintient.sqlite');
 define('CINTIENT_NULL_BYTE_TOKEN', '==');
 
 define('CINTIENT_PHP_BINARY', 'php');
+
+define('CINTIENT_BUILDS_PAGE_LENGTH', 12);

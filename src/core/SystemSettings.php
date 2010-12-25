@@ -156,7 +156,7 @@ class SystemSettings
   
   static public function &getList(User $user, $access, array $options = array())
   {
-    isset($options['sortType']) ?: $options['sortType'] = Sort::ALPHA_ASC;
+    isset($options['sort']) ?: $options['sort'] = Sort::ALPHA_ASC;
     
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
@@ -165,9 +165,9 @@ class SystemSettings
          . ' WHERE p.id=pu.id'
          . ' AND pu.userid=?'
          . ' AND pu.access & ?';
-    if ($options['sortType'] != Sort::NONE) {
+    if ($options['sort'] != Sort::NONE) {
       $sql .= ' ORDER BY';
-      switch ($options['sortType']) {
+      switch ($options['sort']) {
         case Sort::ALPHA_ASC:
           $sql .= ' title ASC';
           break;

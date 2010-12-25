@@ -141,9 +141,12 @@ class TemplateManager
     //$mkdir->setDir('/tmp/tmp2/tmp3');
     $mkdir->setDir('/lixo');
     
+    $lint = new BuilderElement_Task_PhpLint();
+    $lint->setFilesets(array($fileset));
+    
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($exec));
+    $target->setTasks(array($exec, $lint));
     //echo $target->toString('php');
     
     $target2 = new BuilderElement_Target();
@@ -154,9 +157,10 @@ class TemplateManager
     
     $project = new BuilderElement_Project();
     $project->addTarget($target);
+    $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);
     $project->setDefaultTarget($target->getName());
-    $code = $project->toString('php');
+    $code = $project->toString('phing');
     
     echo $code;
     //var_dump(BuilderConnector_Php::execute($code));
@@ -254,6 +258,11 @@ class TemplateManager
     //
     if (isset($_GET['build'])) {
       $_SESSION['project']->build(true);
+    //
+    // Viewing details
+    //
+    } else {
+      $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getListByProject($_SESSION['project'], $_SESSION['user']));
     }
   }
   
