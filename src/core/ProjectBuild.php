@@ -164,8 +164,15 @@ class ProjectBuild
          . ' WHERE pu.projectid=?'
          . ' AND pu.userid=?'
          . ' AND pu.access & ?';
-    if ($options['sort'] == Sort::DATE_DESC) {
-      $sql .= ' ORDER BY pb.id DESC';
+    if ($options['sort'] != Sort::NONE) {
+      $sql .= ' ORDER BY';
+      switch ($options['sort']) {
+        case Sort::DATE_ASC:
+          $sql .= ' pb.id ASC';
+          break;
+        case Sort::DATE_DESC:
+          $sql .= ' pb.id DESC';
+      }
     }
     $sql .= ' LIMIT ?, ?';
     $val = array($project->getId(), $user->getId(), $access, $options['pageStart'], $options['pageLength']);
