@@ -297,6 +297,7 @@ if (!file_exists('{$o->getDir()}')) {
       \$GLOBALS['result']['stacktrace'][] = '[phplint] Errors parsing ' . \$entry . '.';
       return false;
     } else {
+      \$GLOBALS['result']['ok'] = true;
       \$GLOBALS['result']['stacktrace'][] = '[phplint] No syntax errors detected in ' . \$entry . '.';
     }
   }
