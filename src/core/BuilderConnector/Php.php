@@ -77,11 +77,15 @@ EOT;
     if ($o->getDefaultTarget() !== null) {
       $php .= <<<EOT
 \$GLOBALS['targets'] = array();
-\$GLOBALS['targets']['default'] = '{$o->getDefaultTarget()}';
+\$GLOBALS['targetDefault'] = '{$o->getDefaultTarget()}';
 \$GLOBALS['result'] = array();
 \$GLOBALS['result']['ok'] = false;
 \$GLOBALS['result']['output'] = '';
 \$GLOBALS['result']['stacktrace'] = array();
+function output(\$task, \$message)
+{
+  \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$task}] {\$message}";
+}
 EOT;
     }
     $properties = $o->getProperties();
@@ -101,10 +105,14 @@ EOT;
     }
     $php .= "
 foreach (\$GLOBALS['targets'] as \$target) {
+  output(\$target, 'Executing target...');
   if (\$target() === false) {
     \$error = error_get_last();
     \$GLOBALS['result']['output'] = \$error['message'] . ', on line ' . \$error['line'] . '.';
+    output(\$target, 'Target failed.');
     return false;
+  } else {
+    output(\$target, 'Target executed.');
   }
 }
 ";
@@ -177,13 +185,16 @@ EOT;
   if (is_file(\$entry) || ({$o->getIncludeEmptyDirs()} && is_dir(\$entry))) { // includeemptydirs
     //\$ret = unlink(\$entry);
     echo \"\\n  Removing \$entry.\";
-    \$ret = true;
+  }
+  if (!\$ret) {
+    output('delete', 'Failed deleting \$entry.');
+  } else {
+    output('delete', 'Deleted \$entry.');
   }
   return \$ret;
 };
 if (!fileset{$fileset->getId()}(\$callback)) {
   \$GLOBALS['result']['ok'] = false;
-  \$GLOBALS['result']['stacktrace'][] = '[' . __METHOD__ . '] failed deleting a file/dir.';
   if ({$o->getFailOnError()}) { // failonerror
     return false;
   }
@@ -214,6 +225,7 @@ EOT;
     } else {
       $php .= <<<EOT
 echo "{$o->getMessage()}\n";
+output('echo', '{$o->getMessage()}');
 EOT;
     }
     return $php;
@@ -235,11 +247,22 @@ EOT;
       $args = ' ' . implode(' ', $o->getArgs());
     }
     $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-\$ret = exec('{$dir}{$o->getExecutable()}{$args}');";
+output('exec', 'Executing \"{$dir}{$o->getExecutable()}{$args}\".');
+\$ret = exec('{$dir}{$o->getExecutable()}{$args}', \$lines, \$retval);
+foreach (\$lines as \$line) {
+  output('exec', \$line);
+}
+";
     if ($o->getOutputProperty()) {
       $php .= "\$GLOBALS['properties']['{$o->getOutputProperty()}'] = \$ret;
 ";
     }
+    $php .= "if (\$retval > 0) {
+  output('exec', 'Failed.');
+} else {
+  output('exec', 'Success.');
+}
+";
     //TODO: bullet proof this for boolean falses (they're not showing up)
     /*
     $php .= "if ({$o->getFailOnError()} && !\$ret) {
@@ -263,8 +286,13 @@ return true;
 if (!file_exists('{$o->getDir()}')) {
   if (mkdir('{$o->getDir()}', " . DEFAULT_DIR_MASK . ", true) === false) {
     \$GLOBALS['result']['ok'] = false;
+    output('mkdir', 'Could not create \"{$o->getDir()}\".');
     return false;
+  } else {
+    output('mkdir', 'Created \"{$o->getDir()}\".');
   }
+} else {
+  output('mkdir', '\"{$o->getDir()}\" already exists.');
 }
 ";
     return $php;
@@ -277,7 +305,9 @@ if (!file_exists('{$o->getDir()}')) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHP lint.', __METHOD__);
       return false;
     }
-    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';";
+    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
+output('phplint', 'Starting...');
+";
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
@@ -294,25 +324,26 @@ if (!file_exists('{$o->getDir()}')) {
     exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
     if (\$ret > 0) {
       \$GLOBALS['result']['ok'] = false;
-      \$GLOBALS['result']['stacktrace'][] = '[phplint] Errors parsing ' . \$entry . '.';
+      output('phplint', 'Errors parsing ' . \$entry . '.');
       return false;
     } else {
       \$GLOBALS['result']['ok'] = true;
-      \$GLOBALS['result']['stacktrace'][] = '[phplint] No syntax errors detected in ' . \$entry . '.';
+      output('phplint', 'No syntax errors detected in ' . \$entry . '.');
     }
   }
   return true;
 };
 if (!fileset{$fileset->getId()}(\$callback)) {
+  output('phplint', 'Failed.');
   if ({$o->getFailOnError()}) { // failonerror
     return false;
   }
+} else {
+  output('phplint', 'Done.');
 }
 ";
       }
     }
-    
-    
     return $php;
   }
   
@@ -448,16 +479,17 @@ if (!fileset{$fileset->getId()}(\$callback)) {
         \$GLOBALS['result']['ok'] = false;
         \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}]';
         \$GLOBALS['result']['output'] = \$msg;
-        \$GLOBALS['result']['stacktrace'][] = '[' . __METHOD__ . '] ' . \$msg;
+        output(__METHOD__, \$msg);
         return false;
       }
     }
   } catch (UnexpectedValueException \$e) { // Typical permission denied
     \$GLOBALS['result']['ok'] = false;
     \$GLOBALS['result']['output'] = \$e->getMessage();
-    \$GLOBALS['result']['stacktrace'][] = '[' . __METHOD__ . '] ' . \$e->getMessage();
+    output(__METHOD__, \$e->getMessage());
     return false;
   }
+  return true;
 ";
     $php .= "
 }
