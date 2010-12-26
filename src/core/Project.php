@@ -252,13 +252,12 @@ class Project
     }
     if (!ProjectBuild::delete($this->getId())) {
       Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    $sql = "DROP TABLE projectlog{$this->getId()}";
-    if (!Database::execute($sql)) {
+    if (!ProjectLog::delete($this->getId())) {
       Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
     $sql = "DELETE FROM project WHERE id=?";
@@ -305,18 +304,7 @@ class Project
     if (!$this->_save()) {
       return false;
     }
-    //
-    // Create the dedicated history table - only now do we have the project id
-    //
-    $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectlog{$this->getId()} (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  type TINYINT,
-  message TEXT DEFAULT ''
-);
-EOT;
-    if (!Database::execute($sql)) {
+    if (!ProjectLog::install($this->getId())) {
       $this->delete();
       return false;
     }

@@ -50,6 +50,8 @@ SCM Password: {*$smarty.session.project->getScmUsername()*}
   <br>
   status: {$build->getStatus()}
   <br>
+  release file: {if $build->getStatus() == ProjectBuild::STATUS_OK_WITH_PACKAGE}<a href="#">package_file</a> (<a href="#">re-generate</a>){else}<a href="#">generate</a>{/if}
+  <br>
   output:
   {if $build->getOutput()}
   <textarea cols="120" rows="10">{$build->getOutput()}</textarea>

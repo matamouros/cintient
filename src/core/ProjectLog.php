@@ -40,20 +40,15 @@
 /**
  * 
  */
-class ProjectBuild
+class ProjectLog
 {
   private $_id;           // the build's incremental ID
   private $_date;         // the build's date
-  private $_label;        // the label on the build, also used to name the release package file
-  private $_description;  // a user generated description text (prior or after the build triggered).
-  private $_output;       // the integration builder's output collected
-  private $_status;       // indicates: failure | no_release | release
+  private $_type;         // the label on the build, also used to name the release package file
+  private $_message;      // a user generated description text (prior or after the build triggered).
+  private $_username;     // The username that triggered the log entry
   private $_projectId;    // goes into the table name - it's not an attribute
   private $_signature;    // Internal flag to control whether a save to database is required
-
-  const STATUS_FAIL = 0;
-  const STATUS_OK_WITHOUT_PACKAGE = 1;
-  const STATUS_OK_WITH_PACKAGE = 2;
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -81,10 +76,9 @@ class ProjectBuild
     $this->_projectId = $projectId;
     $this->_id = null;
     $this->_date = null;
-    $this->_label = '';
-    $this->_description = '';
-    $this->_output = '';
-    $this->_status = self::STATUS_FAIL;
+    $this->_type = '';
+    $this->_message = '';
+    $this->_username = '';
     $this->_signature = null;
   }
   
@@ -95,9 +89,9 @@ class ProjectBuild
   
   public function delete()
   {
-    $sql = "DROP TABLE projectbuild{$this->getProjectId()}";
+    $sql = "DROP TABLE projectlog{$this->getProjectId()}";
     if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [TABLE={$this->getProjectId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [TABLE={$this->getProjectId()}]", __METHOD__);
       return false;
     }
     return true;
@@ -120,14 +114,13 @@ class ProjectBuild
     if (!Database::beginTransaction()) {
       return false;
     }
-    $sql = 'INSERT INTO projectbuild' . $this->getProjectId()
-         . ' (label, description, output, status)'
-         . ' VALUES (?,?,?,?)';
+    $sql = 'INSERT INTO projectlog' . $this->getProjectId()
+         . ' (type, message, username)'
+         . ' VALUES (?,?,?)';
     $val = array(
-      $this->getLabel(),
-      $this->getDescription(),
-      $this->getOutput(),
-      $this->getStatus(),
+      $this->getType(),
+      $this->getMessage(),
+      $this->getUsername(),
     );
     if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
       Database::rollbackTransaction();
@@ -137,11 +130,11 @@ class ProjectBuild
     $this->setId($id);
     
     if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getProjectId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project log might not have been saved. [PID={$this->getProjectId()}]", __METHOD__);
       return false;
     }
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Saved project build. [PID={$this->getProjectId()}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Saved project log. [PID={$this->getProjectId()}]", __METHOD__);
     #endif
     $this->updateSignature();
     return true;
@@ -152,6 +145,17 @@ class ProjectBuild
     $this->setSignature($this->_getCurrentSignature());
   }
   
+  static public function write($msg)
+  {
+    //
+    // Oh boy... there goes proper layer separation...
+    //
+    $projectLog = new ProjectLog($_SESSION['project']->getId());
+    $projectLog->setType(0);
+    $projectLog->setMessage($msg);
+    $projectLog->setUsername($_SESSION['user']->getUsername());
+  }
+  
   static public function getListByProject($project, $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
@@ -160,8 +164,8 @@ class ProjectBuild
     
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $sql = 'SELECT pb.*'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+    $sql = 'SELECT pl.*'
+         . ' FROM projectlog' . $project->getId() . ' pl, projectuser pu'
          . ' WHERE pu.projectid=?'
          . ' AND pu.userid=?'
          . ' AND pu.access & ?';
@@ -169,10 +173,10 @@ class ProjectBuild
       $sql .= ' ORDER BY';
       switch ($options['sort']) {
         case Sort::DATE_ASC:
-          $sql .= ' pb.id ASC';
+          $sql .= ' pl.id ASC';
           break;
         case Sort::DATE_DESC:
-          $sql .= ' pb.id DESC';
+          $sql .= ' pl.id DESC';
       }
     }
     $sql .= ' LIMIT ?, ?';
@@ -180,8 +184,8 @@ class ProjectBuild
     if ($rs = Database::query($sql, $val)) {
       $ret = array();
       while ($rs->nextRow()) {
-        $projectBuild = self::_getObject($rs, $project->getId());
-        $ret[] = $projectBuild;
+        $projectLog = self::_getObject($rs, $project->getId());
+        $ret[] = $projectLog;
       }
     }
     return $ret;
@@ -189,13 +193,12 @@ class ProjectBuild
   
   static private function _getObject(Resultset $rs, $projectId)
   {
-    $ret = new ProjectBuild($projectId);
+    $ret = new ProjectLog($projectId);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
-    $ret->setLabel($rs->getLabel());
-    $ret->setDescription($rs->getDescription());
-    $ret->setOutput($rs->getOutput());
-    $ret->setStatus($rs->getStatus());
+    $ret->setType($rs->getType());
+    $ret->setMessage($rs->getMessage());
+    $ret->setUsername($rs->getUsername());
     
     $ret->updateSignature();
     return $ret;
@@ -204,13 +207,12 @@ class ProjectBuild
   static public function install($projectId)
   {
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectbuild{$projectId} (
+CREATE TABLE IF NOT EXISTS projectlog{$projectId} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  label VARCHAR(255) NOT NULL DEFAULT '',
-  description TEXT NOT NULL DEFAULT '',
-  output TEXT NOT NULL DEFAULT '',
-  status TINYINT UNSIGNED DEFAULT 0
+  type TINYINT DEFAULT 0,
+  message TEXT DEFAULT '',
+  username VARCHAR(20) NOT NULL DEFAULT ''
 );
 EOT;
     if (!Database::execute($sql)) {
@@ -222,9 +224,9 @@ EOT;
   
   static public function uninstall($projectId)
   {
-    $sql = "DROP TABLE projectbuild{$projectId}";
+    $sql = "DROP TABLE projectlog{$projectId}";
     if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [TABLE={$projectId}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [TABLE={$projectId}]", __METHOD__);
       return false;
     }
     return true;

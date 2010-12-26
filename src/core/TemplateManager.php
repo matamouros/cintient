@@ -225,6 +225,8 @@ class TemplateManager
         header('Location: ' . UrlManager::getForProjectNew());
         exit;
       }
+      $_SESSION['project'] = $project;
+      ProjectLog::write("Project created.");
       
       //
       // TODO: Success notification to display after redirecting
@@ -257,7 +259,12 @@ class TemplateManager
     // Building
     //
     if (isset($_GET['build'])) {
-      $_SESSION['project']->build(true);
+      ProjectLog::write("A building was triggered.");
+      if (!$_SESSION['project']->build(true)) {
+        ProjectLog::write("Building failed.");
+      } else {
+        ProjectLog::write("Building successful.");
+      }
     //
     // Viewing details
     //

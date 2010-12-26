@@ -41,6 +41,6 @@
  * 
  */
  
-Config::load();
+//Config::load();
 
-SCMConnector::
+//SCMConnector::
