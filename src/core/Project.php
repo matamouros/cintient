@@ -125,19 +125,17 @@ class Project
     //TODO: test code - every new project gets a pre-loaded integration builder
     //
     $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage('This is an echo!');
-    $echo2 = new BuilderElement_Task_Echo();
-    $echo2->setMessage('This is another echo!');
-    $mkdir = new BuilderElement_Task_Mkdir();
-    $mkdir->setDir('/tmp/lixo');
+    $echo->setMessage('PHP lint checking...');
     $target = new BuilderElement_Target();
-    $target->setName('tests');
+    $target->setName('build');
     $lint = new BuilderElement_Task_PhpLint();
     $fileset = new BuilderElement_Type_Fileset();
-    $fileset->setDir('/tmp/');
-    $fileset->addInclude('*.php');
+    $fileset->setDir('/Users/pfonseca/Dev/cintient/');
+    $fileset->addInclude('**/*.php');
     $lint->setFilesets(array($fileset));
-    $target->setTasks(array($echo, $mkdir, $echo2, $lint));
+    $echo2 = new BuilderElement_Task_Echo();
+    $echo2->setMessage('Done!');
+    $target->setTasks(array($echo, $lint, $echo2));
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
 
@@ -230,15 +228,16 @@ class Project
     $this->setReleaseCounter(((int)$this->getReleaseCounter()+1));
     $build->setLabel($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
     
-    // 5. generate release package?
+    // TODO: 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {
-      $status = self::BUILD_STATUS_OK_WITH_PACKAGE;
+      $build->setStatus(ProjectBuild::STATUS_OK_WITH_PACKAGE);
     } else {
-      $status = self::BUILD_STATUS_OK_WITHOUT_PACKAGE;
+      $build->setStatus(ProjectBuild::STATUS_OK_WITHOUT_PACKAGE);
     }
     
-    // 6. tag the sources on the built revision
+    // TODO: 6. tag the sources on the built revision
 
+    SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     return true;
   }
     
