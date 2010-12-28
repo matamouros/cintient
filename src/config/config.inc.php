@@ -40,7 +40,7 @@
 error_reporting(-1);
 define('LOG_FILE', '/var/log/cintient.log');
 define('WORK_DIR', '/var/run/cintient/');
-define('LOCAL_WORKING_COPY_DIR', WORK_DIR . 'local/');
+define('PROJECTS_DIR', '/var/run/cintient/projects/');
 
 define('DEFAULT_DIR_MASK', 0777);
 
@@ -75,5 +75,8 @@ define('DATABASE_FILE', '/var/run/cintient/cintient.sqlite');
 define('CINTIENT_NULL_BYTE_TOKEN', '==');
 
 define('CINTIENT_PHP_BINARY', 'php');
+
+define('CINTIENT_PHPUNIT_DIR', INSTALL_DIR . 'lib/phpunit-3.5.6/');
+define('CINTIENT_PHPUNIT_BINARY', CINTIENT_PHPUNIT_DIR . 'phpunit.php');
 
 define('CINTIENT_BUILDS_PAGE_LENGTH', 12);

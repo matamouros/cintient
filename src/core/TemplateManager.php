@@ -60,9 +60,6 @@ class TemplateManager
 
   static public function tests_init()
   {
-    User::install();
-    Project::install();
-    
     $user = new User();
     $user->setEmail('pedro.matamouros@gmail.com');
     $user->setNotificationEmails('pedro.matamouros@gmail.com,');
@@ -286,6 +283,35 @@ class TemplateManager
   {
     session_destroy();
     session_start();
+    //
+    // Create necessary dirs
+    //
+    if (!file_exists(WORK_DIR) && !mkdir(WORK_DIR, DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create working dir. Check your permissions.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    if (!file_exists(PROJECTS_DIR) && !mkdir(PROJECTS_DIR, DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create projects dir. Check your permissions.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    //
+    // Setup all objects
+    //
+    if (!User::install()) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not setup User object.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    if (!Project::install()) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not setup Project object.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    //
+    // Test user setup
+    //
     self::tests_init();
     header('Location: ' . URLManager::getForDashboard());
     exit;

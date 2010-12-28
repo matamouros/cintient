@@ -56,7 +56,6 @@ class Project
   private $_releaseminor;          // The current release minor number
   private $_releasecounter;        // the *last* number assigned to a successful created release package. Should be incremental
   private $_scmConnectorType;      // * Always * loaded from the available modules on core/ScmConnector
-  private $_scmLocalWorkingCopy;
   private $_scmPassword;
   private $_scmRemoteRepository;
   private $_scmUsername;
@@ -65,6 +64,7 @@ class Project
   private $_title;
   private $_users;                 // An array of users and corresponding permissions, taken from projectuser table
   private $_visits;                // Counter of accesses, for hotness
+  private $_workDir;               // The working dir of the project (sources, generated reports, etc)
   //
   // Builders
   //
@@ -108,13 +108,13 @@ class Project
     $this->_description = '';
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
     $this->_scmRemoteRepository = '';
-    $this->_scmLocalWorkingCopy = LOCAL_WORKING_COPY_DIR . uniqid('',true);
     $this->_scmUsername = '';
     $this->_scmPassword = '';
     $this->_signature = null;
     $this->_status = self::STATUS_UNINITIALIZED;
     $this->_title = '';
     $this->_users = array();
+    $this->_workDir = '';
     //
     // Builders
     //
@@ -292,6 +292,16 @@ class Project
     return $this->_dateCreation;
   }
   
+  public function getScmLocalWorkingCopy()
+  {
+    return $this->getWorkDir() . 'sources/';
+  }
+  
+  public function getReportsWorkingDir()
+  {
+    return $this->getWorkDir() . 'reports/';
+  }
+  
   /**
    * Call this at the very creation of the project, for checking out the sources
    * and initialization stuff like that.
@@ -299,7 +309,24 @@ class Project
   public function init()
   {
     //
-    // Save first
+    // Create all the working directories
+    //
+    $this->setWorkDir(PROJECTS_DIR . uniqid($this->getId(), true) . '/'); // Don't forget the trailing '/'!
+    if (!mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
+      $this->setWorkDir(null);
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create sources dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!mkdir($this->getReportsWorkingDir(), DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    //
+    // Save the project and take care of all database dependencies.
     //
     if (!$this->_save()) {
       return false;
@@ -312,6 +339,10 @@ class Project
       $this->delete();
       return false;
     }
+    //
+    // SCM checkout of the project. If not possible to checkout now,
+    // we'll just try at a later time.
+    //
     $params = array(
       'type'     => $this->getScmConnectorType(),
       'remote'   => $this->getScmRemoteRepository(),
@@ -342,13 +373,13 @@ CREATE TABLE IF NOT EXISTS project(
   releaseminor MEDIUMINT UNSIGNED DEFAULT 0,
   releasecounter INT UNSIGNED DEFAULT 0,
   scmconnectortype VARCHAR(20) DEFAULT '',
-  scmlocalworkingcopy VARCHAR(255) DEFAULT '',
   scmpassword VARCHAR(255) DEFAULT '',
   scmremoterepository VARCHAR(255) DEFAULT '',
   scmusername VARCHAR(255) DEFAULT '',
   status TINYINT UNSIGNED DEFAULT 0,
   title VARCHAR(255) DEFAULT '',
-  visits INTEGER UNSIGNED DEFAULT 0
+  visits INTEGER UNSIGNED DEFAULT 0,
+  workdir VARCHAR(255) DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS projectuser(
   projectid INTEGER UNSIGNED NOT NULL,
@@ -390,7 +421,7 @@ EOT;
     $sql = 'REPLACE INTO project'
          . ' (id,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildlabel,scmpassword,scmusername,scmlocalworkingcopy,'
+         . ' buildlabel,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype)'
          . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
@@ -405,7 +436,7 @@ EOT;
       $this->getBuildLabel(),
       $this->getScmPassword(),
       $this->getScmUsername(),
-      $this->getScmLocalWorkingCopy(),
+      $this->getWorkDir(),
       $this->getScmRemoteRepository(),
       $this->getScmConnectorType(),
     );
@@ -543,7 +574,7 @@ EOT;
     $ret->setScmRemoteRepository($rs->getScmRemoteRepository());
     $ret->setScmUsername($rs->getScmUsername());
     $ret->setScmPassword($rs->getScmPassword());
-    $ret->setScmLocalWorkingCopy($rs->getScmLocalWorkingCopy());
+    $ret->setWorkDir($rs->getWorkDir());
     $ret->setBuildLabel($rs->getBuildLabel());
     $ret->setDateCreation($rs->getDateCreation());
     $ret->setDescription($rs->getDescription());
