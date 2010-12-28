@@ -42,20 +42,26 @@
  * 
  * 
  */
-class BuilderElement_Task_Chmod extends BuilderElementAbstract
+class BuilderElement_Task_PhpUnit extends BuilderElementAbstract
 {
-  protected $_executable; 
-  protected $_args;            // The arguments to the executable command, if any, a space separated string
-  protected $_dir;             // The directory in which the command should be executed in
-  protected $_outputProperty;  // Log the command's output to the variable with this name
-  protected $_failOnError;     // Stop the build if the command fails (Ant only)
+  protected $_codeCoverageXmlFile;
+  protected $_codeCoverageHtmlDir;
+  protected $_failOnError;         // Stop the build if the command fails (Ant only)
+  protected $_failOnFailure;       // PHPUnit distinguishes failures from errors
+  protected $_failOnIncomplete;
+  protected $_failOnSkipped;
+  protected $_filesets;            // An array of fileset types
+  protected $_logJunitXmlFile;
   
   public function __construct()
   {
-    $this->_executable = null;
-    $this->_args = null;
-    $this->_dir = null;
-    $this->_outputProperty = null;
-    $this->_failOnError = null;
+    $this->_codeCoverageXmlFile = null;
+    $this->_codeCoverageHtmlDir = null;
+    $this->_failOnError = true;
+    $this->_failOnFailure = true;
+    $this->_failOnIncomplete = true;
+    $this->_failOnSkipped = false;
+    $this->_filesets = null;
+    $this->_logJunitXmlFile = null;
   }
 }

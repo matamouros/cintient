@@ -103,19 +103,19 @@ EOT;
         $php .= self::BuilderElement_Target($target);
       }
     }
-    $php .= "
+    $php .= <<<EOT
 foreach (\$GLOBALS['targets'] as \$target) {
-  output(\$target, 'Executing target...');
+  output('target', "Executing target \"\$target\"...");
   if (\$target() === false) {
     \$error = error_get_last();
     \$GLOBALS['result']['output'] = \$error['message'] . ', on line ' . \$error['line'] . '.';
-    output(\$target, 'Target failed.');
+    output('target', "Target \"\$target\" failed.");
     return false;
   } else {
-    output(\$target, 'Target executed.');
+    output('target', "Target \"\$target\" executed.");
   }
 }
-";
+EOT;
     return $php;
   }
   
@@ -340,6 +340,55 @@ if (!fileset{$fileset->getId()}(\$callback)) {
   }
 } else {
   output('phplint', 'Done.');
+}
+";
+      }
+    }
+    return $php;
+  }
+  
+  static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o)
+  {
+    $php = '';
+    if (!$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHPUnit.', __METHOD__);
+      return false;
+    }
+    $php .= "\$GLOBALS['result']['task'] = 'phpunit';
+output('phpunit', 'Starting...');
+";
+    if ($o->getFilesets()) {
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $php .= self::BuilderElement_Type_Fileset($fileset);
+        //
+        // In the following callback we assume that the fileset returns a
+        // directory only *after* all it's content.
+        //
+        $php .= "
+\$callback = function (\$entry) {
+  if (is_file(\$entry)) {
+    \$ret = null;
+    \$output = array();
+    exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
+    if (\$ret > 0) {
+      \$GLOBALS['result']['ok'] = false;
+      output('phpunit', 'Errors parsing ' . \$entry . '.');
+      return false;
+    } else {
+      \$GLOBALS['result']['ok'] = true;
+      output('phpunit', 'No syntax errors detected in ' . \$entry . '.');
+    }
+  }
+  return true;
+};
+if (!fileset{$fileset->getId()}(\$callback)) {
+  output('phpunit', 'Failed.');
+  if ({$o->getFailOnError()}) { // failonerror
+    return false;
+  }
+} else {
+  output('phpunit', 'Done.');
 }
 ";
       }
