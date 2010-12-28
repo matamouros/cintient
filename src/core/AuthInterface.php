@@ -1,8 +1,8 @@
 <?php
 /*
- * 
  * Cintient, Continuous Integration made simple.
- * Copyright (c) 2011, Pedro Mata-Mouros Fonseca
+ * 
+ * Copyright (c) 2011, Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
