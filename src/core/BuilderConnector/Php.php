@@ -359,7 +359,27 @@ output('phpunit', 'Starting unit tests...');
 ";
     $logJunitXmlFile = '';
     if ($o->getLogJunitXmlFile()) {
-      //$logJunitXmlFile = ' --log-junit ' . $o->getLogJunitXmlFile();
+      $logJunitXmlFile = ' --log-junit ' . $o->getLogJunitXmlFile();
+    }
+    $codeCoverageXmlFile = '';
+    if ($o->getCodeCoverageXmlFile()) {
+      if (!extension_loaded('xdebug')) {
+        $php .= "
+output('phpunit', 'Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+";
+      } else {
+        $codeCoverageXmlFile = ' --coverage-clover ' . $o->getCodeCoverageXmlFile();
+      }
+    }
+    $codeCoverageHtmlFile = '';
+    if ($o->getCodeCoverageHtmlFile()) {
+      if (!extension_loaded('xdebug')) {
+        $php .= "
+output('phpunit', 'Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+";
+      } else {
+        $codeCoverageHtmlFile = ' --coverage-html ' . $o->getCodeCoverageHtmlFile();
+      }
     }
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
@@ -374,14 +394,13 @@ output('phpunit', 'Starting unit tests...');
   if (is_file(\$entry)) {
     \$ret = null;
     \$output = array();
-    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile} \$entry\", \$output, \$ret);
+    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$output, \$ret);
+    output('phpunit', \$entry . ': ' . array_pop(\$output));
     if (\$ret > 0) {
       \$GLOBALS['result']['ok'] = false;
-      output('phpunit', 'Tests failed for ' . \$entry . '.');
       return false;
     } else {
       \$GLOBALS['result']['ok'] = true;
-      output('phpunit', 'Tests ok for ' . \$entry . '.');
     }
   }
   return true;
@@ -532,7 +551,7 @@ if (!fileset{$fileset->getId()}(\$callback)) {
         \$GLOBALS['result']['ok'] = false;
         \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}]';
         \$GLOBALS['result']['output'] = \$msg;
-        output(__METHOD__, \$msg);
+        //output(__METHOD__, \$msg);
         return false;
       }
     }
