@@ -35,7 +35,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . "/Users/pfonseca/Dev/cintient/lib/" . PATH_SEPARATOR . "/Users/pfonseca/Dev/cintient/lib/PEAR/" . PATH_SEPARATOR . "/Users/pfonseca/Dev/cintient/lib/PEAR/PHP/");
+//
+// Cintient requirement
+//
+require dirname(__FILE__) . '/../../../src/config/phpunit.conf.php';
+
 require_once 'PHP/CodeCoverage/Filter.php';
 PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
 
