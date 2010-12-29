@@ -286,12 +286,12 @@ class TemplateManager
     //
     // Create necessary dirs
     //
-    if (!file_exists(WORK_DIR) && !mkdir(WORK_DIR, DEFAULT_DIR_MASK, true)) {
+    if (!file_exists(CINTIENT_WORK_DIR) && !mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create working dir. Check your permissions.", __METHOD__);
       echo "Error"; // TODO: treat this properly
       exit;
     }
-    if (!file_exists(PROJECTS_DIR) && !mkdir(PROJECTS_DIR, DEFAULT_DIR_MASK, true)) {
+    if (!file_exists(CINTIENT_PROJECTS_DIR) && !mkdir(CINTIENT_PROJECTS_DIR, DEFAULT_DIR_MASK, true)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create projects dir. Check your permissions.", __METHOD__);
       echo "Error"; // TODO: treat this properly
       exit;

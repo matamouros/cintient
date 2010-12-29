@@ -133,9 +133,14 @@ class Project
     $fileset->setDir('/Users/pfonseca/Dev/cintient/');
     $fileset->addInclude('**/*.php');
     $lint->setFilesets(array($fileset));
+    $phpunit = new BuilderElement_Task_PhpUnit();
+    $fileset2 = new BuilderElement_Type_Fileset();
+    $fileset2->setDir('/Users/pfonseca/Dev/cintient/src/tests/');
+    $fileset2->addInclude('*Test.php');
+    $phpunit->setFilesets(array($fileset2));
     $echo2 = new BuilderElement_Task_Echo();
     $echo2->setMessage('Done!');
-    $target->setTasks(array($echo, $lint, $echo2));
+    $target->setTasks(array($echo, $lint, $phpunit, $echo2));
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
 
@@ -311,7 +316,7 @@ class Project
     //
     // Create all the working directories
     //
-    $this->setWorkDir(PROJECTS_DIR . uniqid($this->getId(), true) . '/'); // Don't forget the trailing '/'!
+    $this->setWorkDir(CINTIENT_PROJECTS_DIR . uniqid($this->getId(), true) . '/'); // Don't forget the trailing '/'!
     if (!mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
       $this->setWorkDir(null);
       SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);

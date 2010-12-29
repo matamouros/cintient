@@ -119,7 +119,7 @@ class ScmConnector
   static public function &getAvailableConnectors()
   {
     $connectors = array();
-    if ($dirHandle = opendir(INSTALL_DIR . 'src/core/ScmConnector/')) {
+    if ($dirHandle = opendir(CINTIENT_INSTALL_DIR . 'src/core/ScmConnector/')) {
       while (false !== ($filename = readdir($dirHandle))) {
         if (($connector = strstr($filename, '.php', true)) !== false) {
           $connectors[] = strtolower($connector);

@@ -355,8 +355,12 @@ if (!fileset{$fileset->getId()}(\$callback)) {
       return false;
     }
     $php .= "\$GLOBALS['result']['task'] = 'phpunit';
-output('phpunit', 'Starting...');
+output('phpunit', 'Starting unit tests...');
 ";
+    $logJunitXmlFile = '';
+    if ($o->getLogJunitXmlFile()) {
+      //$logJunitXmlFile = ' --log-junit ' . $o->getLogJunitXmlFile();
+    }
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
@@ -370,25 +374,25 @@ output('phpunit', 'Starting...');
   if (is_file(\$entry)) {
     \$ret = null;
     \$output = array();
-    exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
+    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile} \$entry\", \$output, \$ret);
     if (\$ret > 0) {
       \$GLOBALS['result']['ok'] = false;
-      output('phpunit', 'Errors parsing ' . \$entry . '.');
+      output('phpunit', 'Tests failed for ' . \$entry . '.');
       return false;
     } else {
       \$GLOBALS['result']['ok'] = true;
-      output('phpunit', 'No syntax errors detected in ' . \$entry . '.');
+      output('phpunit', 'Tests ok for ' . \$entry . '.');
     }
   }
   return true;
 };
 if (!fileset{$fileset->getId()}(\$callback)) {
-  output('phpunit', 'Failed.');
+  output('phpunit', 'Tests failed.');
   if ({$o->getFailOnError()}) { // failonerror
     return false;
   }
 } else {
-  output('phpunit', 'Done.');
+  output('phpunit', 'All tests ok.');
 }
 ";
       }

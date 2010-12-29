@@ -60,20 +60,8 @@ header('Content-type: text/html; charset=UTF-8');
 |* | SETUP                                                          | *|
 \* +----------------------------------------------------------------+ */
 
-require 'src/config/config.inc.php';
+require 'src/config/cintient.conf.php';
 require 'lib/Smarty-3.0rc4/Smarty.class.php';
-
-// Autoload registers
-function autoloadCore($classname)
-{
-  if (strpos($classname, '_') !== false) {
-    $classname = str_replace('_', '/', $classname);
-  }
-  if (is_file(INSTALL_DIR . 'src/core/' . $classname . '.php')) {
-    include 'src/core/' . $classname . '.php';
-  }
-}
-spl_autoload_register('autoloadCore');
 
 session_start(); // session_start *has* to come after the custom autoloading
 

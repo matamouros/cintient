@@ -51,7 +51,7 @@ class Database
   {
     static $instance;
     if (!($instance instanceof SQLite3)) {
-      $instance = new SQLite3(DATABASE_FILE);
+      $instance = new SQLite3(CINTIENT_DATABASE_FILE);
       #if DEBUG
       SystemEvent::raise(SystemEvent::DEBUG, 'New connection opened.', __METHOD__);
       #endif

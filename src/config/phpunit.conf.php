@@ -37,46 +37,11 @@
  * 
  */
 
-error_reporting(-1);
-define('LOG_FILE', '/var/log/cintient.log');
-define('WORK_DIR', '/var/run/cintient/');
-define('PROJECTS_DIR', '/var/run/cintient/projects/');
-
-define('DEFAULT_DIR_MASK', 0777);
-
-define('INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
-
-define('AUTH_METHOD', 'local'); // Taken from src/core/Auth/
-
-define('SCM_DEFAULT_CONNECTOR', 'svn'); // Taken from src/core/ScmConnector/
-
-define('SMARTY_DEBUG', false);
-define('SMARTY_FORCE_COMPILE', false);
-define('SMARTY_COMPILE_CHECK', true);
-define('SMARTY_TEMPLATE_DIR', INSTALL_DIR . 'src/templates/');
-define('SMARTY_COMPILE_DIR', '/tmp/');
-
-define('PASSWORD_SALT', 'rOTA4spNYI3yXvAL');
-
-define('SERVER', 'localhost');
-
-define('DATABASE_FILE', '/var/run/cintient/cintient.sqlite');
+require_once dirname(__FILE__) . '/cintient.conf.php';
 
 //
-// The following is a workaround on the fact that the translation of this
-// serialized object to the database gets all broken, due to the fact of PHP
-// introducing NULL bytes around the '*' that is prepended before protected
-// variable members, in the serialized mode. This method replaces those
-// problematic NULL bytes with an identifier string '==',
-// rendering serialization and unserialization of these specific kinds of
-// object safe. Credits to travis@travishegner.com on:
-// http://pt.php.net/manual/en/function.serialize.php#96504
+// Specific include_path just to satisfy PHPUnit
 //
-define('CINTIENT_NULL_BYTE_TOKEN', '==');
-
-define('CINTIENT_PHP_BINARY', 'php');
-
-define('CINTIENT_PHPUNIT_DIR', INSTALL_DIR . 'lib/phpunit-3.5.6/');
-define('CINTIENT_PHPUNIT_BINARY', CINTIENT_PHPUNIT_DIR . 'phpunit.php');
-
-define('CINTIENT_BUILDS_PAGE_LENGTH', 12);
+set_include_path( get_include_path() . PATH_SEPARATOR
+                . CINTIENT_INSTALL_DIR . 'lib/PEAR/' . PATH_SEPARATOR
+                . CINTIENT_INSTALL_DIR . 'lib/PEAR/PHP/');
