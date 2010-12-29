@@ -1,8 +1,8 @@
-#!/usr/bin/env php
 <?php
-/* PHPUnit
+/**
+ * Text_Template
  *
- * Copyright (c) 2002-2010, Sebastian Bergmann <sebastian@phpunit.de>.
+ * Copyright (c) 2009-2010, Sebastian Bergmann <sb@sebastian-bergmann.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,26 +29,37 @@
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRIC
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @category   Text
+ * @package    Template
+ * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright  2009-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link       http://github.com/sebastianbergmann/php-text-template
+ * @since      File available since Release 1.1.0
  */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '/Users/pfonseca/Dev/cintient/lib/phpunit-3.5.6/' . PATH_SEPARATOR . "/Users/pfonseca/Dev/cintient/lib/" . PATH_SEPARATOR . "/Users/pfonseca/Dev/cintient/lib/PHP/");
-require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
+function text_template_autoload($class) {
+    static $classes = NULL;
+    static $path = NULL;
 
-if (extension_loaded('xdebug')) {
-    xdebug_disable();
+    if ($classes === NULL) {
+        $classes = array(
+          'text_template' => '/Template.php'
+        );
+
+        $path = dirname(dirname(__FILE__));
+    }
+
+    $cn = strtolower($class);
+
+    if (isset($classes[$cn])) {
+        require $path . $classes[$cn];
+    }
 }
 
-if (strpos('@php_bin@', '@php_bin') === 0) {
-    set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
-}
-
-require_once 'PHPUnit/Autoload.php';
-
-define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-
-PHPUnit_TextUI_Command::main();
+spl_autoload_register('text_template_autoload');
