@@ -120,30 +120,6 @@ class Project
     //
     $this->_integrationBuilder = new BuilderElement_Project();
     $this->_deploymentBuilder = new BuilderElement_Project();
-    
-    //
-    //TODO: test code - every new project gets a pre-loaded integration builder
-    //
-    $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage('PHP lint checking...');
-    $target = new BuilderElement_Target();
-    $target->setName('build');
-    $lint = new BuilderElement_Task_PhpLint();
-    $fileset = new BuilderElement_Type_Fileset();
-    $fileset->setDir('/Users/pfonseca/Dev/cintient/');
-    $fileset->addInclude('**/*.php');
-    $lint->setFilesets(array($fileset));
-    $phpunit = new BuilderElement_Task_PhpUnit();
-    $fileset2 = new BuilderElement_Type_Fileset();
-    $fileset2->setDir('/Users/pfonseca/Dev/cintient/src/tests/');
-    $fileset2->addInclude('*Test.php');
-    $phpunit->setFilesets(array($fileset2));
-    $echo2 = new BuilderElement_Task_Echo();
-    $echo2->setMessage('Done!');
-    $target->setTasks(array($echo, $lint, $phpunit, $echo2));
-    $this->_integrationBuilder->addTarget($target);
-    $this->_integrationBuilder->setDefaultTarget($target->getName());
-
     //
     // Options
     //
@@ -330,6 +306,35 @@ class Project
       SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
+    //
+    // TODO: Temporary: create dummy integration builder, while there is
+    //       no interface to do this.
+    //
+    //
+    //TODO: test code - every new project gets a pre-loaded integration builder
+    //
+    $echo = new BuilderElement_Task_Echo();
+    $echo->setMessage('PHP lint checking...');
+    $target = new BuilderElement_Target();
+    $target->setName('build');
+    $lint = new BuilderElement_Task_PhpLint();
+    $fileset = new BuilderElement_Type_Fileset();
+    $fileset->setDir('/Users/pfonseca/Dev/cintient/');
+    $fileset->addInclude('**/*.php');
+    $lint->setFilesets(array($fileset));
+    $phpunit = new BuilderElement_Task_PhpUnit();
+    $fileset2 = new BuilderElement_Type_Fileset();
+    $fileset2->setDir('/Users/pfonseca/Dev/cintient/src/tests/');
+    $fileset2->addInclude('*Test.php');
+    $phpunit->setFilesets(array($fileset2));
+    $phpunit->setLogJunitXmlFile($this->getReportsWorkingDir() . 'log-junit.xml');
+    $phpunit->setCodeCoverageXmlFile($this->getReportsWorkingDir() . 'codecoverage.xml');
+    $phpunit->setCodeCoverageHtmlFile($this->getReportsWorkingDir() . 'codecoverage.html');
+    $echo2 = new BuilderElement_Task_Echo();
+    $echo2->setMessage('Done!');
+    $target->setTasks(array($echo, $lint, $phpunit, $echo2));
+    $this->_integrationBuilder->addTarget($target);
+    $this->_integrationBuilder->setDefaultTarget($target->getName());
     //
     // Save the project and take care of all database dependencies.
     //
