@@ -83,7 +83,7 @@ define('CINTIENT_PHPUNIT_BINARY', CINTIENT_INSTALL_DIR . 'lib/PEAR/bin/phpunit')
 
 define('CINTIENT_BUILDS_PAGE_LENGTH', 12);
 
-set_include_path(get_include_path() . PATH_SEPARATOR . CINTIENT_INSTALL_DIR);
+set_include_path(CINTIENT_INSTALL_DIR);
 
 // Register our autoloader
 function autoloadCintient($classname)
