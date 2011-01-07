@@ -48,7 +48,7 @@ class ProjectBuild
   private $_description;  // a user generated description text (prior or after the build triggered).
   private $_output;       // the integration builder's output collected
   private $_status;       // indicates: failure | no_release | release
-  private $_projectId;    // goes into the table name - it's not an attribute
+  private $_project;      // the project ID goes into the table name - it's not an attribute
   private $_signature;    // Internal flag to control whether a save to database is required
 
   const STATUS_FAIL = 0;
@@ -76,9 +76,9 @@ class ProjectBuild
     return false;
   }
   
-  public function __construct($projectId)
+  public function __construct(Project $project)
   {
-    $this->_projectId = $projectId;
+    $this->_project = $project;
     $this->_id = null;
     $this->_date = null;
     $this->_label = '';
@@ -93,11 +93,63 @@ class ProjectBuild
     $this->_save();
   }
   
+  public function createReportFromJunit()
+  {
+    $junitReportFile = $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME;
+    if (!is_file($junitReportFile)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    //
+    // Access file testsuites directly (last level before testcases).
+    // This can't be a closure because of its recursiveness.
+    //
+    function f($node) {
+      if (isset($node->attributes()->file)) {
+        return $node;
+      } else {
+        return f($node->children());
+      }
+    }
+    try {
+      $xml = new SimpleXMLElement($junitReportFile, 0, true);
+    } catch (Exception $e) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems processing Junit XML file. [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    $xmls = $xml->children();
+    foreach ($xmls as $node) {
+      $successes = array(); // assertions - failures
+      $failures = array();
+      $methods = array();
+      $classXml = f($node);
+      //
+      // After f() we're exactly at the test class (file) root level,
+      // with level 1 being the unit test (method of the original class)
+      // and level 2 being the various datasets used in the test (each a
+      // test case).
+      //
+      foreach ($classXml->children() as $methodXml) {
+        $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
+        $methods[] = $methodXml->attributes()->name;
+        $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
+        $successes[] = (float)$time - (float)$f;
+        $failures[] = $f;
+      }
+
+      $chartWidth = 700;
+      $chartHeight = 25 * count($methods) + 60;
+      
+      
+      return true;
+    }
+  }
+  
   public function delete()
   {
-    $sql = "DROP TABLE projectbuild{$this->getProjectId()}";
+    $sql = "DROP TABLE projectbuild{$this->getProject()->getId()}";
     if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [TABLE={$this->getProjectId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [TABLE={$this->getProject()->getId()}]", __METHOD__);
       return false;
     }
     return true;
@@ -111,6 +163,41 @@ class ProjectBuild
     return md5(serialize($arr));
   }
   
+  public function getReportsDir()
+  {
+    return $this->getProject()->getReportsWorkingDir() . $this->getId() . '/';
+  }
+  
+  public function init()
+  {
+    //
+    // Get the ID
+    //
+    if (!$this->_save()) {
+      return false;
+    }
+    //
+    // Create this build's report dir, backing up an existing one
+    //
+    if (is_dir($this->getReportsDir())) {
+      $backupOldBuildReportDir = $this->getReportsDir() . '_old_' . uniqid() . '/';
+    }
+    if (!mkdir($this->getReportsDir(), DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't create report dir for build. [PID={$this->getProject()->getId()}] [DIR={$this->getReportsDir()}] [BUILD={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    //
+    // Backup the original junit report file
+    // TODO: only if unit tests were comissioned!!!!
+    //
+    //if (UNIT_TESTES_WERE_DONE) {
+      if (!@rename($this->getProject()->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
+      }
+    //}
+    return true;
+  }
+  
   private function _save($force=false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
@@ -120,7 +207,7 @@ class ProjectBuild
     if (!Database::beginTransaction()) {
       return false;
     }
-    $sql = 'INSERT INTO projectbuild' . $this->getProjectId()
+    $sql = 'INSERT INTO projectbuild' . $this->getProject()->getId()
          . ' (label, description, output, status)'
          . ' VALUES (?,?,?,?)';
     $val = array(
@@ -137,11 +224,11 @@ class ProjectBuild
     $this->setId($id);
     
     if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getProjectId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getProject()->getId()}]", __METHOD__);
       return false;
     }
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Saved project build. [PID={$this->getProjectId()}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Saved project build. [PID={$this->getProject()->getId()}]", __METHOD__);
     #endif
     $this->updateSignature();
     return true;
@@ -180,16 +267,16 @@ class ProjectBuild
     if ($rs = Database::query($sql, $val)) {
       $ret = array();
       while ($rs->nextRow()) {
-        $projectBuild = self::_getObject($rs, $project->getId());
+        $projectBuild = self::_getObject($rs, $project);
         $ret[] = $projectBuild;
       }
     }
     return $ret;
   }
   
-  static private function _getObject(Resultset $rs, $projectId)
+  static private function _getObject(Resultset $rs, Project $project)
   {
-    $ret = new ProjectBuild($projectId);
+    $ret = new ProjectBuild($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
     $ret->setLabel($rs->getLabel());

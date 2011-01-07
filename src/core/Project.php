@@ -142,6 +142,7 @@ class Project
 
     if ($this->getStatus() == self::STATUS_BUILDING) {
       SystemEvent::raise(SystemEvent::INFO, "Project is currently building, or is queued for building. [PROJECTID={$this->getId()}]", __METHOD__);
+      $this->setStatus(self::STATUS_ERROR);
       return false;
     }
     
@@ -184,10 +185,6 @@ class Project
       SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
-    
-    //
-    // Ok. After this, we're dealing with a full-fledged build here.
-    //
     if (empty($this->_buildLabel)) {
       SystemEvent::raise(SystemEvent::ERROR, "Empty build label, could not complete project build. [PROJECTID={$this->getId()}]", __METHOD__);
       $this->setStatus(self::STATUS_MODIFIED);
@@ -196,7 +193,7 @@ class Project
     $this->setStatus(self::STATUS_OK); // Even if the build fails, it's not really an error of the project
     $php = $this->_integrationBuilder->toString('php');
     $buildOk = BuilderConnector_Php::execute($php);
-    $build = new ProjectBuild($this->getId());
+    $build = new ProjectBuild($this);
     $build->setOutput(implode("\n", $GLOBALS['result']['stacktrace']));
     if (!$buildOk) {
       $build->setStatus(ProjectBuild::STATUS_FAIL);
@@ -208,6 +205,17 @@ class Project
     //
     $this->setReleaseCounter(((int)$this->getReleaseCounter()+1));
     $build->setLabel($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
+    //
+    // Setup build specific report dir
+    //
+    if (!$build->init()) {
+      $this->setStatus(self::STATUS_ERROR);
+      return false;
+    }
+    //
+    // Build Junit reports, if any
+    //
+    $build->createReportFromJunit();
     
     // TODO: 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {

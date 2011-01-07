@@ -41,6 +41,8 @@ error_reporting(-1);
 define('LOG_FILE', '/var/log/cintient.log');
 define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulled from the user .ini config file
 
+define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
+
 
 define('CINTIENT_PROJECTS_DIR', CINTIENT_WORK_DIR . 'projects/');
 
