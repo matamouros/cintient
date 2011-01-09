@@ -97,7 +97,7 @@ class ProjectBuild
   {
     $junitReportFile = $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME;
     if (!is_file($junitReportFile)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}] [FILE={$junitReportFile}]", __METHOD__);
       return false;
     }
     //
@@ -119,10 +119,22 @@ class ProjectBuild
     }
     $xmls = $xml->children();
     foreach ($xmls as $node) {
+      $imageFilename = '';
       $successes = array(); // assertions - failures
       $failures = array();
+      $methodsNames = array();
+      $classes = array();
       $methods = array();
       $classXml = f($node);
+      $class = new TestClass();
+      $class->setName($classXml->attributes()->name);
+      $class->setFile((string)$classXml->attributes()->file);
+      $class->setTests((string)$classXml->attributes()->tests);
+      $class->setAssertions((string)$classXml->attributes()->assertions);
+      $class->setFailures((string)$classXml->attributes()->failures);
+      $class->setErrors((string)$classXml->attributes()->errors);
+      $class->setTime((string)$classXml->attributes()->time);
+      $class->setChartFilename(md5($this->getProject()->getId() . $this->getId() . $class->getFile()) . '.png');
       //
       // After f() we're exactly at the test class (file) root level,
       // with level 1 being the unit test (method of the original class)
@@ -130,18 +142,25 @@ class ProjectBuild
       // test case).
       //
       foreach ($classXml->children() as $methodXml) {
+        $method = new TestMethod();
+        $method->setName($methodXml->getName());
+        $method->setTests((string)$methodXml->attributes()->tests);
+        $method->setAssertions((string)$methodXml->attributes()->assertions);
+        $method->setFailures((string)$methodXml->attributes()->failures);
+        $method->setErrors((string)$methodXml->attributes()->errors);
+        $method->setTime((string)$methodXml->attributes()->time);
+        $methods[] = $method;
+        
         $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
-        $methods[] = $methodXml->attributes()->name;
+        $methodsNames[] = $methodXml->attributes()->name;
         $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
         $successes[] = (float)$time - (float)$f;
         $failures[] = $f;
       }
 
-      $chartWidth = 700;
-      $chartHeight = 25 * count($methods) + 60;
-      
-      
-      return true;
+      $class->setTestMethods($methods);
+      $classes[] = $class;
+      return $classes;
     }
   }
   
@@ -160,6 +179,8 @@ class ProjectBuild
     $arr = get_object_vars($this);
     $arr['_signature'] = null;
     unset($arr['_signature']);
+    $arr['_project'] = null;
+    unset($arr['_project']);
     return md5(serialize($arr));
   }
   
@@ -207,21 +228,30 @@ class ProjectBuild
     if (!Database::beginTransaction()) {
       return false;
     }
-    $sql = 'INSERT INTO projectbuild' . $this->getProject()->getId()
-         . ' (label, description, output, status)'
-         . ' VALUES (?,?,?,?)';
+    $sql = 'REPLACE INTO projectbuild' . $this->getProject()->getId()
+         . ' (id, label, description, output, status)'
+         . ' VALUES (?,?,?,?,?)';
     $val = array(
+      $this->getId(),
       $this->getLabel(),
       $this->getDescription(),
       $this->getOutput(),
       $this->getStatus(),
     );
-    if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
-      return false;
+    if ($this->_id === null) {
+      if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
+        Database::rollbackTransaction();
+        SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
+        return false;
+      }
+      $this->setId($id);
+    } else {
+      if (!Database::execute($sql, $val)) {
+        Database::rollbackTransaction();
+        SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
+        return false;
+      }
     }
-    $this->setId($id);
     
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getProject()->getId()}]", __METHOD__);
@@ -239,7 +269,27 @@ class ProjectBuild
     $this->setSignature($this->_getCurrentSignature());
   }
   
-  static public function getListByProject($project, $user, $access = Access::READ, array $options = array())
+  static public function getById($buildId, Project $project, User $user, $access = Access::READ, array $options = array())
+  { 
+    $ret = false;
+    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
+    $buildId = (int)$buildId;
+    $sql = 'SELECT pb.*'
+         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+         . ' WHERE pu.projectid=?'
+         . ' AND pu.userid=?'
+         . ' AND pu.access & ?'
+         . ' AND pb.id=?';
+    $val = array($project->getId(), $user->getId(), $access, $buildId);
+    if ($rs = Database::query($sql, $val)) {
+      if ($rs->nextRow()) {
+        $ret = self::_getObject($rs, $project);
+      }
+    }
+    return $ret;
+  }
+  
+  static public function getListByProject(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
     isset($options['pageStart'])?:$options['pageStart']=0;
