@@ -69,7 +69,15 @@ class Auth implements AuthInterface
       return false;
     }
     $_SESSION['user'] = $user;
-    SystemEvent::raise(SystemEvent::DEBUG, "User authenticated. [ID={$userId}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "User authenticated. [USR={$user->getUsername()}]", __METHOD__);
+    return true;
+  }
+  
+  static public function logout()
+  {
+    $username = $_SESSION['user']->getUsername();
+    session_destroy();
+    SystemEvent::raise(SystemEvent::DEBUG, "User logged out. [ID={$username}]", __METHOD__);
     return true;
   }
 }
