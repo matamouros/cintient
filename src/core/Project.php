@@ -212,10 +212,6 @@ class Project
       $this->setStatus(self::STATUS_ERROR);
       return false;
     }
-    //
-    // Build Junit reports, if any
-    //
-    $build->createReportFromJunit();
     
     // TODO: 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {
@@ -327,12 +323,12 @@ class Project
     $target->setName('build');
     $lint = new BuilderElement_Task_PhpLint();
     $fileset = new BuilderElement_Type_Fileset();
-    $fileset->setDir('/Users/pfonseca/Dev/cintient/');
+    $fileset->setDir('/Users/pfonseca/Dev/'.$this->getBuildLabel().'/');
     $fileset->addInclude('**/*.php');
     $lint->setFilesets(array($fileset));
     $phpunit = new BuilderElement_Task_PhpUnit();
     $fileset2 = new BuilderElement_Type_Fileset();
-    $fileset2->setDir('/Users/pfonseca/Dev/cintient/src/tests/');
+    $fileset2->setDir('/Users/pfonseca/Dev/'.$this->getBuildLabel().'/src/tests/');
     $fileset2->addInclude('*Test.php');
     $phpunit->setFilesets(array($fileset2));
     $phpunit->setLogJunitXmlFile($this->getReportsWorkingDir() . 'log-junit.xml');
