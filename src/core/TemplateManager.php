@@ -170,6 +170,57 @@ class TemplateManager
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
   
+  static public function asset()
+  {
+    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
+      //TODO: Redirect and exit?
+      exit;
+    }
+    if (!isset($_GET['f']) || empty($_GET['f'])) {
+      SystemEvent::raise(SystemEvent::INFO, "Missing requered parameters.", __METHOD__);
+      //TODO: Redirect and exit?
+      exit;
+    }
+    //
+    // It's a project build asset!
+    //
+    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+      $build = null;
+      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+      if (!($build instanceof ProjectBuild)) {
+        SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
+        //TODO: Redirect and exit?
+        exit;
+      }
+      $filename = $build->getReportsDir() . $_GET['f'];
+      if (!file_exists($filename)) {
+        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
+        //TODO: Redirect and exit?
+        exit;
+      }
+      $pos = strrpos($filename, '.');
+      if ($pos) {
+        $extension   = strtolower(substr($filename, $pos+1));
+        $ext['jpg']  = 'image/jpeg';
+        $ext['jpeg'] = 'image/jpeg';
+        $ext['gif']  = 'image/gif';
+        $ext['png']  = 'image/png';
+        $ext['swf']  = 'application/x-shockwave-flash';
+        $ext['css']  = 'text/css';
+        $ext['xml']  = 'text/xml';
+        if (isset($ext[$extension])) {
+          header('Content-type: '.$ext[$extension]);
+        }
+      }
+      header('Last-Modified: '.date('r',filectime($filename)));
+      header('Content-Length: '.filesize($filename));
+      readfile($filename);
+      exit;
+    }
+    exit;
+  }
+  
   static public function authentication()
   {
     if (isset($_SESSION['user']) && $_SESSION['user'] instanceof User) {
@@ -268,6 +319,29 @@ class TemplateManager
     } else {
       $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getListByProject($_SESSION['project'], $_SESSION['user']));
     }
+  }
+  
+  static public function projectBuild()
+  {
+    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
+      //TODO: Redirect and exit?
+      exit;
+    }
+    $build = null;
+    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+    }
+    if (!($build instanceof ProjectBuild)) {
+      SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
+      //TODO: Redirect and exit?
+      exit;
+    }
+    //
+    // All ok. Generate all reports
+    //
+    $GLOBALS['smarty']->assign('projectBuild_junit', $build->createReportFromJunit());
+    $GLOBALS['smarty']->assign('projectBuild_build', $build);
   }
   
   /**
