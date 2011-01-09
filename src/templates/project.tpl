@@ -46,7 +46,7 @@ SCM Password: {*$smarty.session.project->getScmUsername()*}
 <b>Builds</b>
 {foreach from=$project_buildList item=build}
   <br><br>
-  build #{$build->getId()}
+  <a href="{URLManager::getForProjectBuildView($build->getId())}">build #{$build->getId()}</a>
   <br>
   status: {$build->getStatus()}
   <br>
