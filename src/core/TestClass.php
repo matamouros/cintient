@@ -50,6 +50,7 @@ class TestClass
   private $_errors;
   private $_time;
   private $_testMethods;
+  private $_chartFilename;
   
   /**
    * Magic method implementation for calling vanilla getters and setters. This
