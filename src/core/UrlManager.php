@@ -42,6 +42,12 @@
  */
 class UrlManager
 {
+  static public function getForAsset($filename, $params = array())
+  {
+    $params['f'] = $filename;
+    return "/asset/?" .  http_build_query($params);
+  }
+  
   static public function getForAuthentication()
   {
     return '/authentication/';
@@ -55,6 +61,11 @@ class UrlManager
   static public function getForProjectBuild()
   {
     return '/project/?build';   
+  }
+  
+  static public function getForProjectBuildView($build)
+  {
+    return "/project-build/?bid={$build}";
   }
   
   static public function getForProjectEdit()
