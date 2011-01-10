@@ -92,9 +92,27 @@ html
 }
 
 
+/* +----------------------------------------------------------------+ *\
+|* | HEADERS/FOOTERS                                                | *|
+\* +----------------------------------------------------------------+ */
+
+#footer
+{
+  text-align: center;
+  clear: both;
+  padding-top: 30px;
+  font-size: .6em;
+  line-height: 1.7em;
+}
+
+#footer #installationStats
+{
+  padding-bottom: 10px;
+}
+
 #headerLogo
 {
-	float: left;
+  float: left;
 }
 
 #splashHeader header h1
@@ -107,65 +125,61 @@ html
 
 #splashHeader
 {
-	text-align: center;
-	margin-bottom: 70px;
+  text-align: center;
+  margin-bottom: 70px;
 }
 
 #userHeader
 {
-	margin-bottom: 10px;
-	clear: both;
-	height: 40px;
+  margin-bottom: 10px;
+  clear: both;
+  height: 40px;
 }
 
 #userHeader header h1
 {
-	font-size: 1.8em;
-	color: rgb(230,230,230);
-	width: 500px;
-	float: left;
-	margin-top: 10px;
+  font-size: 1.8em;
+  color: rgb(230,230,230);
+  width: 550px;
+  float: left;
+  margin-top: 10px;
 }
 
 #userHeader nav
 {
-	float: left;
-	width: 300px;
+  float: left;
+  width: 250px;
 }
 
 #userHeader nav #user #avatar
 {
-	float: left;
+  float: left;
+  width: 40px;
+  height: 40px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
 }
 
 #userHeader nav #user #username
 {
-	padding-left: 50px;
-	font-size: 1.2em;
+  padding-left: 50px;
+  font-size: 1.2em;
 }
 
 #userHeader nav #user #links
 {
-	clear: none;
+  clear: none;
   padding-left: 50px;
   padding-top: 3px;
   font-size: .8em;
 }
 
-#footer
-{
-	text-align: center;
-	clear: both;
-	padding-top: 30px;
-	font-size: .6em;
-	line-height: 1.7em;
-}
 
-#footer #installationStats
-{
-	padding-bottom: 10px;
-}
-
+/* +----------------------------------------------------------------+ *\
+|* | OTHER STUFF                                                    | *|
+\* +----------------------------------------------------------------+ */
 
 #loginContainer
 {
@@ -182,19 +196,10 @@ html
 	padding-right: 6px;
 	width: auto;
 	background: #FBFBFB;
-	border: 1px solid #E5E5E5;
-	border-bottom-left-radius: 10px 10px;
-	border-bottom-left-radius: 10px 10px;
-	border-bottom-left-radius: 10px 10px;
-	border-bottom-right-radius: 10px 10px;
-	border-bottom-right-radius: 10px 10px;
-	border-bottom-right-radius: 10px 10px;
-	border-top-left-radius: 10px 10px;
-	border-top-left-radius: 10px 10px;
-	border-top-left-radius: 10px 10px;
-	border-top-right-radius: 10px 10px;
-	border-top-right-radius: 10px 10px;
-	border-top-right-radius: 10px 10px;
+	border: 2px solid #999;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	box-shadow: 2px 2px 10px #111;
   -webkit-box-shadow: #111 2px 2px 10px;
   -moz-box-shadow: #111 2px 2px 10px;
@@ -204,9 +209,10 @@ html
 {
 	font-size: 1.8em;
 	border: 0px solid #fff;
-	width: auto;
+	width: 300px;
 	color: #555;
 	padding-left: 3px;
+	margin-left: 3px;
 }
 
 .loginLabel
@@ -218,3 +224,112 @@ html
 {
 	float: right;
 }
+
+
+/* +----------------------------------------------------------------+ *\
+|* | PROJECTS                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+.projectAvatar
+{
+	float: left;
+	width: 40px;
+	height: 40px;
+	margin-top: 1px;
+	box-shadow: 1px 1px 3px #999;
+  -webkit-box-shadow: #999 1px 1px 3px;
+  -moz-box-shadow: #999 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+.projectDetails
+{
+	margin-left: 75px;
+}
+
+.projectTitle
+{
+	font-weight: bold;
+	margin-bottom: 2px;
+}
+
+.projectStats
+{
+	font-size: .6em;
+}
+
+.projectStatus
+{
+	float: left;
+	margin-top: 2px;
+	width: 20px;
+	height: 20px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.projectStatusOk
+{
+	margin-left: 7px;
+	background: rgb(124,196,0); /* non-CSS3 */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7CC400', endColorstr='#7A964B'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#7CC400), to(#7A964B)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #7CC400, #7A964B); /* for firefox 3.6+ */
+	box-shadow: 0px 0px 4px rgb(124,196,0);
+  -webkit-box-shadow: rgb(124,196,0) 0px 0px 4px;
+  -moz-box-shadow: rgb(124,196,0) 0px 0px 4px;
+}
+
+.projectStatusFailed
+{
+	margin-left: 7px;
+  background: rgb(255,40,0); /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF2800', endColorstr='#B35D4D'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#FF2800), to(#B35D4D)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #FF2800, #B35D4D); /* for firefox 3.6+ */
+  box-shadow: 0px 0px 4px rrgb(255,40,0);
+  -webkit-box-shadow: rgb(255,40,0) 0px 0px 4px;
+  -moz-box-shadow: rgb(255,40,0) 0px 0px 4px;
+}
+
+#projectListContainer
+{
+	text-shadow: none;
+	color: #555;
+}
+
+.projectDraggableContainer
+{
+  margin-bottom: 20px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 600px;
+  height: 44px;
+  background: #FBFBFB;
+  /*background: rgb(230,230,230);*/
+  /*background: rgb(124,196,0);*/
+  /*background: rgb(255,40,0);*/
+  border: 2px solid #999;
+  -webkit-border-radius: 16px 16px 16px 16px;
+  -moz-border-radius: 16px 16px 16px 16px;
+  border-radius: 16px 16px 16px 16px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.projectDraggableContainer .projectLink
+{
+	color: #555;
+  font-weight: normal;
+  text-decoration: none;
+	text-shadow: none;
+  margin: 0;
+  width: 600px;
+  height: 44px;
+}
+
+

@@ -46,7 +46,7 @@
   <input class="loginTextfield" type="password" name="password">
 </div>
 <input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
-<input id="loginSubmitButton" type="submit">
+<input id="loginSubmitButton" type="submit" value="Go!">
 </div>
 </form>
 {include file='includes/footer.inc.tpl'}
