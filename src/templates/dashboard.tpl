@@ -35,36 +35,53 @@
   POSSIBILITY OF SUCH DAMAGE.
   
 *}{include file='includes/header.inc.tpl'}
-    <ul id="projectListContainer" class="container">
-
-<a href="{URLManager::getForProjectNew()}">new project</a>
-<br>
-<br>
+    <div id="sectionMenu" class="container"><a href="{URLManager::getForProjectNew()}">Create a new project</a></div>
+    <div id="projectListContainer" class="container">
+      <ul>
 {foreach $dashboard_projectList as $project}
       <li class="projectDraggableContainer container">
         <a href="{URLManager::getForProjectView($project)}" class="projectLink">
-        <div class="projectAvatar"><img src="/imgs/redhalo_90.jpg" width="40" height="40"></div>
+        <div class="projectAvatar"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
         <div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
-          <div class="projectStats">Last build on Jan 9, 2011</div>
-          <div class="projectStats">Latest version: 1.0.9</div>
+          <div class="projectStats">Latest build on Jan 9, 2011</div>
+          <div class="projectStats">Current version: 1.0.9</div>
+          {*<div class="projectStats">Production version: 1.0.9</div>*}
         </div>
         </a>
       </li>
 {foreachelse}
 N&atilde;o tem projectos.
 {/foreach}
+      </ul>
     </div>
 <script type="text/javascript">
 // <![CDATA[
-$('.projectDraggableContainer')
-  .style('cursor', 'default') //very important, indicate to user that div is clickable
-  .hover( function() {
-	  //$(this).style('cursor', 'default');
-	  $(this).css("border", "1px solid red");
-	  //window.location = $(this).find('a').attr('href');
-	}); //Do click as if user clicked actual text of link.
+$('.projectDraggableContainer').each( function() {
+	$(this).click( function() {
+		window.location = $(this).find('a').attr('href');
+  });
+	$(this).hover(
+		function() {
+      $(this).css({
+    	  "cursor" : "pointer",
+    	  "border" : "2px solid rgb(255,40,0)",
+    	  "box-shadow" : "0px 0px 40px rgb(255,40,0)",
+        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
+        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
+      });
+    },
+    function() {
+    	$(this).css({
+    	  "cursor" : "default",
+    	  "border" : "2px solid #999",
+    	  "box-shadow" : "2px 2px 10px #111",
+    	  "-webkit-box-shadow" : "#111 2px 2px 10px",
+    	  "-moz-box-shadow" : "#111 2px 2px 10px"
+      });
+    });
+});
 // ]]> 
 </script>
 {include file='includes/footer.inc.tpl'}
