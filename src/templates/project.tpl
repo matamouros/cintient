@@ -37,28 +37,44 @@
 *}{include file='includes/header.inc.tpl'}
 {if isset($smarty.get.new)}
 {* PROJECT NEW *}
-<form action="{URLManager::getForProjectNew()}" method="post">
-Title <input type="text" name="title">
-<br>
-Description <textarea rows="3" cols="30" name="description"></textarea>
-<br>
-Build label <input type="text" name="buildLabel">
-<br>
-Connector
-<select name="scmConnectorType">
+    <div id="" class="container">Create a new project below, or <a href="">cancel</a>.<div>
+    <form action="{URLManager::getForProjectNew()}" method="post">
+    <div id="newProjectContainer" class="container">
+      <div class="label">Project title</div>
+      <div class="textfieldContainer" style="width: 204px;">
+        <input class="textfield" style="width: 200px" type="text" name="title">
+      </div>
+      <div class="label">A small description</div>
+      <div class="textareaContainer">
+        <textarea class="textarea" name="description"></textarea>
+      </div>
+      <div class="label">A build label</div>
+      <div class="textfieldContainer" style="width: 164px;">
+        <input class="textfield" style="width: 160px;" type="text" name="buildLabel">
+      </div>
+      <div class="label">The SCM connector</div>
+      <div class="dropdownContainer">
+        <select class="dropdown" name="scmConnectorType">
 {foreach from=$project_availableConnectors item=connector}
-  <option value="{$connector}">{$connector}
+          <option value="{$connector}">{$connector|capitalize}
 {/foreach}
-</select>
-<br>
-SCM Username <input type="text" name="scmUsername">
-<br>
-SCM Password <input type="password" name="scmPassword">
-<br>
-SCM Remote Repository <input type="text" name="scmRemoteRepository">
-<br>
-<input type="submit">
-</form>
+        </select>
+      </div>
+      <div class="label">Username for SCM access</div>
+      <div class="textfieldContainer" style="width: 164px;">
+        <input class="textfield" style="width: 160px;" type="text" name="scmUsername">
+      </div>
+      <div class="label">Password for SCM access</div>
+      <div class="textfieldContainer" style="width: 164px;">
+        <input class="textfield" style="width: 160px;" type="password" name="scmPassword">
+      </div>
+      <div class="label">The SCM remote repository</div>
+      <div class="textfieldContainer" style="width: 356px;">
+        <input class="textfield" style="width: 350px;" type="text" name="scmRemoteRepository">
+      </div>
+      <input type="submit" value="Create!" id="submitButton">
+    </div>
+    </form>
 {else}
 {* PROJECT DETAILS *}
 Title: {$smarty.session.project->getTitle()}
