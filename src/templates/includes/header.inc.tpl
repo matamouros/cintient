@@ -50,7 +50,7 @@
   <script type="text/javascript" src="/js/jquery-1.4.4.js"></script>
 </head>
 <body>
-  <div id="header" class="container">
+  <div id="header" class="containerTopLevel">
 {if $smarty.session.user instanceof User}
     <div id="userHeader" class="container">
       <header>
@@ -72,16 +72,16 @@
       <header>
         <hgroup>
           <h1>Cintient</h1>
-          <img src="/imgs/redhalo.jpg">
+          <img src="/imgs/redhalo.jpg" width="195" height="130">
         </hgroup>
       </header>
     </div>
 {/if}
   </div>
 {if isset($menuLeft) || isset($menuRight)}
-  <div id="menu" class="container">
+  <div id="menu" class="containerTopLevel">
     <nav id="menuLeft">{if isset($menuLeft)}{$menuLeft}{/if}</nav>
     <nav id="menuRight">{if isset($menuRight)}{$menuRight}{/if}</nav>
   </div>
 {/if}
-  <div id="main" class="container">
+  <div id="main" class="containerTopLevel">

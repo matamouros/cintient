@@ -36,7 +36,7 @@
   
 *}{TemplateManager::providerFooter()}
   </div>
-  <div id="footer" class="container">
+  <div id="footer" class="containerTopLevel">
     <div id="installationStats">Sentient since {$providerFooter_installDate|date_format}. Monitoring {$providerFooter_projectsCount} projects, with {$providerFooter_usersCount} user, built {$providerFooter_usersCount} times.</div>
     <div class="paragraph"><a href="http://code.google.com/p/cintient/">Cintient</a>, Continuous Integration made simple, is free software distributed under the New BSD License terms.</div>
     <div class="paragraph">Copyright &copy; 2011, <a href="mailto:pedro.matamouros@gmail.com">Pedro Mata-Mouros</a>. All rights reserved.</div>

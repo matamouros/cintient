@@ -34,14 +34,14 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
   
-*}{include file='includes/header.inc.tpl' menuLeft="Dashboard" menuRight="<a href=\"{URLManager::getForProjectNew()}\">new project</a>"}
+*}{include file='includes/header.inc.tpl' menuLeft="Dashboard" menuRight="Create a <a href=\"{URLManager::getForProjectNew()}\">new project</a>."}
 {if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
       <li class="projectDraggableContainer container">
         <a href="{URLManager::getForProjectView($project)}" class="projectLink">
-        <div class="projectAvatar"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
+        <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
         <div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
@@ -56,29 +56,31 @@
     </div>
 <script type="text/javascript">
 // <![CDATA[
-$('.projectDraggableContainer').each( function() {
-	$(this).click( function() {
-		window.location = $(this).find('a').attr('href');
-  });
-	$(this).hover(
-		function() {
-      $(this).css({
-    	  "cursor" : "pointer",
-    	  "border" : "2px solid rgb(255,40,0)",
-    	  "box-shadow" : "0px 0px 40px rgb(255,40,0)",
-        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
-        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
-      });
-    },
-    function() {
-    	$(this).css({
-    	  "cursor" : "default",
-    	  "border" : "2px solid #999",
-    	  "box-shadow" : "2px 2px 10px #111",
-    	  "-webkit-box-shadow" : "#111 2px 2px 10px",
-    	  "-moz-box-shadow" : "#111 2px 2px 10px"
-      });
+$(document).ready(function() {
+  $('.projectDraggableContainer').each( function() {
+  	$(this).click(function() {
+  		window.location = $(this).find('a').attr('href');
     });
+  	$(this).hover(
+  		function() {
+        $(this).css({
+      	  "cursor" : "pointer",
+      	  "border" : "2px solid rgb(255,40,0)",
+      	  "box-shadow" : "0px 0px 40px rgb(255,40,0)",
+          "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
+          "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
+        });
+      },
+      function() {
+      	$(this).css({
+      	  "cursor" : "default",
+      	  "border" : "2px solid #999",
+      	  "box-shadow" : "2px 2px 10px #111",
+      	  "-webkit-box-shadow" : "#111 2px 2px 10px",
+      	  "-moz-box-shadow" : "#111 2px 2px 10px"
+        });
+      });
+  });
 });
 // ]]> 
 </script>

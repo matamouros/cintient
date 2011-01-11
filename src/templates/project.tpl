@@ -35,7 +35,7 @@
   POSSIBILITY OF SUCH DAMAGE.
   
 *}{if isset($smarty.get.new)}
-{include file='includes/header.inc.tpl' menuLeft="Create a project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
+{include file='includes/header.inc.tpl' menuLeft="New project" menuRight="Create a new project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
 {* PROJECT NEW *}
     <form action="{URLManager::getForProjectNew()}" method="post">
     <div id="newProjectContainer" class="container">
@@ -75,25 +75,28 @@
     </div>
     </form>
 {else}
-{include file='includes/header.inc.tpl' menuLeft="Project details"}
+{include file='includes/header.inc.tpl'
+  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectEdit($smarty.session.project)}\">edit</a>"}
 {* PROJECT DETAILS *}
-Title: {$smarty.session.project->getTitle()}
-<br>
-Build label: {$smarty.session.project->getBuildLabel()}
-<br>
-Status: {$smarty.session.project->getStatus()}
-<br>
-Description: {$smarty.session.project->getDescription()}
-<br>
-Connector: {$smarty.session.project->getScmConnectorType()}
-<br>
-SCM Username: {$smarty.session.project->getScmUsername()}
-<br>
-SCM Password: {*$smarty.session.project->getScmUsername()*}
-<br><br>
-<a href="{URLManager::getForProjectBuild($smarty.session.project)}">Build!!</a>
-<br>
-<a href="{URLManager::getForProjectEdit($smarty.session.project)}">clique aqui para editar</a>
+    <article id="project">
+      <div class="avatar"><img src="/imgs/redhalo_90x90.jpg"></div>
+      <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
+      <div class="details">
+        <div class="title">{$smarty.session.project->getTitle()}</div>
+        <div class="stats">Latest build on Jan 9, 2011. Production version: 1.0.1</div>
+        <div id="users">
+{foreach from=$smarty.session.project->getUsers() item=user}
+{$username=User::getById($user[0])->getUsername()}
+          <div class="user">
+            <div class="avatar"><img src="/imgs/anon_avatar_50.png" width="25" height="25"></div>
+            <div class="username">{if $username==$smarty.session.user->getUsername()}This is you!{else}{$username}{/if}</div>
+          </div>
+{/foreach}
+          {*<a href="{URLManager::getForDashboard()}">dashboard</a> | <a href="{URLManager::getForProjectNew()}">new project</a>*}
+        </div>
+      </div>
+    </article>
+{*    
 <br><br>
 <b>Builds</b>
 {foreach from=$project_buildList item=build}
@@ -110,5 +113,6 @@ SCM Password: {*$smarty.session.project->getScmUsername()*}
   {/if}
   <a href="#">(details)</a>
 {/foreach}
+*}
 {/if}
 {include file='includes/footer.inc.tpl'}

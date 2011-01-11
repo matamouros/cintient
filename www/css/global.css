@@ -107,9 +107,14 @@ a:active
   float: right;
 }
 
+.containerTopLevel
+{
+  width: 800px;
+  margin: auto auto auto auto;
+}
+
 .container
 {
-	width: 800px;
 	margin: auto auto auto auto;
 }
 
@@ -193,7 +198,7 @@ html
 {
   font-size: 1em;
   border: 0px solid #fff;
-  width: 400px;
+  width: 400px !important;
   height: 55px;
   color: #555;
   padding-left: 3px;
@@ -358,7 +363,7 @@ html
 |* | PROJECTS                                                       | *|
 \* +----------------------------------------------------------------+ */
 
-.projectAvatar
+.projectAvatar40x40
 {
 	float: left;
 	width: 40px;
@@ -370,28 +375,104 @@ html
   border: 1px solid #fff;
 }
 
+article#project .avatar
+{
+  float: left;
+  width: 90px;
+  height: 90px;
+  margin-top: 1px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+article#project .details
+{
+  margin-left: 125px;
+}
+
+article#project .details #users
+{
+  margin-left: 1px;
+  margin-top: 13px;
+  float: left;
+  clear: right;
+}
+
+article#project #users .user .avatar
+{
+  width: 25px;
+  height: 25px;
+  margin-left: 1px;
+  margin-bottom: 3px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+  float: left;
+}
+
+article#project #users .user .username
+{
+  font-size: .6em;
+  float: left;
+  clear: left;
+}
+
+article#project .title
+{
+	font-size: 1.1em;
+  margin-bottom: 2px;
+}
+
+article#project .stats
+{
+  font-size: .76em;
+  margin-left: 3px;
+}
+
+article#project #statusContainer
+{
+	height: 90px;
+	float: left;
+	width: 33px;
+	margin-top: 2px;
+	margin-left: 2px;
+}
+
+article#project #statusContainer .status
+{
+  float: left;
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+}
+
 .projectDetails
 {
-	margin-left: 75px;
+  margin-left: 75px;
 }
 
 .projectTitle
 {
-	font-weight: bold;
-	margin-bottom: 2px;
+  font-weight: bold;
+  margin-bottom: 2px;
 }
 
 .projectStats
 {
-	font-size: .6em;
+  font-size: .6em;
 }
 
 .projectStatus
 {
-	float: left;
-	margin-top: 2px;
-	width: 20px;
-	height: 20px;
+  float: left;
+  margin-top: 2px;
+  width: 20px;
+  height: 20px;
   -webkit-border-radius: 10px 10px 10px 10px;
   -moz-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
@@ -469,6 +550,16 @@ html
 {
   width: 350px;
   margin-bottom: 80px;
+}
+
+article#project .avatar
+{
+  font-size: .8em;
+}
+
+article#project .user .username
+{
+	font-size: .8em;
 }
 
 
