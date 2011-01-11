@@ -34,10 +34,9 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
   
-*}{include file='includes/header.inc.tpl'}
-{if isset($smarty.get.new)}
+*}{if isset($smarty.get.new)}
+{include file='includes/header.inc.tpl' menuLeft="Create a project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
 {* PROJECT NEW *}
-    <div id="" class="container">Create a new project below, or <a href="">cancel</a>.<div>
     <form action="{URLManager::getForProjectNew()}" method="post">
     <div id="newProjectContainer" class="container">
       <div class="label">Project title</div>
@@ -76,6 +75,7 @@
     </div>
     </form>
 {else}
+{include file='includes/header.inc.tpl' menuLeft="Project details"}
 {* PROJECT DETAILS *}
 Title: {$smarty.session.project->getTitle()}
 <br>

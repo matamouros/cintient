@@ -35,18 +35,18 @@
   POSSIBILITY OF SUCH DAMAGE.
     
 *}{include file='includes/header.inc.tpl'}
-<form action="{URLManager::getForAuthentication()}" method="post">
-<div id="loginContainer" class="container">
-<div class="loginLabel">Username</div>
-<div class="loginTextfieldContainer">
-  <input class="loginTextfield" type="text" name="username">
-</div>
-<div class="loginLabel">Password</div>
-<div class="loginTextfieldContainer">
-  <input class="loginTextfield" type="password" name="password">
-</div>
-<input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
-<input id="loginSubmitButton" type="submit" value="Go!">
-</div>
-</form>
+    <form action="{URLManager::getForAuthentication()}" method="post">
+    <div id="loginContainer" class="container">
+      <div class="loginLabel">Username</div>
+      <div class="loginTextfieldContainer">
+        <input class="loginTextfield" type="text" name="username">
+      </div>
+      <div class="loginLabel">Password</div>
+      <div class="loginTextfieldContainer">
+        <input class="loginTextfield" type="password" name="password">
+      </div>
+      <input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
+      <input id="loginSubmitButton" type="submit" value="Go!">
+    </div>
+    </form>
 {include file='includes/footer.inc.tpl'}

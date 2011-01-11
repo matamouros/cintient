@@ -34,8 +34,8 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
   
-*}{include file='includes/header.inc.tpl'}
-    <div id="sectionMenu" class="container"><a href="{URLManager::getForProjectNew()}">Create a new project</a></div>
+*}{include file='includes/header.inc.tpl' menuLeft="Dashboard" menuRight="<a href=\"{URLManager::getForProjectNew()}\">new project</a>"}
+{if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
@@ -51,8 +51,6 @@
         </div>
         </a>
       </li>
-{foreachelse}
-N&atilde;o tem projectos.
 {/foreach}
       </ul>
     </div>
@@ -84,4 +82,7 @@ $('.projectDraggableContainer').each( function() {
 });
 // ]]> 
 </script>
+{else}
+    <div class="messageInfo container">You don't have any projects, but you can always <a href="{URLManager::getForProjectNew()}">create a new one</a>.</div>
+{/if}
 {include file='includes/footer.inc.tpl'}

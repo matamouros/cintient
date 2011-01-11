@@ -78,18 +78,38 @@ a:active
 
 #header
 {
-	width: 800px;
 	margin-top: 10px;
 }
 
 #main
 {
-  width: 800px;
   margin-top: 10px;
+}
+
+#menu
+{
+	font-size: 1.04em;
+	height: 20px;
+	margin-top: 20px;
+	margin-bottom: 30px;
+	clear: both;
+}
+
+#menuLeft
+{
+	font-size: 1.3em;
+	float: left;
+}
+
+#menuRight
+{
+	margin-top: 5px; /* compensate for menuLeft's bigger font-size */
+  float: right;
 }
 
 .container
 {
+	width: 800px;
 	margin: auto auto auto auto;
 }
 
@@ -452,3 +472,11 @@ html
 }
 
 
+/* +----------------------------------------------------------------+ *\
+|* | MESSAGES                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+.messageInfo
+{
+	font-size: 12pt;
+}

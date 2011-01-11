@@ -50,7 +50,7 @@
   <script type="text/javascript" src="/js/jquery-1.4.4.js"></script>
 </head>
 <body>
-  <div id="mainContainer" class="container">
+  <div id="header" class="container">
 {if $smarty.session.user instanceof User}
     <div id="userHeader" class="container">
       <header>
@@ -77,3 +77,11 @@
       </header>
     </div>
 {/if}
+  </div>
+{if isset($menuLeft) || isset($menuRight)}
+  <div id="menu" class="container">
+    <nav id="menuLeft">{if isset($menuLeft)}{$menuLeft}{/if}</nav>
+    <nav id="menuRight">{if isset($menuRight)}{$menuRight}{/if}</nav>
+  </div>
+{/if}
+  <div id="main" class="container">
