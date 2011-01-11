@@ -525,6 +525,8 @@ EOT;
   
   static public function getById($user, $id, $access = Access::READ, array $options = array())
   {
+    isset($options['loadUsers'])?:$options['loadUsers']=true;
+    
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $id = (int)$id;
