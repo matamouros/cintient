@@ -45,41 +45,41 @@ class UrlManager
   static public function getForAsset($filename, $params = array())
   {
     $params['f'] = $filename;
-    return "/asset/?" .  http_build_query($params);
+    return CINTIENT_BASE_URL . "/asset/?" .  http_build_query($params);
   }
   
   static public function getForAuthentication()
   {
-    return '/authentication/';
+    return CINTIENT_BASE_URL . '/authentication/';
   }
   
   static public function getForDashboard()
   {
-    return '/dashboard/';
+    return CINTIENT_BASE_URL . '/dashboard/';
   }
   
   static public function getForProjectBuild()
   {
-    return '/project/?build';   
+    return CINTIENT_BASE_URL . '/project/?build';   
   }
   
   static public function getForProjectBuildView($build)
   {
-    return "/project-build/?bid={$build}";
+    return CINTIENT_BASE_URL . "/project-build/?bid={$build}";
   }
   
   static public function getForProjectEdit()
   {
-    return '/project/?pid=' . $_SESSION['project']->getId();
+    return CINTIENT_BASE_URL . '/project/?pid=' . $_SESSION['project']->getId();
   }
   
   static public function getForProjectNew()
   {
-    return '/project/?new';
+    return CINTIENT_BASE_URL . '/project/?new';
   }
   
   static public function getForProjectView(Project $project)
   {
-    return "/project/?pid={$project->getId()}";
+    return CINTIENT_BASE_URL . "/project/?pid={$project->getId()}";
   }
 }

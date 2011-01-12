@@ -43,6 +43,7 @@ define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulle
 
 define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
 
+define('CINTIENT_BASE_URL', 'http://cintient'); // Without trailing slash
 
 define('CINTIENT_PROJECTS_DIR', CINTIENT_WORK_DIR . 'projects/');
 
