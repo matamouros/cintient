@@ -392,12 +392,33 @@ article#project .details
   margin-left: 125px;
 }
 
+article#project .details #buildsList
+{
+  margin-left: 5px;
+  margin-top: 28px;
+  font-size: .8em;
+}
+
+article#project .details #buildsList .label
+{
+  font-size: .9em;
+}
+
 article#project .details #users
 {
-  margin-left: 1px;
-  margin-top: 13px;
-  float: left;
-  clear: right;
+	width: 270px;
+	height: auto;
+  margin-left: 20px;
+  margin-top: 0;
+  float: right;
+  clear: none;
+}
+
+article#project .details #users .user
+{
+	width: 90px;
+	height: auto;
+	float: left;
 }
 
 article#project #users .user .avatar
@@ -420,16 +441,28 @@ article#project #users .user .username
   clear: left;
 }
 
+article#project #users .title
+{
+  font-size: .76em;
+  margin-bottom: 8px;
+  float: left;
+  clear: both;
+  width: 100%;
+}
+
 article#project .title
 {
 	font-size: 1.1em;
   margin-bottom: 2px;
+  width: 100%;
 }
 
 article#project .stats
 {
   font-size: .76em;
   margin-left: 3px;
+  float: left;
+  clear: right;
 }
 
 article#project #statusContainer
@@ -465,6 +498,7 @@ article#project #statusContainer .status
 .projectStats
 {
   font-size: .6em;
+  width: auto;
 }
 
 .projectStatus

@@ -83,8 +83,9 @@
       <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
       <div class="details">
         <div class="title">{$smarty.session.project->getTitle()}</div>
-        <div class="stats">Latest build on Jan 9, 2011. Production version: 1.0.1</div>
+        <div class="stats">Latest: build #{$project_buildList.0->getId()}, {if $project_buildList.0->getStatus()==Project::STATUS_OK}successfully built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.</div>
         <div id="users">
+          <div class="title">Registered users for this project:</div>
 {foreach from=$smarty.session.project->getUsers() item=user}
 {$username=User::getById($user[0])->getUsername()}
           <div class="user">
@@ -92,7 +93,14 @@
             <div class="username">{if $username==$smarty.session.user->getUsername()}This is you!{else}{$username}{/if}</div>
           </div>
 {/foreach}
-          {*<a href="{URLManager::getForDashboard()}">dashboard</a> | <a href="{URLManager::getForProjectNew()}">new project</a>*}
+        </div>
+        <div id="buildsList">
+          <div class="label">Choose a different build:</div>
+          <select class="dropdown" name="">
+{foreach from=$project_buildList item=build}
+            <option value="{$build->getId()}" name="buildId">Build #{$build->getId()}  ( {$build->getDate()|date_format} )
+{/foreach}
+          </select>
         </div>
       </div>
     </article>
