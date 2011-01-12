@@ -84,7 +84,7 @@ define('CINTIENT_PHP_BINARY', 'php');
 
 define('CINTIENT_PHPUNIT_BINARY', CINTIENT_INSTALL_DIR . 'lib/PEAR/bin/phpunit');
 
-define('CINTIENT_BUILDS_PAGE_LENGTH', 12);
+define('CINTIENT_BUILDS_PAGE_LENGTH', 20);
 
 set_include_path(CINTIENT_INSTALL_DIR);
 
