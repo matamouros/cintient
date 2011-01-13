@@ -741,8 +741,8 @@ EOT;
       //
       // Rig stuff to still use this request and use the view logic below
       //
-      $_GET['pid'] = $project->getId();
-      $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
+      //$_GET['pid'] = $project->getId();
+      //$GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
     }
     
     //
@@ -775,7 +775,19 @@ EOT;
     // Viewing details
     //
     } else {
-      $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getListByProject($_SESSION['project'], $_SESSION['user']));
+      if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+        $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+      } else {
+        $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
+      }
+      if (!($build instanceof ProjectBuild)) {
+        SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}]", __METHOD__);
+        //TODO: Redirect and exit?
+        exit;
+      }
+      $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
+      $GLOBALS['smarty']->assign('project_build', $build);
+      $GLOBALS['smarty']->assign('project_buildJunit', $build->createReportFromJunit());
     }
   }
   
@@ -791,7 +803,7 @@ EOT;
       $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
     }
     if (!($build instanceof ProjectBuild)) {
-      SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}]", __METHOD__);
       //TODO: Redirect and exit?
       exit;
     }
