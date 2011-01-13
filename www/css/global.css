@@ -389,14 +389,18 @@ article#project .avatar
 
 article#project .details
 {
-  margin-left: 125px;
+  float: left;
+  width: 670px;
 }
 
 article#project .details #buildsList
 {
-  margin-left: 5px;
-  margin-top: 28px;
+  margin-left: 3px;
+  margin-top: 11px;
   font-size: .8em;
+  width: 350px;
+  float: left;
+  clear: none;
 }
 
 article#project .details #buildsList .label
@@ -462,7 +466,6 @@ article#project .stats
   font-size: .76em;
   margin-left: 3px;
   float: left;
-  clear: right;
 }
 
 article#project #statusContainer
@@ -476,7 +479,6 @@ article#project #statusContainer
 
 article#project #statusContainer .status
 {
-  float: left;
   width: 20px;
   height: 20px;
   -webkit-border-radius: 10px 10px 10px 10px;
@@ -578,6 +580,41 @@ article#project #statusContainer .status
   margin: 0;
   width: 600px;
   height: 44px;
+}
+
+#projectViewContainer
+{
+	float: left;
+	margin-top: 50px;
+}
+
+#projectViewContainer #rawOutput
+{
+	font-size: .68em;
+	font-family: "Andale Mono"; /* TODO: choose a proper ubiquous font */
+	font-weight: normal;
+	white-space: nowrap;
+	/*overflow: scroll;
+	width: 800px;*/
+}
+
+#projectViewContainer #junitReport
+{
+  margin: 0; 
+}
+
+#projectViewContainer #junitReport .classTest
+{
+	margin-bottom: 8px;
+}
+
+#projectViewContainer #junitReport .chart img
+{
+	/*-webkit-border-radius: 16px 16px 16px 16px;*/
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
 }
 
 #newProjectContainer
