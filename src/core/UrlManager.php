@@ -63,9 +63,9 @@ class UrlManager
     return CINTIENT_BASE_URL . '/project/?build';   
   }
   
-  static public function getForProjectBuildView($build)
+  static public function getForProjectBuildView(Project $project, ProjectBuild $build)
   {
-    return CINTIENT_BASE_URL . "/project-build/?bid={$build}";
+    return CINTIENT_BASE_URL . "/project/?pid={$project->getId()}&bid={$build->getId()}";
   }
   
   static public function getForProjectEdit()
