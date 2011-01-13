@@ -81,8 +81,8 @@
     <article id="project">
       <div class="avatar"><img src="/imgs/redhalo_90x90.jpg"></div>
       <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
+      <div class="title">{$smarty.session.project->getTitle()}</div>
       <div class="details">
-        <div class="title">{$smarty.session.project->getTitle()}</div>
         <div class="stats">Latest: build #{$project_buildList.0->getId()}, {if $project_buildList.0->getStatus()==Project::STATUS_OK}successfully built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.</div>
         <div id="users">
           <div class="title">Registered users for this project:</div>
@@ -96,14 +96,31 @@
         </div>
         <div id="buildsList">
           <div class="label">Choose a different build:</div>
-          <select class="dropdown" name="">
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  $('#buildsListDropdown').change(function() {
+	  window.location.replace($(this).find("option:selected").attr('value'));
+  });
+});
+//]]> 
+</script>
+          <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-            <option value="{$build->getId()}" name="buildId">Build #{$build->getId()}  ( {$build->getDate()|date_format} )
+            <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>Build #{$build->getId()}, rev3426  ( {$build->getDate()|date_format} )
 {/foreach}
           </select>
         </div>
       </div>
     </article>
+    <div id="projectViewContainer">
+      {*<div id="rawOutput">{$build->getOutput()|nl2br}</div>*}
+      <div id="junitReport">
+{foreach from=$project_buildJunit item=classTest}
+      <div class="classTest">{$classTest->getName()}</div>
+      <div class="chart"><img src="{URLManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
+{/foreach}
+    </div>
 {*    
 <br><br>
 <b>Builds</b>
@@ -122,5 +139,6 @@
   <a href="#">(details)</a>
 {/foreach}
 *}
+    </div>
 {/if}
 {include file='includes/footer.inc.tpl'}
