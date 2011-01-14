@@ -122,19 +122,34 @@ $(document).ready(function() {
 	var activeResultPane = null;
 	function showBuildResultPane(resultPane) {
 		if (activeResultPane === null || $(activeResultPane).attr('id') !== $(resultPane).attr('id')) {
-  		$('#projectViewContainer .buildResultPane').each(function() {
-        $(this).hide('fast');
+			// Hide the previous pane
+      $(activeResultPane).hide(50);
+			// Reset the previous link
+      $('#projectSectionsLinks a.' + $(activeResultPane).attr('id')).css({
+        "color" : "rgb(255,40,0)",
+        "font-weight" : "bold",
+        "text-decoration" : "none",
+        "text-shadow" : "none"
       });
-  	  resultPane.show('fast');
+			// Highlight the active link
+			$('#projectSectionsLinks a.' + $(resultPane).attr('id')).css({
+				"color" : "rgb(255,60,0)",
+			  "text-shadow" : "0px 0px 6px rgba(255,40,0,1)",
+			  "text-decoration" : "none"
+      });
+		  // Show the current pane
+  	  resultPane.show(200);
+  	  
   	  activeResultPane = resultPane;
 		}
   }
-	// Set the trigger click events
+	// Bind the click link events to their corresponding panes
 	$('#projectSectionsLinks a').each(function() {
 		$(this).click(function() {
 			showBuildResultPane($('#projectViewContainer').find('#' + $(this).attr('class')));
     });
   });
+	// Promptly show the default pane
 	showBuildResultPane($('#projectViewContainer #junitReport'));
 });
 //]]> 

@@ -125,6 +125,7 @@ html
 	color: #999;
 	text-shadow: black 0px 1px 1px;
 	font-size: 12pt;
+	overflow-y: scroll;
 }
 
 .dropdownContainer
