@@ -771,24 +771,23 @@ EOT;
       } else {
         ProjectLog::write("Building successful.");
       }
+    }
     //
     // Viewing details
     //
+    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
     } else {
-      if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-        $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
-      } else {
-        $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
-      }
-      if (!($build instanceof ProjectBuild)) {
-        SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}]", __METHOD__);
-        //TODO: Redirect and exit?
-        exit;
-      }
-      $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
-      $GLOBALS['smarty']->assign('project_build', $build);
-      $GLOBALS['smarty']->assign('project_buildJunit', $build->createReportFromJunit());
+      $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
     }
+    if (!($build instanceof ProjectBuild)) {
+      SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}]", __METHOD__);
+      //TODO: Redirect and exit?
+      exit;
+    }
+    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
+    $GLOBALS['smarty']->assign('project_build', $build);
+    $GLOBALS['smarty']->assign('project_buildJunit', $build->createReportFromJunit());
   }
   
   static public function projectBuild()
