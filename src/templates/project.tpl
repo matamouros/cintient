@@ -113,12 +113,39 @@ $(document).ready(function() {
         </div>
       </div>
     </article>
+    <nav id="projectSectionsLinks">
+      <a href="#" class="rawOutput">raw output</a> | <a href="#" class="junitReport">junit</a>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+	// Show the passed resultPane, hiding all others
+	var activeResultPane = null;
+	function showBuildResultPane(resultPane) {
+		if (activeResultPane === null || $(activeResultPane).attr('id') !== $(resultPane).attr('id')) {
+  		$('#projectViewContainer .buildResultPane').each(function() {
+        $(this).hide('fast');
+      });
+  	  resultPane.show('fast');
+  	  activeResultPane = resultPane;
+		}
+  }
+	// Set the trigger click events
+	$('#projectSectionsLinks a').each(function() {
+		$(this).click(function() {
+			showBuildResultPane($('#projectViewContainer').find('#' + $(this).attr('class')));
+    });
+  });
+	showBuildResultPane($('#projectViewContainer #junitReport'));
+});
+//]]> 
+</script>
+    </nav>
     <div id="projectViewContainer">
-      {*<div id="rawOutput">{$build->getOutput()|nl2br}</div>*}
-      <div id="junitReport">
+      <div id="rawOutput" class="buildResultPane">{$build->getOutput()|nl2br}</div>
+      <div id="junitReport" class="buildResultPane">
 {foreach from=$project_buildJunit item=classTest}
-      <div class="classTest">{$classTest->getName()}</div>
-      <div class="chart"><img src="{URLManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
+        <div class="classTest">{$classTest->getName()}</div>
+        <div class="chart"><img width="{$smarty.const.CHART_JUNIT_DEFAULT_WIDTH}" src="{URLManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
 {/foreach}
     </div>
 {*    
