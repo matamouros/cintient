@@ -158,7 +158,7 @@ class ProjectBuild
         $failures[] = $f;
       }
 
-      $chartWidth = 790;
+      $chartWidth = CHART_JUNIT_DEFAULT_WIDTH;
       $chartHeight = 25 * count($methodsNames) + 60;
       
       /* pChart library inclusions */

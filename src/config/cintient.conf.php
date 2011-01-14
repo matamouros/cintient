@@ -86,6 +86,8 @@ define('CINTIENT_PHPUNIT_BINARY', CINTIENT_INSTALL_DIR . 'lib/PEAR/bin/phpunit')
 
 define('CINTIENT_BUILDS_PAGE_LENGTH', 20);
 
+define('CHART_JUNIT_DEFAULT_WIDTH', 790);
+
 set_include_path(CINTIENT_INSTALL_DIR);
 
 // Register our autoloader
