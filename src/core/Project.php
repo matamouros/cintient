@@ -80,6 +80,7 @@ class Project
   const STATUS_OK = 2;
   const STATUS_BUILDING = 3;
   const STATUS_MODIFIED = 4;
+  const STATUS_UNBUILT = 5;
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -161,18 +162,19 @@ class Project
         if (!ScmConnector::isModified($params)) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
           if (!$force) {
-            $this->setStatus(self::STATUS_OK);
+            //$this->setStatus(self::STATUS_OK);
             return false;
           }
         }
-        $this->setStatus(self::STATUS_MODIFIED);
-        if (!ScmConnector::update($params)) {
-          SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
-          if (!$force) {
-            $this->setStatus(self::STATUS_ERROR);
-            return false;
-          }
-        }
+      }
+    }
+    $this->setStatus(self::STATUS_MODIFIED);
+    $rev = null; // Keep this for now, add it to the project build later.
+    if (!ScmConnector::update($params, $rev)) {
+      SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
+      if (!$force) {
+        $this->setStatus(self::STATUS_ERROR);
+        return false;
       }
     }
     
@@ -190,12 +192,13 @@ class Project
       $this->setStatus(self::STATUS_MODIFIED);
       return false;
     }
-    $this->setStatus(self::STATUS_OK); // Even if the build fails, it's not really an error of the project
     $php = $this->_integrationBuilder->toString('php');
     $buildOk = BuilderConnector_Php::execute($php);
     $build = new ProjectBuild($this);
+    $build->setScmRevision($rev);
     $build->setOutput(implode("\n", $GLOBALS['result']['stacktrace']));
     if (!$buildOk) {
+      $this->setStatus(self::STATUS_ERROR);
       $build->setStatus(ProjectBuild::STATUS_FAIL);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
@@ -205,6 +208,7 @@ class Project
     //
     $this->setReleaseCounter(((int)$this->getReleaseCounter()+1));
     $build->setLabel($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
+    $this->setStatus(self::STATUS_OK);
     //
     // Setup build specific report dir
     //
@@ -368,7 +372,7 @@ class Project
       $this->setStatus(self::STATUS_UNINITIALIZED);
       return false;
     }
-    $this->setStatus(self::STATUS_OK);
+    $this->setStatus(self::STATUS_UNBUILT);
     return true;
   }
   

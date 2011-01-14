@@ -50,6 +50,7 @@ class ProjectBuild
   private $_status;       // indicates: failure | no_release | release
   private $_project;      // the project ID goes into the table name - it's not an attribute
   private $_signature;    // Internal flag to control whether a save to database is required
+  private $_scmRevision;  // The corresponding SCM revision on the remote repository
 
   const STATUS_FAIL = 0;
   const STATUS_OK_WITHOUT_PACKAGE = 1;
@@ -86,6 +87,7 @@ class ProjectBuild
     $this->_output = '';
     $this->_status = self::STATUS_FAIL;
     $this->_signature = null;
+    $this->_scmRevision = null;
   }
   
   public function __destruct()
@@ -375,14 +377,15 @@ class ProjectBuild
       return false;
     }
     $sql = 'REPLACE INTO projectbuild' . $this->getProject()->getId()
-         . ' (id, label, description, output, status)'
-         . ' VALUES (?,?,?,?,?)';
+         . ' (id, label, description, output, status, scmrevision)'
+         . ' VALUES (?,?,?,?,?,?)';
     $val = array(
       $this->getId(),
       $this->getLabel(),
       $this->getDescription(),
       $this->getOutput(),
       $this->getStatus(),
+      $this->getScmRevision(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -499,6 +502,7 @@ class ProjectBuild
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
     $ret->setStatus($rs->getStatus());
+    $ret->setScmRevision($rs->getScmRevision());
     
     $ret->updateSignature();
     return $ret;
@@ -513,7 +517,8 @@ CREATE TABLE IF NOT EXISTS projectbuild{$projectId} (
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
-  status TINYINT UNSIGNED DEFAULT 0
+  status TINYINT UNSIGNED DEFAULT 0,
+  scmrevision INTEGER UNSIGNED DEFAULT 0
 );
 EOT;
     if (!Database::execute($sql)) {
