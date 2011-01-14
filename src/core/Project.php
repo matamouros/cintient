@@ -60,6 +60,7 @@ class Project
   private $_scmRemoteRepository;
   private $_scmUsername;
   private $_signature;             // Internal flag to control whether a save to database is required
+  private $_statsNumBuilds;        // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
   private $_status;
   private $_title;
   private $_users;                 // An array of users and corresponding permissions, taken from projectuser table
@@ -112,6 +113,7 @@ class Project
     $this->_scmUsername = '';
     $this->_scmPassword = '';
     $this->_signature = null;
+    $this->_statsNumBuilds = 0;
     $this->_status = self::STATUS_UNINITIALIZED;
     $this->_title = '';
     $this->_users = array();
@@ -216,6 +218,8 @@ class Project
       $this->setStatus(self::STATUS_ERROR);
       return false;
     }
+    // Increment our agregated number of builds
+    $this->setStatsNumBuilds($this->getStatsNumBuilds()+1);
     
     // TODO: 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {
@@ -394,6 +398,7 @@ CREATE TABLE IF NOT EXISTS project(
   scmpassword VARCHAR(255) DEFAULT '',
   scmremoterepository VARCHAR(255) DEFAULT '',
   scmusername VARCHAR(255) DEFAULT '',
+  statsnumbuilds INTEGER UNSIGNED DEFAULT 0,
   status TINYINT UNSIGNED DEFAULT 0,
   title VARCHAR(255) DEFAULT '',
   visits INTEGER UNSIGNED DEFAULT 0,
@@ -439,9 +444,9 @@ EOT;
     $sql = 'REPLACE INTO project'
          . ' (id,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildlabel,scmpassword,scmusername,workdir,'
+         . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
       $this->getDateCreation(),
@@ -452,6 +457,7 @@ EOT;
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
       $this->getStatus(),
       $this->getBuildLabel(),
+      $this->getStatsNumBuilds(),
       $this->getScmPassword(),
       $this->getScmUsername(),
       $this->getWorkDir(),
@@ -582,6 +588,19 @@ EOT;
     return $ret;
   }
   
+  static public function getCountTotalBuilds()
+  {
+    $ret = 0;
+    $sql = 'SELECT SUM(statsnumbuilds) AS c'
+         . ' FROM project p';
+    if ($rs = Database::query($sql)) {
+      if ($rs->nextRow()) {
+        $ret = (int)$rs->getC();
+      }
+    }
+    return $ret;
+  }
+  
   /**
    * 
    * @param unknown_type $rs
@@ -602,6 +621,7 @@ EOT;
     $ret->setReleaseMajor($rs->getReleaseMajor());
     $ret->setReleaseMinor($rs->getReleaseMinor());
     $ret->setReleaseCounter($rs->getReleaseCounter());
+    $ret->setStatsNumBuilds($rs->getStatsNumBuilds());
     $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
