@@ -52,7 +52,7 @@ interface ScmConnectorInterface
   
   static public function isModified(array $args);
 
-  static public function update(array $args);
+  static public function update(array $args, &$rev);
   
   static public function tag(array $args);
 }

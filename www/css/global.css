@@ -404,6 +404,11 @@ article#project .details #buildsList
   clear: none;
 }
 
+article#project .details #buildsList #buildsListDropdown
+{
+	font-size: .9em;
+}
+
 article#project .details #buildsList .label
 {
   font-size: .9em;

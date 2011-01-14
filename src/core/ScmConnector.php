@@ -96,11 +96,11 @@ class ScmConnector
     }
   }
   
-  static public function update(array $params = array())
+  static public function update(array $params = array(), &$rev)
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
     $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    if (!$scmConnectorObject::update($params)) {
+    if (!$scmConnectorObject::update($params, $rev)) {
       SystemEvent::raise(SystemEvent::DEBUG, "Could not update local working copy. [DIR={$params['local']}]", __METHOD__);
       return false;
     } else {

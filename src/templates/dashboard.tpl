@@ -39,14 +39,15 @@
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
+{$dashboard_latestBuild=ProjectBuild::getLatest($project, $smarty.session.user)}
       <li class="projectDraggableContainer container">
         <a href="{URLManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
         <div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
-          <div class="projectStats">Latest build on Jan 9, 2011</div>
-          <div class="projectStats">Current version: 1.0.9</div>
+          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: build {$dashboard_latestBuild->getId()}, r{$dashboard_latestBuild->getScmRevision()}, {if $dashboard_latestBuild->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$dashboard_latestBuild->getDate()|date_format}.{else}This project wasn't built yet.{/if}</div>
+          {if !empty($dashboard_latestBuild)}<div class="projectStats">Current version: {$dashboard_latestBuild->getLabel()}</div>{/if}
           {*<div class="projectStats">Production version: 1.0.9</div>*}
         </div>
         </a>

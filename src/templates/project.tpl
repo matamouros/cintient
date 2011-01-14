@@ -83,7 +83,7 @@
       <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
       <div class="title">{$smarty.session.project->getTitle()}</div>
       <div class="details">
-        <div class="stats">Latest: build #{$project_buildList.0->getId()}, {if $project_buildList.0->getStatus()==Project::STATUS_OK}successfully built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.</div>
+        <div class="stats">{if !empty($project_buildList)}Latest: build {$project_buildList.0->getId()}, r{$project_buildList.0->getScmRevision()}, {if $project_buildList.0->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.{else}Click <a href="{URLManager::getForProjectBuild($smarty.session.project)}">here</a> to trigger the first build for this project.{/if}</div>
         <div id="users">
           <div class="title">Registered users for this project:</div>
 {foreach from=$smarty.session.project->getUsers() item=user}
@@ -95,6 +95,7 @@
 {/foreach}
         </div>
         <div id="buildsList">
+{if !empty($project_buildList)}
           <div class="label">Choose a different build:</div>
 <script type="text/javascript">
 // <![CDATA[
@@ -107,14 +108,16 @@ $(document).ready(function() {
 </script>
           <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-            <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>Build #{$build->getId()}, rev3426  ( {$build->getDate()|date_format} )
+            <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
           </select>
+{/if}  
         </div>
       </div>
     </article>
+{if !empty($project_buildList)}
     <nav id="projectSectionsLinks">
-      <a href="#" class="rawOutput">raw output</a> | <a href="#" class="junitReport">junit</a>
+      <a href="#" class="rawOutput">raw output</a> | <a href="#" class="junitReport">unit tests</a>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
@@ -156,31 +159,18 @@ $(document).ready(function() {
 </script>
     </nav>
     <div id="projectViewContainer">
-      <div id="rawOutput" class="buildResultPane">{$build->getOutput()|nl2br}</div>
+      <div id="rawOutput" class="buildResultPane">{$project_build->getOutput()|nl2br}</div>
       <div id="junitReport" class="buildResultPane">
+{if !empty($project_buildJunit)}
 {foreach from=$project_buildJunit item=classTest}
         <div class="classTest">{$classTest->getName()}</div>
         <div class="chart"><img width="{$smarty.const.CHART_JUNIT_DEFAULT_WIDTH}" src="{URLManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
 {/foreach}
+{else}
+Due to a build error, the unit tests chart could not be generated. Please check the raw output of the build for problems, such as a PHP Fatal error.
+{/if}
     </div>
-{*    
-<br><br>
-<b>Builds</b>
-{foreach from=$project_buildList item=build}
-  <br><br>
-  <a href="{URLManager::getForProjectBuildView($build->getId())}">build #{$build->getId()}</a>
-  <br>
-  status: {$build->getStatus()}
-  <br>
-  release file: {if $build->getStatus() == ProjectBuild::STATUS_OK_WITH_PACKAGE}<a href="#">package_file</a> (<a href="#">re-generate</a>){else}<a href="#">generate</a>{/if}
-  <br>
-  output:
-  {if $build->getOutput()}
-  <textarea cols="120" rows="10">{$build->getOutput()}</textarea>
-  {/if}
-  <a href="#">(details)</a>
-{/foreach}
-*}
+{/if}
     </div>
 {/if}
 {include file='includes/footer.inc.tpl'}

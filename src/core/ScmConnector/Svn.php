@@ -77,7 +77,7 @@ class ScmConnector_Svn implements ScmConnectorInterface
     return ($matches[1][0] != $matches[1][1]);
   }
 
-  static public function update(array $args)
+  static public function update(array $args, &$rev)
   {
     $command = "svn up --username {$args['username']} --password {$args['password']} {$args['local']}";
     $lastline = exec($command, $output, $return);
@@ -86,6 +86,11 @@ class ScmConnector_Svn implements ScmConnectorInterface
       SystemEvent::raise(SystemEvent::ERROR, "Could not update local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
       return false;
     }
+    if (!preg_match('/revision (\d+)/', $lastline, $matches)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not get revision number from update. [COMMAND=\"{$command}\"] [RET={$return}] [LASTLINE=\"{$lastline}\"]", __METHOD__);
+      $rev = null;
+    }
+    $rev = (int)$matches[1];
     return true;
   }
   
