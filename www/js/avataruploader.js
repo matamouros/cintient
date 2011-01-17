@@ -639,6 +639,12 @@ qq.extend(qq.FileUploader.prototype, {
         qq.setText(fileElement, this._formatFileName(fileName));
         this._find(item, 'size').style.display = 'none';        
 
+        // matamouros 2011.01.17: to only have the last uploaded filename show up
+        // instead of appending to the existing list.
+        //this._listElement.appendChild(item);
+        if (this._listElement.firstChild != null) {
+        	this._listElement.removeChild(this._listElement.firstChild);
+        }
         this._listElement.appendChild(item);
     },
     _getItemByFileId: function(id){
@@ -650,12 +656,13 @@ qq.extend(qq.FileUploader.prototype, {
             if (item.qqFileId == id) return item;            
             item = item.nextSibling;
         }          
-    },
+    }
     /**
      * delegate click event for cancel link 
      **/
     // matamouros 2011.01.17
     /*
+    ,
     _bindCancelEvent: function(){
         var self = this,
             list = this._listElement;            
