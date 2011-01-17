@@ -1,41 +1,24 @@
 {*
-  Cintient, Continuous Integration made simple.
-  
-  Copyright (c) 2011, Pedro Mata-Mouros <pedro.matamouros@gmail.com>
-  All rights reserved.
-  
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-  
-  . Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-  
-  . Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following
-    disclaimer in the documentation and/or other materials provided
-    with the distribution.
+    Cintient, Continuous Integration made simple.
+    Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
     
-  . Neither the name of Pedro Mata-Mouros Fonseca, Cintient, nor
-    the names of its contributors may be used to endorse or promote
-    products derived from this software without specific prior
-    written permission.
+    This file is part of Cintient.
     
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS
-  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-  
+    Cintient is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    Cintient is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+
 *}{if isset($smarty.get.new)}
-{include file='includes/header.inc.tpl' menuLeft="New project" menuRight="Create a new project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
+{include file='includes/header.inc.tpl' menuLeft="Create a new project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
 {* PROJECT NEW *}
     <form action="{URLManager::getForProjectNew()}" method="post">
     <div id="newProjectContainer" class="container">
@@ -76,7 +59,8 @@
     </form>
 {else}
 {include file='includes/header.inc.tpl'
-  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectEdit($smarty.session.project)}\">edit</a>"}
+  menuLeft="Build details"
+  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectConfig($smarty.session.project)}\">config</a>"}
 {* PROJECT DETAILS *}
     <article id="project">
       <div class="avatar"><img src="/imgs/redhalo_90x90.jpg"></div>
@@ -89,7 +73,7 @@
 {foreach from=$smarty.session.project->getUsers() item=user}
 {$username=User::getById($user[0])->getUsername()}
           <div class="user">
-            <div class="avatar"><img src="/imgs/anon_avatar_50.png" width="25" height="25"></div>
+            <div class="avatar"><img src="{$smarty.session.user->getAvatarUrl()}" width="25" height="25"></div>
             <div class="username">{if $username==$smarty.session.user->getUsername()}This is you!{else}{$username}{/if}</div>
           </div>
 {/foreach}

@@ -1,40 +1,24 @@
 <?php
 /*
- * Cintient, Continuous Integration made simple.
  * 
- * Copyright (c) 2011, Pedro Mata-Mouros <pedro.matamouros@gmail.com>
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * . Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- * 
- * . Redistributions in binary form must reproduce the above
- *   copyright notice, this list of conditions and the following
- *   disclaimer in the documentation and/or other materials provided
- *   with the distribution.
- *   
- * . Neither the name of Pedro Mata-Mouros Fonseca, Cintient, nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior
- *   written permission.
- *   
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *  Cintient, Continuous Integration made simple.
+ *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *
+ *  This file is part of Cintient.
+ *
+ *  Cintient is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Cintient is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+ *  
  */
 
 /**
@@ -42,18 +26,19 @@
  */
 class User
 {
-  private $_cos; // The user's classes of service
+  private $_avatar;          // The avatar's location
+  private $_cos;                // The user's classes of service
   private $_creationDate;
-  private $_email; // Registration unique email
-  private $_enabled; // 0 for disabled or >0 for enabled
+  private $_email;              // Registration unique email
+  private $_enabled;            // 0 for disabled or >0 for enabled
   private $_id;
-  private $_name; // Real name
+  private $_name;               // Real name
   private $_notificationEmails; // Email addresses for notification purposes
   private $_signature;
   private $_username;
   
-  private $_projectId; // The active project ID
-  private $_projectAccess; // The active project access level
+  private $_projectId;          // The active project ID
+  private $_projectAccess;      // The active project access level
   
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -78,6 +63,7 @@ class User
   
   public function __construct()
   {
+    $this->_avatar = null;
     $this->_cos = UserCos::USER;
     $this->_creationDate = date('Y-m-d H:i:s');
     $this->_email = '';
@@ -101,10 +87,12 @@ class User
       return false;
     }
     $sql = 'REPLACE INTO user'
-         . ' (id,cos,creationdate,email,enabled,name,notificationEmails,username)'
-         . ' VALUES (?,?,?,?,?,?,?,?)';
+         . ' (id,avatar,cos,creationdate,email,enabled,name,'
+         . 'notificationEmails,username)'
+         . ' VALUES (?,?,?,?,?,?,?,?,?)';
     $val = array(
       $this->getId(),
+      $this->getAvatar(),
       $this->getCos(),
       $this->getCreationDate(),
       $this->getEmail(),
@@ -143,6 +131,29 @@ class User
   {
     if ($this->getCos()) {
     }
+  }
+  
+  public function getAvatarUrl()
+  {
+    if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {
+      return URLManager::getForAsset(substr($this->getAvatar(), 6), array('avatar' => 1));
+    } elseif (($pos = strpos($this->getAvatar(), 'gravatar:')) === 0) {
+      // TODO: Maybe it's best to keep a user's gravatar email a hash it on-the-fly
+      // instead of storing the definitive URL to it.
+      return substr($this->getAvatar(), 9);
+    } else {
+      return '/imgs/anon_avatar_50.png';
+    }
+  }
+  
+  public function setAvatarLocal($filename)
+  {
+    $this->_avatar = 'local:' . $filename;
+  }
+  
+  public function setAvatarGravatar($id)
+  {
+    $this->_avatar = 'gravatar:' . $id;
   }
   
   private function _getCurrentSignature()
@@ -212,7 +223,8 @@ CREATE TABLE IF NOT EXISTS user(
   email VARCHAR(255),
   cos TINYINT UNSIGNED,
   name VARCHAR(255) NOT NULL DEFAULT '',
-  notificationemails TEXT NOT NULL DEFAULT ''
+  notificationemails TEXT NOT NULL DEFAULT '',
+  avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS userauth(
   userid INTEGER PRIMARY KEY,
@@ -230,6 +242,7 @@ EOT;
   static private function _getObject($rs)
   {
     $ret = new User();
+    $ret->setAvatar($rs->getAvatar());
     $ret->setCos($rs->getCos());
     $ret->setCreationDate($rs->getCreationDate());
     $ret->setEmail($rs->getEmail());

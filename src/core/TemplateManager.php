@@ -1,40 +1,24 @@
 <?php
 /*
- * Cintient, Continuous Integration made simple.
  * 
- * Copyright (c) 2011, Pedro Mata-Mouros <pedro.matamouros@gmail.com>
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * . Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- * 
- * . Redistributions in binary form must reproduce the above
- *   copyright notice, this list of conditions and the following
- *   disclaimer in the documentation and/or other materials provided
- *   with the distribution.
- *   
- * . Neither the name of Pedro Mata-Mouros Fonseca, Cintient, nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior
- *   written permission.
- *   
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *  Cintient, Continuous Integration made simple.
+ *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *
+ *  This file is part of Cintient.
+ *
+ *  Cintient is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Cintient is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+ *  
  */
 
 /**
@@ -576,20 +560,46 @@ EOT;
   
   static public function asset()
   {
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
-      SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
-      //TODO: Redirect and exit?
-      exit;
-    }
     if (!isset($_GET['f']) || empty($_GET['f'])) {
-      SystemEvent::raise(SystemEvent::INFO, "Missing requered parameters.", __METHOD__);
+      SystemEvent::raise(SystemEvent::INFO, "Missing required parameters.", __METHOD__);
       //TODO: Redirect and exit?
       exit;
     }
+    
+    //
+    // Avatar
+    //
+    if (isset($_GET['avatar'])) {
+      $filename = CINTIENT_AVATARS_DIR . $_GET['f'];
+      if (!file_exists($filename)) {
+        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [ASSET=avatar] [FILE={$filename}]", __METHOD__);
+        //TODO: Redirect and exit?
+        exit;
+      }
+      $pos = strrpos($filename, '.');
+      if ($pos) {
+        $extension   = strtolower(substr($filename, $pos+1));
+        $ext['jpg']  = 'image/jpeg';
+        $ext['jpeg'] = 'image/jpeg';
+        $ext['gif']  = 'image/gif';
+        $ext['png']  = 'image/png';
+        if (isset($ext[$extension])) {
+          header('Content-type: '.$ext[$extension]);
+        }
+      }
+      header('Last-Modified: '.date('r',filectime($filename)));
+      header('Content-Length: '.filesize($filename));
+      readfile($filename);
+      
     //
     // It's a project build asset!
     //
-    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+    } elseif (isset($_GET['bid']) && !empty($_GET['bid'])) {
+      if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+        SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
+        //TODO: Redirect and exit?
+        exit;
+      }
       $build = null;
       $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
       if (!($build instanceof ProjectBuild)) {
@@ -620,7 +630,6 @@ EOT;
       header('Last-Modified: '.date('r',filectime($filename)));
       header('Content-Length: '.filesize($filename));
       readfile($filename);
-      exit;
     }
     exit;
   }
@@ -659,6 +668,16 @@ EOT;
       echo "Error"; // TODO: treat this properly
       exit;
     }
+    if (!file_exists(CINTIENT_ASSETS_DIR) && !mkdir(CINTIENT_ASSETS_DIR, DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create assets dir. Check your permissions.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    if (!file_exists(CINTIENT_AVATARS_DIR) && !mkdir(CINTIENT_AVATARS_DIR, DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create avatars dir. Check your permissions.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
     //
     // Setup all objects
     //
@@ -686,6 +705,12 @@ EOT;
     header('Location: /');
     exit;
   }
+  
+  static public function notFound()
+  {}
+ 
+  static public function notAuthorized()
+  {}
   
   static public function project()
   {
@@ -786,29 +811,6 @@ EOT;
     $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
   }
   
-  static public function projectBuild()
-  {
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
-      SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
-      //TODO: Redirect and exit?
-      exit;
-    }
-    $build = null;
-    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
-    }
-    if (!($build instanceof ProjectBuild)) {
-      SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}]", __METHOD__);
-      //TODO: Redirect and exit?
-      exit;
-    }
-    //
-    // All ok. Generate all reports
-    //
-    $GLOBALS['smarty']->assign('projectBuild_junit', $build->createReportFromJunit());
-    $GLOBALS['smarty']->assign('projectBuild_build', $build);
-  }
-  
   /**
    * Provider method for footer.inc.tpl. See this file's header for more
    * details on provider methods.
@@ -851,9 +853,8 @@ EOT;
     $GLOBALS['smarty']->assign('providerFooter_buildsCount', $buildsCount);
   }
   
-  static public function notFound()
-  {}
- 
-  static public function notAuthorized()
-  {}
+  static public function settings()
+  {
+    
+  }
 }
