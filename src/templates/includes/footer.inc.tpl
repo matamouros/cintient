@@ -21,8 +21,8 @@
   </div>
   <div id="footer" class="containerTopLevel">
     <div id="installationStats">Sentient since {$providerFooter_installDate|date_format}. Monitoring {$providerFooter_projectsCount} projects, with {$providerFooter_usersCount} user, built {Project::getCountTotalBuilds()} times.</div>
-    <div class="paragraph"><a href="http://code.google.com/p/cintient/">Cintient</a>, Continuous Integration made simple, is free software distributed under the New BSD License terms.</div>
-    <div class="paragraph">Copyright &copy; 2011, <a href="mailto:pedro.matamouros@gmail.com">Pedro Mata-Mouros</a>. All rights reserved.</div>
+    <div class="paragraph">Cintient is free software distributed under the GNU General Public License version 3 or later terms.</div>
+    <div class="paragraph">Copyright &copy; 2010, 2011, Pedro Mata-Mouros Fonseca. All rights reserved.</div>
   </div>
 </body>
 </html>
