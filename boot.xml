@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <!-- REQUIREMENTS -->
+  <step number="1" description="Requirements">
+    <item title="Server">
+      <items>
+        <!-- PHP -->
+        <item label="PHP">
+          <methods>
+            <method><![CDATA[version_compare(phpversion(), '5.3.3', '>=');]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["You've got version ".phpversion()." and is ok!";]]></success>
+            <error><![CDATA["You'll need at least version 5.3.3 or higher";]]></error>
+          </messages>
+        </item>
+        <!-- /PHP -->
+        <!-- mod_rewrite -->
+        <item label="mod_rewrite">
+          <methods>
+            <method><![CDATA[in_array("mod_rewrite", apache_get_modules());]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Active and OK!";]]></success>
+            <error><![CDATA["You'll need mod_rewrite support";]]></error>
+          </messages>
+        </item>
+        <!-- /mod_rewrite -->
+        <!-- sqlite3 -->
+        <item label="SQLite3">
+          <methods>
+            <method><![CDATA[extension_loaded('sqlite3') && sqlite_libversion() > '2.5';]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["You've got version ".sqlite_libversion()." and OK!";]]></success>
+            <error><![CDATA["You'll need sqlite3 version 2.5 or higher support";]]></error>
+          </messages>
+        </item>
+        <!-- /sqlite3 -->
+        <!-- GD -->
+        <item label="GD">
+          <methods>
+            <method><![CDATA[($gdInfo = gd_info());]]></method>
+            <method><![CDATA[
+              ((isset($gdInfo['PNG Support']) && $gdInfo['PNG Support'] !== false))
+              && ((isset($gdInfo['FreeType Support']) && $gdInfo['FreeType Support'] !== false));
+            ]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["You've got version ".$gdInfo['GD Version']." and OK!";]]></success>
+            <error><![CDATA["You'll need to install GD with PNG and FreeType support";]]></error>
+          </messages>
+        </item>
+        <!-- /GD -->
+        <!-- BASE URL -->
+        <item label="Base URL">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="http://localhost/cintient/www" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /BASE URL -->
+      </items>
+    </item>
+  </step>
+  <!-- /REQUIREMENTS -->
+  <!-- PERMISSIONS -->
+  <step number="2" description="Permissions">
+    <item title="File permissions">
+      <items>
+        <!-- LOG FILE -->
+        <item label="Log file status">
+          <methods>
+            <method><![CDATA[$fp = @fopen('/var/log/cintient.log', 'w+');]]></method>
+            <method><![CDATA[@fclose($fp);]]></method>
+            <method><![CDATA[@unlink('/var/log/cintient.log');]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Permissions on this log file location are OK!";]]></success>
+            <error><![CDATA["You'll need to give write permissions to log file location";]]></error>
+          </messages>
+        </item>
+        <!-- /LOG FILE -->
+        <!-- WORKING DIR -->
+        <item label="Working directory status">
+          <methods>
+            <method><![CDATA[mkdir('/var/run/cintient/.install', 0777, true);]]></method>
+            <method><![CDATA[rmdir('/var/run/cintient/.install');]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Permissions on this working directory location are OK!";]]></success>
+            <error><![CDATA["you need to manually create this working directory location with read/write permissions";]]></error>
+          </messages>
+        </item>
+        <!-- /WORKING DIR -->
+        <!-- PROJECTS DIR -->
+        <item label="Projects directory status">
+          <methods>
+            <method><![CDATA[mkdir('/var/run/cintient/projects/.install', 0777, true);]]></method>
+            <method><![CDATA[rmdir('/var/run/cintient/projects/.install');]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_PROJECTS_DIR" id="CONFIG_VAR-CINTIENT_PROJECTS_DIR" value="projects/" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Permissions on this working directory location are OK!";]]></success>
+            <error><![CDATA["you need to manually create this working directory location with read/write permissions";]]></error>
+          </messages>
+        </item>
+        <!-- /PROJECTS DIR -->
+        <!-- INSTALL DIR -->
+        <item label="Installation directory status">
+          <methods>
+            <method><![CDATA[$installDir = getcwd();]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_INSTALL_DIR" id="CONFIG_VAR-CINTIENT_INSTALL_DIR" value="'.getcwd().'/" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Permissions on this installation directory location are OK!";]]></success>
+            <error><![CDATA["you need to manually create this installation directory location";]]></error>
+          </messages>
+        </item>
+        <!-- /INSTALL DIR -->
+        <!-- Config File -->
+        <item label="Config file status">
+          <methods>
+            <method><![CDATA[$fp = fopen($installDir . "/src/config/cintient.conf.php" , "w+");]]></method>
+            <method><![CDATA[fclose($fp);]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["All is OK!";]]></success>
+            <error><![CDATA["You'll need to create this file with read/write permissions";]]></error>
+          </messages>
+        </item>
+        <!-- /Config File -->
+        <!-- HTACCESS File -->
+        <item label=".htaccess file status">
+          <methods>
+            <method><![CDATA[$fp = @fopen("www/.htaccess" , "w+");]]></method>
+            <method><![CDATA[@fclose($fp);]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["All is OK!";]]></success>
+            <error><![CDATA["You'll need to create this file: www/.htaccess with read/write permissions for the install process";]]></error>
+          </messages>
+        </item>
+        <!-- /HTACCESS File -->
+      </items>
+    </item>
+  </step>
+  <!-- /PERMISSIONS -->  
+  <!-- ADMIN SETTINGS -->
+  <step number="3" description="Admin">
+    <item title="Admin settings">
+      <items>
+        <!-- NAME -->
+        <item label="Name">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /EMAIL -->
+        <!-- EMAIL -->
+        <item label="Email">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /EMAIL -->
+        <!-- USERNAME -->
+        <item label="Username">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /USERNAME -->
+        <!-- PASSWORD -->
+        <item label="Password">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /PASSWORD -->
+        <!-- PASSWORD 2 -->
+        <item label="Repeat Password">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<input type="text" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" />';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /PASSWORD 2 -->
+      </items>
+    </item>
+  </step>
+  <!-- /DATABASE --> 
+  <!-- CONFIG FILE VARS -->
+  <config>
+    <var name="CINTIENT_CONFIG_FILE"><![CDATA[CINTIENT_INSTALL_DIR . " . 'src/config/cintient.conf.php'"]]></var>
+    <var name="AUTH_METHOD">"'local'"</var>
+    <var name="SCM_DEFAULT_CONNECTOR">"'svn'"</var>
+    <var name="SMARTY_DEBUG">"false"</var>
+    <var name="SMARTY_FORCE_COMPILE">"false"</var>
+    <var name="SMARTY_COMPILE_CHECK">"true"</var>
+    <var name="SMARTY_TEMPLATE_DIR"><![CDATA[CINTIENT_INSTALL_DIR . " . 'src/templates/'"]]></var>
+    <var name="SMARTY_COMPILE_DIR">"'/tmp/'"</var>
+    <var name="PASSWORD_SALT">"'rOTA4spNYI3yXvAL'"</var>
+    <var name="SERVER">"'localhost'"</var>
+    <var name="CINTIENT_DATABASE_FILE"><![CDATA[CINTIENT_WORK_DIR . " . 'cintient.sqlite'"]]></var>
+    <var name="CINTIENT_NULL_BYTE_TOKEN">"'=='"</var>
+    <var name="CINTIENT_PHP_BINARY">"'php'"</var>
+    <var name="CINTIENT_PHPUNIT_BINARY"><![CDATA[CINTIENT_INSTALL_DIR . " . 'lib/PEAR/bin/phpunit'"]]></var>
+    <var name="CINTIENT_BUILDS_PAGE_LENGTH">"12"</var>
+  </config>
+  <!-- /CONFIG FILE VARS -->
+  <!-- AUTOLOAD CODE -->
+  <autoload>
+<![CDATA[set_include_path(CINTIENT_INSTALL_DIR);
+
+// Register our autoloader
+function autoloadCintient($classname)
+{
+  if (strpos($classname, '_') !== false) {
+    $classname = str_replace('_', '/', $classname);
+  }
+  if (is_file(CINTIENT_INSTALL_DIR . 'src/core/' . $classname . '.php')) {
+    include 'src/core/' . $classname . '.php';
+  }
+}
+spl_autoload_register('autoloadCintient');
+]]>
+  </autoload>
+  <!-- /AUTOLOAD CODE -->
+</settings>
