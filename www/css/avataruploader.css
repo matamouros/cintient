@@ -51,7 +51,7 @@
 .qq-upload-spinner
 {
 	display:inline-block;
-	background: url("loading.gif");
+	background: url("http://cintient/imgs/loading.gif");
 	width:15px;
 	height:15px;
 	vertical-align:text-bottom;
