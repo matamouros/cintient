@@ -172,7 +172,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" />';]]></input> 
+            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -186,7 +186,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" />';]]></input> 
+            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -200,7 +200,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" />';]]></input> 
+            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -214,7 +214,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" />';]]></input> 
+            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -228,7 +228,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" />';]]></input> 
+            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>

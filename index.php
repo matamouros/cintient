@@ -277,11 +277,17 @@ exit;
     // ]]>
     </script>
   </form>
+<?php
+  $index = 0;
+  if (isset($_GET['step'])) {
+    $index = (int)$_GET['step']-1;
+  }
+?>  
 <script type="text/javascript">
 // <![CDATA[
 var installer;
 jQuery(document).ready(function() {
-  installer = new Installer();
+  installer = new Installer({index:<?php echo $index; ?>});
 });
 // ]]>
 </script>  
