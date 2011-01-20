@@ -77,9 +77,8 @@
         <!-- LOG FILE -->
         <item label="Log file status">
           <methods>
-            <method><![CDATA[$fp = @fopen('/var/log/cintient.log', 'w+');]]></method>
+            <method><![CDATA[$fp = @fopen('/var/log/cintient.log', 'a');]]></method>
             <method><![CDATA[@fclose($fp);]]></method>
-            <method><![CDATA[@unlink('/var/log/cintient.log');]]></method>
           </methods>
           <inputs>
             <input><![CDATA['<input type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" />';]]></input> 
@@ -93,8 +92,8 @@
         <!-- WORKING DIR -->
         <item label="Working directory status">
           <methods>
-            <method><![CDATA[mkdir('/var/run/cintient/.install', 0777, true);]]></method>
-            <method><![CDATA[rmdir('/var/run/cintient/.install');]]></method>
+            <method><![CDATA[@mkdir('/var/run/cintient/.install', 0777, true);]]></method>
+            <method><![CDATA[@rmdir('/var/run/cintient/.install');]]></method>
           </methods>
           <inputs>
             <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" />';]]></input> 
@@ -108,8 +107,8 @@
         <!-- PROJECTS DIR -->
         <item label="Projects directory status">
           <methods>
-            <method><![CDATA[mkdir('/var/run/cintient/projects/.install', 0777, true);]]></method>
-            <method><![CDATA[rmdir('/var/run/cintient/projects/.install');]]></method>
+            <method><![CDATA[@mkdir('/var/run/cintient/projects/.install', 0777, true);]]></method>
+            <method><![CDATA[@rmdir('/var/run/cintient/projects/.install');]]></method>
           </methods>
           <inputs>
             <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_PROJECTS_DIR" id="CONFIG_VAR-CINTIENT_PROJECTS_DIR" value="projects/" />';]]></input> 
@@ -137,8 +136,8 @@
         <!-- Config File -->
         <item label="Config file status">
           <methods>
-            <method><![CDATA[$fp = fopen($installDir . "/src/config/cintient.conf.php" , "w+");]]></method>
-            <method><![CDATA[fclose($fp);]]></method>
+            <method><![CDATA[$fp = @fopen($installDir . "/src/config/cintient.conf.php" , "a+");]]></method>
+            <method><![CDATA[@fclose($fp);]]></method>
           </methods>
           <messages>
             <success><![CDATA["All is OK!";]]></success>
@@ -149,7 +148,7 @@
         <!-- HTACCESS File -->
         <item label=".htaccess file status">
           <methods>
-            <method><![CDATA[$fp = @fopen("www/.htaccess" , "w+");]]></method>
+            <method><![CDATA[$fp = @fopen("www/.htaccess" , "a+");]]></method>
             <method><![CDATA[@fclose($fp);]]></method>
           </methods>
           <messages>
