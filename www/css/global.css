@@ -40,6 +40,41 @@ a{text-decoration:none;}
 |* | GENERIC STUFF                                                  | *|
 \* +----------------------------------------------------------------+ */
 
+@font-face {
+  font-family: 'AnonymousPro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('AnonymousPro-Regular'), url('/fonts/AnonymousPro-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Orbitron-Regular'), url('/fonts/Orbitron-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Orbitron-Medium'), url('/fonts/Orbitron-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Orbitron-Bold'), url('/fonts/Orbitron-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Orbitron-Black'), url('/fonts/Orbitron-Black.ttf') format('truetype');
+}
+
 a
 {
   color: rgb(255,40,0);
@@ -213,6 +248,7 @@ html
 
 #footer
 {
+	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   text-align: center;
   clear: both;
   padding-top: 30px;
@@ -232,7 +268,10 @@ html
 
 #splashHeader header h1
 {
-  font-size: 6em;
+	margin-top: 50px;
+	margin-bottom: 20px;
+	font-family: 'Orbitron', "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  font-size: 80pt;
   width: auto;
   color: rgb(230,230,230);
   text-shadow: black 0px 3px 5px;
@@ -253,7 +292,8 @@ html
 
 #userHeader header h1
 {
-  font-size: 1.8em;
+	font-family: 'Orbitron', "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  font-size: 1.7em;
   color: rgb(230,230,230);
   width: 550px;
   float: left;
@@ -585,7 +625,7 @@ article#project #statusContainer .status
 #projectViewContainer #rawOutput
 {
 	font-size: .68em;
-	font-family: "Andale Mono"; /* TODO: choose a proper ubiquous font */
+	font-family: "Anonymous Pro"; /* TODO: choose a proper ubiquous font */
 	font-weight: normal;
 	white-space: nowrap;
 	/*overflow: scroll;
