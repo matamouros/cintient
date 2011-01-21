@@ -36,9 +36,9 @@ class Project
   private $_dateModification;      // Last settings modification date
   private $_description;
   private $_id;
-  private $_releasemajor;          // The current release major number
-  private $_releaseminor;          // The current release minor number
-  private $_releasecounter;        // the *last* number assigned to a successful created release package. Should be incremental
+  private $_releaseMajor;          // The current release major number
+  private $_releaseMinor;          // The current release minor number
+  private $_releaseCounter;        // the *last* number assigned to a successful created release package. Should be incremental
   private $_scmConnectorType;      // * Always * loaded from the available modules on core/ScmConnector
   private $_scmPassword;
   private $_scmRemoteRepository;
