@@ -17,50 +17,50 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{if isset($smarty.get.new)}
+*}{if isset($smarty.get.new) && $smarty.server.REQUEST_METHOD != 'POST' || isset($smarty.get.edit)}
 {include file='includes/header.inc.tpl' menuLeft="Create a new project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
-{* PROJECT NEW *}
-    <form action="{URLManager::getForProjectNew()}" method="post">
+{* PROJECT NEW/EDIT *}
+    <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
     <div id="newProjectContainer" class="container">
       <div class="label">Project title</div>
       <div class="textfieldContainer" style="width: 204px;">
-        <input class="textfield" style="width: 200px" type="text" name="title">
+        <input class="textfield" style="width: 200px" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
       </div>
       <div class="label">A small description</div>
       <div class="textareaContainer">
-        <textarea class="textarea" name="description"></textarea>
+        <textarea class="textarea" name="description">{if isset($formData['description'])}{$formData['description']}{/if}</textarea>
       </div>
       <div class="label">A build label</div>
       <div class="textfieldContainer" style="width: 164px;">
-        <input class="textfield" style="width: 160px;" type="text" name="buildLabel">
+        <input class="textfield" style="width: 160px;" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}">
       </div>
       <div class="label">The SCM connector</div>
       <div class="dropdownContainer">
         <select class="dropdown" name="scmConnectorType">
 {foreach from=$project_availableConnectors item=connector}
-          <option value="{$connector}">{$connector|capitalize}
+          <option value="{$connector}"{if isset($formData['scmConnectorType']) && $formData['scmConnectorType']==$connector} selected{/if}>{$connector|capitalize}
 {/foreach}
         </select>
       </div>
       <div class="label">Username for SCM access</div>
       <div class="textfieldContainer" style="width: 164px;">
-        <input class="textfield" style="width: 160px;" type="text" name="scmUsername">
+        <input class="textfield" style="width: 160px;" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}">
       </div>
       <div class="label">Password for SCM access</div>
       <div class="textfieldContainer" style="width: 164px;">
-        <input class="textfield" style="width: 160px;" type="password" name="scmPassword">
+        <input class="textfield" style="width: 160px;" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
       </div>
       <div class="label">The SCM remote repository</div>
       <div class="textfieldContainer" style="width: 356px;">
-        <input class="textfield" style="width: 350px;" type="text" name="scmRemoteRepository">
+        <input class="textfield" style="width: 350px;" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}">
       </div>
-      <input type="submit" value="Create!" id="submitButton">
+      <input type="submit" value="{if isset($smarty.get.new)}Create!{else}Edit!{/if}" id="submitButton">
     </div>
     </form>
 {else}
 {include file='includes/header.inc.tpl'
   menuLeft="Build details"
-  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectConfig($smarty.session.project)}\">config</a>"}
+  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
 {* PROJECT DETAILS *}
     <article id="project">
       <div class="avatar"><img src="/imgs/redhalo_90x90.jpg"></div>

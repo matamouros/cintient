@@ -724,54 +724,86 @@ EOT;
     //
     // New project form submission
     //
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $_POST['title'];
-      $_POST['description'];
-      $_POST['scmConnectorType'];
-      $_POST['scmRemoteRepository'];
-      $_POST['scmUsername'];
-      $_POST['scmPassword'];
-      
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {      
       //
-      // TODO: On errors, put the textfields in a session var
+      // Check for mandatory attributes
       //
-      
-      $project = new Project();
-      $project->setTitle($_POST['title']);
-      $project->setBuildLabel($_POST['buildLabel']);
-      $project->setDescription($_POST['description']);
-      $project->setScmConnectorType($_POST['scmConnectorType']);
-      $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
-      $project->setScmUsername($_POST['scmUsername']);
-      $project->setScmPassword($_POST['scmPassword']);
-      $project->addToUsers(array(
-        $_SESSION['user']->getId(),
-        Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
-      );
-      if (!$project->init()) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
+      if (!isset($_POST['title']) ||
+           empty($_POST['title']) ||
+          !isset($_POST['buildLabel']) ||
+           empty($_POST['buildLabel']) ||
+          //!isset($_POST['description']) ||
+          // empty($_POST['description']) ||
+          !isset($_POST['scmConnectorType']) ||
+           empty($_POST['scmConnectorType']) ||
+          !isset($_POST['scmRemoteRepository']) ||
+           empty($_POST['scmRemoteRepository']) ||
+          !isset($_POST['scmUsername']) ||
+           empty($_POST['scmUsername']) ||
+          !isset($_POST['scmPassword']) ||
+           empty($_POST['scmPassword'])
+      ) {
         //
-        // TODO: Notification
+        // TODO: Error notification!!!
         //
-        header('Location: ' . UrlManager::getForProjectNew());
-        exit;
+        SystemEvent::raise(SystemEvent::DEBUG, "Project editing failed, required attributes were empty.", __METHOD__);
+        $formData = array();
+        $formData['title'] = $_POST['title'];
+        $formData['buildLabel'] = $_POST['buildLabel'];
+        $formData['description'] = $_POST['description'];
+        $formData['scmConnectorType'] = $_POST['scmConnectorType'];
+        $formData['scmRemoteRepository'] = $_POST['scmRemoteRepository'];
+        $formData['scmUsername'] = $_POST['scmUsername'];
+        $formData['scmPassword'] = $_POST['scmPassword'];
+        $GLOBALS['smarty']->assign('formData', $formData);
+        $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
+      } else {
+        if (isset($_GET['edit'])) {
+          if (!($_SESSION['project'] instanceof Project)) {
+            SystemEvent::raise(SystemEvent::ERROR, "Editing project not possible, because of probable session expire.", __METHOD__);
+            return false;
+          }
+          $project = $_SESSION['project'];
+          $project->setId($_SESSION['project']->getId());
+        } else {
+          $GLOBALS['project'] = null;
+          $project = new Project();
+        }
+        $project->setTitle($_POST['title']);
+        $project->setBuildLabel($_POST['buildLabel']);
+        $project->setDescription($_POST['description']);
+        $project->setScmConnectorType($_POST['scmConnectorType']);
+        $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
+        $project->setScmUsername($_POST['scmUsername']);
+        $project->setScmPassword($_POST['scmPassword']);
+        $project->addToUsers(array(
+          $_SESSION['user']->getId(),
+          Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
+        );
+        
+        if (isset($_GET['new']) && !$project->init()) {
+          SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
+          //
+          // TODO: Notification
+          //
+          header('Location: ' . UrlManager::getForProjectNew());
+          exit;
+        }
+        if (isset($_GET['new'])) {
+          $_SESSION['project'] = $project;
+          ProjectLog::write("Project created.");
+        } else {
+          ProjectLog::write("Project edited.");
+        }
       }
-      $_SESSION['project'] = $project;
-      ProjectLog::write("Project created.");
       
       //
-      // TODO: Success notification to display after redirecting
+      // We will leave this control and carry on to the project view
       //
-      
-      //
-      // Rig stuff to still use this request and use the view logic below
-      //
-      //$_GET['pid'] = $project->getId();
-      //$GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
     }
-    
+
     //
-    // Project view/edit
+    // Setting a new project?
     //
     if (isset($_GET['pid']) && !empty($_GET['pid'])) {
       $_SESSION['project'] = Project::getById($_SESSION['user'], $_GET['pid']);
@@ -786,29 +818,42 @@ EOT;
       //
       return false;
     }
-    //
-    // Building
-    //
-    if (isset($_GET['build'])) {
-      ProjectLog::write("A building was triggered.");
-      if (!$_SESSION['project']->build(true)) {
-        ProjectLog::write("Building failed.");
-      } else {
-        ProjectLog::write("Building successful.");
-      }
-    }
-    //
-    // Viewing details
-    //
-    $build = null; // It's possible that no build was triggered yet.
-    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+    if (isset($_GET['edit'])) {
+      $formData = array();
+      $formData['title'] = $_SESSION['project']->getTitle();
+      $formData['buildLabel'] = $_SESSION['project']->getBuildLabel();
+      $formData['description'] = $_SESSION['project']->getDescription();
+      $formData['scmConnectorType'] = $_SESSION['project']->getScmConnectorType();
+      $formData['scmRemoteRepository'] = $_SESSION['project']->getScmRemoteRepository();
+      $formData['scmUsername'] = $_SESSION['project']->getScmUsername();
+      $formData['scmPassword'] = $_SESSION['project']->getScmPassword();
+      $GLOBALS['smarty']->assign('formData', $formData);
+      $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
     } else {
-      $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
+      //
+      // Building
+      //
+      if (isset($_GET['build'])) {
+        ProjectLog::write("A building was triggered.");
+        if (!$_SESSION['project']->build(true)) {
+          ProjectLog::write("Building failed.");
+        } else {
+          ProjectLog::write("Building successful.");
+        }
+      }
+      //
+      // Viewing project build details
+      //
+      $build = null; // It's possible that no build was triggered yet.
+      if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+        $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+      } else {
+        $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
+      }
+      $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
+      $GLOBALS['smarty']->assign('project_build', $build);
+      $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
     }
-    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
-    $GLOBALS['smarty']->assign('project_build', $build);
-    $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
   }
   
   /**

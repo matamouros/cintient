@@ -52,9 +52,9 @@ class UrlManager
     return CINTIENT_BASE_URL . "/project/?pid={$project->getId()}&bid={$build->getId()}";
   }
   
-  static public function getForProjectConfig()
+  static public function getForProjectEdit()
   {
-    return CINTIENT_BASE_URL . '/project/?pid=' . $_SESSION['project']->getId();
+    return CINTIENT_BASE_URL . '/project/?edit';
   }
   
   static public function getForProjectNew()
