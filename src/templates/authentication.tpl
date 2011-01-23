@@ -49,4 +49,12 @@
       <input id="loginSubmitButton" type="submit" value="Go!">
     </div>
     </form>
+<script type="text/javascript">
+// <![CDATA[
+$('#loginContainer').hide();
+$(document).ready(function() {
+  $('#loginContainer').fadeIn(300);
+});
+// ]]> 
+</script>
 {include file='includes/footer.inc.tpl'}
