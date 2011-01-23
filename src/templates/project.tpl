@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{if isset($smarty.get.new) && $smarty.server.REQUEST_METHOD != 'POST' || isset($smarty.get.edit)}
-{include file='includes/header.inc.tpl' menuLeft="Create a new project below, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
+{include file='includes/header.inc.tpl' menuLeft="Create project"}
 {* PROJECT NEW/EDIT *}
     <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
     <div id="newProjectContainer" class="container">
@@ -60,10 +60,10 @@
 {else}
 {include file='includes/header.inc.tpl'
   menuLeft="Build details"
-  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">force build</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
+  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">Force build</a> | <a href=\"{URLManager::getForProjectEdit()}\">Edit</a>"}
 {* PROJECT DETAILS *}
     <article id="project">
-      <div class="avatar"><img src="/imgs/redhalo_90x90.jpg"></div>
+      <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
       <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
       <div class="title">{$smarty.session.project->getTitle()}</div>
       <div class="details">
@@ -101,7 +101,7 @@ $(document).ready(function() {
     </article>
 {if !empty($project_buildList)}
     <nav id="projectSectionsLinks">
-      <a href="#" class="rawOutput">raw output</a> | <a href="#" class="junitReport">unit tests</a>
+      <a href="#" class="rawOutput">Raw output</a> | <a href="#" class="junitReport">Unit tests</a>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {

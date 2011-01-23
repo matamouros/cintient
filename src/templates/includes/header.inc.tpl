@@ -47,17 +47,34 @@
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$smarty.session.user->getAvatarUrl()}" width="40" height="40"></div>
               <div id="username">{$smarty.session.user->getUsername()}</div>
-              <div id="links"><a href="{URLManager::getForDashboard()}">dashboard</a> | <a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
+              <div id="links"><a href="{URLManager::getForDashboard()}">Dashboard</a> | <a href="/settings/">Settings</a> | <a href="/logout/">Logout</a></div>
             </div>
           </nav>
         </hgroup>
       </header>
     </div>
+  </div>
+  <div id="menu" class="containerTopLevel">
+    <nav id="mainMenu">
+      <ul>
+        <li id="dashboard"><a href="{URLManager::getForDashboard()}">D</a></li>
+        <li id="historyBack"><a href="#">&lt;</a></li>
+        <li id="sectionName">{if isset($menuLeft)}{$menuLeft}{/if}</li>
+        {if isset($menuRight)}<li class="sectionTopOptions">{$menuRight}</li>{/if}
+      </ul>
+    </nav>
 <script type="text/javascript">
 // <![CDATA[
 $('#logo').hide();
 $(document).ready(function() {
   $('#logo').show(200);
+  //
+  // Enable history back button on the main menu
+  //
+  $('#mainMenu #historyBack').click(function(){
+    history.back();
+    return false;
+  });
 });
 // ]]> 
 </script>
@@ -72,18 +89,14 @@ $(document).ready(function() {
     </div>
 <script type="text/javascript">
 // <![CDATA[
-$('#splashHeader header').hide();
+$('#splashHeader h1').hide();
+$('#splashHeader img').hide();
 $(document).ready(function() {
-  $('#splashHeader header').fadeIn(300);
+	$('#splashHeader h1').fadeIn(300);
+  $('#splashHeader img').fadeIn(300);
 });
 // ]]> 
 </script>
 {/if}
   </div>
-{if isset($menuLeft) || isset($menuRight)}
-  <div id="menu" class="containerTopLevel">
-    <nav id="menuLeft">{if isset($menuLeft)}{$menuLeft}{/if}</nav>
-    <nav id="menuRight">{if isset($menuRight)}{$menuRight}{/if}</nav>
-  </div>
-{/if}
   <div id="main" class="containerTopLevel">

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl' menuLeft="Edit your settings, or <a href=\"{URLManager::getForDashboard()}\">cancel</a>."}
+*}{include file='includes/header.inc.tpl' menuLeft="Settings"}
     <div id="settingsContainer" class="container">
       <ul>
         <li class="settingsNode">

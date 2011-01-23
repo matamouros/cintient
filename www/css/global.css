@@ -45,6 +45,10 @@ a
   color: rgb(255,40,0);
   font-weight: bold;
   text-decoration: none;
+  font-variant: small-caps;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
 }
 
 a:hover
@@ -73,9 +77,64 @@ a:active
 {
 	font-size: 1.04em;
 	height: 20px;
-	margin-top: 20px;
-	margin-bottom: 30px;
+	margin-top: 35px;
+	margin-bottom: 40px;
 	clear: both;
+}
+
+#mainMenu ul li
+{
+	font-variant: small-caps;
+	font-size: 1.1m;
+	color: #555;
+	/*text-shadow: none;*/
+	text-shadow: #fff 1px 1px 1px;
+	border-top: 2px solid #999;
+	border-bottom: 2px solid #999;
+	float: left;
+	margin: 0;
+	padding-left: 9px;
+	padding-right: 10px;
+	padding-top: 5px;
+	padding-bottom: 4px;
+	box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  /*background: rgb(230,230,230);*/
+  /*background: rgb(124,196,0);*/
+  /*background: rgb(255,40,0);*/
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd)/*, color-stop(0.9, #bbb)*/); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+}
+
+#mainMenu ul li:first-child
+{
+  border-left: 2px solid #bbb;
+  -webkit-border-radius: 6px 0px 0px 6px;
+  -moz-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+}
+
+#mainMenu ul li:last-child
+{
+	border-right: 2px solid #bbb;
+  -webkit-border-radius: 0px 6px 6px 0px;
+  -moz-border-radius: 0px 6px 6px 0px;
+  border-radius: 0px 6px 6px 0px;
+}
+
+#mainMenu #sectionName
+{
+	padding-left: 15px;
+	padding-right: 15px;
+	font-variant: small-caps;
+}
+
+#mainMenu .sectionTopOptions
+{
+	
 }
 
 #menuLeft
@@ -177,6 +236,7 @@ html
   color: #555;
   padding-left: 3px;
   margin-left: 3px;
+  outline: none;
 }
 
 .loginLabel
@@ -380,9 +440,9 @@ html
 	width: 40px;
 	height: 40px;
 	margin-top: 1px;
-	box-shadow: 1px 1px 3px #999;
-  -webkit-box-shadow: #999 1px 1px 3px;
-  -moz-box-shadow: #999 1px 1px 3px;
+	box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
   border: 1px solid #fff;
 }
 
@@ -488,18 +548,19 @@ article#project #statusContainer
 {
 	height: 90px;
 	float: left;
-	width: 33px;
-	margin-top: 2px;
+	/*width: 33px;*/
+	width: 45px;
+	margin-top: 6px;
 	margin-left: 2px;
 }
 
 article#project #statusContainer .status
 {
-  width: 20px;
-  height: 20px;
-  -webkit-border-radius: 10px 10px 10px 10px;
-  -moz-border-radius: 10px 10px 10px 10px;
-  border-radius: 10px 10px 10px 10px;
+  width: 30px;
+  height: 30px;
+  -webkit-border-radius: 15px 15px 15px 15px;
+  -moz-border-radius: 15px 15px 15px 15px;
+  border-radius: 15px 15px 15px 15px;
 }
 
 .projectDetails
@@ -585,6 +646,9 @@ article#project #statusContainer .status
   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
   background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
 }
 
 .projectDraggableContainer .projectLink
@@ -592,10 +656,12 @@ article#project #statusContainer .status
 	color: #555;
   font-weight: normal;
   text-decoration: none;
-	text-shadow: none;
+	/*text-shadow: none;*/
+	text-shadow: #fff 1px 1px 1px;
   margin: 0;
   width: 600px;
   height: 44px;
+  font-variant: normal;
 }
 
 #projectViewContainer
