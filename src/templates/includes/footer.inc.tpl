@@ -24,5 +24,13 @@
     <div class="paragraph">Cintient is free software distributed under the GNU General Public License version 3 or later terms.</div>
     <div class="paragraph">Copyright &copy; 2010, 2011, Pedro Mata-Mouros Fonseca. All rights reserved.</div>
   </div>
+<script type="text/javascript">
+// <![CDATA[
+$('#footer').hide();
+$(document).ready(function() {
+  $('#footer').fadeIn(200);
+});
+// ]]> 
+</script>
 </body>
 </html>

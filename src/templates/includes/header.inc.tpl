@@ -42,7 +42,7 @@
     <div id="userHeader" class="container">
       <header>
         <hgroup>
-          <h1>Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
+          <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
           <nav>
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$smarty.session.user->getAvatarUrl()}" width="40" height="40"></div>
@@ -53,6 +53,14 @@
         </hgroup>
       </header>
     </div>
+<script type="text/javascript">
+// <![CDATA[
+$('#logo').hide();
+$(document).ready(function() {
+  $('#logo').show(200);
+});
+// ]]> 
+</script>
 {else}
     <div id="splashHeader" class="container">
       <header>
@@ -62,6 +70,14 @@
         </hgroup>
       </header>
     </div>
+<script type="text/javascript">
+// <![CDATA[
+$('#splashHeader header').hide();
+$(document).ready(function() {
+  $('#splashHeader header').fadeIn(300);
+});
+// ]]> 
+</script>
 {/if}
   </div>
 {if isset($menuLeft) || isset($menuRight)}

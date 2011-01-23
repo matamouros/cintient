@@ -125,7 +125,7 @@ $(document).ready(function() {
 			  "text-decoration" : "none"
       });
 		  // Show the current pane
-  	  resultPane.show(200);
+  	  resultPane.fadeIn(300);
   	  
   	  activeResultPane = resultPane;
 		}
