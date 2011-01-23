@@ -40,41 +40,6 @@ a{text-decoration:none;}
 |* | GENERIC STUFF                                                  | *|
 \* +----------------------------------------------------------------+ */
 
-@font-face {
-  font-family: 'AnonymousPro';
-  font-style: normal;
-  font-weight: 400;
-  src: local('AnonymousPro-Regular'), url('/fonts/AnonymousPro-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Orbitron-Regular'), url('/fonts/Orbitron-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 500;
-  src: local('Orbitron-Medium'), url('/fonts/Orbitron-Medium.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Orbitron-Bold'), url('/fonts/Orbitron-Bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 900;
-  src: local('Orbitron-Black'), url('/fonts/Orbitron-Black.ttf') format('truetype');
-}
-
 a
 {
   color: rgb(255,40,0);
@@ -115,6 +80,8 @@ a:active
 
 #menuLeft
 {
+	/*font-family: Orbitron,"Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+	letter-spacing: 1px;*/
 	font-size: 1.3em;
 	float: left;
 }
@@ -146,6 +113,11 @@ html
 	overflow-y: scroll;
 }
 
+
+/* +----------------------------------------------------------------+ *\
+|* | FORMS                                                          | *|
+\* +----------------------------------------------------------------+ */
+
 .dropdownContainer
 {
   margin-bottom: 15px;
@@ -171,6 +143,53 @@ html
 .fineprintLabel
 {
 	font-size: .7em;
+}
+
+#loginContainer
+{
+  width: 316px;
+  margin-bottom: 80px;
+}
+
+.loginTextfieldContainer
+{
+  margin-bottom: 20px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 6px;
+  width: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.loginTextfield
+{
+  font-size: 1.8em;
+  border: 0px solid #fff;
+  width: 300px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+}
+
+.loginLabel
+{
+  letter-spacing: 3px;
+  font-family: Orbitron;
+  font-size: 1.1em;
+}
+
+#loginSubmitButton
+{
+  float: right;
+  font-family: Orbitron;
 }
 
 .textfieldContainer
@@ -233,6 +252,8 @@ html
 
 .label
 {
+	/*letter-spacing: .10em;
+	font-family: Orbitron;*/
   font-size: 1.1em;
 }
 
@@ -248,11 +269,12 @@ html
 
 #footer
 {
-	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+	/*letter-spacing: .20em;*/
+  font-family: Syncopate, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   text-align: center;
   clear: both;
   padding-top: 30px;
-  font-size: .6em;
+  font-size: .56em;
   line-height: 1.7em;
 }
 
@@ -268,10 +290,12 @@ html
 
 #splashHeader header h1
 {
-	margin-top: 50px;
+	margin-top: 40px;
 	margin-bottom: 20px;
-	font-family: 'Orbitron', "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-  font-size: 80pt;
+	font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+	letter-spacing: 4px;
+  font-size: 70pt;
+  font-size: 6em;
   width: auto;
   color: rgb(230,230,230);
   text-shadow: black 0px 3px 5px;
@@ -292,8 +316,10 @@ html
 
 #userHeader header h1
 {
-	font-family: 'Orbitron', "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-  font-size: 1.7em;
+	font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  /*font-size: 1.6em;*/
+  font-size: 24pt;
+  letter-spacing: 2px;
   color: rgb(230,230,230);
   width: 550px;
   float: left;
@@ -335,50 +361,6 @@ html
 /* +----------------------------------------------------------------+ *\
 |* | OTHER STUFF                                                    | *|
 \* +----------------------------------------------------------------+ */
-
-#loginContainer
-{
-	width: 316px;
-	margin-bottom: 80px;
-}
-
-.loginTextfieldContainer
-{
-	margin-bottom: 20px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-left: 2px;
-	padding-right: 6px;
-	width: auto;
-	background: #FBFBFB;
-	border: 2px solid #999;
-	-webkit-border-radius: 10px 10px 10px 10px;
-	-moz-border-radius: 10px 10px 10px 10px;
-	border-radius: 10px 10px 10px 10px;
-	box-shadow: 2px 2px 10px #111;
-  -webkit-box-shadow: #111 2px 2px 10px;
-  -moz-box-shadow: #111 2px 2px 10px;
-}
-
-.loginTextfield
-{
-	font-size: 1.8em;
-	border: 0px solid #fff;
-	width: 300px;
-	color: #555;
-	padding-left: 3px;
-	margin-left: 3px;
-}
-
-.loginLabel
-{
-	font-size: 1.1em;
-}
-
-#loginSubmitButton
-{
-	float: right;
-}
 
 #sectionMenu
 {
@@ -625,7 +607,7 @@ article#project #statusContainer .status
 #projectViewContainer #rawOutput
 {
 	font-size: .68em;
-	font-family: "Anonymous Pro"; /* TODO: choose a proper ubiquous font */
+	font-family: "Anonymous Pro", "Andale Mono";
 	font-weight: normal;
 	white-space: nowrap;
 	/*overflow: scroll;

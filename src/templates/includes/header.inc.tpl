@@ -23,6 +23,9 @@
   <meta charset="UTF-8" />
   <meta property="url" content="{*SERVER_NAME*}">
   <title>Cintient</title>
+  <link rel="stylesheet" href="/css/font_anonymouspro.css" />
+  <link rel="stylesheet" href="/css/font_orbitron.css" />
+  <link rel="stylesheet" href="/css/font_syncopate.css" />
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/avataruploader.css" />
   <link rel="icon" href="/favicon.ico">
