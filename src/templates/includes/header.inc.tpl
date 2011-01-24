@@ -47,7 +47,7 @@
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$smarty.session.user->getAvatarUrl()}" width="40" height="40"></div>
               <div id="username">{$smarty.session.user->getUsername()}</div>
-              <div id="links"><a href="{URLManager::getForDashboard()}">dashboard</a> | <a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
+              <div id="links">{if $smarty.session.user->isCos(UserCos::ROOT)}<a href="{URLManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
             </div>
           </nav>
         </hgroup>

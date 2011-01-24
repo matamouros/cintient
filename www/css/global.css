@@ -105,9 +105,9 @@ a:hover
   padding-top: 5px;
   padding-bottom: 4px;
   background: #999;
-  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd');
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #555));
-  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%);
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
 }
 
 #mainMenu ul li:first-child
@@ -420,14 +420,17 @@ html
 #userHeader nav #user #username
 {
   padding-left: 50px;
+  line-height: .5em;
+  padding-top: 7px;
+  padding-bottom: 5px;
   font-size: 1.2em;
 }
 
 #userHeader nav #user #links
 {
   clear: none;
-  padding-left: 50px;
-  padding-top: 3px;
+  padding-left: 52px;
+  padding-top: 0px;
   font-size: .8em;
 }
 

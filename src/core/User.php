@@ -127,6 +127,18 @@ class User
     return $this->_save();
   }
   
+  /**
+   * Use this instead of getCos() directly, in order to be more future
+   * proof. It's possible that the User's CoS will someday be an array,
+   * so using this should keep you safe.
+   * 
+   * @param UserCos $cos
+   */
+  public function isCos($cos)
+  {
+    return ($this->getCos() == $cos);
+  }
+  
   public function getAccess()
   {
     if ($this->getCos()) {
