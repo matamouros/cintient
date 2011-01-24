@@ -26,7 +26,7 @@
       <li class="projectDraggableContainer container">
         <a href="{URLManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
-        <div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div>
+        <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
           <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: build {$dashboard_latestBuild->getId()}, r{$dashboard_latestBuild->getScmRevision()}, {if $dashboard_latestBuild->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$dashboard_latestBuild->getDate()|date_format}.{else}This project hasn't been built yet.{/if}</div>

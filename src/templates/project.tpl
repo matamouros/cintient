@@ -18,7 +18,12 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{if isset($smarty.get.new) && $smarty.server.REQUEST_METHOD != 'POST' || isset($smarty.get.edit)}
-{include file='includes/header.inc.tpl' menuLeft="Create project"}
+{if isset($smarty.get.new)}
+  {$sectionTitle="Project create"}
+{else}
+  {$sectionTitle="Project edit"}
+{/if}
+{include file='includes/header.inc.tpl' menuLeft=$sectionTitle}
 {* PROJECT NEW/EDIT *}
     <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
     <div id="newProjectContainer" class="container">
@@ -58,9 +63,13 @@
     </div>
     </form>
 {else}
+{$menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">build</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
+{if !empty($project_buildList)}
+  {$menuRight="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">output</a> | <a href=\"#\" class=\"junitReport\">tests</a></span> | $menuRight"}
+{/if}
 {include file='includes/header.inc.tpl'
-  menuLeft="Build details"
-  menuRight="<a href=\"{URLManager::getForProjectBuild($smarty.session.project)}\">Force build</a> | <a href=\"{URLManager::getForProjectEdit()}\">Edit</a>"}
+  menuLeft="Project"
+  menuRight=$menuRight}
 {* PROJECT DETAILS *}
     <article id="project">
       <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
@@ -100,8 +109,6 @@ $(document).ready(function() {
       </div>
     </article>
 {if !empty($project_buildList)}
-    <nav id="projectSectionsLinks">
-      <a href="#" class="rawOutput">Raw output</a> | <a href="#" class="junitReport">Unit tests</a>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
@@ -141,7 +148,6 @@ $(document).ready(function() {
 });
 //]]> 
 </script>
-    </nav>
     <div id="projectViewContainer">
       <div id="rawOutput" class="buildResultPane">{$project_build->getOutput()|nl2br}</div>
       <div id="junitReport" class="buildResultPane">
