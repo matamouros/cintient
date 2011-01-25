@@ -54,7 +54,12 @@ class UrlManager
   
   static public function getForProjectEdit()
   {
-    return CINTIENT_BASE_URL . '/project/?edit';
+    return CINTIENT_BASE_URL . '/project/edit/';
+  }
+  
+  static public function getForProjectEditUsers()
+  {
+    return CINTIENT_BASE_URL . '/project/edit/?users';
   }
   
   static public function getForProjectNew()

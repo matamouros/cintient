@@ -20,11 +20,7 @@
  *  
  */
 
-
-/* +----------------------------------------------------------------+ *\
-|* | RESET (powered by Yahoo!)                                      | *|
-\* +----------------------------------------------------------------+ */
-
+/* @group Reset */
 /*
 Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
@@ -32,14 +28,17 @@ http://developer.yahoo.com/yui/license.html
 version: 3.2.0
 build: 2676
 */
+
 html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
 /* My own */
 a{text-decoration:none;}
+/* @end */
 
+/* @group Generic stuff */
 /* +----------------------------------------------------------------+ *\
 |* | GENERIC STUFF                                                  | *|
 \* +----------------------------------------------------------------+ */
-
 a
 {
   color: rgb(255,40,0);
@@ -53,14 +52,14 @@ a
 
 a:hover
 {
-	color: rgb(255,60,0);
+  color: rgb(255,60,0);
   text-shadow: 0px 0px 6px rgba(255,40,0,1);
   text-decoration: none;
 }
 
 #header
 {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 #main
@@ -70,16 +69,16 @@ a:hover
 
 #menu
 {
-	font-size: 1.04em;
-	height: 20px;
-	margin-top: 35px;
-	margin-bottom: 40px;
-	clear: both;
+  font-size: 1.04em;
+  height: 20px;
+  margin-top: 35px;
+  margin-bottom: 40px;
+  clear: both;
 }
 
 #mainMenu ul
 {
-	box-shadow: 2px 2px 10px #111;
+  box-shadow: 2px 2px 10px #111;
   -webkit-box-shadow: #111 2px 2px 10px;
   -moz-box-shadow: #111 2px 2px 10px;
   float: left;
@@ -152,14 +151,14 @@ a:hover
 
 #mainMenu #sectionName
 {
-	padding-left: 10px;
-	padding-right: 10px;
-	font-variant: small-caps;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-variant: small-caps;
 }
 
 #mainMenu .sectionTopOptions
 {
-	
+  
 }
 
 .containerTopLevel
@@ -170,20 +169,22 @@ a:hover
 
 .container
 {
-	margin: auto auto auto auto;
+  margin: auto auto auto auto;
 }
 
 html
 {
-	background: #303030;
-	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-	color: #999;
-	text-shadow: black 0px 1px 1px;
-	font-size: 12pt;
-	overflow-y: scroll;
+  background: #303030;
+  font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  color: #999;
+  text-shadow: black 0px 1px 1px;
+  font-size: 12pt;
+  overflow-y: scroll;
 }
 
+/* @end */
 
+/* @group Forms */
 /* +----------------------------------------------------------------+ *\
 |* | FORMS                                                          | *|
 \* +----------------------------------------------------------------+ */
@@ -213,7 +214,7 @@ html
 
 .fineprintLabel
 {
-	font-size: .7em;
+  font-size: .7em;
 }
 
 #loginContainer
@@ -266,7 +267,7 @@ html
 
 .textfieldContainer
 {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding: 0px;
   padding-right: 5px;
   width: auto;
@@ -295,10 +296,10 @@ html
 
 .textareaContainer
 {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding: 0;
   padding-right: 3px;
-  width: 406px;
+  width: 556px;
   height: auto;
   background: #FBFBFB;
   border: 2px solid #999;
@@ -314,7 +315,7 @@ html
 {
   font-size: 1em;
   border: 0px solid #fff;
-  width: 400px !important;
+  width: 550px !important;
   height: 55px;
   color: #555;
   padding-left: 3px;
@@ -326,9 +327,17 @@ html
 
 .label
 {
-	/*letter-spacing: .10em;
-	font-family: Orbitron;*/
+  /*letter-spacing: .10em;
+  font-family: Orbitron;*/
   font-size: 1.1em;
+}
+
+.labelCheckbox
+{
+  /*letter-spacing: .10em;
+  font-family: Orbitron;*/
+  font-size: 1.1em;
+  float: left;
 }
 
 #submitButton
@@ -336,14 +345,16 @@ html
   float: right;
 }
 
+/* @end */
 
+/* @group Headers/Footers */
 /* +----------------------------------------------------------------+ *\
 |* | HEADERS/FOOTERS                                                | *|
 \* +----------------------------------------------------------------+ */
 
 #footer
 {
-	/*letter-spacing: .20em;*/
+  /*letter-spacing: .20em;*/
   font-family: Syncopate, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   text-align: center;
   clear: both;
@@ -364,10 +375,10 @@ html
 
 #splashHeader header h1
 {
-	margin-top: 40px;
-	margin-bottom: 20px;
-	font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-	letter-spacing: 4px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  letter-spacing: 4px;
   font-size: 70pt;
   font-size: 6em;
   width: auto;
@@ -390,7 +401,7 @@ html
 
 #userHeader header h1
 {
-	font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   /*font-size: 1.6em;*/
   font-size: 24pt;
   letter-spacing: 2px;
@@ -434,30 +445,119 @@ html
   font-size: .8em;
 }
 
+/* @end */
 
+
+/* @group Other stuff */
 /* +----------------------------------------------------------------+ *\
 |* | OTHER STUFF                                                    | *|
 \* +----------------------------------------------------------------+ */
 
 #sectionMenu
 {
-	text-align: right;
-	padding-right: 3px;
-	padding-top: 10px;
+  text-align: right;
+  padding-right: 3px;
+  padding-top: 10px;
 }
 
+/* @end */
 
+
+/* @group Project edit */
+
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT EDIT                                                   | *|
+\* +----------------------------------------------------------------+ */
+
+.projectEditContainer .accessLevelPane
+{
+  width: 100px;
+  float: left;
+  margin-top: 12px;
+  margin-left: 20px;
+}
+
+.projectEditContainer .accessLevelPaneLevels
+{
+  display: none;
+  border: 1px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  float: left;
+  width: 90px;
+  padding: 6px;
+  padding-bottom:4px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #444));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  position: absolute;
+}
+
+.exclusivePane
+{
+  display: none;
+}
+
+.projectEditContainer
+{
+  width: 600px;
+}
+
+.projectEditContainer .user .avatar
+{
+  width: 40px;
+  height: 40px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+.projectEditContainer input[type=checkbox]
+{
+  clear: left;
+  float: left;
+  margin-top: 4px;
+  margin-right: 5px;
+  margin-bottom: 6px;
+}
+
+.projectEditContainer .user .avatar
+{
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+.projectEditContainer .user .username
+{
+  float: left;
+  margin-top: 12px;
+  margin-left: 10px;
+}
+
+/* @end */
+
+
+/* @group Projects */
 /* +----------------------------------------------------------------+ *\
 |* | PROJECTS                                                       | *|
 \* +----------------------------------------------------------------+ */
 
 .projectAvatar40x40
 {
-	float: left;
-	width: 40px;
-	height: 40px;
-	margin-top: 1px;
-	box-shadow: 1px 1px 3px #111;
+  float: left;
+  width: 40px;
+  height: 40px;
+  margin-top: 1px;
+  box-shadow: 1px 1px 3px #111;
   -webkit-box-shadow: #111 1px 1px 3px;
   -moz-box-shadow: #111 1px 1px 3px;
   border: 1px solid #fff;
@@ -493,7 +593,7 @@ article#project .details #buildsList
 
 article#project .details #buildsList #buildsListDropdown
 {
-	font-size: .9em;
+  font-size: .9em;
 }
 
 article#project .details #buildsList .label
@@ -503,8 +603,8 @@ article#project .details #buildsList .label
 
 article#project .details #users
 {
-	width: 270px;
-	height: auto;
+  width: 270px;
+  height: auto;
   margin-left: 20px;
   margin-top: 0;
   float: right;
@@ -513,9 +613,9 @@ article#project .details #users
 
 article#project .details #users .user
 {
-	width: 90px;
-	height: auto;
-	float: left;
+  width: 90px;
+  height: auto;
+  float: left;
 }
 
 article#project #users .user .avatar
@@ -549,7 +649,7 @@ article#project #users .title
 
 article#project .title
 {
-	font-size: 1.1em;
+  font-size: 1.1em;
   margin-bottom: 2px;
   width: 100%;
 }
@@ -563,12 +663,12 @@ article#project .stats
 
 article#project #statusContainer
 {
-	height: 90px;
-	float: left;
-	/*width: 33px;*/
-	width: 45px;
-	margin-top: 6px;
-	margin-left: 2px;
+  height: 90px;
+  float: left;
+  /*width: 33px;*/
+  width: 45px;
+  margin-top: 6px;
+  margin-left: 2px;
 }
 
 article#project #statusContainer .status
@@ -618,19 +718,19 @@ article#project #statusContainer .status
 
 .projectStatusOk
 {
-	margin-left: 7px;
-	background: rgb(124,196,0); /* non-CSS3 */
-	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7CC400', endColorstr='#7A964B'); /* for IE */
+  margin-left: 7px;
+  background: rgb(124,196,0); /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7CC400', endColorstr='#7A964B'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#7CC400), to(#7A964B)); /* for webkit browsers */
   background: -moz-linear-gradient(top, #7CC400, #7A964B); /* for firefox 3.6+ */
-	box-shadow: 0px 0px 4px rgb(124,196,0);
+  box-shadow: 0px 0px 4px rgb(124,196,0);
   -webkit-box-shadow: rgb(124,196,0) 0px 0px 4px;
   -moz-box-shadow: rgb(124,196,0) 0px 0px 4px;
 }
 
 .projectStatusFailed
 {
-	margin-left: 7px;
+  margin-left: 7px;
   background: rgb(255,40,0); /* non-CSS3 */
   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF2800', endColorstr='#B35D4D'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#FF2800), to(#B35D4D)); /* for webkit browsers */
@@ -642,10 +742,10 @@ article#project #statusContainer .status
 
 #projectListContainer
 {
-	text-align: left;
-	text-shadow: none;
-	color: #555;
-	padding-top: 30px;
+  text-align: left;
+  text-shadow: none;
+  color: #555;
+  padding-top: 30px;
 }
 
 .projectDraggableContainer
@@ -678,11 +778,11 @@ article#project #statusContainer .status
 
 .projectDraggableContainer .projectLink
 {
-	color: #555;
+  color: #555;
   font-weight: normal;
   text-decoration: none;
-	/*text-shadow: none;*/
-	text-shadow: #fff 1px 1px 1px;
+  /*text-shadow: none;*/
+  text-shadow: #fff 1px 1px 1px;
   margin: 0;
   width: 600px;
   height: 44px;
@@ -691,18 +791,18 @@ article#project #statusContainer .status
 
 #projectViewContainer
 {
-	float: left;
-	margin-top: 15px;
+  float: left;
+  margin-top: 15px;
 }
 
 #projectViewContainer #rawOutput
 {
-	font-size: .68em;
-	font-family: "Anonymous Pro", "Andale Mono";
-	font-weight: normal;
-	white-space: nowrap;
-	/*overflow: scroll;
-	width: 800px;*/
+  font-size: .68em;
+  font-family: "Anonymous Pro", "Andale Mono";
+  font-weight: normal;
+  white-space: nowrap;
+  /*overflow: scroll;
+  width: 800px;*/
 }
 
 #projectViewContainer #junitReport
@@ -712,12 +812,12 @@ article#project #statusContainer .status
 
 #projectViewContainer #junitReport .classTest
 {
-	margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 #projectViewContainer #junitReport .chart img
 {
-	/*-webkit-border-radius: 16px 16px 16px 16px;*/
+  /*-webkit-border-radius: 16px 16px 16px 16px;*/
   border: 2px solid #999;
   box-shadow: 2px 2px 10px #111;
   -webkit-box-shadow: #111 2px 2px 10px;
@@ -726,35 +826,41 @@ article#project #statusContainer .status
 
 #projectViewContainer .buildResultPane
 {
-	display: none;
+  display: none;
 }
 
 #projectSectionsLinks
 {
-	/*
-	width: 100%;
-	float: left;
-	text-align: center;
-	margin-top: 15px;
-	font-size: 1.04em;
-	*/
+  /*
+  width: 100%;
+  float: left;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 1.04em;
+  */
 }
 
 #projectSectionsLinks ul
 {
-	/*
-	float: left;
-	text-align: center;
-	*/
+  /*
+  float: left;
+  text-align: center;
+  */
 }
 
 #projectSectionsLinks li
 {
-	/*
-	float: left;
-	margin-left: 20px;
-	margin-right: 20px;
-	*/
+  /*
+  float: left;
+  margin-left: 20px;
+  margin-right: 20px;
+  */
+}
+
+#projectEditContainer
+{
+  width: 600px;
+  margin-bottom: 80px;
 }
 
 #newProjectContainer
@@ -770,10 +876,13 @@ article#project .avatar
 
 article#project .user .username
 {
-	font-size: .8em;
+  font-size: .8em;
 }
 
+/* @end */
 
+
+/* @group Settings */
 /* +----------------------------------------------------------------+ *\
 |* | SETTINGS                                                       | *|
 \* +----------------------------------------------------------------+ */
@@ -786,26 +895,33 @@ article#project .user .username
 
 .settingsNode
 {
-	clear: both;
-	margin-bottom: 15px;
+  clear: both;
+  margin-bottom: 15px;
 }
 
 #avatarUploader
 {
-	/* Because no matter what I can't make the li that owns this, respect its own CSS */
-	margin-bottom: 60px;
+  /* Because no matter what I can't make the li that owns this, respect its own CSS */
+  margin-bottom: 60px;
 }
 
+/* @end */
 
+
+/* @group Messages */
 /* +----------------------------------------------------------------+ *\
 |* | MESSAGES                                                       | *|
 \* +----------------------------------------------------------------+ */
 
 .messageInfo
 {
-	font-size: 12pt;
+  font-size: 12pt;
 }
 
+/* @end */
+
+
+/* @group Installer stuff */
 /* +----------------------------------------------------------------+ *\
 |* | INSTALLER STUFF                                                | *|
 \* +----------------------------------------------------------------+ */
@@ -901,3 +1017,5 @@ article#project .user .username
 {
   border: 1px solid #7A5559;
 }
+
+/* @end */

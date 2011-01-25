@@ -123,7 +123,7 @@ $(document).ready(function() {
         "color" : "rgb(255,40,0)",
         "font-weight" : "bold",
         "text-decoration" : "none",
-        "text-shadow" : "none"
+        "text-shadow" : "#303030 1px 1px 1px"
       });
 			// Highlight the active link
 			$('#projectSectionsLinks a.' + $(resultPane).attr('id')).css({

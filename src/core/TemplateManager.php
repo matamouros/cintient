@@ -856,6 +856,115 @@ EOT;
     }
   }
   
+  static public function project_edit()
+  {
+    //
+    // Edit form submission
+    //
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {      
+      //
+      // Check for mandatory attributes
+      //
+      if (!isset($_POST['title']) ||
+           empty($_POST['title']) ||
+          !isset($_POST['buildLabel']) ||
+           empty($_POST['buildLabel']) ||
+          //!isset($_POST['description']) ||
+          // empty($_POST['description']) ||
+          !isset($_POST['scmConnectorType']) ||
+           empty($_POST['scmConnectorType']) ||
+          !isset($_POST['scmRemoteRepository']) ||
+           empty($_POST['scmRemoteRepository']) ||
+          !isset($_POST['scmUsername']) ||
+           empty($_POST['scmUsername']) ||
+          !isset($_POST['scmPassword']) ||
+           empty($_POST['scmPassword'])
+      ) {
+        //
+        // TODO: Error notification!!!
+        //
+        SystemEvent::raise(SystemEvent::DEBUG, "Project editing failed, required attributes were empty.", __METHOD__);
+        $formData = array();
+        $formData['title'] = $_POST['title'];
+        $formData['buildLabel'] = $_POST['buildLabel'];
+        $formData['description'] = $_POST['description'];
+        $formData['scmConnectorType'] = $_POST['scmConnectorType'];
+        $formData['scmRemoteRepository'] = $_POST['scmRemoteRepository'];
+        $formData['scmUsername'] = $_POST['scmUsername'];
+        $formData['scmPassword'] = $_POST['scmPassword'];
+        $GLOBALS['smarty']->assign('formData', $formData);
+        $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
+      } else {
+        if (isset($_GET['edit'])) {
+          if (!($_SESSION['project'] instanceof Project)) {
+            SystemEvent::raise(SystemEvent::ERROR, "Editing project not possible, because of probable session expire.", __METHOD__);
+            return false;
+          }
+          $project = $_SESSION['project'];
+          $project->setId($_SESSION['project']->getId());
+        } else {
+          $GLOBALS['project'] = null;
+          $project = new Project();
+        }
+        $project->setTitle($_POST['title']);
+        $project->setBuildLabel($_POST['buildLabel']);
+        $project->setDescription($_POST['description']);
+        $project->setScmConnectorType($_POST['scmConnectorType']);
+        $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
+        $project->setScmUsername($_POST['scmUsername']);
+        $project->setScmPassword($_POST['scmPassword']);
+        $project->addToUsers(array(
+          $_SESSION['user']->getId(),
+          Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
+        );
+        
+        if (isset($_GET['new']) && !$project->init()) {
+          SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
+          //
+          // TODO: Notification
+          //
+          header('Location: ' . UrlManager::getForProjectNew());
+          exit;
+        }
+        if (isset($_GET['new'])) {
+          $_SESSION['project'] = $project;
+          ProjectLog::write("Project created.");
+        } else {
+          ProjectLog::write("Project edited.");
+        }
+      }
+      
+      //
+      // We will leave this control and carry on to the project view
+      //
+    }
+    
+    if (isset($_GET['pid']) && !empty($_GET['pid'])) {
+      $_SESSION['project'] = Project::getById($_SESSION['user'], $_GET['pid']);
+    }
+    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
+      //
+      // TODO: Notification
+      //
+      //
+      // TODO: this should really be a redirect to the previous page.
+      //
+      return false;
+    }
+    
+    $formData = array();
+    $formData['title'] = $_SESSION['project']->getTitle();
+    $formData['buildLabel'] = $_SESSION['project']->getBuildLabel();
+    $formData['description'] = $_SESSION['project']->getDescription();
+    $formData['scmConnectorType'] = $_SESSION['project']->getScmConnectorType();
+    $formData['scmRemoteRepository'] = $_SESSION['project']->getScmRemoteRepository();
+    $formData['scmUsername'] = $_SESSION['project']->getScmUsername();
+    $formData['scmPassword'] = $_SESSION['project']->getScmPassword();
+    $GLOBALS['smarty']->assign('formData', $formData);
+    $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
+  }
+  
   /**
    * Provider method for footer.inc.tpl. See this file's header for more
    * details on provider methods.

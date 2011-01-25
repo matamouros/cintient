@@ -32,8 +32,38 @@ class Access
   const WRITE = 4;
   const OWNER = 8;
   
-  static public function validate(User $user, Project $project)
+  static public function toStr($access)
   {
-    
+    $str = '';
+    switch ($access) {
+      case self::READ:
+        $str = 'read';
+        break;
+      case self::BUILD:
+        $str = 'build';
+        break;
+      case self::WRITE:
+        $str = 'write';
+        break;
+      case self::OWNER:
+        $str = 'owner';
+        break;
+      case self::NONE:
+      default:
+        $str = 'none';
+        break;
+    }
+    return $str;
+  }
+  
+  static public function getList()
+  {
+    return array(
+      self::NONE => self::toStr(self::NONE),
+      self::READ => self::toStr(self::READ),
+      self::BUILD => self::toStr(self::BUILD),
+      self::WRITE => self::toStr(self::WRITE),
+      self::OWNER => self::toStr(self::OWNER),
+    ); 
   }
 }
