@@ -208,7 +208,6 @@ fclose(\$fp);
 EOT;
     } else {
       $php .= <<<EOT
-echo "{$o->getMessage()}\n";
 output('echo', '{$o->getMessage()}');
 EOT;
     }
