@@ -26,6 +26,16 @@
  */
 class UrlManager
 {
+  static public function getForAjaxAvatarUpload()
+  {
+    return CINTIENT_BASE_URL . '/ajax/avatar-upload/'; 
+  }
+  
+  static public function getForAjaxProjectBuild()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/build/';
+  }
+  
   static public function getForAsset($filename, $params = array())
   {
     $params['f'] = $filename;
@@ -42,14 +52,14 @@ class UrlManager
     return CINTIENT_BASE_URL . '/dashboard/';
   }
   
-  static public function getForProjectBuild()
+  static public function getForProjectBuildHistory()
   {
-    return CINTIENT_BASE_URL . '/project/?build';   
+    return CINTIENT_BASE_URL . '/project/history/';   
   }
   
   static public function getForProjectBuildView(Project $project, ProjectBuild $build)
   {
-    return CINTIENT_BASE_URL . "/project/?pid={$project->getId()}&bid={$build->getId()}";
+    return CINTIENT_BASE_URL . "/project/history/?pid={$project->getId()}&bid={$build->getId()}";
   }
   
   static public function getForProjectEdit()
@@ -64,7 +74,7 @@ class UrlManager
   
   static public function getForProjectNew()
   {
-    return CINTIENT_BASE_URL . '/project/?new';
+    return CINTIENT_BASE_URL . '/project/new/';
   }
   
   static public function getForProjectView(Project $project)

@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
-  menuLeft="Project edit"
+  menuLeft="Edit project"
   menuRight="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a> | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"usersPane\">users</a></span>"}
     <div id="paneContainer">
       <div id="metadataPane" class="exclusivePane">

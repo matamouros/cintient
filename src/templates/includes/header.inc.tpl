@@ -57,7 +57,7 @@
   <div id="menu" class="containerTopLevel">
     <nav id="mainMenu">
       <ul>
-        <li id="historyBack"><a href="{URLManager::getForDashboard()}">&larr;</a></li>
+        <li id="historyBack">{if $globals_subSection == 'dashboard'}&#8226;{else}<a href="{URLManager::getForDashboard()}">&larr;</a>{/if}</li>
         <li id="sectionName">{if isset($menuLeft)}{$menuLeft}{/if}</li>
         {if isset($menuRight)}<li class="sectionTopOptions">{$menuRight}</li>{/if}
       </ul>

@@ -152,6 +152,7 @@ if (!empty($GLOBALS['section'])) {
     SystemEvent::raise(SystemEvent::DEBUG, "Routing to known template function. [FUNCTION=TemplateManager::{$GLOBALS['templateMethod']}] [URI={$GLOBALS['uri']}]", __METHOD__);
     #endif
     TemplateManager::$GLOBALS['templateMethod']();
+    $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
     $GLOBALS['smarty']->display($GLOBALS['templateFile']);
     exit;
   }

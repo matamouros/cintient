@@ -73,6 +73,7 @@ class ScmConnector_Svn implements ScmConnectorInterface
     if (!preg_match('/revision (\d+)/', $lastline, $matches)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not get revision number from update. [COMMAND=\"{$command}\"] [RET={$return}] [LASTLINE=\"{$lastline}\"]", __METHOD__);
       $rev = null;
+      return false;
     }
     $rev = (int)$matches[1];
     return true;

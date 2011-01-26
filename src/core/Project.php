@@ -517,6 +517,25 @@ EOT;
     $this->setSignature($this->_getCurrentSignature());
   }
   
+  /**
+   * Checks if a given user has at least the specified $accessLevel.
+   * 
+   * @param int $accessLevel
+   * 
+   * @return bool
+   */
+  public function userHasAccessLevel(User $user, $accessLevel)
+  {
+    $hasAccessLevel = false;
+    foreach ($this->_users as $userPair) {
+      if ($user->getId() == $userPair[0]) {
+        $hasAccessLevel = ($userPair[1] >= $accessLevel);
+        break;
+      }
+    }
+    return $hasAccessLevel;
+  }
+  
   static public function getById($user, $id, $access = Access::READ, array $options = array())
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;

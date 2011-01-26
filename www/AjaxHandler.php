@@ -64,8 +64,8 @@ $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) !
 //
 // Ajax related
 //
-if (preg_match('/^\/ajax\/(?:([\w-]+)\/)?$/', $GLOBALS['uri'], $matches)) {
-  if (count($matches) == 2) {
+if (preg_match('/^\/ajax\/([\w-]+)(?:\/([\w-]+))?\/$/', $GLOBALS['uri'], $matches)) {
+  if (count($matches) == 1) {
     $GLOBALS['section'] = 'default';
     $GLOBALS['subSection'] = $matches[1];
   } else {
@@ -96,13 +96,15 @@ if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
 // Ajax related
 //
 if (!empty($GLOBALS['section'])) {
-  $GLOBALS['ajaxMethod'] = $GLOBALS['subSection'];
   if (strpos($GLOBALS['subSection'], '-') !== false) {
     $subSectionPieces = explode('-', $GLOBALS['subSection']);
     array_walk($subSectionPieces, function(&$value) {
       $value = ucfirst($value);
     });
     $GLOBALS['ajaxMethod'] = lcfirst(implode($subSectionPieces));
+  }
+  if ($GLOBALS['section'] != 'default') {
+    $GLOBALS['ajaxMethod'] = $GLOBALS['section'] . '_' . $GLOBALS['subSection'];
   }
   if (method_exists('AjaxManager', $GLOBALS['ajaxMethod'])) {
     #if DEBUG

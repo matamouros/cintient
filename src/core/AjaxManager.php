@@ -175,24 +175,44 @@ class AjaxManager
     exit;
   }
   
-  static public function triggerBuild()
+  static public function project_build()
   {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
     if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
-      //TODO: error
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
       exit;
     }
-    if ($_SESSION['project']->getUserId() != $_SESSION['user']->getId()) {
-      //TODO: not authorized
+    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::BUILD)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+        'projectStatus' => $_SESSION['project']->getStatus(),
+      ));
       exit;
     }
-    if ($_SESSION['project']->getAccessLevel() < Access::BUILD) {
-      //TODO: not enough perms
-      exit;
+
+    ProjectLog::write("A building was triggered.");
+    if (!$_SESSION['project']->build(true)) {
+      ProjectLog::write("Building failed.");
+      echo json_encode(array(
+        'success' => true,
+        'projectStatus' => $_SESSION['project']->getStatus(),
+      ));
+    } else {
+      ProjectLog::write("Building successful.");
+      echo json_encode(array(
+        'success' => true,
+        'projectStatus' => $_SESSION['project']->getStatus(),
+      ));
     }
-    if (!$_SESSION['project']->isModified()) {
-      //TODO: do nothing
-      exit;
-    }
-    $_SESSION['project']->build();
+    exit;
   }
 }

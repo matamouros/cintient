@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl' menuLeft="Dashboard" menuRight="<a href=\"{URLManager::getForProjectNew()}\">create project</a>"}
+*}{include file='includes/header.inc.tpl' menuLeft="Dashboard" menuRight="<a href=\"{URLManager::getForProjectNew()}\">new project</a>"}
 {if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
