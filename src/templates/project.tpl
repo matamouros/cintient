@@ -22,7 +22,7 @@
   menuRight="<a href=\"{URLManager::getForProjectBuildHistory()}\">build history</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
     <article id="project">
       <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
-      <div id="statusContainer"><div class="triggerBuild status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
+      <div id="statusContainer"><div class="triggerBuild status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{elseif $smarty.session.project->getStatus()==Project::STATUS_BUILDING}Working{elseif $smarty.session.project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
       <div class="title">{$smarty.session.project->getTitle()}</div>
       <div id="projectStatus_{$smarty.session.project->getId()}" class="details">
         {if !empty($project_latestBuild)}Latest: build {$project_latestBuild->getId()}, r{$project_latestBuild->getScmRevision()}, {if $project_latestBuild->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$project_latestBuild->getDate()|date_format}.{else}Click <a href="#" class="triggerBuild">here</a> to trigger the first build for this project.{/if}

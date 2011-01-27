@@ -47,7 +47,7 @@ $(document).ready(function() {
         </select>
 {/if}  
       </div>
-      <div class="details">{if !empty($project_buildList)}Latest: build {$project_buildList.0->getId()}, r{$project_buildList.0->getScmRevision()}, {if $project_buildList.0->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.{else}Click <a href="{URLManager::getForProjectBuild($smarty.session.project)}">here</a> to trigger the first build for this project.{/if}</div>
+      <div class="details">{if !empty($project_buildList)}Latest: build {$project_buildList.0->getId()}, r{$project_buildList.0->getScmRevision()}, {if $project_buildList.0->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.{else}Click <a href="{URLManager::getForAjaxProjectBuild()}">here</a> to trigger the first build for this project.{/if}</div>
     </article>
 {if !empty($project_buildList)}
 <script type="text/javascript">
