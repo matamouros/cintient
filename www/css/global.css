@@ -582,14 +582,14 @@ article#project .avatar
   border: 1px solid #fff;
 }
 
-article#project #buildsList
+#buildsList
 {
   margin-left: 3px;
   margin-top: 0px;
   font-size: .8em;
   width: 335px;
   height: 40px;
-  float: right;
+  float: left;
   clear: none;
 }
 

@@ -24,31 +24,26 @@
 {include file='includes/header.inc.tpl'
   menuLeft="Build history"
   menuRight=$menuRight}
-    <article id="project">
-      <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
-      <div id="statusContainer"><div class="status projectStatus{if $smarty.session.project->getStatus()==Project::STATUS_OK}Ok{else}Failed{/if}"></div></div>
-      <div class="title">{$smarty.session.project->getTitle()}</div>
-      <div id="buildsList">
+{include file='includes/projectHeader.inc.tpl' project=$smarty.session.project project_latestBuild=$project_buildList.0}
+    <div id="buildsList">
 {if !empty($project_buildList)}
-        <div class="label">Choose a different build:</div>
+      <div class="label">Choose a different build:</div>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
   $('#buildsListDropdown').change(function() {
-	  window.location.replace($(this).find("option:selected").attr('value'));
+    window.location.replace($(this).find("option:selected").attr('value'));
   });
 });
 //]]> 
 </script>
-        <select class="dropdown" id="buildsListDropdown">
+      <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-          <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
+        <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
-        </select>
+      </select>
 {/if}  
-      </div>
-      <div class="details">{if !empty($project_buildList)}Latest: build {$project_buildList.0->getId()}, r{$project_buildList.0->getScmRevision()}, {if $project_buildList.0->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$project_buildList.0->getDate()|date_format}.{else}Click <a href="{URLManager::getForAjaxProjectBuild()}">here</a> to trigger the first build for this project.{/if}</div>
-    </article>
+    </div>
 {if !empty($project_buildList)}
 <script type="text/javascript">
 // <![CDATA[
