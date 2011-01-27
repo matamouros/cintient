@@ -140,7 +140,7 @@ class Project
       if ($this->getStatus() == self::STATUS_UNINITIALIZED || !file_exists($this->getScmLocalWorkingCopy())) {
         if (!ScmConnector::checkout($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't checkout sources. [PROJECTID={$this->getId()}]", __METHOD__);
-          $this->setStatus(self::STATUS_ERROR);
+          $this->setStatus(self::STATUS_UNINITIALIZED);
           return false;
         }
         $this->setStatus(self::STATUS_MODIFIED);
@@ -163,6 +163,10 @@ class Project
         return false;
       }
     }
+    
+    // We're now building
+    $this->setStatus(self::STATUS_BUILDING);
+    $this->_save(); // We want the building status to update imediatelly
     
     // 3. trigger unit tests and all the rules specified in the rules engine
     if (!($this->_integrationBuilder instanceof BuilderElement_Project)) {
