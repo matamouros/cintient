@@ -77,8 +77,12 @@ class UrlManager
     return CINTIENT_BASE_URL . '/project/new/';
   }
   
-  static public function getForProjectView(Project $project)
+  static public function getForProjectView(Project $project = null)
   {
-    return CINTIENT_BASE_URL . "/project/?pid={$project->getId()}";
+    $param = '';
+    if ($project instanceof Project) {
+      $param = "?pid={$project->getId()}";
+    }
+    return CINTIENT_BASE_URL . "/project/" . $param;
   }
 }

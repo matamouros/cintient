@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
-  menuLeft="Project"
-  menuRight="<a href=\"{URLManager::getForProjectBuildHistory()}\">build history</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
+  subSectionTitle="Project"
+  menuLinks="<a href=\"{URLManager::getForProjectBuildHistory()}\">build history</a> | <a href=\"{URLManager::getForProjectEdit()}\">edit</a>"}
 {include file='includes/projectHeader.inc.tpl' project=$smarty.session.project project_latestBuild=$project_latestBuild}
 {include file='includes/footer.inc.tpl'}

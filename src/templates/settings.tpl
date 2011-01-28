@@ -17,7 +17,8 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl' menuLeft="Settings"}
+*}{include file='includes/header.inc.tpl'
+  subSectionTitle="Settings"}
     <div id="settingsContainer" class="container">
       <ul>
         <li class="settingsNode">

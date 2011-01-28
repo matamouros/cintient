@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl' menuLeft="New project"}
+*}{include file='includes/header.inc.tpl' subSectionTitle="New project" level=1}
     <form action="{URLManager::getForProjectNew()}" method="post">
     <div id="newProjectContainer" class="container">
       <div class="label">Project title</div>

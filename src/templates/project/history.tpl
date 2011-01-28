@@ -19,11 +19,12 @@
 
 *}
 {if !empty($project_buildList)}
-  {$menuRight="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a> | <a href=\"#\" class=\"junitReport\">unit</a></span>"}
+  {$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a> | <a href=\"#\" class=\"junitReport\">unit</a></span>"}
 {/if}
 {include file='includes/header.inc.tpl'
-  menuLeft="Build history"
-  menuRight=$menuRight}
+  subSectionTitle="Build history"
+  menuLinks=$menuLinks
+  backLink="{URLManager::getForProjectView()}"}
 {include file='includes/projectHeader.inc.tpl' project=$smarty.session.project project_latestBuild=$project_buildList.0}
     <div id="buildsList">
 {if !empty($project_buildList)}
