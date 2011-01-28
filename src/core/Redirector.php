@@ -55,7 +55,7 @@ class Redirector
   
   public static function redirectToUri($url)
   {
-    SystemEvent::raise(SystemEvent::DEBUG, "Redirecting from [URI={$GLOBALS['uri']}] to [URI={$uri}]");
+    SystemEvent::raise(SystemEvent::DEBUG, "Redirecting from [URI={$GLOBALS['uri']}] to [URL={$url}]");
     header('Location: ' . $url);
     exit;
   }
