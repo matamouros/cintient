@@ -20,6 +20,30 @@
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
  *  
  */
+
+/**
+ *  
+ *  This is Cintient's installation script. The only way to make it past
+ *  installation is to delete this and boot.xml, which should be done at
+ *  the end of this very script, if every pre-requisite is satisfied.
+ *  
+ *  @author Pedro Eugenio <voxmachina@gmail.com>
+ *  @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
+ *  
+ */
+
+//
+// Try to check if we already have our own document root setup, i.e.,
+// a vhost (from a previous install). Adapt relative URIs accordingly.
+//
+$uriPrefix = '';
+if (!preg_match('/(.+\/www)\/?$/', $_SERVER['DOCUMENT_ROOT'], $matches) ||
+     dirname(__FILE__) . '/www' != $matches[1]
+) {
+  $uriPrefix = 'www/';
+}
+$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $uriPrefix;
+
 //
 // Check for php support
 //
@@ -72,7 +96,7 @@ if (isset($_POST) && count($_POST) > 0) {
   }
   
   // test xml install file one more time
-  $configVars = new SimpleXMLElement('boot.xml', LIBXML_NOCDATA, true);
+  $configVars = new SimpleXMLElement(dirname(__FILE__) . '/boot.xml', LIBXML_NOCDATA, true);
   if (!$configVars instanceOf SimpleXMLElement) {
     die("ERROR: Could not load installation file!");
   }
@@ -148,7 +172,7 @@ if (isset($_POST) && count($_POST) > 0) {
   $user->init();
   $user->setPassword($userPassword);
   
-  header('Location: '.CINTIENT_BASE_URL.'/dashboard');
+  header('Location: ' . URLManager::getForDashboard());
   exit;
 }
 
@@ -180,7 +204,7 @@ exit;
 //
 // Try to read settings file
 //
-$settings = new SimpleXMLElement('boot.xml', LIBXML_NOCDATA, true);
+$settings = new SimpleXMLElement(dirname(__FILE__) . '/boot.xml', LIBXML_NOCDATA, true);
 if (!$settings instanceOf SimpleXMLElement) {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -209,9 +233,9 @@ exit;
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Cintient Installation</title>
-	<link rel="stylesheet" href="www/css/global.css" />
-	<script type="text/javascript" src="www/js/jquery-1.4.4.js"></script>
-	<script type="text/javascript" src="www/js/installer.js"></script>
+	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/global.css" />
+	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/jquery-1.4.4.js"></script>
+	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/installer.js"></script>
 </head>
 <body id="installer">
 	<form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">

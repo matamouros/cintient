@@ -27,6 +27,15 @@
 |* | EARLY SANATIZATION                                             | *|
 \* +----------------------------------------------------------------+ */
 //
+// Nothing works until the installation file is out of the way.
+//
+if (file_exists(dirname(__FILE__) . '/../index.php') ||
+    file_exists(dirname(__FILE__) . '/../boot.xml')
+) {
+  include dirname(__FILE__) . '/../index.php';
+  exit;
+}
+//
 // Proxy layer compatibility hack, if there is one.
 //
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -37,18 +46,6 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 //
 header('X-Frame-Options: DENY');
 header('Content-type: text/html; charset=UTF-8');
-//
-// Do we have SCRIPT_URL?
-//TODO: Check if this is really required
-//
-/*
-if (!isset($_SERVER['SCRIPT_URL'])) {
-  if (!isset($_SERVER['REQUEST_URI'])) {
-    echo "Report back to us what webserver you are using, because Cintient is currently not compatible with it!";
-    exit;
-  }
-  $_SERVER['SCRIPT_URL'] = substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
-}*/
 
 
 

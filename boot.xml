@@ -58,7 +58,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="http://localhost/cintient/www" />';]]></input> 
+            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" />';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
