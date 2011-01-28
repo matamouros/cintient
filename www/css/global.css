@@ -78,6 +78,19 @@ a:hover
   clear: both;
 }
 
+#mainMenu #historyBack
+{
+  font-size: .9em;
+  font-weight: bold;
+  vertical-align: text-top;
+  letter-spacing: .3em;
+}
+
+.ghosted
+{
+  opacity: .3;
+}
+
 #mainMenu ul
 {
   box-shadow: 2px 2px 10px #111;
@@ -91,6 +104,7 @@ a:hover
 
 #mainMenu ul li
 {
+  height: 20px;
   font-variant: small-caps;
   font-size: 1.1m;
   color: #fff;
@@ -117,6 +131,8 @@ a:hover
   -webkit-border-radius: 6px 0px 0px 6px;
   -moz-border-radius: 6px 0px 0px 6px;
   border-radius: 6px 0px 0px 6px;
+  padding-right: 5px;
+  width: 42px;
 }
 
 #mainMenu ul li:last-child
