@@ -29,9 +29,7 @@
 //
 // Nothing works until the installation file is out of the way.
 //
-if (file_exists(dirname(__FILE__) . '/../index.php') ||
-    file_exists(dirname(__FILE__) . '/../boot.xml')
-) {
+if (file_exists(dirname(__FILE__) . '/../index.php')) {
   include dirname(__FILE__) . '/../index.php';
   exit;
 }
