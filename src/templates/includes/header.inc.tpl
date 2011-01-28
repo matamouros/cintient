@@ -58,7 +58,7 @@
     <nav id="mainMenu">
       <ul>
         <li id="historyBack">{if isset($backLink)}<a href="{URLManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{URLManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
-        <li id="sectionName">{if isset($subSectionTitle)}{$subSectionTitle}{/if}</li>
+        <li id="sectionName">{$subSectionTitle}</li>
         {if isset($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
       </ul>
     </nav>
