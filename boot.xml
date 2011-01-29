@@ -60,20 +60,6 @@
   <step number="2" description="Local filesystem permissions">
     <item title="File permissions">
       <items>
-        <!-- INSTALL DIR -->
-        <item label="Installation directory">
-          <methods>
-            <method><![CDATA[$installDir = getcwd();]]></method>
-          </methods>
-          <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_INSTALL_DIR" id="CONFIG_VAR-CINTIENT_INSTALL_DIR" value="'.getcwd().'/" /></div>';]]></input> 
-          </inputs>
-          <messages>
-            <success><![CDATA["Ready.";]]></success>
-            <error><![CDATA["Check write permissions on the directory location.";]]></error>
-          </messages>
-        </item>
-        <!-- /INSTALL DIR -->
         <!-- BASE URL -->
         <item label="Base URL where Cintient will run">
           <methods>
@@ -88,6 +74,20 @@
           </messages>
         </item>
         <!-- /BASE URL -->
+        <!-- INSTALL DIR -->
+        <item label="Installation directory">
+          <methods>
+            <method><![CDATA[$installDir = getcwd();]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_INSTALL_DIR" id="CONFIG_VAR-CINTIENT_INSTALL_DIR" value="'.getcwd().'/" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the directory location.";]]></error>
+          </messages>
+        </item>
+        <!-- /INSTALL DIR -->
         <!-- LOG FILE -->
         <item label="The application log file">
           <methods>

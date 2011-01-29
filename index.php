@@ -287,24 +287,31 @@ $(document).ready(function() {
     <div id="mainMenu">
       <ul>
         <li id="historyBack"><?php
+$stepNumber = 1;
 if (isset($_GET['step'])) {
-  for ($i=0; $i<count($settings->step); $i++) {
-    if ($_GET['step'] != $i+1) {
+  $stepNumber = $_GET['step'];
+}
+for ($i=0; $i<count($settings->step); $i++) {
+  if ($stepNumber != $i+1) {
 ?><span class="step-<?php echo $i+1; ?> ghosted">&#8226;</span><?php
-    } else {
+  } else {
 ?><span class="step-<?php echo $i+1; ?>">&#8226;</span><?php
-    }
   }
 }
 ?></li>
         <li id="sectionName"><?php
 if (!isset($_GET['step']) || !isset($settings->step[$_GET['step']-1])) {
-  $_GET['step'] = 1;
+  $stepNumber = 1;
 }
-echo $settings->step[$_GET['step']-1]["description"];
+echo $settings->step[$stepNumber-1]["description"];
 ?></li>
       </ul>
     </div>
+<script type="text/javascript">
+// <![CDATA[
+$('#mainMenu').hide();
+// ]]> 
+</script>
   </div>
   <div class="containerTopLevel">
 	<form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -372,7 +379,8 @@ if (isset($_GET['step'])) {
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  installer = new Installer({index:<?php echo $index; ?>});
+	$('#mainMenu').fadeIn(500);
+  new Installer({index:<?php echo $index; ?>});
 });
 // ]]>
 </script>
@@ -389,6 +397,7 @@ $(document).ready(function() {
 			$('#splashHeader img').fadeOut(500);
 			setTimeout(
 				function(){
+					$('#mainMenu').fadeIn(500);
 				  new Installer({index:<?php echo $index; ?>});
 			  },
 			  700

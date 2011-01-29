@@ -103,7 +103,6 @@ Installer.prototype = {
   /* shows a step given its array offset */
   showStep : function (index)
   {
-	  console.log(this._steps);
     var step   = this._steps[index];
     
     if (!this.notBuilt(index)) {
@@ -153,7 +152,6 @@ Installer.prototype = {
     //
     // Update the breadcrumbs
     //
-    console.log(index);
     $('#mainMenu #historyBack .step-' + (index+2)).addClass('ghosted');
     $('#mainMenu #historyBack .step-' + (index+1)).removeClass('ghosted');
   },
