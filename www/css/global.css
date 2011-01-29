@@ -357,7 +357,7 @@ html
   float: left;
 }
 
-#submitButton
+#submitButton, .submitButton
 {
   float: right;
 }
@@ -940,105 +940,4 @@ article#project .avatar
 {
   font-size: 12pt;
 }
-
-/* @end */
-
-
-/* @group Installer stuff */
-/* +----------------------------------------------------------------+ *\
-|* | INSTALLER STUFF                                                | *|
-\* +----------------------------------------------------------------+ */
-#installer form
-{
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  width: 500px;
-}
-
-#installer h1
-{
-  font-size: 2em;
-  font-weight: bold;
-  margin-top: 30px;
-  margin-bottom: 100px;
-}
-
-#installer h2
-{
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-#installer .installer_step
-{
-  text-align: left;
-  margin-bottom: 40px;
-}
-
-#installer .error
-{
-  color: rgb(255,40,0);
-}
-
-#installer .success
-{
-  color: green;
-}
-
-#installer .note
-{
-  font-size : 0.7em;
-  font-weight : normal;
-}
-
-#installer .element
-{
-  padding: 10px;
-  width: 450px;
-}
-
-#installer input
-{
-  background-color: #444;
-  border: 1px solid #222;
-  width: 450px;
-  height: 30px;
-}
-
-#installer .element strong
-{
-  width: 450px;
-  display: block;
-}
-
-#installer button
-{
-  float: right;
-  margin: 20px 35px 0 0;
-}
-
-#installer button, #installer #save
-{
-  width: auto;
-  height: auto;
-  padding: 4px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border: 1px solid #333;
-  background-color: #333;
-  border-radius: 15px;
-  color: #999;
-  box-shadow: 0px 0px 8px #222;
-  -moz-box-shadow: 0px 0px 8px #222;
-  -webkit-box-shadow: 0px 0px 8px #222;
-  cursor: pointer;
-}
-
-#installer .mandatory
-{
-  border: 1px solid #7A5559;
-}
-
 /* @end */

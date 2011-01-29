@@ -224,6 +224,14 @@ if (!$settings instanceOf SimpleXMLElement) {
 <?php
 exit;
 }
+$greetings = array(
+  'Greetings human.',
+  'Hello, Dave!',
+  "They'll fix you. They fix everything.",
+  'Looking for me?',
+  'Stay out of trouble.',
+  "This will all end in tears.",
+);
 //
 // Ok ready to start installation!
 //
@@ -233,87 +241,166 @@ exit;
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Cintient Installation</title>
+	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_anonymouspro.css" />
+  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_orbitron.css" />
+  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_syncopate.css" />
 	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/global.css" />
+	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/installer.css" />
 	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/jquery-1.4.4.js"></script>
 	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/installer.js"></script>
 </head>
 <body id="installer">
-	<form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-	<h1>Cintient Installation</h1>
-  <?php foreach ($settings->step as $step) : ?>
-    <div id="step-<?php echo $step['number']; ?>" class="installer_step hidden">
-    <h2>Step <?php echo $step["number"]; ?> - <?php echo $step["description"]; ?></h2>
-    <?php foreach ($step->item as $item) : ?>
-    <ul>
-  	 <li>
-  	   <strong><?php echo $item["title"]; ?>&nbsp;</strong>
-  	   <ul>
-  	   <?php foreach ($item->items->item as $element) : ?>
-  	     <li class="element">
-  	     <?php
-  	        $hasInputs = false;
-  	        if (isset($element->inputs)) {
-  	         $hasInputs = true;
-  	        }
-  	     ?>
-  	      <strong class="item">
-  	       <?php echo (string)$element['label']; ?>:&nbsp;
-  	     </strong>
-  	     <?php 
-  	       if($hasInputs) {
-            foreach ($element->inputs as $input) {
-              eval("\$out=".(string)$input->input);
-              echo $out;
-            }
-           } 
-         ?>
-  	     <?php
-  	       $retAll    = true;
-  	       foreach ($element->methods->method as $method) {
-             eval("\$retAll=\$retAll && ".(string)$method);
-  	       }
-  	     ?>
-    	   <?php if ($retAll) : ?>
-           <?php eval("\$msg=".(string)$element->messages->success); ?>
-    	     <span class="success"><?php echo $msg; ?></span>
-    	   <?php else : ?>
-    	     <?php eval("\$msg=".(string)$element->messages->error); ?>
-    	     <span class="error">ERROR</span>
-    	     <span class="error note"><?php echo $msg; ?></span>
-    	   <?php endif; ?>
-  	     </li>
-  	   <?php endforeach; ?>
-  	   </ul>
-  	 </li>
-    </ul>
-    </div>
-    <script type="text/javascript">
-    // <![CDATA[
-      jQuery('#step-<?php echo $step['number']; ?>').hide();
-    // ]]>
-    </script>
-    <?php endforeach; ?>
-  <?php endforeach; ?>
-  <input type="submit" class="hidden" name="save" id="save" value="save" />
-  <script type="text/javascript">
-    // <![CDATA[
-      jQuery('#save').hide();
-    // ]]>
-    </script>
-  </form>
+  <div id="splashHeader" class="container">
 <?php
-  $index = 0;
-  if (isset($_GET['step'])) {
-    $index = (int)$_GET['step']-1;
-  }
-?>  
+if (!isset($_GET['step'])) {
+?>
+    <header>
+      <hgroup>
+        <h1>Cintient</h1>
+        <img src="/imgs/redhalo.jpg" width="195" height="130">
+      </hgroup>
+    </header>
+    <div class="greetings"><?php echo $greetings[rand(0, count($greetings)-1)]; ?></div>
+  
 <script type="text/javascript">
 // <![CDATA[
-var installer;
-jQuery(document).ready(function() {
+$('#splashHeader h1').hide();
+$('#splashHeader img').hide();
+$('#splashHeader .greetings').hide();
+$(document).ready(function() {
+  $('#splashHeader h1').fadeIn(300);
+  $('#splashHeader img').fadeIn(300);
+  setTimeout(
+		function() {
+	    $('#splashHeader .greetings').fadeIn(1000);
+		},
+		1000
+  );
+});
+// ]]> 
+</script>
+<?php
+}
+?>
+  </div>
+  <div class="containerTopLevel">
+    <div id="mainMenu">
+      <ul>
+        <li id="historyBack"><?php
+if (isset($_GET['step'])) {
+  for ($i=0; $i<count($settings->step); $i++) {
+    if ($_GET['step'] != $i+1) {
+?><span class="step-<?php echo $i+1; ?> ghosted">&#8226;</span><?php
+    } else {
+?><span class="step-<?php echo $i+1; ?>">&#8226;</span><?php
+    }
+  }
+}
+?></li>
+        <li id="sectionName"><?php
+if (!isset($_GET['step']) || !isset($settings->step[$_GET['step']-1])) {
+  $_GET['step'] = 1;
+}
+echo $settings->step[$_GET['step']-1]["description"];
+?></li>
+      </ul>
+    </div>
+  </div>
+  <div class="containerTopLevel">
+	<form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<?php foreach ($settings->step as $step) : ?>
+  <div id="step-<?php echo $step['number']; ?>" class="installer_step hidden container">
+    <div>
+  <?php foreach ($step->item as $item) : ?>
+  	<ul class="item">
+    <?php foreach ($item->items->item as $element) : ?>
+  	  <li class="element">
+      <?php
+      $hasInputs = false;
+      if (isset($element->inputs)) {
+       $hasInputs = true;
+      }
+    	?>
+        <div class="label"><?php echo (string)$element['label']; ?></div>
+      <?php 
+      if ($hasInputs) {
+        foreach ($element->inputs as $input) {
+          eval("\$out=".(string)$input->input);
+          echo $out;
+        }
+      }
+      $retAll = true;
+      foreach ($element->methods->method as $method) {
+        eval("\$retAll=\$retAll && ".(string)$method);
+      }
+      
+      if ($retAll) : ?>
+      <?php eval("\$msg=".(string)$element->messages->success); ?>
+        <div class="success"><?php echo $msg; ?></div>
+      <?php else : ?>
+      <?php eval("\$msg=".(string)$element->messages->error); ?>
+        <div class="error"><?php echo $msg; ?></div>
+      <?php endif; ?>
+  	  </li>
+  	<?php endforeach; ?>
+  	</ul>
+
+<script type="text/javascript">
+// <![CDATA[
+$('#step-<?php echo $step['number']; ?>').hide();
+// ]]>
+</script>
+  <?php endforeach; ?>
+    </div>
+  </div>
+<?php endforeach; ?>
+  <div class="container">
+    <input type="submit" class="hidden submitButton" name="save" id="save" value="Next" />
+  </div>
+<script type="text/javascript">
+// <![CDATA[
+$('#save').hide();
+// ]]>
+</script>
+  </form>
+  </div>
+<?php
+$index = 0;
+if (isset($_GET['step'])) {
+  $index = (int)$_GET['step']-1;
+?>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
   installer = new Installer({index:<?php echo $index; ?>});
 });
 // ]]>
-</script>  
+</script>
+<?php
+} else {
+?>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  setTimeout(
+		function() {
+			$('#splashHeader .greetings').fadeOut(100);
+			$('#splashHeader h1').fadeOut(500);
+			$('#splashHeader img').fadeOut(500);
+			setTimeout(
+				function(){
+				  new Installer({index:<?php echo $index; ?>});
+			  },
+			  700
+			);
+	  },
+	  4000
+  );
+});
+// ]]>
+</script>
+<?php
+}
+?>
 </body>
 </html>

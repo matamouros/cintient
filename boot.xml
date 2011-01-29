@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
   <!-- REQUIREMENTS -->
-  <step number="1" description="Requirements">
+  <step number="1" description="Requirements checklist">
     <item title="Server">
       <items>
-        <!-- PHP -->
-        <item label="PHP">
-          <methods>
-            <method><![CDATA[version_compare(phpversion(), '5.3.3', '>=');]]></method>
-          </methods>
-          <messages>
-            <success><![CDATA["You've got version ".phpversion()." and is ok!";]]></success>
-            <error><![CDATA["You'll need at least version 5.3.3 or higher";]]></error>
-          </messages>
-        </item>
-        <!-- /PHP -->
         <!-- mod_rewrite -->
-        <item label="mod_rewrite">
+        <item label="Apache mod_rewrite">
           <methods>
             <method><![CDATA[in_array("mod_rewrite", apache_get_modules());]]></method>
           </methods>
           <messages>
-            <success><![CDATA["Active and OK!";]]></success>
-            <error><![CDATA["You'll need mod_rewrite support";]]></error>
+            <success><![CDATA["Detected.";]]></success>
+            <error><![CDATA["Apache mod_rewrite is required.";]]></error>
           </messages>
         </item>
         <!-- /mod_rewrite -->
+        <!-- PHP -->
+        <item label="PHP 5.3.x">
+          <methods>
+            <method><![CDATA[version_compare(phpversion(), '5.3.3', '>=');]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Detected version ".phpversion().".";]]></success>
+            <error><![CDATA["Version 5.3.3 or higher is required.";]]></error>
+          </messages>
+        </item>
+        <!-- /PHP -->
         <!-- sqlite3 -->
-        <item label="SQLite3">
+        <item label="PHP compiled with SQLite3 2.5.x">
           <methods>
             <method><![CDATA[extension_loaded('sqlite3') && sqlite_libversion() > '2.5';]]></method>
           </methods>
           <messages>
-            <success><![CDATA["You've got version ".sqlite_libversion()." and OK!";]]></success>
-            <error><![CDATA["You'll need sqlite3 version 2.5 or higher support";]]></error>
+            <success><![CDATA["Detected version ".sqlite_libversion().".";]]></success>
+            <error><![CDATA["PHP with sqlite3 version 2.5 or higher required.";]]></error>
           </messages>
         </item>
         <!-- /sqlite3 -->
         <!-- GD -->
-        <item label="GD">
+        <item label="PHP compiled with GD">
           <methods>
             <method><![CDATA[($gdInfo = gd_info());]]></method>
             <method><![CDATA[
@@ -47,18 +47,40 @@
             ]]></method>
           </methods>
           <messages>
-            <success><![CDATA["You've got version ".$gdInfo['GD Version']." and OK!";]]></success>
-            <error><![CDATA["You'll need to install GD with PNG and FreeType support";]]></error>
+            <success><![CDATA["Detected version ".$gdInfo['GD Version'].".";]]></success>
+            <error><![CDATA["PHP with GD (with PNG and FreeType support) is required.";]]></error>
           </messages>
         </item>
         <!-- /GD -->
+      </items>
+    </item>
+  </step>
+  <!-- /REQUIREMENTS -->
+  <!-- PERMISSIONS -->
+  <step number="2" description="Local filesystem permissions">
+    <item title="File permissions">
+      <items>
+        <!-- INSTALL DIR -->
+        <item label="Installation directory">
+          <methods>
+            <method><![CDATA[$installDir = getcwd();]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_INSTALL_DIR" id="CONFIG_VAR-CINTIENT_INSTALL_DIR" value="'.getcwd().'/" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the directory location.";]]></error>
+          </messages>
+        </item>
+        <!-- /INSTALL DIR -->
         <!-- BASE URL -->
-        <item label="Base URL">
+        <item label="Base URL where Cintient will run">
           <methods>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" style="width: 450px;" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -66,103 +88,54 @@
           </messages>
         </item>
         <!-- /BASE URL -->
-      </items>
-    </item>
-  </step>
-  <!-- /REQUIREMENTS -->
-  <!-- PERMISSIONS -->
-  <step number="2" description="Permissions">
-    <item title="File permissions">
-      <items>
         <!-- LOG FILE -->
-        <item label="Log file status">
+        <item label="The application log file">
           <methods>
             <method><![CDATA[$fp = @fopen('/var/log/cintient.log', 'a');]]></method>
             <method><![CDATA[@fclose($fp);]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" /></div>';]]></input> 
           </inputs>
           <messages>
-            <success><![CDATA["Permissions on this log file location are OK!";]]></success>
-            <error><![CDATA["You'll need to give write permissions to log file location";]]></error>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the file location.";]]></error>
           </messages>
         </item>
         <!-- /LOG FILE -->
         <!-- WORKING DIR -->
-        <item label="Working directory status">
+        <item label="Application work directory">
           <methods>
             <method><![CDATA[@mkdir('/var/run/cintient/.install', 0777, true);]]></method>
             <method><![CDATA[@rmdir('/var/run/cintient/.install');]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" /></div>';]]></input> 
           </inputs>
           <messages>
-            <success><![CDATA["Permissions on this working directory location are OK!";]]></success>
-            <error><![CDATA["you need to manually create this working directory location with read/write permissions";]]></error>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the directory location.";]]></error>
           </messages>
         </item>
         <!-- /WORKING DIR -->
-        <!-- PROJECTS DIR -->
-        <item label="Projects directory status">
-          <methods>
-            <method><![CDATA[@mkdir('/var/run/cintient/projects/.install', 0777, true);]]></method>
-            <method><![CDATA[@rmdir('/var/run/cintient/projects/.install');]]></method>
-          </methods>
-          <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_PROJECTS_DIR" id="CONFIG_VAR-CINTIENT_PROJECTS_DIR" value="projects/" />';]]></input> 
-          </inputs>
-          <messages>
-            <success><![CDATA["Permissions on this working directory location are OK!";]]></success>
-            <error><![CDATA["you need to manually create this working directory location with read/write permissions";]]></error>
-          </messages>
-        </item>
-        <!-- /PROJECTS DIR -->
-        <!-- INSTALL DIR -->
-        <item label="Installation directory status">
-          <methods>
-            <method><![CDATA[$installDir = getcwd();]]></method>
-          </methods>
-          <inputs>
-            <input><![CDATA['<input type="text" name="CONFIG_VAR-CINTIENT_INSTALL_DIR" id="CONFIG_VAR-CINTIENT_INSTALL_DIR" value="'.getcwd().'/" />';]]></input> 
-          </inputs>
-          <messages>
-            <success><![CDATA["Permissions on this installation directory location are OK!";]]></success>
-            <error><![CDATA["you need to manually create this installation directory location";]]></error>
-          </messages>
-        </item>
-        <!-- /INSTALL DIR -->
-        <!-- Config File -->
-        <item label="Config file status">
-          <methods>
-            <method><![CDATA[$fp = @fopen($installDir . "/src/config/cintient.conf.php" , "a+");]]></method>
-            <method><![CDATA[@fclose($fp);]]></method>
-          </methods>
-          <messages>
-            <success><![CDATA["All is OK!";]]></success>
-            <error><![CDATA["You'll need to create this file with read/write permissions";]]></error>
-          </messages>
-        </item>
-        <!-- /Config File -->
         <!-- HTACCESS File -->
-        <item label=".htaccess file status">
+        <!--item label=".htaccess">
           <methods>
             <method><![CDATA[$fp = @fopen("www/.htaccess" , "a+");]]></method>
             <method><![CDATA[@fclose($fp);]]></method>
           </methods>
           <messages>
-            <success><![CDATA["All is OK!";]]></success>
-            <error><![CDATA["You'll need to create this file: www/.htaccess with read/write permissions for the install process";]]></error>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the file location.";]]></error>
           </messages>
-        </item>
+        </item-->
         <!-- /HTACCESS File -->
       </items>
     </item>
   </step>
   <!-- /PERMISSIONS -->  
   <!-- ADMIN SETTINGS -->
-  <step number="3" description="Admin">
+  <step number="3" description="Administration account">
     <item title="Admin settings">
       <items>
         <!-- NAME -->
@@ -171,7 +144,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -185,7 +158,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 356px;"><input class="textfield" style="width: 350px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -199,7 +172,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -213,7 +186,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -227,7 +200,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<input type="text" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" />';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>

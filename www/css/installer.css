@@ -1,0 +1,127 @@
+/* @override http://cintient/css/installer.css */
+
+/*
+ * 
+ *  Cintient, Continuous Integration made simple.
+ *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *
+ *  This file is part of Cintient.
+ *
+ *  Cintient is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Cintient is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
+ 
+ 
+#installer form
+{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 500px;
+}
+
+#installer .installer_step
+{
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+#installer .error
+{
+  color: #FF2800;
+}
+
+#installer .success
+{
+  color: #7CC400;
+}
+
+#installer .note
+{
+  font-size : 0.7em;
+  font-weight : normal;
+}
+
+#installer .element
+{
+  padding: 10px;
+  width: 450px;
+}
+
+#installer .element strong
+{
+  width: 450px;
+  display: block;
+}
+
+#installer button, input[type=submit]
+{
+  float: right;
+  margin-right: 10px;
+}
+
+#installer button, #installer #save
+{
+  color: #555;
+  font-size: 1.1em;
+  width: auto;
+  height: auto;
+  border: 2px solid #999;
+  padding-left: 10px;
+  padding-right: 10px;
+  -webkit-border-radius: 16px 16px 16px 16px;
+  -moz-border-radius: 16px 16px 16px 16px;
+  border-radius: 16px 16px 16px 16px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  /*background: rgb(230,230,230);*/
+  /*background: rgb(124,196,0);*/
+  /*background: rgb(255,40,0);*/
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  cursor: pointer;
+}
+
+#installer .mandatory
+{
+  /*border: 1px solid #7A5559;*/
+}
+
+#splashHeader .greetings
+{
+  margin-top: 60px;
+  font-size: 2em;
+}
+
+.installer_step ul.item
+{
+  clear: both;
+  padding-top:20px;
+}
+
+.label
+{
+  font-size: 1.4em;
+}
+
+.textfieldContainer
+{
+  margin-bottom: 3px;
+}

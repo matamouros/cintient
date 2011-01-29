@@ -74,23 +74,50 @@ Installer.prototype = {
       }
     }
   },
+  /* Nice highlights for all buttons and input type submits. */
+  highlightButton : function(button)
+  {
+    $(button).each( function() {
+  	  $(this).hover(
+	    function() {
+	      $(this).css({
+	        "cursor" : "pointer",
+	        "border" : "2px solid rgb(255,40,0)",
+	        "box-shadow" : "0px 0px 40px rgb(255,40,0)",
+	        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
+	        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
+	      });
+	    },
+	    function() {
+	      $(this).css({
+	        "cursor" : "default",
+	        "border" : "2px solid #999",
+	        "box-shadow" : "2px 2px 10px #111",
+	        "-webkit-box-shadow" : "#111 2px 2px 10px",
+	        "-moz-box-shadow" : "#111 2px 2px 10px"
+	      });
+	    });
+	  }
+    );  
+  },
   /* shows a step given its array offset */
   showStep : function (index)
   {
+	  console.log(this._steps);
     var step   = this._steps[index];
     
     if (!this.notBuilt(index)) {
       var button = document.createElement('button'), 
-          backBtn;       
-    
+          backBtn;
+      this.highlightButton(button);
       /* show next only if this step has no errors */
       if (jQuery('#'+this.options.elemsIds.step + '-' + (index+1) + ' .' + this.options.elemsClasses.error).length == 0) {
-        button.innerHTML  = 'Continue &#187;';
+        button.innerHTML  = 'Next &rarr;';
         button.className  = index;
         jQuery(button).bind('click', {self:this}, this.onStepChange);
         jQuery(step).append(button);
       } else {
-        button.innerHTML  = 'Reload';
+        button.innerHTML  = 'Retry';
         button.className  = index;
         jQuery(button).click(function(e) {
           e.preventDefault();
@@ -101,7 +128,8 @@ Installer.prototype = {
     
       if (index > 0) {
         backBtn           = document.createElement('button');
-        backBtn.innerHTML = '&#171; Back';
+        this.highlightButton(backBtn);
+        backBtn.innerHTML = '&larr; Back';
         backBtn.className = index;
         jQuery(backBtn).bind('click', {self:this}, this.stepBack);
         jQuery(step).append(backBtn);
@@ -109,7 +137,7 @@ Installer.prototype = {
       
       this._stepsBuilt.push(index);  
     }
-    jQuery(step).slideDown();
+    jQuery(step).fadeIn(150);
     this.mandatoryWatchGuard();
   },
   /* goes back a step */
@@ -119,9 +147,15 @@ Installer.prototype = {
     var self     = e.data.self,
         index    = jQuery(this).attr('class'),
         curStep  = self._steps[index--];        
-    jQuery(curStep).slideUp('slow', function () {
+    jQuery(curStep).fadeOut(100, function () {
       self.showStep(index);
-    });        
+    });
+    //
+    // Update the breadcrumbs
+    //
+    console.log(index);
+    $('#mainMenu #historyBack .step-' + (index+2)).addClass('ghosted');
+    $('#mainMenu #historyBack .step-' + (index+1)).removeClass('ghosted');
   },
   /* tells if a step was allready built */
   notBuilt : function (index)
@@ -148,16 +182,21 @@ Installer.prototype = {
         }
       }
       if (error) {
-        alert('Please fill all mandatory fields!');
+        alert('Make sure all required fields are filled.');
         return false;
       }
     }
     if (index < (self._steps.length-1)) {
       var curStep  = self._steps[index++];
       /* hide this and show next */
-      jQuery(curStep).slideUp('slow', function () {
+      jQuery(curStep).fadeOut(100, function () {
         self.showStep(index);
       });
+      //
+      // Update the breadcrumbs
+      //
+      $('#mainMenu #historyBack .step-' + index).addClass('ghosted');
+      $('#mainMenu #historyBack .step-' + (index+1)).removeClass('ghosted');
     } else {
       jQuery('#'+self.options.elemsIds.form).submit();
     }
