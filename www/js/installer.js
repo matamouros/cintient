@@ -83,9 +83,9 @@ Installer.prototype = {
 	      $(this).css({
 	        "cursor" : "pointer",
 	        "border" : "2px solid rgb(255,40,0)",
-	        "box-shadow" : "0px 0px 40px rgb(255,40,0)",
-	        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
-	        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
+	        "box-shadow" : "0px 0px 20px rgb(255,40,0)",
+	        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 20px",
+	        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 15px"
 	      });
 	    },
 	    function() {
