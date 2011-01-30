@@ -31,8 +31,9 @@
  * call init(); objects created from the database, no need to do anything.
  */
 class SystemSettings
-{
-  private $_dateInstalled;
+{ 
+  private $_settings;
+  private $_signature; // Internal flag to control whether a save to database is required
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -60,128 +61,100 @@ class SystemSettings
   
   public function __construct()
   {
-    
+    $this->_settings = array(
+      'allowUserSignUp' => false,
+    );
   }
   
   public function __destruct()
   {
-    if ($this->_changed) {
-      $this->_save();
-    }
-  }
-  
-  public function build()
-  {
-    
-  }
-  
-  /**
-   * Call this at the very creation of the project, for checking out the sources
-   * and initialization stuff like that.
-   */
-  public function init()
-  {
-    /*
-    if (!$this->_save()) {
-      return false;
-    }
-    //
-    // We can handle checkout failures, the user can retry it later. _save()
-    // calls, on the other hand are not the same.
-    //
-    $this->_scmConnector->checkout();
-    return true;
-    */
-    return $this->_scmConnector->checkout();
+    $this->_save();
   }
   
   private function _save()
   {
-    //TODO: database write logic
-    $sql = 'INSERT INTO project'
-         . ' (accesslevel,datebuild,datecheckedforchanges,datecreation,datemodification,description,title)'
-         . " VALUES ()";
-    $val = array();
-    if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
+    if ($this->_getCurrentSignature() == $this->_signature && !$force) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
       return false;
     }
-    $this->setId($id);
-    $this->setChanged(false);
+
+    if (!$stmt = Database::stmtPrepare("REPLACE INTO systemsettings (key, value) VALUES (?,?)")) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems trying to save system settings.", __METHOD__);
+      return false;
+    }
+    
+    foreach ($this->_settings as $key => $value) {
+      Database::stmtBind($stmt, array($key, $value));
+      if (!Database::stmtExecute($stmt)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems saving system settings.", __METHOD__);
+        return false;
+      }
+    }
+
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Saved. [PID={$this->getId()}] [TITLE={$this->getTitle()}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Saved system settings.", __METHOD__);
     #endif
+    $this->updateSignature();
     return true;
   }
   
-  static public function getById(User $user, $access, $id)
+  static public function &get()
   {
     $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $id = (int)$id;
-    $sql = 'SELECT p.*'
-         . ' FROM project p, project_user pu'
-         . ' WHERE p.id=?'
-         . ' AND p.id=pu.id'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?';
-    $val = array($id, $user->getId(), $access);
-    if ($rs = Database::query($sql, $val)) {
-      $ret = null;
-      if (!$rs->EOF) {
-        $ret = self::_getObject($rs);
-      }
-      @$rs->Close();
-      $rs = null;
-      unset($rs);
-    }
-    return $ret;
-  }
-  
-  static public function &getList(User $user, $access, array $options = array())
-  {
-    isset($options['sort']) ?: $options['sort'] = Sort::ALPHA_ASC;
-    
-    $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $sql = 'SELECT p.*'
-         . ' FROM project p, project_user pu'
-         . ' WHERE p.id=pu.id'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?';
-    if ($options['sort'] != Sort::NONE) {
-      $sql .= ' ORDER BY';
-      switch ($options['sort']) {
-        case Sort::ALPHA_ASC:
-          $sql .= ' title ASC';
-          break;
-        case Sort::ALPHA_DESC:
-          $sql .= ' title DESC';
-      }
-    }
-    $val = array($user->getId(), $access);
-    if ($rs = Database::query($sql, $val)) {
-      $ret = array();
-      while (!$rs->EOF) {
-        $ret[] = self::_getObject($rs);
-        $rs->MoveNext();
-      }
-      @$rs->Close();
-      $rs = null;
-      unset($rs);
+    $sql = 'SELECT *'
+         . ' FROM systemsettings';
+    if ($rs = Database::query($sql)) {
+      $ret = self::_getObject($rs);
     }
     return $ret;
   }
   
   /**
    * 
-   * @param unknown_type $rs
+   * @param Resultset $rs
    */
-  static private function _getObject($rs)
+  static private function _getObject(Resultset $rs)
   {
     $ret = new self();
-    $ret->setId($rs->fields['id']);
-    $ret->setChanged(false);
+    while ($rs->NextRow()) {
+      $ret->setSetting($rs->getKey(),$rs->getValue());
+    }
+    $ret->updateSignature();
     return $ret;
+  }
+  
+  static public function install()
+  {
+  $sql = <<<EOT
+CREATE TABLE IF NOT EXISTS systemsettings(
+  key VARCHAR(255) PRIMARY KEY,
+  value TEXT NOT NULL DEFAULT ''
+);
+EOT;
+    if (!Database::execute($sql)) {
+      SystemEvent::raise(SystemEvent::INFO, "Could not create SytemSettings related tables.", __METHOD__);
+      return false;
+    } else {
+      SystemEvent::raise(SystemEvent::INFO, "Created SytemSettings related tables.", __METHOD__);
+      return true;
+    }
+  }
+  
+  public function setSetting($key, $value)
+  {
+    $this->_settings[$key] = $value;
+  }
+  
+  public function updateSignature()
+  {
+    $this->setSignature($this->_getCurrentSignature());
+  }
+  
+  private function _getCurrentSignature()
+  {
+    $arr = get_object_vars($this);
+    $arr['_signature'] = null;
+    unset($arr['_signature']);
+    return md5(serialize($arr));
   }
 }

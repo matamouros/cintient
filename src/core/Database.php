@@ -163,6 +163,64 @@ class Database
     return $rs;
   }
   
+  static public function stmtPrepare($query)
+  {
+    $db = self::_singleton();
+    if (!$db) {
+      return false;
+    }
+    SystemEvent::raise(SystemEvent::DEBUG, 'Preparing.', __METHOD__);
+    $paramIndex = 0;
+    //
+    // Substitute ? for :1 type placeholders, since SQLite3 doesn't use the
+    // MySQL ? type placeholders and we don't want that to propagate out of
+    // this database handler class.
+    //
+    $query = preg_replace_callback(
+      '/\?/',
+      function ($match) use (&$paramIndex) {
+        $match = ':' . $paramIndex;
+        $paramIndex++;
+        return $match;
+      },
+      $query,
+      -1
+    );
+    if ($query === null) {
+      //TODO: error and abort
+      return false;
+    }
+    $stmt = $db->prepare($query);
+    return $stmt;
+  }
+  
+  static public function stmtBind(SQLite3Stmt &$stmt, array $values)
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, 'Binding.', __METHOD__);
+    //
+    // Fuck support for SQLite3 BLOB
+    //
+    for ($i = 0; $i < count($values); $i++) {
+      $type = SQLITE3_TEXT;
+      if (is_null($values[$i])) {
+        $type = SQLITE3_NULL;
+      } elseif (is_int($values[$i])) {
+        $type = SQLITE3_INTEGER;
+      } elseif (is_float($values[$i])) {
+        $type = SQLITE3_FLOAT;
+      }
+      if (!$stmt->bindValue(':' . $i, $values[$i], $type)) {
+        return false;
+      }
+    }
+  }
+  
+  static public function stmtExecute(SQLite3Stmt &$stmt)
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, 'Executing.', __METHOD__);
+    return $stmt->execute();
+  }
+  
   static public function beginTransaction()
   {
     $db = self::_singleton();

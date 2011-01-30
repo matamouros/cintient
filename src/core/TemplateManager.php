@@ -553,6 +553,15 @@ EOT;
     $myPicture->autoOutput("pictures/example.drawFilledSplineChart.png"); 
   }
   
+  static public function tests_system()
+  {
+    $s = new SystemSettings();
+    $s->setSetting('test2', true);
+    //$s->setSetting('test', true);
+    $s->setSetting('allowUserSignUp', true);
+    exit;
+  }
+  
   
   /* +----------------------------------------------------------------+ *\
   |* | DEFAULT                                                        | *|
@@ -688,6 +697,11 @@ EOT;
     }
     if (!Project::install()) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not setup Project object.", __METHOD__);
+      echo "Error"; // TODO: treat this properly
+      exit;
+    }
+    if (!SystemSettings::install()) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not setup SystemSettings object.", __METHOD__);
       echo "Error"; // TODO: treat this properly
       exit;
     }
