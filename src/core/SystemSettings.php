@@ -34,6 +34,8 @@ class SystemSettings
 { 
   private $_settings;
   private $_signature; // Internal flag to control whether a save to database is required
+  
+  const ALLOW_USER_SIGN_UP_LBL = 'allowUserSignUp';
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -61,8 +63,11 @@ class SystemSettings
   
   public function __construct()
   {
+    //
+    // Make sure that bool valued settings are cast to ints.
+    //
     $this->_settings = array(
-      'allowUserSignUp' => false,
+      self::ALLOW_USER_SIGN_UP_LBL => 0,
     );
   }
   
@@ -71,7 +76,7 @@ class SystemSettings
     $this->_save();
   }
   
-  private function _save()
+  private function _save($force = false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
       SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
@@ -135,6 +140,8 @@ EOT;
       SystemEvent::raise(SystemEvent::INFO, "Could not create SytemSettings related tables.", __METHOD__);
       return false;
     } else {
+      $self = new self();
+      $self->_save(true); // This allows us to save the default system settings values at install time.
       SystemEvent::raise(SystemEvent::INFO, "Created SytemSettings related tables.", __METHOD__);
       return true;
     }
