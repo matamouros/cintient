@@ -39,17 +39,15 @@ if (file_exists(dirname(__FILE__) . '/../index.php')) {
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
   $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
 }
-//
-// Clickjacking protection
-//
-header('X-Frame-Options: DENY');
-header('Content-type: text/html; charset=UTF-8');
 
 
 
 /* +----------------------------------------------------------------+ *\
 |* | SETUP                                                          | *|
 \* +----------------------------------------------------------------+ */
+
+ob_start();
+header('Content-type: text/html; charset=UTF-8');
 
 require 'src/config/cintient.conf.php';
 require 'lib/Smarty-3.0rc4/Smarty.class.php';
@@ -67,6 +65,7 @@ SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT
 // Volatile stuff
 //
 $GLOBALS['section'] = null;
+$GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings
 $GLOBALS['smarty'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;
@@ -111,7 +110,10 @@ if (preg_match('/^\/(?:([\w-]+)\/(?:([\w-]+)\/)?)?$/', $GLOBALS['uri'], $matches
 \* +----------------------------------------------------------------+ */
 
 if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
-  if ((!Auth::authenticate() || !($_SESSION['user'] instanceof User)) && $GLOBALS['subSection'] != 'install') {
+  if ((!Auth::authenticate() || !($_SESSION['user'] instanceof User)) &&
+      $GLOBALS['subSection'] != 'install' &&
+     ($GLOBALS['subSection'] != 'register' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])
+) {
     //
     // Special case of template logic here, because the URI will get overwritten
     // right after it. Somewhere, a cute small kitten died a horrible death.
@@ -147,7 +149,9 @@ if (!empty($GLOBALS['section'])) {
     SystemEvent::raise(SystemEvent::DEBUG, "Routing to known template function. [FUNCTION=TemplateManager::{$GLOBALS['templateMethod']}] [URI={$GLOBALS['uri']}]", __METHOD__);
     #endif
     TemplateManager::$GLOBALS['templateMethod']();
+    $GLOBALS['smarty']->assign('globals_settings', $GLOBALS['settings']);
     $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
+    ob_end_clean();
     $GLOBALS['smarty']->display($GLOBALS['templateFile']);
     exit;
   }

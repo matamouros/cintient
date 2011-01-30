@@ -39,14 +39,15 @@
     <div id="loginContainer" class="container">
       <div class="loginLabel">Username</div>
       <div class="loginTextfieldContainer">
-        <input class="loginTextfield" type="text" name="username">
+        <input class="loginTextfield" type="text" name="username" />
       </div>
       <div class="loginLabel">Password</div>
       <div class="loginTextfieldContainer">
-        <input class="loginTextfield" type="password" name="password">
+        <input class="loginTextfield" type="password" name="password" />
       </div>
       <input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
-      <input id="loginSubmitButton" type="submit" value="Go!">
+      <input id="loginSubmitButton" type="submit" value="Go!" />
+      {if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}<a href="{URLManager::getForRegister()}" class="optionLink">register</a>{/if}
     </div>
     </form>
 <script type="text/javascript">
