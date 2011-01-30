@@ -30,12 +30,12 @@
  * scope. Usage is simple: new objects created from scratch, don't forget to
  * call init(); objects created from the database, no need to do anything.
  */
-class SystemSettings
+class SystemSettings implements ArrayAccess
 { 
   private $_settings;
   private $_signature; // Internal flag to control whether a save to database is required
   
-  const ALLOW_USER_SIGN_UP_LBL = 'allowUserSignUp';
+  const ALLOW_USER_REGISTRATION = 'allowUserRegistration';
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -63,11 +63,12 @@ class SystemSettings
   
   public function __construct()
   {
+    $this->_signature = null;
     //
     // Make sure that bool valued settings are cast to ints.
     //
     $this->_settings = array(
-      self::ALLOW_USER_SIGN_UP_LBL => 0,
+      self::ALLOW_USER_REGISTRATION => 1,
     );
   }
   
@@ -76,13 +77,37 @@ class SystemSettings
     $this->_save();
   }
   
+  public function offsetSet($offset, $value)
+  {
+    if (is_null($offset)) {
+      $this->_settings[] = $value;
+    } else {
+      $this->_settings[$offset] = $value;
+    }
+  }
+  
+  public function offsetExists($offset)
+  {
+    return isset($this->_settings[$offset]);
+  }
+
+  public function offsetUnset($offset)
+  {
+    unset($this->_settings[$offset]);
+  }
+  
+  public function offsetGet($offset)
+  {
+    return isset($this->_settings[$offset]) ? $this->_settings[$offset] : null;
+  }
+  
   private function _save($force = false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
       SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
       return false;
     }
-
+    
     if (!$stmt = Database::stmtPrepare("REPLACE INTO systemsettings (key, value) VALUES (?,?)")) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems trying to save system settings.", __METHOD__);
       return false;
@@ -103,7 +128,7 @@ class SystemSettings
     return true;
   }
   
-  static public function &get()
+  static public function get()
   {
     $ret = false;
     $sql = 'SELECT *'
@@ -130,7 +155,7 @@ class SystemSettings
   
   static public function install()
   {
-  $sql = <<<EOT
+    $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS systemsettings(
   key VARCHAR(255) PRIMARY KEY,
   value TEXT NOT NULL DEFAULT ''
@@ -140,7 +165,7 @@ EOT;
       SystemEvent::raise(SystemEvent::INFO, "Could not create SytemSettings related tables.", __METHOD__);
       return false;
     } else {
-      $self = new self();
+      $self = new SystemSettings();
       $self->_save(true); // This allows us to save the default system settings values at install time.
       SystemEvent::raise(SystemEvent::INFO, "Created SytemSettings related tables.", __METHOD__);
       return true;
