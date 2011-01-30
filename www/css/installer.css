@@ -83,9 +83,9 @@
   -webkit-border-radius: 16px 16px 16px 16px;
   -moz-border-radius: 16px 16px 16px 16px;
   border-radius: 16px 16px 16px 16px;
-  box-shadow: 2px 2px 10px #111;
-  -webkit-box-shadow: #111 2px 2px 10px;
-  -moz-box-shadow: #111 2px 2px 10px;
+  box-shadow: 2px 2px 20px #111;
+  -webkit-box-shadow: #111 2px 2px 20px;
+  -moz-box-shadow: #111 2px 2px 15px;
   /*background: rgb(230,230,230);*/
   /*background: rgb(124,196,0);*/
   /*background: rgb(255,40,0);*/

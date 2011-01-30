@@ -237,7 +237,7 @@ html
 #loginContainer
 {
   width: 316px;
-  margin-bottom: 80px;
+  margin-bottom: 50px;
 }
 
 .loginTextfieldContainer
@@ -406,7 +406,7 @@ html
 #splashHeader
 {
   text-align: center;
-  margin-bottom: 70px;
+  margin-bottom: 50px;
 }
 
 #userHeader

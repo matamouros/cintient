@@ -226,11 +226,16 @@ exit;
 }
 $greetings = array(
   'Greetings human.',
-  'Hello, Dave!',
+  "I'm sorry, Dave, I'm afraid I can't do that.",
   "They'll fix you. They fix everything.",
   'Looking for me?',
   'Stay out of trouble.',
   "This will all end in tears.",
+  "Danger, Will Robinson!",
+  "Thank you for a very enjoyable game.",
+  "Shall we play a game?",
+  "Wouldn't you prefer a nice game of chess?",
+  "Greetings, Professor Falken.",
 );
 //
 // Ok ready to start installation!
