@@ -65,7 +65,7 @@ $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) !
 // Ajax related
 //
 if (preg_match('/^\/ajax\/([\w-]+)(?:\/([\w-]+))?\/$/', $GLOBALS['uri'], $matches)) {
-  if (count($matches) == 1) {
+  if (count($matches) <= 2) {
     $GLOBALS['section'] = 'default';
     $GLOBALS['subSection'] = $matches[1];
   } else {
