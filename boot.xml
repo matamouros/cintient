@@ -130,7 +130,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -144,7 +144,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 356px;"><input class="textfield" style="width: 350px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 406px;"><input class="textfield" style="width: 400px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -158,7 +158,7 @@
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input> 
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>

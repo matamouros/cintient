@@ -52,17 +52,17 @@ if (false) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Error: PHP is not running</title>
-	<style type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Error: PHP is not running</title>
+  <style type="text/css">
     .error {color:red;font-weight:bold;}
-	</style>
+  </style>
 </head>
 <body>
-	<h1>Cintient</h1>
-	<h2><span class="error">Error:</span> PHP is not running</h2>
-	<p>You'll need <a href="http://php.net">php</a> in order to start using Cintient</p>
-	<p>Be sure to fulfill the <a href="#">requirements</a></p>
+  <h1>Cintient</h1>
+  <h2><span class="error">Error:</span> PHP is not running</h2>
+  <p>You'll need <a href="http://php.net">php</a> in order to start using Cintient</p>
+  <p>Be sure to fulfill the <a href="#">requirements</a></p>
 </body>
 </html>
 <?php
@@ -184,17 +184,17 @@ if (!extension_loaded('SimpleXML') || !extension_loaded('libxml')) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Error: PHP is not running with SimpleXML and libxml Support</title>
-	<style type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Error: PHP is not running with SimpleXML and libxml Support</title>
+  <style type="text/css">
     .error {color:red;font-weight:bold;}
-	</style>
+  </style>
 </head>
 <body>
-	<h1>Cintient</h1>
-	<h2><span class="error">Error:</span> PHP is not running</h2>
-	<p>You'll need <a href="http://php.net">php</a> with SimpleXML in order to start using Cintient</p>
-	<p>Be sure to fulfill the <a href="#">requirements</a></p>
+  <h1>Cintient</h1>
+  <h2><span class="error">Error:</span> PHP is not running</h2>
+  <p>You'll need <a href="http://php.net">php</a> with SimpleXML in order to start using Cintient</p>
+  <p>Be sure to fulfill the <a href="#">requirements</a></p>
 </body>
 </html>
 <?php
@@ -210,15 +210,15 @@ if (!$settings instanceOf SimpleXMLElement) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Error: Could not load settings file</title>
-	<style type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Error: Could not load settings file</title>
+  <style type="text/css">
     .error {color:red;font-weight:bold;}
-	</style>
+  </style>
 </head>
 <body>
-	<h1>Cintient</h1>
-	<h2><span class="error">Error:</span>Could not load settings file, check for file: 'boot.xml' at the web project root</h2>
+  <h1>Cintient</h1>
+  <h2><span class="error">Error:</span>Could not load settings file, check for file: 'boot.xml' at the web project root</h2>
 </body>
 </html>
 <?php
@@ -244,21 +244,21 @@ $greetings = array(
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Cintient Installation</title>
-	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_anonymouspro.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Cintient Installation</title>
+  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_anonymouspro.css" />
   <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_orbitron.css" />
   <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_syncopate.css" />
-	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/global.css" />
-	<link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/installer.css" />
-	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/jquery-1.4.4.js"></script>
-	<script type="text/javascript" src="<?php echo $uriPrefix; ?>js/installer.js"></script>
+  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/global.css" />
+  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/installer.css" />
+  <script type="text/javascript" src="<?php echo $uriPrefix; ?>js/jquery-1.4.4.js"></script>
+  <script type="text/javascript" src="<?php echo $uriPrefix; ?>js/installer.js"></script>
 </head>
 <body id="installer">
-  <div id="splashHeader" class="container">
 <?php
 if (!isset($_GET['step'])) {
 ?>
+  <div id="splashHeader" class="container">
     <header>
       <hgroup>
         <h1>Cintient</h1>
@@ -266,7 +266,7 @@ if (!isset($_GET['step'])) {
       </hgroup>
     </header>
     <div class="greetings"><?php echo $greetings[rand(0, count($greetings)-1)]; ?></div>
-  
+  </div>
 <script type="text/javascript">
 // <![CDATA[
 $('#splashHeader h1').hide();
@@ -276,10 +276,10 @@ $(document).ready(function() {
   $('#splashHeader h1').fadeIn(300);
   $('#splashHeader img').fadeIn(300);
   setTimeout(
-		function() {
-	    $('#splashHeader .greetings').fadeIn(1000);
-		},
-		1000
+    function() {
+      $('#splashHeader .greetings').fadeIn(1000);
+    },
+    1000
   );
 });
 // ]]> 
@@ -287,8 +287,17 @@ $(document).ready(function() {
 <?php
 }
 ?>
+  
+  <div id="header" class="containerTopLevel">
+    <div id="userHeader" class="container">
+      <header>
+        <hgroup>
+          <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
+        </hgroup>
+      </header>
+    </div>
   </div>
-  <div class="containerTopLevel">
+  <div id="menu" class="containerTopLevel">
     <div id="mainMenu">
       <ul>
         <li id="historyBack"><?php
@@ -314,25 +323,26 @@ echo $settings->step[$stepNumber-1]["description"];
     </div>
 <script type="text/javascript">
 // <![CDATA[
+$('#logo').hide();
 $('#mainMenu').hide();
 // ]]> 
 </script>
   </div>
   <div class="containerTopLevel">
-	<form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+  <form method="post" id="install" name="install" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 <?php foreach ($settings->step as $step) : ?>
   <div id="step-<?php echo $step['number']; ?>" class="installer_step hidden container">
     <div>
   <?php foreach ($step->item as $item) : ?>
-  	<ul class="item">
+    <ul class="item">
     <?php foreach ($item->items->item as $element) : ?>
-  	  <li class="element">
+      <li class="element">
       <?php
       $hasInputs = false;
       if (isset($element->inputs)) {
        $hasInputs = true;
       }
-    	?>
+      ?>
         <div class="label"><?php echo (string)$element['label']; ?></div>
       <?php 
       if ($hasInputs) {
@@ -353,9 +363,9 @@ $('#mainMenu').hide();
       <?php eval("\$msg=".(string)$element->messages->error); ?>
         <div class="error"><?php echo $msg; ?></div>
       <?php endif; ?>
-  	  </li>
-  	<?php endforeach; ?>
-  	</ul>
+      </li>
+    <?php endforeach; ?>
+    </ul>
 
 <script type="text/javascript">
 // <![CDATA[
@@ -384,7 +394,8 @@ if (isset($_GET['step'])) {
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-	$('#mainMenu').fadeIn(500);
+  $('#logo').show(200);
+  $('#mainMenu').fadeIn(500);
   new Installer({index:<?php echo $index; ?>});
 });
 // ]]>
@@ -396,19 +407,21 @@ $(document).ready(function() {
 // <![CDATA[
 $(document).ready(function() {
   setTimeout(
-		function() {
-			$('#splashHeader .greetings').fadeOut(100);
-			$('#splashHeader h1').fadeOut(500);
-			$('#splashHeader img').fadeOut(500);
-			setTimeout(
-				function(){
-					$('#mainMenu').fadeIn(500);
-				  new Installer({index:<?php echo $index; ?>});
-			  },
-			  700
-			);
-	  },
-	  4000
+    function() {
+      $('#splashHeader .greetings').fadeOut(100);
+      $('#splashHeader h1').fadeOut(500);
+      $('#splashHeader img').fadeOut(500);
+      setTimeout(
+        function(){
+          $('#splashHeader').hide();
+          $('#logo').show(200);
+          $('#mainMenu').fadeIn(500);
+          new Installer({index:<?php echo $index; ?>});
+        },
+        700
+      );
+    },
+    4000
   );
 });
 // ]]>
