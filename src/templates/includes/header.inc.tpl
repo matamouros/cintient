@@ -67,14 +67,30 @@
 $('#logo').hide();
 $(document).ready(function() {
   $('#logo').show(200);
-  //
-  // Enable history back button on the main menu
-  //
-  /*
-  $('#mainMenu #historyBack').click(function(){
-    history.back();
-    return false;
-  });*/
+});
+// ]]> 
+</script>
+{elseif $globals_subSection == 'registration'}
+    <div id="userHeader" class="container">
+      <header>
+        <hgroup>
+          <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
+        </hgroup>
+      </header>
+    </div>
+  </div>
+  <div id="menu" class="containerTopLevel">
+    <nav id="mainMenu">
+      <ul>
+        <li id="historyBack"><a href="{URLManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
+        <li id="sectionName">{$subSectionTitle}</li>
+      </ul>
+    </nav>
+<script type="text/javascript">
+// <![CDATA[
+$('#logo').hide();
+$(document).ready(function() {
+  $('#logo').show(200);
 });
 // ]]> 
 </script>
