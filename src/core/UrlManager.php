@@ -86,8 +86,8 @@ class UrlManager
     return CINTIENT_BASE_URL . "/project/" . $param;
   }
   
-  static public function getForRegister()
+  static public function getForRegistration()
   {
-    return CINTIENT_BASE_URL . "/register/";
+    return CINTIENT_BASE_URL . "/registration/";
   }
 }

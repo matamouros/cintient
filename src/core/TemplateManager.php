@@ -764,7 +764,7 @@ EOT;
     //
     // Edit form submission
     //
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {      
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       //
       // Check for mandatory attributes
       //
@@ -962,13 +962,13 @@ EOT;
   }
   
   /**
-   * Provider method for footer.inc.tpl. See this file's header for more
-   * details on provider methods.
+   * Provider method for installation stats to footer.inc.tpl. See this
+   * file's header for more details on provider methods.
    */
-  static public function providerFooter()
+  static public function providerInstallationStats()
   {
     $user = User::getById(1);
-    $GLOBALS['smarty']->assign('providerFooter_installDate', $user->getCreationDate());
+    $GLOBALS['smarty']->assign('providerInstallationStats_installDate', $user->getCreationDate());
     
     //
     // SQL here... :-/ Actually, it'd be nice to cache this...
@@ -979,7 +979,7 @@ EOT;
     if ($rs !== false && $rs->nextRow()) {
       $projectsCount = (int)$rs->getNum();
     }
-    $GLOBALS['smarty']->assign('providerFooter_projectsCount', $projectsCount);
+    $GLOBALS['smarty']->assign('providerInstallationStats_projectsCount', $projectsCount);
     
     $usersCount = 0;
     $sql = "SELECT COUNT(id) AS num FROM user";
@@ -987,7 +987,7 @@ EOT;
     if ($rs !== false && $rs->nextRow()) {
       $usersCount = (int)$rs->getNum();
     }
-    $GLOBALS['smarty']->assign('providerFooter_usersCount', $usersCount);
+    $GLOBALS['smarty']->assign('providerInstallationStats_usersCount', $usersCount);
     
     $buildsCount = 14;
     //
@@ -1000,7 +1000,68 @@ EOT;
       $projectsCount = (int)$rs->getNum();
     }
     */
-    $GLOBALS['smarty']->assign('providerFooter_buildsCount', $buildsCount);
+    $GLOBALS['smarty']->assign('providerInstallationStats_buildsCount', $buildsCount);
+  }
+  
+  static public function registration()
+  {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      //
+      // Check for validity
+      //
+      $error = false;
+      if (!isset($_POST['name']) ||
+           empty($_POST['name']) ||
+          !isset($_POST['email']) ||
+           empty($_POST['email']) ||
+          !isset($_POST['username']) ||
+           empty($_POST['username']) ||
+          !isset($_POST['password']) ||
+           empty($_POST['password']) ||
+          !isset($_POST['password2']) ||
+           empty($_POST['password2']) ||
+           $_POST['password'] != $_POST['password2']
+      ) {
+        SystemEvent::raise(SystemEvent::DEBUG, "User registration failed, required attributes were empty.", __METHOD__);
+        $error = true;
+      } else {
+        $user = User::getByUsername($_POST['username']);
+        if ($user instanceof User) {
+          SystemEvent::raise(SystemEvent::DEBUG, "Username already taken.", __METHOD__);
+          $error = true;
+        }
+        $user = null;
+        unset($user);
+      }
+      if ($error) {
+        //
+        // TODO: Error notification!!!
+        //
+        $formData = array();
+        $formData['name'] = $_POST['name'];
+        $formData['email'] = $_POST['email'];
+        $formData['username'] = $_POST['username'];
+        $GLOBALS['smarty']->assign('formData', $formData);
+      } else {
+        //
+        // Everything ok, let's register the new user
+        //
+        $user = new User();
+        $user->setEmail($_POST['email']);
+        $user->setNotificationEmails($_POST['email']);
+        $user->setName($_POST['name']);
+        $user->setUsername($_POST['username']);
+        $user->setCos(UserCos::USER);
+        $user->init();
+        $user->setPassword($_POST['password']);
+        //
+        // Log the user in
+        //
+        Auth::authenticate();
+        Redirector::redirectToUri(URLManager::getForDashboard());
+        exit;
+      }
+    }
   }
   
   static public function settings()

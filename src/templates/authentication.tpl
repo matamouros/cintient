@@ -47,7 +47,7 @@
       </div>
       <input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
       <input id="loginSubmitButton" type="submit" value="Go!" />
-      {if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}<a href="{URLManager::getForRegister()}" class="optionLink">register</a>{/if}
+      {if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}<a href="{URLManager::getForRegistration()}" class="optionLink">register</a>{/if}
     </div>
     </form>
 <script type="text/javascript">

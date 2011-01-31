@@ -112,7 +112,7 @@ if (preg_match('/^\/(?:([\w-]+)\/(?:([\w-]+)\/)?)?$/', $GLOBALS['uri'], $matches
 if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
   if ((!Auth::authenticate() || !($_SESSION['user'] instanceof User)) &&
       $GLOBALS['subSection'] != 'install' &&
-     ($GLOBALS['subSection'] != 'register' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])
+     ($GLOBALS['subSection'] != 'registration' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])
 ) {
     //
     // Special case of template logic here, because the URI will get overwritten
