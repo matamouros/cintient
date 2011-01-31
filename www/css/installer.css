@@ -69,6 +69,7 @@
 {
   float: right;
   margin-right: 10px;
+  margin-top: 20px;
 }
 
 #installer button, #installer #save
@@ -113,7 +114,6 @@
 .installer_step ul.item
 {
   clear: both;
-  padding-top:20px;
 }
 
 .label
