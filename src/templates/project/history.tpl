@@ -25,7 +25,7 @@
   subSectionTitle="Build history"
   menuLinks=$menuLinks
   backLink="{URLManager::getForProjectView()}"}
-{include file='includes/projectHeader.inc.tpl' project=$smarty.session.project project_latestBuild=$project_buildList.0}
+{include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_buildList.0}
     <div id="buildsList">
 {if !empty($project_buildList)}
       <div class="label">Choose a different build:</div>
@@ -40,7 +40,7 @@ $(document).ready(function() {
 </script>
       <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-        <option value="{URLManager::getForProjectBuildView($smarty.session.project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
+        <option value="{URLManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
       </select>
 {/if}  

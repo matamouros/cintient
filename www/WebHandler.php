@@ -59,8 +59,6 @@ SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT
 #endif
 
 //$_SESSION['language'] = null;
-//$_SESSION['project'] = null; // The active Project object or null, *always and only*
-//$_SESSION['user']; The logged-in User object or null, *always and only*
 //
 // Volatile stuff
 //
@@ -72,6 +70,7 @@ $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
 $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) != '/' ? '/' : '');
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
+$GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
 //
 // Smarty
 //
@@ -154,6 +153,7 @@ if (!empty($GLOBALS['section'])) {
     $GLOBALS['smarty']->assign('globals_settings', $GLOBALS['settings']);
     $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
     $GLOBALS['smarty']->assign('globals_user', $GLOBALS['user']);
+    $GLOBALS['smarty']->assign('globals_project', $GLOBALS['project']);
     ob_end_clean();
     $GLOBALS['smarty']->display($GLOBALS['templateFile']);
     exit;

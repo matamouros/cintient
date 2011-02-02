@@ -28,7 +28,7 @@
     </article>
 <script type="text/javascript">
 //<![CDATA[
-var projectLastKnownStatus = {$smarty.session.project->getStatus()};
+var projectLastKnownStatus = {$globals_project->getStatus()};
 function forceBuild()
 {
   updateProjectStatus({Project::STATUS_BUILDING});

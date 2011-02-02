@@ -604,21 +604,21 @@ EOT;
     // It's a project build asset!
     //
     } elseif (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
         SystemEvent::raise(SystemEvent::INFO, "Problems fetching requested project.", __METHOD__);
         //TODO: Redirect and exit?
         exit;
       }
       $build = null;
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $GLOBALS['user']);
+      $build = ProjectBuild::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
       if (!($build instanceof ProjectBuild)) {
-        SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
         //TODO: Redirect and exit?
         exit;
       }
       $filename = $build->getReportsDir() . $_GET['f'];
       if (!file_exists($filename)) {
-        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
         //TODO: Redirect and exit?
         exit;
       }
@@ -732,9 +732,9 @@ EOT;
     // Setting a new project?
     //
     if (isset($_GET['pid']) && !empty($_GET['pid'])) {
-      $_SESSION['project'] = Project::getById($GLOBALS['user'], $_GET['pid']);
+      $GLOBALS['project'] = Project::getById($GLOBALS['user'], $_GET['pid']);
     }
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
       //
       // TODO: Notification
@@ -744,19 +744,20 @@ EOT;
       //
       return false;
     }
+    $_SESSION['projectId'] = $GLOBALS['project']->getId();
     /*
     //
     // Building
     //
     if (isset($_GET['build'])) {
       ProjectLog::write("A building was triggered.");
-      if (!$_SESSION['project']->build(true)) {
+      if (!$GLOBALS['project']->build(true)) {
         ProjectLog::write("Building failed.");
       } else {
         ProjectLog::write("Building successful.");
       }
     }*/
-    $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($_SESSION['project'], $GLOBALS['user']));
+    $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']));
   }
   
   static public function project_edit()
@@ -799,12 +800,12 @@ EOT;
         $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
       } else {
         if (isset($_GET['edit'])) {
-          if (!($_SESSION['project'] instanceof Project)) {
+          if (!($GLOBALS['project'] instanceof Project)) {
             SystemEvent::raise(SystemEvent::ERROR, "Editing project not possible, because of probable session expire.", __METHOD__);
             return false;
           }
-          $project = $_SESSION['project'];
-          $project->setId($_SESSION['project']->getId());
+          $project = $GLOBALS['project'];
+          $project->setId($GLOBALS['project']->getId());
         } else {
           $GLOBALS['project'] = null;
           $project = new Project();
@@ -830,7 +831,8 @@ EOT;
           exit;
         }
         if (isset($_GET['new'])) {
-          $_SESSION['project'] = $project;
+          $GLOBALS['project'] = $project;
+          $_SESSION['projectId'] = $GLOBALS['project']->getId();
           ProjectLog::write("Project created.");
         } else {
           ProjectLog::write("Project edited.");
@@ -841,7 +843,7 @@ EOT;
       // We will leave this control and carry on to the project view
       //
     }
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
       //
       // TODO: Notification
@@ -853,20 +855,20 @@ EOT;
     }
     
     $formData = array();
-    $formData['title'] = $_SESSION['project']->getTitle();
-    $formData['buildLabel'] = $_SESSION['project']->getBuildLabel();
-    $formData['description'] = $_SESSION['project']->getDescription();
-    $formData['scmConnectorType'] = $_SESSION['project']->getScmConnectorType();
-    $formData['scmRemoteRepository'] = $_SESSION['project']->getScmRemoteRepository();
-    $formData['scmUsername'] = $_SESSION['project']->getScmUsername();
-    $formData['scmPassword'] = $_SESSION['project']->getScmPassword();
+    $formData['title'] = $GLOBALS['project']->getTitle();
+    $formData['buildLabel'] = $GLOBALS['project']->getBuildLabel();
+    $formData['description'] = $GLOBALS['project']->getDescription();
+    $formData['scmConnectorType'] = $GLOBALS['project']->getScmConnectorType();
+    $formData['scmRemoteRepository'] = $GLOBALS['project']->getScmRemoteRepository();
+    $formData['scmUsername'] = $GLOBALS['project']->getScmUsername();
+    $formData['scmPassword'] = $GLOBALS['project']->getScmPassword();
     $GLOBALS['smarty']->assign('formData', $formData);
     $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
   }
   
   static public function project_history()
   {
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
       //
       // TODO: Notification
@@ -881,11 +883,11 @@ EOT;
     //
     $build = null; // It's possible that no build was triggered yet.
     if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $GLOBALS['user']);
+      $build = ProjectBuild::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
     } else {
-      $build = ProjectBuild::getLatest($_SESSION['project'], $GLOBALS['user']);
+      $build = ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
-    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $GLOBALS['user']));
+    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
     $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
   }
@@ -951,7 +953,8 @@ EOT;
           header('Location: ' . UrlManager::getForProjectNew());
           exit;
         }
-        $_SESSION['project'] = $project;
+        $GLOBALS['project'] = $project;
+        $_SESSION['projectId'] = $GLOBALS['project']->getId();
         ProjectLog::write("Project created.");
         Redirector::redirectToUri(URLManager::getForDashboard());
         exit;

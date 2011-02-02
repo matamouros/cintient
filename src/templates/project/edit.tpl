@@ -168,10 +168,10 @@ $(document).ready(function() {
   //
   // Remove user
   //
-  $('ul#userList li .user .remove a').each(function() {
-    $(this).click(function(e) {
+  //$('ul#userList li .user .remove a').each(function() {
+  $('ul#userList .remove a').live('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
+      //e.stopPropagation();
       $.ajax({
         url: $(this).attr('href'),
         data: { username: $(this).attr('class') },
@@ -191,7 +191,7 @@ $(document).ready(function() {
           alert(errorThrown);
         }
       });
-    });
+    //});
   });
 });
 //]]> 
@@ -199,7 +199,7 @@ $(document).ready(function() {
         <div class="projectEditContainer container">
           <ul id="userList">
 {$accessLevels=Access::getList()}
-{foreach from=$smarty.session.project->getUsers() item=user}
+{foreach from=$globals_project->getUsers() item=user}
 {$userAccessLevel=$user[1]}
 {$user=User::getById($user[0])}
             <li id="{$user->getUsername()}">

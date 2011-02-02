@@ -134,7 +134,7 @@ class ProjectLog
     //
     // Oh boy... there goes proper layer separation...
     //
-    $projectLog = new ProjectLog($_SESSION['project']->getId());
+    $projectLog = new ProjectLog($GLOBALS['project']->getId());
     $projectLog->setType(0);
     $projectLog->setMessage($msg);
     $projectLog->setUsername($GLOBALS['user']->getUsername());

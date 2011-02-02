@@ -179,7 +179,7 @@ class AjaxManager
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
     
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -189,7 +189,7 @@ class AjaxManager
       exit;
     }
     
-    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
@@ -208,7 +208,7 @@ class AjaxManager
       exit;
     }
     
-    $_SESSION['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
+    $GLOBALS['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
     $accessLevels = Access::getList();
     $html = <<<EOT
             <li id="{$user->getUsername()}">
@@ -237,7 +237,7 @@ EOT;
                     </ul>
                   </div>
                 </div>
-                <div class=\"remove\"><a href=\"{$removeLink}\">Remove</a></div>
+                <div class=\"remove\"><a class=\"{$user->getUsername()}\" href=\"{$removeLink}\">Remove</a></div>
               </div>
             </li>
 ";
@@ -252,7 +252,7 @@ EOT;
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -261,29 +261,29 @@ EOT;
       ));
       exit;
     }
-    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
         'success' => false,
         'error' => $msg,
-        'projectStatus' => $_SESSION['project']->getStatus(),
+        'projectStatus' => $GLOBALS['project']->getStatus(),
       ));
       exit;
     }
 
     ProjectLog::write("A building was triggered.");
-    if (!$_SESSION['project']->build(true)) {
+    if (!$GLOBALS['project']->build(true)) {
       ProjectLog::write("Building failed.");
       echo json_encode(array(
         'success' => true,
-        'projectStatus' => $_SESSION['project']->getStatus(),
+        'projectStatus' => $GLOBALS['project']->getStatus(),
       ));
     } else {
       ProjectLog::write("Building successful.");
       echo json_encode(array(
         'success' => true,
-        'projectStatus' => $_SESSION['project']->getStatus(),
+        'projectStatus' => $GLOBALS['project']->getStatus(),
       ));
     }
     exit;
@@ -293,7 +293,8 @@ EOT;
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
     
-    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
+        !isset($_GET['username'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -303,7 +304,7 @@ EOT;
       exit;
     }
     
-    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
@@ -323,7 +324,7 @@ EOT;
     }
 
     echo json_encode(array(
-      'success' => $_SESSION['project']->removeFromUsers($user),
+      'success' => $GLOBALS['project']->removeFromUsers($user),
       'username' => $user->getUsername(),
     ));
     exit;
