@@ -58,7 +58,6 @@ session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_URL']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", __METHOD__);
 #endif
 
-//$_SESSION['language'] = null;
 //
 // Volatile stuff
 //
@@ -119,6 +118,7 @@ if (!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
     // right after it. Somewhere, a cute small kitten died a horrible death.
     //
     $GLOBALS['smarty']->assign('authentication_redirectUri', urlencode($GLOBALS['uri']));
+    $GLOBALS['section'] = 'default';
     $GLOBALS['subSection'] = 'authentication';
     $GLOBALS['user'] = null;
     $_SESSION['userId'] = null;
