@@ -175,6 +175,79 @@ class AjaxManager
     exit;
   }
   
+  static public function project_addUser()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+    
+    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::WRITE)) {
+      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$_SESSION['user']->getUsername()}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not authorized',
+      ));
+      exit;
+    }
+    
+    $user = User::getByUsername($_GET['username']);
+    if (!($user instanceof User)) {
+      SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not found',
+      ));
+      exit;
+    }
+    
+    $_SESSION['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
+    $accessLevels = Access::getList();
+    $html = <<<EOT
+            <li id="{$user->getUsername()}">
+              <div class="user">
+                <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
+                <div class="username">{$user->getUsername()}</div>
+                <div class="accessLevelPane">
+                  <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
+                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
+                    <ul>
+EOT;
+    foreach ($accessLevels as $accessLevel => $accessName) {
+      if ($accessLevel !== 0) {
+        $checked = '';
+        if ((Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT & $accessLevel) != 0) {
+          $checked = ' checked';
+        }
+        $accessName = ucfirst($accessName);
+        $html .= <<<EOT
+                      <li><input type="checkbox" value="{$accessLevel}"{$checked}><div class="labelCheckbox">{$accessName}</div></li>
+EOT;
+      }
+    }
+    $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
+    $html .= "
+                    </ul>
+                  </div>
+                </div>
+                <div class=\"remove\"><a href=\"{$removeLink}\">Remove</a></div>
+              </div>
+            </li>
+";
+    echo json_encode(array(
+      'success' => true,
+      'html' => $html,
+    ));
+    exit;
+  }
+  
   static public function project_build()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -213,6 +286,85 @@ class AjaxManager
         'projectStatus' => $_SESSION['project']->getStatus(),
       ));
     }
+    exit;
+  }
+  
+  static public function project_removeUser()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+    
+    if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::WRITE)) {
+      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$_SESSION['user']->getUsername()}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not authorized',
+      ));
+      exit;
+    }
+    
+    $user = User::getByUsername($_GET['username']);
+    if (!($user instanceof User)) {
+      SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not found',
+      ));
+      exit;
+    }
+
+    echo json_encode(array(
+      'success' => $_SESSION['project']->removeFromUsers($user),
+      'username' => $user->getUsername(),
+    ));
+    exit;
+  }
+  
+  /**
+   * Searches for a list of users, given a specified term.
+   */
+  static public function search_user()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called. [USERTERM={$_GET['userTerm']}]", __METHOD__);
+    
+    //
+    // This should be a costly operation for the user waiting.
+    //
+    sleep(1);
+
+    //
+    // Also, don't blindly check one letter only
+    //
+    if (strlen($_GET['userTerm']) < 2) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Not triggering query for less than 2 chars. [USERTERM={$_GET['userTerm']}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+      ));
+      exit;
+    }
+    
+    $usersToJson = array();
+    $users = User::getListByIncompleteTerm($_GET['userTerm']);
+    for ($i = 0; $i < count($users); $i++) {
+      $usersToJson[$i] = array();
+      $usersToJson[$i]['username'] = $users[$i]->getUsername();
+      $usersToJson[$i]['avatar'] = $users[$i]->getAvatarUrl();
+    }
+    
+    echo json_encode(array(
+      'success' => true,
+      'result' => $usersToJson,
+    ));
+    
     exit;
   }
 }

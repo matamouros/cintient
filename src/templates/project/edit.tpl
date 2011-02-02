@@ -69,28 +69,160 @@
         </form>
       </div>
       <div id="usersPane" class="exclusivePane">
+        <div id="addUserPane" class="projectEditContainer container">
+          <div class="label">Add an existing user <div class="fineprintLabel">(specify an email or username)</div></div>
+          <div class="textfieldContainer" style="width: 254px;">
+            <input class="textfield" style="width: 250px;" type="search" id="searchUserTextfield" />
+          </div>
+          <div id="searchUserPane" class="popupWidget">
+            <ul>
+              <li></li>
+            </ul>
+          </div>
+        </div>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  timerId = null;
+  userTermVal = null;
+  searchUserPaneActive = false;
+  $('#searchUserTextfield').keyup(function(e) {
+    userTermVal = $(this).val();
+    if (userTermVal.length > 1) {
+      triggerListRefresh = function() {
+        //
+        // TODO: Setup a spinning loading icon
+        //
+        $.ajax({
+          url: '{URLManager::getForAjaxSearchUser()}',
+          data: { userTerm: userTermVal },
+          type: 'GET',
+          cache: false,
+          dataType: 'json',
+          success: function(data, textStatus, XMLHttpRequest) {
+            $('#searchUserPane ul li').remove();
+            if (!data.success) {
+              $('#searchUserPane ul').append('<li>Problems fetching users.</li>');
+            } else {
+              if (data.result.length == 0) {
+                $('#searchUserPane ul').append('<li>No users found.</li>');
+              } else {
+                for (i = 0; i < data.result.length; i++) {
+                  $('#searchUserPane ul').append('<a href="#" class="'+data.result[i].username+'"><li><img class="avatar25" src="'+data.result[i].avatar+'"/><span class="username">'+data.result[i].username+'</span></li></a>');
+                };
+              }
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+          }
+        });
+        $('#searchUserPane').fadeIn(150);
+        searchUserPaneActive = true;
+      };
+      
+      if (e.which == 13) { // Imediatelly send request, if ENTER was depressed
+        triggerListRefresh();
+      } else {
+        timerId = setTimeout(triggerListRefresh, 1000);
+      }
+    }
+  });
+  $('#searchUserTextfield').keydown(function() {
+    if (timerId !== null) {
+      clearTimeout(timerId);
+    }
+  });
+  //Close any menus on click anywhere on the page
+  $(document).click(function(){
+    if (searchUserPaneActive) {
+      $('#searchUserPane').fadeOut(50);
+      searchUserPaneActive = false;
+    }
+  });
+  
+  //
+  // Add select widget user to the project list of users
+  //
+  $('#searchUserPane ul a').live('click', function() {
+    $.ajax({
+      url: '{URLManager::getForAjaxProjectAddUser()}',
+      data: { username: $(this).attr('class') },
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        console.log(data);
+        if (!data.success) {
+          $('ul#userList').append('<li>Problems adding user.</li>');
+        } else {
+          $('ul#userList').append(data.html);
+        }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+  });
+
+  //
+  // Remove user
+  //
+  $('ul#userList li .user .remove a').each(function() {
+    $(this).click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $.ajax({
+        url: $(this).attr('href'),
+        data: { username: $(this).attr('class') },
+        type: 'GET',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          //console.log(data);
+          if (!data.success) {
+            //TODO: treat this properly
+            console.log('error');
+          } else {
+            $('ul#userList li#' + data.username).remove();
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(errorThrown);
+        }
+      });
+    });
+  });
+});
+//]]> 
+</script>
         <div class="projectEditContainer container">
+          <ul id="userList">
 {$accessLevels=Access::getList()}
 {foreach from=$smarty.session.project->getUsers() item=user}
 {$userAccessLevel=$user[1]}
 {$user=User::getById($user[0])}
-          <div id="{$user->getUsername()}" class="user">
-            <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
-            <div class="username">{$user->getUsername()}{if $user->getUsername()==$smarty.session.user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
-            <div class="accessLevelPane">
-              <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
-              <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
-                <ul>
+            <li id="{$user->getUsername()}">
+              <div class="user">
+                <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
+                <div class="username">{$user->getUsername()}{if $user->getUsername()==$smarty.session.user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
+                <div class="accessLevelPane">
+                  <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
+                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
+                    <ul>
 {foreach $accessLevels as $accessLevel => $accessName}
   {if $accessLevel !== 0} {* Don't show the NONE value access level *}
-                  <li><input type="checkbox" value="{$accessLevel}"{if ($userAccessLevel & $accessLevel)!=0} checked{/if}><div class="labelCheckbox">{$accessName|capitalize}</div></li>
+                      <li><input type="checkbox" value="{$accessLevel}"{if ($userAccessLevel & $accessLevel)!=0} checked{/if}><div class="labelCheckbox">{$accessName|capitalize}</div></li>
   {/if}
 {/foreach}
-                </ul>
+                    </ul>
+                  </div>
+                </div>
+                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">Remove</a></div>
               </div>
-            </div>
-          </div>
+            </li>
 {/foreach}
+          </ul>
         </div>
       </div>
       <div id="deploymentBuilderPane" class="exclusivePane">

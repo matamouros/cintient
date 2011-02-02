@@ -224,6 +224,19 @@ class User
     return $ret;
   }
   
+  static public function getListByIncompleteTerm($term)
+  {
+    $ret = array();
+    $sql = 'SELECT * FROM user '
+         . " WHERE username LIKE %?%"
+         . " OR name LIKE %?%";
+    $rs = Database::query($sql, array($term, $term));
+    while ($rs->nextRow()) {
+      $ret[] = self::_getObject($rs);
+    }
+    return $ret;
+  }
+  
   static public function install()
   {
     $sql = <<<EOT

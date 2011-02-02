@@ -467,6 +467,12 @@ EOT;
       }
     }
     
+    $sql = 'DELETE FROM projectuser WHERE projectid=' . $this->getId();
+    if (!Database::execute($sql)) {
+      Database::rollbackTransaction();
+      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project to db.", __METHOD__);
+      return false;
+    }
     $sql = 'REPLACE INTO projectuser'
          . ' (projectid,userid,access)'
          . ' VALUES (?,?,?)';
@@ -502,6 +508,21 @@ EOT;
   public function addToUsers(array $pair)
   {
     $this->_users = array_merge($this->_users, array($pair));
+  }
+  
+  public function removeFromUsers(User $user)
+  {
+    $i = 0;
+    $removed = false;
+    foreach ($this->_users as $pair) {
+      if ($pair[0] == $user->getId()) {
+        unset($this->_users[$i]);
+        $removed = true;
+        break;
+      }
+      $i++;
+    }
+    return $removed;
   }
   
   public function loadUsers()

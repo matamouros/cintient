@@ -96,6 +96,7 @@ if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
 // Ajax related
 //
 if (!empty($GLOBALS['section'])) {
+  $GLOBALS['ajaxMethod'] = $GLOBALS['subSection'];
   if (strpos($GLOBALS['subSection'], '-') !== false) {
     $subSectionPieces = explode('-', $GLOBALS['subSection']);
     array_walk($subSectionPieces, function(&$value) {
@@ -104,7 +105,7 @@ if (!empty($GLOBALS['section'])) {
     $GLOBALS['ajaxMethod'] = lcfirst(implode($subSectionPieces));
   }
   if ($GLOBALS['section'] != 'default') {
-    $GLOBALS['ajaxMethod'] = $GLOBALS['section'] . '_' . $GLOBALS['subSection'];
+    $GLOBALS['ajaxMethod'] = $GLOBALS['section'] . '_' . $GLOBALS['ajaxMethod'];
   }
   if (method_exists('AjaxManager', $GLOBALS['ajaxMethod'])) {
     #if DEBUG

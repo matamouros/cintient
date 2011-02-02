@@ -31,9 +31,24 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/avatar-upload/'; 
   }
   
+  static public function getForAjaxProjectAddUser()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/add-user/';
+  }
+  
   static public function getForAjaxProjectBuild()
   {
     return CINTIENT_BASE_URL . '/ajax/project/build/';
+  }
+  
+  static public function getForAjaxProjectRemoveUser()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/remove-user/';
+  }
+  
+  static public function getForAjaxSearchUser()
+  {
+    return CINTIENT_BASE_URL . '/ajax/search/user/';
   }
   
   static public function getForAsset($filename, $params = array())

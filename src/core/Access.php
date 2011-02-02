@@ -32,6 +32,11 @@ class Access
   const WRITE = 4;
   const OWNER = 8;
   
+  //
+  // Utility consts - SERIOUSLY take care if the above consts are ever altered!
+  //
+  const DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT = 3;  // READ & BUILD
+  
   static public function toStr($access)
   {
     $str = '';
