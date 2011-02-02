@@ -298,9 +298,15 @@ class Database
     // this database handler class.
     //
     $query = preg_replace_callback(
-      '/\?/',
-      function ($match) use (&$paramIndex) {
+      '/(%)?\?(%)?/',
+      function ($matches) use (&$paramIndex, &$values) {
         $match = ':' . $paramIndex;
+        if (isset($matches[1])) {
+          $values[$paramIndex] = $matches[1] . $values[$paramIndex];
+        }
+        if (isset($matches[2])) {
+          $values[$paramIndex] .= $matches[2];
+        }
         $paramIndex++;
         return $match;
       },
