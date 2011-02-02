@@ -71,6 +71,7 @@ $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
 $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) != '/' ? '/' : '');
+$GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 //
 // Smarty
 //
@@ -109,8 +110,8 @@ if (preg_match('/^\/(?:([\w-]+)\/(?:([\w-]+)\/)?)?$/', $GLOBALS['uri'], $matches
 |* | AUTHENTICATION                                                 | *|
 \* +----------------------------------------------------------------+ */
 
-if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
-  if ((!Auth::authenticate() || !($_SESSION['user'] instanceof User)) &&
+if (!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
+  if ((!Auth::authenticate() || !($GLOBALS['user'] instanceof User)) &&
       $GLOBALS['subSection'] != 'install' &&
      ($GLOBALS['subSection'] != 'registration' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])
 ) {
@@ -120,7 +121,8 @@ if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
     //
     $GLOBALS['smarty']->assign('authentication_redirectUri', urlencode($GLOBALS['uri']));
     $GLOBALS['subSection'] = 'authentication';
-    $_SESSION['user'] = null;
+    $GLOBALS['user'] = null;
+    $_SESSION['userId'] = null;
   }
 }
 
@@ -151,6 +153,7 @@ if (!empty($GLOBALS['section'])) {
     TemplateManager::$GLOBALS['templateMethod']();
     $GLOBALS['smarty']->assign('globals_settings', $GLOBALS['settings']);
     $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
+    $GLOBALS['smarty']->assign('globals_user', $GLOBALS['user']);
     ob_end_clean();
     $GLOBALS['smarty']->display($GLOBALS['templateFile']);
     exit;

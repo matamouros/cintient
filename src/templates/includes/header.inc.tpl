@@ -38,16 +38,16 @@
 </head>
 <body>
   <div id="header" class="containerTopLevel">
-{if $smarty.session.user instanceof User}
+{if $globals_user instanceof User}
     <div id="userHeader" class="container">
       <header>
         <hgroup>
           <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
           <nav>
             <div id="user">
-              <div id="avatar"><img id="avatarImg" src="{$smarty.session.user->getAvatarUrl()}" width="40" height="40"></div>
-              <div id="username">{$smarty.session.user->getUsername()}</div>
-              <div id="links">{if $smarty.session.user->isCos(UserCos::ROOT)}<a href="{URLManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
+              <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
+              <div id="username">{$globals_user->getUsername()}</div>
+              <div id="links">{if $globals_user->isCos(UserCos::ROOT)}<a href="{URLManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
             </div>
           </nav>
         </hgroup>

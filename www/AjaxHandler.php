@@ -54,6 +54,7 @@ $GLOBALS['ajaxMethod'] = null;
 $GLOBALS['section'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) != '/' ? '/' : '');
+$GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 
 
 
@@ -80,7 +81,7 @@ if (preg_match('/^\/ajax\/([\w-]+)(?:\/([\w-]+))?\/$/', $GLOBALS['uri'], $matche
 |* | AUTHENTICATION                                                 | *|
 \* +----------------------------------------------------------------+ */
 
-if (!isset($_SESSION['user']) || !($_SESSION['user'] instanceof User)) {
+if (!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
   SystemEvent::raise(SystemEvent::INFO, "Authentication is required on all ajax requests. [URI={$GLOBALS['uri']}]", "AjaxHandler");
   // TODO: send error here
   exit;
@@ -125,6 +126,6 @@ if (!empty($GLOBALS['section'])) {
 |* | RESTAURANT AT THE END OF THE UNIVERSE                          | *|
 \* +----------------------------------------------------------------+ */
 
-SystemEvent::raise(SystemEvent::INFO, "Not found. [URI={$GLOBALS['uri']}] [USER=" . (($_SESSION['user'] instanceof User)? $_SESSION['user']->getUsername() : 'N/A') . ']');
+SystemEvent::raise(SystemEvent::INFO, "Not found. [URI={$GLOBALS['uri']}] [USER=" . (($GLOBALS['user'] instanceof User)? $GLOBALS['user']->getUsername() : 'N/A') . ']');
 // TODO: send error here
 exit;

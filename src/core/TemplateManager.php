@@ -610,7 +610,7 @@ EOT;
         exit;
       }
       $build = null;
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $GLOBALS['user']);
       if (!($build instanceof ProjectBuild)) {
         SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$_SESSION['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
         //TODO: Redirect and exit?
@@ -645,7 +645,7 @@ EOT;
   
   static public function authentication()
   {
-    if (isset($_SESSION['user']) && $_SESSION['user'] instanceof User) {
+    if (isset($GLOBALS['user']) && $GLOBALS['user'] instanceof User) {
       header("Location: " . URLManager::getForDashboard());
       exit;
     }
@@ -657,7 +657,7 @@ EOT;
    */
   static public function dashboard()
   {
-    $GLOBALS['smarty']->assign('dashboard_projectList', Project::getList($_SESSION['user'], Access::READ));
+    $GLOBALS['smarty']->assign('dashboard_projectList', Project::getList($GLOBALS['user'], Access::READ));
   }
   
   static public function install()
@@ -732,7 +732,7 @@ EOT;
     // Setting a new project?
     //
     if (isset($_GET['pid']) && !empty($_GET['pid'])) {
-      $_SESSION['project'] = Project::getById($_SESSION['user'], $_GET['pid']);
+      $_SESSION['project'] = Project::getById($GLOBALS['user'], $_GET['pid']);
     }
     if (!isset($_SESSION['project']) || !($_SESSION['project'] instanceof Project)) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
@@ -756,7 +756,7 @@ EOT;
         ProjectLog::write("Building successful.");
       }
     }*/
-    $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']));
+    $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($_SESSION['project'], $GLOBALS['user']));
   }
   
   static public function project_edit()
@@ -817,7 +817,7 @@ EOT;
         $project->setScmUsername($_POST['scmUsername']);
         $project->setScmPassword($_POST['scmPassword']);
         $project->addToUsers(array(
-          $_SESSION['user']->getId(),
+          $GLOBALS['user']->getId(),
           Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
         );
         
@@ -881,11 +881,11 @@ EOT;
     //
     $build = null; // It's possible that no build was triggered yet.
     if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $_SESSION['user']);
+      $build = ProjectBuild::getById($_GET['bid'], $_SESSION['project'], $GLOBALS['user']);
     } else {
-      $build = ProjectBuild::getLatest($_SESSION['project'], $_SESSION['user']);
+      $build = ProjectBuild::getLatest($_SESSION['project'], $GLOBALS['user']);
     }
-    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $_SESSION['user']));
+    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($_SESSION['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
     $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
   }
@@ -939,7 +939,7 @@ EOT;
         $project->setScmUsername($_POST['scmUsername']);
         $project->setScmPassword($_POST['scmPassword']);
         $project->addToUsers(array(
-          $_SESSION['user']->getId(),
+          $GLOBALS['user']->getId(),
           Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
         );
         

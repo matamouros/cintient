@@ -205,7 +205,7 @@ $(document).ready(function() {
             <li id="{$user->getUsername()}">
               <div class="user">
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
-                <div class="username">{$user->getUsername()}{if $user->getUsername()==$smarty.session.user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
+                <div class="username">{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">

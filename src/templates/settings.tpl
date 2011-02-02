@@ -42,7 +42,7 @@
 <style type="text/css">
 .qq-upload-button
 {
-  background-image: url({$smarty.session.user->getAvatarUrl()});
+  background-image: url({$globals_user->getAvatarUrl()});
 }
 </style>
 <script type="text/javascript" src="/js/avataruploader.js"></script>

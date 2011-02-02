@@ -137,7 +137,7 @@ class ProjectLog
     $projectLog = new ProjectLog($_SESSION['project']->getId());
     $projectLog->setType(0);
     $projectLog->setMessage($msg);
-    $projectLog->setUsername($_SESSION['user']->getUsername());
+    $projectLog->setUsername($GLOBALS['user']->getUsername());
   }
   
   static public function getListByProject($project, $user, $access = Access::READ, array $options = array())

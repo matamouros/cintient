@@ -24,7 +24,7 @@
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
-{$dashboard_latestBuild=ProjectBuild::getLatest($project, $smarty.session.user)}
+{$dashboard_latestBuild=ProjectBuild::getLatest($project, $globals_user)}
       <li class="projectDraggableContainer container">
         <a href="{URLManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>

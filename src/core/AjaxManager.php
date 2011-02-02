@@ -136,8 +136,8 @@ class AjaxManager
     // Save. If the user has a previous local avatar, extract it and
     // remove it from the filesystem.
     //
-    if (($pos = strpos($_SESSION['user']->getAvatar(), 'local:')) === 0) {
-      @unlink(CINTIENT_AVATARS_DIR . substr($_SESSION['user']->getAvatar(), 6));
+    if (($pos = strpos($GLOBALS['user']->getAvatar(), 'local:')) === 0) {
+      @unlink(CINTIENT_AVATARS_DIR . substr($GLOBALS['user']->getAvatar(), 6));
     }
     do {
       $filename = uniqid() . '.jpg';
@@ -145,7 +145,7 @@ class AjaxManager
         break;
       }
     } while (true);
-    $_SESSION['user']->setAvatarLocal($filename);
+    $GLOBALS['user']->setAvatarLocal($filename);
 
     $dstPath = CINTIENT_AVATARS_DIR . $filename;
     $dstImg = imagecreatetruecolor(CINTIENT_AVATAR_WIDTH, CINTIENT_AVATAR_HEIGHT);
@@ -189,8 +189,8 @@ class AjaxManager
       exit;
     }
     
-    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::WRITE)) {
-      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$_SESSION['user']->getUsername()}]", __METHOD__);
+    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
         'error' => 'Not authorized',
@@ -261,7 +261,7 @@ EOT;
       ));
       exit;
     }
-    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::BUILD)) {
+    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -303,8 +303,8 @@ EOT;
       exit;
     }
     
-    if (!$_SESSION['project']->userHasAccessLevel($_SESSION['user'], Access::WRITE)) {
-      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$_SESSION['user']->getUsername()}]", __METHOD__);
+    if (!$_SESSION['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
         'error' => 'Not authorized',

@@ -27,7 +27,7 @@
 class Auth implements AuthInterface
 {
   /**
-   * On success populates $_SESSION['user'] with the authenticated user.
+   * On success populates $GLOBALS['user'] with the authenticated user.
    * 
    * @return bool 
    */
@@ -52,14 +52,17 @@ class Auth implements AuthInterface
       SystemEvent::raise(SystemEvent::INFO, "Unknown user from user ID. [ID={$userId}]", __METHOD__);
       return false;
     }
-    $_SESSION['user'] = $user;
+    $_SESSION['userId'] = $userId;
+    $GLOBALS['user'] = $user;
     SystemEvent::raise(SystemEvent::DEBUG, "User authenticated. [USR={$user->getUsername()}]", __METHOD__);
     return true;
   }
   
   static public function logout()
   {
-    $username = $_SESSION['user']->getUsername();
+    $username = $GLOBALS['user']->getUsername();
+    $GLOBALS['user'] = null;
+    unset($GLOBALS['user']);
     session_destroy();
     SystemEvent::raise(SystemEvent::DEBUG, "User logged out. [ID={$username}]", __METHOD__);
     return true;
