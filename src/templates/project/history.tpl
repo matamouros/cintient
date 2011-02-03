@@ -25,7 +25,11 @@
   subSectionTitle="Build history"
   menuLinks=$menuLinks
   backLink="{URLManager::getForProjectView()}"}
-{include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_buildList.0}
+{$project_latestBuild=""}
+{if !empty($project_buildList)}
+  {$project_latestBuild=$project_buildList.0}
+{/if}
+{include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_latestBuild}
     <div id="buildsList">
 {if !empty($project_buildList)}
       <div class="label">Choose a different build:</div>
