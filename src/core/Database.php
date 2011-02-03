@@ -319,6 +319,9 @@ class Database
       return false;
     }
     $stmt = $db->prepare($query);
+    if (!($stmt instanceof SQLite3Stmt)) {
+      return false;
+    }
     //
     // Fuck support for SQLite3 BLOB
     //
