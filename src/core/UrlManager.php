@@ -31,6 +31,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/avatar-upload/'; 
   }
   
+  static public function getForAjaxProjectAccessLevelChange()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/access-level/';
+  }
+  
   static public function getForAjaxProjectAddUser()
   {
     return CINTIENT_BASE_URL . '/ajax/project/add-user/';

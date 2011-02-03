@@ -235,7 +235,7 @@ $(document).ready(function() {
                     <ul>
 {foreach $accessLevels as $accessLevel => $accessName}
   {if $accessLevel !== 0} {* Don't show the NONE value access level *}
-                      <li><input type="checkbox" value="{$accessLevel}"{if ($userAccessLevel & $accessLevel)!=0} checked{/if}><div class="labelCheckbox">{$accessName|capitalize}</div></li>
+                      <li><input class="accessLevelPaneLevelsCheckbox" type="checkbox" value="{$user->getUsername()}_{$accessLevel}" id="accessLevel" {if ($userAccessLevel & $accessLevel)!=0} checked{/if} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName|capitalize}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
   {/if}
 {/foreach}
                     </ul>
@@ -308,11 +308,37 @@ $(document).ready(function() {
   });
   // Close any menus on click anywhere on the page
   $(document).click( function(e){
-    if (e.isPropagationStopped()) { return; }
-    if (cintientActivePane != null) {
-      cintientActivePane.fadeOut(50);
-      cintientActivePane = null;
+    if ($(e.target).attr('class') != 'accessLevelPaneLevels' &&
+        $(e.target).attr('class') != 'accessLevelPaneLevelsCheckbox' &&
+        $(e.target).attr('class') != 'labelCheckbox' ) {
+      if (e.isPropagationStopped()) { return; }
+      if (cintientActivePane != null) {
+        cintientActivePane.fadeOut(50);
+        cintientActivePane = null;
+      }
     }
+  });
+  //
+  // Setup auto save for access level pane changes
+  //
+  $('.accessLevelPane input.accessLevelPaneLevelsCheckbox').live('click', function() {
+    $.ajax({
+      url: '{URLManager::getForAjaxProjectAccessLevelChange()}',
+      data: { change: $(this).attr('value') },
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (!data.success) {
+          //TODO: treat this properly
+          console.log('error');
+        } else {
+        }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
   });
 });
 //]]> 

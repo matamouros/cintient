@@ -525,6 +525,42 @@ EOT;
     return $removed;
   }
   
+  public function getAccessLevelFromUser(User $user)
+  {
+    foreach ($this->_users as $pair) {
+      if ($pair[0] == $user->getId()) {
+        return $pair[1];
+      }
+    }
+    return false;
+  }
+  
+  public function setAccessLevelForUser(User $user, $access)
+  {
+    $i = 0;
+    foreach ($this->_users as $pair) {
+      if ($pair[0] == $user->getId()) {
+        $this->_users[$i][1] = $access;
+        return true;
+      }
+      $i++;
+    }
+    return false;
+  }
+  
+  public function toggleAccessLevelForUser(User $user, $access)
+  {
+    $i = 0;
+    foreach ($this->_users as $pair) {
+      if ($pair[0] == $user->getId()) {
+        $this->_users[$i][1] = $this->_users[$i][1] + (($this->_users[$i][1] & $access) == 0 ?$access: -$access);
+        return true;
+      }
+      $i++;
+    }
+    return false;
+  }
+  
   public function loadUsers()
   {
     $sql = "SELECT * FROM projectuser WHERE projectid=?";

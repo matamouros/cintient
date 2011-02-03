@@ -175,6 +175,66 @@ class AjaxManager
     exit;
   }
   
+  static public function project_accessLevel()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+    
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not authorized',
+      ));
+      exit;
+    }
+    
+    if (!isset($_GET['change']) ||
+        !($params = explode('_', $_GET['change'])) ||
+        count($params) != 2 ||
+        Access::getDescription($params[1]) === false) {
+      SystemEvent::raise(SystemEvent::INFO, "Invalid request parameters. " . (isset($_GET['change'])?"[PARAMS={$_GET['change']}]":""), __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Invalid request',
+      ));
+      exit;
+    }
+    
+    $user = User::getByUsername($params[0]);
+    if (!($user instanceof User)) {
+      SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$params[0]}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not found',
+      ));
+      exit;
+    }
+    
+    if ($GLOBALS['project']->toggleAccessLevelForUser($user, $params[1])) {
+      echo json_encode(array(
+        'success' => true,
+      ));
+    } else {
+      SystemEvent::raise(SystemEvent::INFO, "Could not update access level for user. [USERNAME={$user->getUsername()}] [ACCESSLEVEL={$params[1]}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Could not update access level for user',
+      ));
+    }
+
+    exit;
+  }
+  
   static public function project_addUser()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -233,7 +293,7 @@ EOT;
           }
           $accessName = ucfirst($accessName);
           $html .= <<<EOT
-                      <li><input type="checkbox" value="{$accessLevel}"{$checked}><div class="labelCheckbox">{$accessName}</div></li>
+                      <li><input class="accessLevelPaneLevelsCheckbox" type="checkbox" value="{$accessLevel}" id="{$accessLevel}"{$checked} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
 EOT;
         }
       }
