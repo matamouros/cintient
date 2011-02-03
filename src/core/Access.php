@@ -32,10 +32,26 @@ class Access
   const WRITE = 4;
   const OWNER = 8;
   
+  static $_description = array(
+    self::NONE => "No access at all",
+    self::READ => "No access to settings or possibility of changing anything",
+    self::BUILD => "Access to builder settings, can trigger new builds",
+    self::WRITE => "Can access and change all settings except deleting the project",
+    self::OWNER => "Root level access",
+  );
+  
   //
   // Utility consts - SERIOUSLY take care if the above consts are ever altered!
   //
   const DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT = 3;  // READ & BUILD
+  
+  static public function getDescription($access)
+  {
+    if (isset(self::$_description[$access])) {
+      return self::$_description[$access];
+    }
+    return false;
+  }
   
   static public function toStr($access)
   {
@@ -54,8 +70,10 @@ class Access
         $str = 'owner';
         break;
       case self::NONE:
-      default:
         $str = 'none';
+        break;
+      default:
+        $str = 'invalid';
         break;
     }
     return $str;
