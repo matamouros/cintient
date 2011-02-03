@@ -134,7 +134,7 @@ class User
    * 
    * @param UserCos $cos
    */
-  public function isCos($cos)
+  public function hasCos($cos)
   {
     return ($this->getCos() == $cos);
   }

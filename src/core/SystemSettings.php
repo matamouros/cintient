@@ -131,8 +131,7 @@ class SystemSettings implements ArrayAccess
   static public function get()
   {
     $ret = false;
-    $sql = 'SELECT *'
-         . ' FROM systemsettings';
+    $sql = 'SELECT * FROM systemsettings';
     if ($rs = Database::query($sql)) {
       $ret = self::_getObject($rs);
     }

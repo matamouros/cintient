@@ -17,9 +17,20 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl'
+*}
+{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a>"}
+{$defaultPane="#deploymentBuilder"}
+{if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"usersPane\">users</a>"}
+  {$defaultPane="#metadataPane"}
+{/if}
+{if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"deletePane\">delete</a></span>"}
+  {$defaultPane="#metadataPane"}
+{/if}
+{include file='includes/header.inc.tpl'
   subSectionTitle="Edit project"
-  menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a> | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a></span>"
+  menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   backLink="{URLManager::getForProjectView()}"}
     <div id="paneContainer">
       <div id="metadataPane" class="exclusivePane">
@@ -68,9 +79,10 @@
         </div>
         </form>
       </div>
+{if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
       <div id="usersPane" class="exclusivePane">
         <div id="addUserPane" class="projectEditContainer container">
-          <div class="label">Add an existing user <div class="fineprintLabel">(specify an email or username)</div></div>
+          <div class="label">Add an existing user <div class="fineprintLabel">(specify name or email)</div></div>
           <div class="textfieldContainer" style="width: 254px;">
             <input class="textfield" style="width: 250px;" type="search" id="searchUserTextfield" />
           </div>
@@ -168,30 +180,26 @@ $(document).ready(function() {
   //
   // Remove user
   //
-  //$('ul#userList li .user .remove a').each(function() {
   $('ul#userList .remove a').live('click', function(e) {
-      e.preventDefault();
-      //e.stopPropagation();
-      $.ajax({
-        url: $(this).attr('href'),
-        data: { username: $(this).attr('class') },
-        type: 'GET',
-        cache: false,
-        dataType: 'json',
-        success: function(data, textStatus, XMLHttpRequest) {
-          //console.log(data);
-          if (!data.success) {
-            //TODO: treat this properly
-            console.log('error');
-          } else {
-            $('ul#userList li#' + data.username).remove();
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert(errorThrown);
+    e.preventDefault();
+    $.ajax({
+      url: $(this).attr('href'),
+      data: { username: $(this).attr('class') },
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (!data.success) {
+          //TODO: treat this properly
+          console.log('error');
+        } else {
+          $('ul#userList li#' + data.username).remove();
         }
-      });
-    //});
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
   });
 });
 //]]> 
@@ -206,6 +214,7 @@ $(document).ready(function() {
               <div class="user">
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
                 <div class="username">{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
+{if !$globals_project->userHasAccessLevel($user, Access::OWNER)}
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
@@ -218,13 +227,15 @@ $(document).ready(function() {
                     </ul>
                   </div>
                 </div>
-                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">Remove</a></div>
+                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">remove</a></div>
+{/if}
               </div>
             </li>
 {/foreach}
           </ul>
         </div>
       </div>
+{/if}
       <div id="deploymentBuilderPane" class="exclusivePane">
       </div>
       <div id="integrationBuilderPane" class="exclusivePane">
@@ -265,7 +276,7 @@ $(document).ready(function() {
     });
   });
   // Promptly show the default pane
-  showExclusivePane($('#metadataPane'));
+  showExclusivePane($('{$defaultPane}'));
 
   //
   // For the access level panes

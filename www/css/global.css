@@ -539,6 +539,12 @@ html
   padding-top: 10px;
 }
 
+.projectEditContainer #userList > li .user .remove
+{
+  float: left;
+  margin-top: 12px;
+}
+
 .projectEditContainer .accessLevelPane
 {
   width: 100px;
@@ -615,7 +621,7 @@ html
 
 #addUserPane
 {
-  padding-bottom: 30px;
+  padding-bottom: 15px;
 }
 
 .avatar25

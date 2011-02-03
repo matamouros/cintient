@@ -558,10 +558,11 @@ EOT;
         break;
       }
     }
+    SystemEvent::raise(SystemEvent::DEBUG, "User " . ($hasAccessLevel?'has':"doesn't have") . " access. [USER={$user->getUsername()}] [ACCESS={$accessLevel}] [PROJECTACCESSLEVEL={$userPair[1]}]", __METHOD__);
     return $hasAccessLevel;
   }
   
-  static public function getById($user, $id, $access = Access::READ, array $options = array())
+  static public function getById(User $user, $id, $access = Access::READ, array $options = array())
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;
     

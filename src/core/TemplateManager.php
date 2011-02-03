@@ -742,7 +742,8 @@ EOT;
       //
       // TODO: this should really be a redirect to the previous page.
       //
-      return false;
+      Redirector::redirectToUri(URLManager::getForDashboard());
+      exit;
     }
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
     /*
@@ -762,6 +763,15 @@ EOT;
   
   static public function project_edit()
   {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      //
+      //TODO: Notify user and redirect
+      //
+      SystemEvent::raise(SystemEvent::INFO, "User not authorized to edit project. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
+      Redirector::redirectToUri(URLManager::getForProjectView());
+      exit;
+    }
+    
     //
     // Edit form submission
     //

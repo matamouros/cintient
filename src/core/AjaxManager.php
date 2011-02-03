@@ -189,7 +189,7 @@ class AjaxManager
       exit;
     }
     
-    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
@@ -215,32 +215,37 @@ class AjaxManager
               <div class="user">
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
                 <div class="username">{$user->getUsername()}</div>
+EOT;
+    if (!$GLOBALS['project']->userHasAccessLevel($user, Access::OWNER) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $html = <<<EOT
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
                     <ul>
 EOT;
-    foreach ($accessLevels as $accessLevel => $accessName) {
-      if ($accessLevel !== 0) {
-        $checked = '';
-        if ((Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT & $accessLevel) != 0) {
-          $checked = ' checked';
-        }
-        $accessName = ucfirst($accessName);
-        $html .= <<<EOT
+      foreach ($accessLevels as $accessLevel => $accessName) {
+        if ($accessLevel !== 0) {
+          $checked = '';
+          if ((Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT & $accessLevel) != 0) {
+            $checked = ' checked';
+          }
+          $accessName = ucfirst($accessName);
+          $html .= <<<EOT
                       <li><input type="checkbox" value="{$accessLevel}"{$checked}><div class="labelCheckbox">{$accessName}</div></li>
 EOT;
+        }
       }
-    }
-    $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
-    $html .= "
+      $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
+      $html .= "
                     </ul>
                   </div>
                 </div>
-                <div class=\"remove\"><a class=\"{$user->getUsername()}\" href=\"{$removeLink}\">Remove</a></div>
+                <div class=\"remove\"><a class=\"{$user->getUsername()}\" href=\"{$removeLink}\">remove</a></div>";
+    }
+    $html .= "
               </div>
-            </li>
-";
+            </li>";
+    
     echo json_encode(array(
       'success' => true,
       'html' => $html,
@@ -261,7 +266,7 @@ EOT;
       ));
       exit;
     }
-    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -304,7 +309,7 @@ EOT;
       exit;
     }
     
-    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
@@ -319,6 +324,18 @@ EOT;
       echo json_encode(array(
         'success' => false,
         'error' => 'Not found',
+      ));
+      exit;
+    }
+    
+    //
+    // Don't remove owners
+    //
+    if ($GLOBALS['project']->userHasAccessLevel($user, Access::OWNER)) {
+      SystemEvent::raise(SystemEvent::INFO, "Only owners can remove themselves. [USER={$user->getUsername()}]", __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Not authorized',
       ));
       exit;
     }
