@@ -105,6 +105,8 @@ $(document).ready(function() {
         //
         // TODO: Setup a spinning loading icon
         //
+        $('#searchUserPane ul li').remove();
+        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/projectStatusWaiting.gif" /></li>');
         $.ajax({
           url: '{URLManager::getForAjaxSearchUser()}',
           data: { userTerm: userTermVal },
@@ -132,17 +134,14 @@ $(document).ready(function() {
         $('#searchUserPane').fadeIn(150);
         searchUserPaneActive = true;
       };
-      
+      if (timerId !== null) {
+        clearTimeout(timerId); // Clear previous timers on queue
+      }
       if (e.which == 13) { // Imediatelly send request, if ENTER was depressed
         triggerListRefresh();
       } else {
         timerId = setTimeout(triggerListRefresh, 1000);
       }
-    }
-  });
-  $('#searchUserTextfield').keydown(function() {
-    if (timerId !== null) {
-      clearTimeout(timerId);
     }
   });
   //Close any menus on click anywhere on the page
