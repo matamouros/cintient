@@ -526,12 +526,32 @@ html
 #addUserPane #searchUserPane
 {
   display: none;
-  margin-left: 10px;
+  margin-left: 237px;
+  margin-top: 37px;
+}
+
+#addUserPane #searchUserPane ul
+{
+  width: 190px;
+  overflow: hidden;
+}
+
+#addUserPane #searchUserPane li.spinningIcon
+{
+  text-align: center;  
+}
+
+#addUserPane > .label
+{
+  margin-right: 15px;
+  float: left;
 }
 
 #addUserPane .textfieldContainer
 {
-  margin-bottom: 2px;
+  float: left;
+  margin-top: 3px;
+  margin-left: 29px;
 }
 .projectEditContainer #userList > li
 {
@@ -541,14 +561,14 @@ html
 
 .projectEditContainer #userList > li .user .remove
 {
-  float: left;
+  float: right;
   margin-top: 12px;
 }
 
 .projectEditContainer .accessLevelPane
 {
   width: 100px;
-  float: left;
+  float: right;
   margin-top: 12px;
   margin-left: 20px;
 }
@@ -583,7 +603,7 @@ html
 
 .projectEditContainer
 {
-  width: 600px;
+  width: 500px;
 }
 
 .projectEditContainer .user .avatar

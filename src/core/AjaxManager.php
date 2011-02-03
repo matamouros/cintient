@@ -211,13 +211,15 @@ class AjaxManager
     $GLOBALS['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
     $accessLevels = Access::getList();
     $html = <<<EOT
-            <li id="{$user->getUsername()}">
+            <li id="{$user->getUsername()}" style="display: none;">
               <div class="user">
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
                 <div class="username">{$user->getUsername()}</div>
 EOT;
-    if (!$GLOBALS['project']->userHasAccessLevel($user, Access::OWNER) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
-      $html = <<<EOT
+    if (!$GLOBALS['project']->userHasAccessLevel($user, Access::OWNER)) {
+      $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
+      $html .= <<<EOT
+                <div class="remove"><a class="{$user->getUsername()}" href="{$removeLink}">remove</a></div>
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
@@ -235,12 +237,10 @@ EOT;
 EOT;
         }
       }
-      $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
       $html .= "
                     </ul>
                   </div>
-                </div>
-                <div class=\"remove\"><a class=\"{$user->getUsername()}\" href=\"{$removeLink}\">remove</a></div>";
+                </div>";
     }
     $html .= "
               </div>
@@ -250,6 +250,7 @@ EOT;
       'success' => true,
       'html' => $html,
     ));
+
     exit;
   }
   

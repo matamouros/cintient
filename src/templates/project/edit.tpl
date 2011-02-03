@@ -82,7 +82,7 @@
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
       <div id="usersPane" class="exclusivePane">
         <div id="addUserPane" class="projectEditContainer container">
-          <div class="label">Add an existing user <div class="fineprintLabel">(specify name or email)</div></div>
+          <div class="label">Add an existing user <div class="fineprintLabel">(specify name or username)</div></div>
           <div class="textfieldContainer" style="width: 254px;">
             <input class="textfield" style="width: 250px;" type="search" id="searchUserTextfield" />
           </div>
@@ -106,7 +106,7 @@ $(document).ready(function() {
         // TODO: Setup a spinning loading icon
         //
         $('#searchUserPane ul li').remove();
-        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/projectStatusWaiting.gif" /></li>');
+        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/loading_2.gif" /></li>');
         $.ajax({
           url: '{URLManager::getForAjaxSearchUser()}',
           data: { userTerm: userTermVal },
@@ -121,9 +121,16 @@ $(document).ready(function() {
               if (data.result.length == 0) {
                 $('#searchUserPane ul').append('<li>No users found.</li>');
               } else {
+                found = 0
                 for (i = 0; i < data.result.length; i++) {
-                  $('#searchUserPane ul').append('<a href="#" class="'+data.result[i].username+'"><li><img class="avatar25" src="'+data.result[i].avatar+'"/><span class="username">'+data.result[i].username+'</span></li></a>');
+                  if ($('ul#userList li#' + data.result[i].username).length == 0) {
+                    $('#searchUserPane ul').append('<a href="#" class="'+data.result[i].username+'"><li><img class="avatar25" src="'+data.result[i].avatar+'"/><span class="username">'+data.result[i].username+'</span></li></a>');
+                    found++;
+                  }
                 };
+                if (found == 0) {
+                  $('#searchUserPane ul').append('<li>No more users found.</li>');
+                }
               }
             }
           },
@@ -163,11 +170,11 @@ $(document).ready(function() {
       cache: false,
       dataType: 'json',
       success: function(data, textStatus, XMLHttpRequest) {
-        console.log(data);
         if (!data.success) {
           $('ul#userList').append('<li>Problems adding user.</li>');
         } else {
           $('ul#userList').append(data.html);
+          $('ul#userList li:last-child').slideDown(150);
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -192,7 +199,14 @@ $(document).ready(function() {
           //TODO: treat this properly
           console.log('error');
         } else {
-          $('ul#userList li#' + data.username).remove();
+          slideUpTime = 150;
+          $('ul#userList li#' + data.username).slideUp(slideUpTime);
+          setTimeout(
+            function() {
+              $('ul#userList li#' + data.username).remove();
+            },
+            slideUpTime
+          );
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -214,6 +228,7 @@ $(document).ready(function() {
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
                 <div class="username">{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
 {if !$globals_project->userHasAccessLevel($user, Access::OWNER)}
+                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">remove</a></div>
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
@@ -226,7 +241,6 @@ $(document).ready(function() {
                     </ul>
                   </div>
                 </div>
-                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">remove</a></div>
 {/if}
               </div>
             </li>
@@ -282,20 +296,19 @@ $(document).ready(function() {
   //
   // Bind the click link events to their corresponding panes
   var cintientActivePane = null;
-  $('.accessLevelPane .accessLevelPaneTitle a').each(function() {
-    $(this).click(function(e) {
-      e.stopPropagation();
-      if (cintientActivePane == null) {
-        cintientActivePane = $('#usersPane .accessLevelPane #accessLevelPaneLevels_' + $(this).attr('class'));
-        cintientActivePane.fadeIn(100);
-      } else {
-        cintientActivePane.fadeOut(50);
-        cintientActivePane = null;
-      }
-    });
+  $('.accessLevelPane .accessLevelPaneTitle a', $('#userList')).live('click', function(e) {
+    if (cintientActivePane == null) {
+      cintientActivePane = $('#usersPane .accessLevelPane #accessLevelPaneLevels_' + $(this).attr('class'));
+      cintientActivePane.fadeIn(100);
+    } else {
+      cintientActivePane.fadeOut(50);
+      cintientActivePane = null;
+    }
+    e.stopPropagation();
   });
   // Close any menus on click anywhere on the page
-  $(document).click(function(){
+  $(document).click( function(e){
+    if (e.isPropagationStopped()) { return; }
     if (cintientActivePane != null) {
       cintientActivePane.fadeOut(50);
       cintientActivePane = null;

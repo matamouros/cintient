@@ -34,7 +34,7 @@
   <![endif]-->
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="/js/jquery-1.4.4.js"></script>
+  <script type="text/javascript" src="/js/jquery-1.5.min.js"></script>
 </head>
 <body>
   <div id="header" class="containerTopLevel">
