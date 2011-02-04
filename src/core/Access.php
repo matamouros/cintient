@@ -28,9 +28,9 @@ class Access
 {
   const NONE  = 0; // Not even owner has access
   const READ  = 1;
-  const BUILD = 2;
-  const WRITE = 4;
-  const OWNER = 8;
+  const BUILD = 3; //3
+  const WRITE = 7; //7
+  const OWNER = 15; //15
   
   static $_description = array(
     self::NONE => "No access at all",
@@ -43,7 +43,7 @@ class Access
   //
   // Utility consts - SERIOUSLY take care if the above consts are ever altered!
   //
-  const DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT = 3;  // READ & BUILD
+  const DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT = self::BUILD;  // READ & BUILD
   
   static public function getDescription($access)
   {

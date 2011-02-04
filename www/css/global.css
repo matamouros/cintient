@@ -262,6 +262,7 @@ html
 {
   font-size: .7em;
   text-indent: 2px;
+  color: rgb(120,120,120);
 }
 
 #loginContainer
@@ -603,6 +604,15 @@ html
   text-indent: 0;
 }
 
+.projectEditContainer .accessLevelPaneLevels input[type=radio]
+{
+  clear: left;
+  float: left;
+  margin-top: 1px;
+  margin-right: 5px;
+  margin-bottom: 6px;
+}
+
 .projectEditContainer .accessLevelPaneLevels
 {
   display: none;
@@ -649,15 +659,6 @@ html
   -webkit-box-shadow: #111 1px 1px 3px;
   -moz-box-shadow: #111 1px 1px 3px;
   border: 1px solid #fff;
-}
-
-.projectEditContainer input[type=checkbox], .projectEditContainer input[type=radio]
-{
-  clear: left;
-  float: left;
-  margin-top: 4px;
-  margin-right: 5px;
-  margin-bottom: 6px;
 }
 
 .projectEditContainer .user .avatar

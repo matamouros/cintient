@@ -547,7 +547,7 @@ EOT;
     }
     return false;
   }
-  
+  /*
   public function toggleAccessLevelForUser(User $user, $access)
   {
     $i = 0;
@@ -559,7 +559,7 @@ EOT;
       $i++;
     }
     return false;
-  }
+  }*/
   
   public function loadUsers()
   {

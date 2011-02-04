@@ -220,7 +220,7 @@ class AjaxManager
       exit;
     }
     
-    if ($GLOBALS['project']->toggleAccessLevelForUser($user, $params[1])) {
+    if ($GLOBALS['project']->setAccessLevelForUser($user, $params[1])) {
       echo json_encode(array(
         'success' => true,
       ));
@@ -288,12 +288,12 @@ EOT;
       foreach ($accessLevels as $accessLevel => $accessName) {
         if ($accessLevel !== 0) {
           $checked = '';
-          if ((Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT & $accessLevel) != 0) {
+          if ($GLOBALS['project']->getAccessLevelFromUser($user) == $accessLevel) {
             $checked = ' checked';
           }
           $accessName = ucfirst($accessName);
           $html .= <<<EOT
-                      <li><input class="accessLevelPaneLevelsCheckbox" type="checkbox" value="{$accessLevel}" id="{$accessLevel}"{$checked} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
+                      <li><input class="accessLevelPaneLevelsCheckbox" type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel" id="{$accessLevel}"{$checked} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
 EOT;
         }
       }
@@ -301,6 +301,9 @@ EOT;
                     </ul>
                   </div>
                 </div>";
+    } else {
+      $html .= '
+                <div class="remove">Owner <span class="fineprintLabel">(no changes allowed)</span></div>';
     }
     $html .= "
               </div>

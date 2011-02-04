@@ -21,11 +21,11 @@
 {$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a>"}
 {$defaultPane="#deploymentBuilder"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"usersPane\">users</a>"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
   {$defaultPane="#metadataPane"}
 {/if}
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"deletePane\">delete</a></span>"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a></span>"}
   {$defaultPane="#metadataPane"}
 {/if}
 {include file='includes/header.inc.tpl'
@@ -235,12 +235,14 @@ $(document).ready(function() {
                     <ul>
 {foreach $accessLevels as $accessLevel => $accessName}
   {if $accessLevel !== 0} {* Don't show the NONE value access level *}
-                      <li><input class="accessLevelPaneLevelsCheckbox" type="checkbox" value="{$user->getUsername()}_{$accessLevel}" id="accessLevel" {if ($userAccessLevel & $accessLevel)!=0} checked{/if} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName|capitalize}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
+                      <li><input class="accessLevelPaneLevelsCheckbox" type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel" id="{$accessLevel}" {if $userAccessLevel == $accessLevel} checked{/if} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName|capitalize}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
   {/if}
 {/foreach}
                     </ul>
                   </div>
                 </div>
+{else}
+                <div class="remove">Owner <span class="fineprintLabel">(no changes allowed)</span></div>
 {/if}
               </div>
             </li>
@@ -299,9 +301,9 @@ $(document).ready(function() {
   $('.accessLevelPane .accessLevelPaneTitle a', $('#userList')).live('click', function(e) {
     if (cintientActivePane == null) {
       cintientActivePane = $('#usersPane .accessLevelPane #accessLevelPaneLevels_' + $(this).attr('class'));
-      cintientActivePane.fadeIn(100);
+      cintientActivePane.slideDown(100);
     } else {
-      cintientActivePane.fadeOut(50);
+      cintientActivePane.slideUp(100);
       cintientActivePane = null;
     }
     e.stopPropagation();
@@ -313,7 +315,7 @@ $(document).ready(function() {
         $(e.target).attr('class') != 'labelCheckbox' ) {
       if (e.isPropagationStopped()) { return; }
       if (cintientActivePane != null) {
-        cintientActivePane.fadeOut(50);
+        cintientActivePane.slideUp(100);
         cintientActivePane = null;
       }
     }
@@ -332,13 +334,14 @@ $(document).ready(function() {
         if (!data.success) {
           //TODO: treat this properly
           console.log('error');
-        } else {
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
         alert(errorThrown);
       }
     });
+    $('.accessLevelPane .accessLevelPaneLevels').slideUp(100);
+    cintientActivePane = null;
   });
 });
 //]]> 
