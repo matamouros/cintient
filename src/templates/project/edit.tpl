@@ -106,7 +106,7 @@ $(document).ready(function() {
         // TODO: Setup a spinning loading icon
         //
         $('#searchUserPane ul li').remove();
-        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/loading_2.gif" /></li>');
+        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/loading-3.gif" /></li>');
         $.ajax({
           url: '{URLManager::getForAjaxSearchUser()}',
           data: { userTerm: userTermVal },
@@ -340,7 +340,7 @@ $(document).ready(function() {
         alert(errorThrown);
       }
     });
-    $('.accessLevelPane .accessLevelPaneLevels').slideUp(100);
+    $('.accessLevelPane .accessLevelPaneLevels').fadeOut(300);
     cintientActivePane = null;
   });
 });

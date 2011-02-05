@@ -903,7 +903,9 @@ article#project #statusContainer .status
 .projectStatusWaiting
 {
   display: none;
-  background-image: url('/imgs/projectStatusWaiting.gif');
+  background-image: url('/imgs/loading-3.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 24px;
   height: 24px;
   margin-left:3px;
