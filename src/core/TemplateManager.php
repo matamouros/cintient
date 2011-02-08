@@ -663,7 +663,7 @@ EOT;
   static public function install()
   {
     session_destroy();
-    session_start();
+
     //
     // Create necessary dirs
     //
@@ -829,7 +829,7 @@ EOT;
         $project->setScmPassword($_POST['scmPassword']);
         $project->addToUsers(array(
           $GLOBALS['user']->getId(),
-          Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
+          Access::OWNER)
         );
         
         if (isset($_GET['new']) && !$project->init()) {
@@ -952,7 +952,7 @@ EOT;
         $project->setScmPassword($_POST['scmPassword']);
         $project->addToUsers(array(
           $GLOBALS['user']->getId(),
-          Access::READ + Access::BUILD + Access::WRITE + Access::OWNER)
+          Access::OWNER)
         );
         
         if (!$project->init()) {
