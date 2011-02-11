@@ -21,19 +21,19 @@
 {$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a>"}
 {$defaultPane="#deploymentBuilder"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"metadataPane\">metadata</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
-  {$defaultPane="#metadataPane"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
+  {$defaultPane="#generalPane"}
 {/if}
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
   {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a></span>"}
-  {$defaultPane="#metadataPane"}
+  {$defaultPane="#generalPane"}
 {/if}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   backLink="{URLManager::getForProjectView()}"}
     <div id="paneContainer">
-      <div id="metadataPane" class="exclusivePane">
+      <div id="generalPane" class="exclusivePane">
         <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
         <div class="projectEditContainer container">
           <div class="label">Project title</div>
