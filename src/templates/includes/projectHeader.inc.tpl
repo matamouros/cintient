@@ -70,7 +70,7 @@ function updateProjectStatus(toStatus)
   projectLastKnownStatus = toStatus;
   switch(toStatus) {
   case {Project::STATUS_OK}:
-    $('#project #statusContainer .projectStatusWaiting').hide(50);
+    $('#project #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#project #statusContainer .status').removeClass('projectStatusFailed projectStatusWorking');
     $('#project #statusContainer .status').addClass('projectStatusOk');
     break;
@@ -80,7 +80,7 @@ function updateProjectStatus(toStatus)
     $('#project #statusContainer .projectStatusWaiting').fadeIn(150);
     break;
   default:
-    $('#project #statusContainer .projectStatusWaiting').hide(50);
+    $('#project #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#project #statusContainer .status').removeClass('projectStatusWorking projectStatusOk');
     $('#project #statusContainer .status').addClass('projectStatusFailed');
     break;
