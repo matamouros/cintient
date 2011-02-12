@@ -341,15 +341,15 @@ EOT;
       exit;
     }
 
-    ProjectLog::write("A building was triggered.");
+    $GLOBALS['project']->log("A building was triggered.");
     if (!$GLOBALS['project']->build(true)) {
-      ProjectLog::write("Building failed.");
+      $GLOBALS['project']->log("Building failed.");
       echo json_encode(array(
         'success' => true,
         'projectStatus' => $GLOBALS['project']->getStatus(),
       ));
     } else {
-      ProjectLog::write("Building successful.");
+      $GLOBALS['project']->log("Building successful.");
       echo json_encode(array(
         'success' => true,
         'projectStatus' => $GLOBALS['project']->getStatus(),

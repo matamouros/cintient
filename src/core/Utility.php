@@ -23,4 +23,20 @@ class Utility
     }
     return $val;
   }
+  
+  static public function bytesToHumanReadable($size)
+  {
+    if ($size < 1024.0) {
+      $size = $size . ' B';
+    } elseif ($size < 1048576.0) {
+      $size = round($size/1024.0, 2) . 'KB';
+    } elseif ($size < 1073741824.0) {
+      $size = round($size/1048576.0, 2) . 'MB';
+    } elseif ($size < 1099511627776.0) {
+      $size = round($size/1073741824.0, 2) . 'GB';
+    } else {
+      $size = round($size/1099511627776.0, 2) . 'TB';
+    }
+    return $size;
+  }
 }

@@ -129,17 +129,6 @@ class ProjectLog
     $this->setSignature($this->_getCurrentSignature());
   }
   
-  static public function write($msg)
-  {
-    //
-    // Oh boy... there goes proper layer separation...
-    //
-    $projectLog = new ProjectLog($GLOBALS['project']->getId());
-    $projectLog->setType(0);
-    $projectLog->setMessage($msg);
-    $projectLog->setUsername($GLOBALS['user']->getUsername());
-  }
-  
   static public function getListByProject($project, $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;

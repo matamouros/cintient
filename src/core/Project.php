@@ -29,27 +29,26 @@
  */
 class Project
 {
-  private $_buildLabel;            // The build label to be used in the packages' and builds' nomenclature (together with the counter)
-  private $_dateBuild;             // Last *success* build date
-  private $_dateCheckedForChanges; // Last status check on the project (not necessarily originating a build)
+  private $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
+  private $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
   private $_dateCreation;
-  private $_dateModification;      // Last settings modification date
   private $_description;
   private $_id;
-  private $_releaseMajor;          // The current release major number
-  private $_releaseMinor;          // The current release minor number
-  private $_releaseCounter;        // the *last* number assigned to a successful created release package. Should be incremental
-  private $_scmConnectorType;      // * Always * loaded from the available modules on core/ScmConnector
+  private $_releaseMajor;            // The current release major number
+  private $_releaseMinor;            // The current release minor number
+  private $_releaseCounter;          // the *last* number assigned to a successful created release package. Should be incremental
+  private $_scmCheckChangesTimeout;  // In minutes.
+  private $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
   private $_scmPassword;
   private $_scmRemoteRepository;
   private $_scmUsername;
-  private $_signature;             // Internal flag to control whether a save to database is required
-  private $_statsNumBuilds;        // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
+  private $_signature;               // Internal flag to control whether a save to database is required
+  private $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
   private $_status;
   private $_title;
-  private $_users;                 // An array of users and corresponding permissions, taken from projectuser table
-  private $_visits;                // Counter of accesses, for hotness
-  private $_workDir;               // The working dir of the project (sources, generated reports, etc)
+  private $_users;                   // An array of users and corresponding permissions, taken from projectuser table
+  private $_visits;                  // Counter of accesses, for hotness
+  private $_workDir;                 // The working dir of the project (sources, generated reports, etc)
   //
   // Builders
   //
@@ -92,6 +91,7 @@ class Project
   {
     $this->_buildLabel = '';
     $this->_description = '';
+    $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
     $this->_scmRemoteRepository = '';
     $this->_scmUsername = '';
@@ -137,7 +137,11 @@ class Project
       //
       // Checkout required?
       //
-      if ($this->getStatus() == self::STATUS_UNINITIALIZED || !file_exists($this->getScmLocalWorkingCopy())) {
+      $this->touchDateCheckedForChanges();
+      if ($this->getStatus() == self::STATUS_UNINITIALIZED ||
+          $this->getStatus() == self::STATUS_UNBUILT ||
+          !file_exists($this->getScmLocalWorkingCopy()))
+      {
         if (!ScmConnector::checkout($params)) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't checkout sources. [PROJECTID={$this->getId()}]", __METHOD__);
           $this->setStatus(self::STATUS_UNINITIALIZED);
@@ -273,6 +277,14 @@ class Project
     return $this->_dateCreation;
   }
   
+  public function getDateCheckedForChanges()
+  {
+    if (empty($this->_dateCheckedForChanges)) {
+      $this->_dateCheckedForChanges = date('Y-m-d H:i:s');
+    }
+    return $this->_dateCheckedForChanges;
+  }
+  
   public function getScmLocalWorkingCopy()
   {
     return $this->getWorkDir() . 'sources/';
@@ -376,12 +388,14 @@ CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   buildlabel TEXT,
   datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
+  datecheckedforchanges DATETIME DEFAULT CURRENT_TIMESTAMP,
   deploymentbuilder TEXT,
   description TEXT DEFAULT '',
   integrationbuilder TEXT,
   releasemajor MEDIUMINT UNSIGNED DEFAULT 0,
   releaseminor MEDIUMINT UNSIGNED DEFAULT 0,
   releasecounter INT UNSIGNED DEFAULT 0,
+  scmcheckchangestimeout MEDIUMINT UNSIGNED DEFAULT 30,
   scmconnectortype VARCHAR(20) DEFAULT '',
   scmpassword VARCHAR(255) DEFAULT '',
   scmremoterepository VARCHAR(255) DEFAULT '',
@@ -433,8 +447,9 @@ EOT;
          . ' (id,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
          . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
-         . ' scmremoterepository,scmconnectortype)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
+         . ' datecheckedforchanges)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $val = array(
       $this->getId(),
       $this->getDateCreation(),
@@ -451,6 +466,8 @@ EOT;
       $this->getWorkDir(),
       $this->getScmRemoteRepository(),
       $this->getScmConnectorType(),
+      $this->getScmCheckChangesTimeout(),
+      $this->getDateCheckedForChanges(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -547,19 +564,6 @@ EOT;
     }
     return false;
   }
-  /*
-  public function toggleAccessLevelForUser(User $user, $access)
-  {
-    $i = 0;
-    foreach ($this->_users as $pair) {
-      if ($pair[0] == $user->getId()) {
-        $this->_users[$i][1] = $this->_users[$i][1] + (($this->_users[$i][1] & $access) == 0 ?$access: -$access);
-        return true;
-      }
-      $i++;
-    }
-    return false;
-  }*/
   
   public function loadUsers()
   {
@@ -573,9 +577,26 @@ EOT;
     $this->setUsers($ret);
   }
   
+  /**
+   * Logs an event to the project log.
+   * 
+   * @param string $msg
+   */
+  public function log($msg)
+  {
+    $projectLog = new ProjectLog($this->getId());
+    $projectLog->setType(0);
+    $projectLog->setMessage($msg);
+  }
+  
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
+  }
+  
+  public function touchDateCheckedForChanges()
+  {
+    $this->_dateCheckedForChanges = date('Y-m-d H:i:s');
   }
   
   /**
@@ -666,6 +687,20 @@ EOT;
     return $ret;
   }
   
+  static public function getNextToBuild()
+  {
+    $ret = null;
+    $sql = 'SELECT * FROM project p'
+         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*60) || ' seconds')"
+         . ' ORDER BY datecheckedforchanges ASC LIMIT 1';
+    if ($rs = Database::query($sql)) {
+      if ($rs->nextRow()) {
+        $ret = self::_getObject($rs);
+      }
+    }
+    return $ret;
+  }
+  
   /**
    * 
    * @param unknown_type $rs
@@ -678,9 +713,11 @@ EOT;
     $ret->setScmRemoteRepository($rs->getScmRemoteRepository());
     $ret->setScmUsername($rs->getScmUsername());
     $ret->setScmPassword($rs->getScmPassword());
+    $ret->getScmCheckChangesTimeout($rs->getScmCheckChangesTimeout());
     $ret->setWorkDir($rs->getWorkDir());
     $ret->setBuildLabel($rs->getBuildLabel());
     $ret->setDateCreation($rs->getDateCreation());
+    $ret->getDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
     $ret->setReleaseMajor($rs->getReleaseMajor());

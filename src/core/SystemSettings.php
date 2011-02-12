@@ -35,7 +35,8 @@ class SystemSettings implements ArrayAccess
   private $_settings;
   private $_signature; // Internal flag to control whether a save to database is required
   
-  const ALLOW_USER_REGISTRATION = 'allowUserRegistration';
+  const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
+  const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
 
   /**
    * Magic method implementation for calling vanilla getters and setters. This
@@ -69,6 +70,7 @@ class SystemSettings implements ArrayAccess
     //
     $this->_settings = array(
       self::ALLOW_USER_REGISTRATION => 1,
+      self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
     );
   }
   

@@ -21,10 +21,20 @@
  *  
  */
 
-/**
- * 
- */
- 
-//Config::load();
 
-//SCMConnector::
+$buildProcess = new Process(CINTIENT_PHP_BINARY . ' ' . CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
+if (!$buildProcess->isRunning()) {
+  if (!$buildProcess->runAsync()) {
+    SystemEvent::raise(SystemEvent::ERROR, "Problems starting up build worker.", 'buildHandler');
+  }
+  #if DEBUG
+  else {
+    SystemEvent::raise(SystemEvent::DEBUG, "Build worker left running in the background.", 'buildHandler');
+  }
+  #endif
+}
+#if DEBUG
+else {
+  SystemEvent::raise(SystemEvent::DEBUG, "Build process already running.", 'buildHandler');
+}
+#endif

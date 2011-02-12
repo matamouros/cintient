@@ -746,18 +746,6 @@ EOT;
       exit;
     }
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
-    /*
-    //
-    // Building
-    //
-    if (isset($_GET['build'])) {
-      ProjectLog::write("A building was triggered.");
-      if (!$GLOBALS['project']->build(true)) {
-        ProjectLog::write("Building failed.");
-      } else {
-        ProjectLog::write("Building successful.");
-      }
-    }*/
     $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']));
   }
   
@@ -843,9 +831,9 @@ EOT;
         if (isset($_GET['new'])) {
           $GLOBALS['project'] = $project;
           $_SESSION['projectId'] = $GLOBALS['project']->getId();
-          ProjectLog::write("Project created.");
+          $GLOBALS['project']->log("Project created.");
         } else {
-          ProjectLog::write("Project edited.");
+          $GLOBALS['project']->log("Project edited.");
         }
       }
       
@@ -965,7 +953,7 @@ EOT;
         }
         $GLOBALS['project'] = $project;
         $_SESSION['projectId'] = $GLOBALS['project']->getId();
-        ProjectLog::write("Project created.");
+        $GLOBALS['project']->log("Project created.");
         Redirector::redirectToUri(URLManager::getForDashboard());
         exit;
       }
