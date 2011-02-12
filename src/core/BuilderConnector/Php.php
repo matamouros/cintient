@@ -66,11 +66,20 @@ EOT;
 \$GLOBALS['result']['ok'] = false;
 \$GLOBALS['result']['output'] = '';
 \$GLOBALS['result']['stacktrace'] = array();
+EOT;
+      //
+      // The following because the internal cron emulation process runs
+      // without exiting, and the second time around will redeclare
+      // ilegally this function.
+      //
+      if (!function_exists('output')) {
+        $php .= <<<EOT
 function output(\$task, \$message)
 {
   \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$task}] {\$message}";
 }
 EOT;
+      }
     }
     $properties = $o->getProperties();
     if ($o->getProperties()) {
