@@ -122,38 +122,42 @@ EOT;
     //
     // TODO: Make sure these function names cannot colide with existing functions!
     //
-    $php .= <<<EOT
+    if (!function_exists($o->getName())) {
+      $php .= <<<EOT
 function {$o->getName()}() {
 EOT;
-    if ($o->getProperties()) {
-      $properties = $o->getProperties();
-      foreach ($properties as $property) {
-        $php .= <<<EOT
+      if ($o->getProperties()) {
+        $properties = $o->getProperties();
+        foreach ($properties as $property) {
+          $php .= <<<EOT
   {self::BuilderElement_Type_Property($property)}
 EOT;
+        }
       }
-    }
-    if ($o->getDependencies()) {
-      $deps = $o->getDependencies();
-      foreach ($deps as $dep) {
-        $php .= <<<EOT
+      if ($o->getDependencies()) {
+        $deps = $o->getDependencies();
+        foreach ($deps as $dep) {
+          $php .= <<<EOT
   \$GLOBALS['targetDeps']['{$o->getName()}'][] = '{$dep}';
 EOT;
+        }
       }
-    }
-    if ($o->getTasks()) {
-      $tasks = $o->getTasks();
-      foreach ($tasks as $task) {
-        $method = get_class($task);
-        $taskOutput = self::$method($task);
-        $php .= <<<EOT
+      if ($o->getTasks()) {
+        $tasks = $o->getTasks();
+        foreach ($tasks as $task) {
+          $method = get_class($task);
+          $taskOutput = self::$method($task);
+          $php .= <<<EOT
   {$taskOutput}
 EOT;
+        }
       }
-    }
-    $php .= <<<EOT
+      $php .= <<<EOT
 }
 EOT;
+    } else {
+      $php .= "// Function {$o->getName()}() already declared.";
+    }
     return $php;
   }
   
@@ -424,6 +428,7 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     //
     //TODO: Implement $isCaseSensitive!!!!
     //TODO: Implement only a single top level class for this
+    
     $php = "if (!class_exists('FilesetFilterIterator', false)) {
   class FilesetFilterIterator extends FilterIterator
   {
@@ -535,7 +540,8 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     // Make sure RecursiveIteratorIterator::CHILD_FIRST is used, so that dirs
     // are only processed after *all* their children are.
     //
-    $php .= "function fileset{$o->getId()}(\$callback)
+    if (!function_exists("fileset{$o->getId()}")) {
+      $php .= "function fileset{$o->getId()}(\$callback)
 {
   try {
     foreach (new FilesetFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST), '{$o->getId()}') as \$entry) {
@@ -555,9 +561,10 @@ if (!fileset{$fileset->getId()}(\$callback)) {
   }
   return true;
 ";
-    $php .= "
+      $php .= "
 }
 ";
+    }
     return $php;
   }
   
