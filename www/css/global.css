@@ -753,14 +753,14 @@ article#project .avatar
   clear: none;
 }
 
-article#project #buildsList #buildsListDropdown
+#buildsList #buildsListDropdown
 {
-  font-size: .9em;
+  font-size: 10pt;
 }
 
-article#project #buildsList .label
+#buildsList .label
 {
-  font-size: .9em;
+  font-size: 10pt;
 }
 
 article#project .title
