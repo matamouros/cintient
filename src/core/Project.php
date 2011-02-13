@@ -126,6 +126,11 @@ class Project
     $params['local'] = $this->getScmLocalWorkingCopy();
     $params['username'] = $this->getScmUsername();
     $params['password'] = $this->getScmPassword();
+    
+    if ($this->getStatus() == self::STATUS_ERROR && !$force) {
+      SystemEvent::raise(SystemEvent::INFO, "Project is in error state, to build you need to force. [PROJECTID={$this->getId()}]", __METHOD__);
+      return false;
+    }
 
     if ($this->getStatus() == self::STATUS_BUILDING) {
       SystemEvent::raise(SystemEvent::INFO, "Project is currently building, or is queued for building. [PROJECTID={$this->getId()}]", __METHOD__);
@@ -713,11 +718,11 @@ EOT;
     $ret->setScmRemoteRepository($rs->getScmRemoteRepository());
     $ret->setScmUsername($rs->getScmUsername());
     $ret->setScmPassword($rs->getScmPassword());
-    $ret->getScmCheckChangesTimeout($rs->getScmCheckChangesTimeout());
+    $ret->setScmCheckChangesTimeout($rs->getScmCheckChangesTimeout());
     $ret->setWorkDir($rs->getWorkDir());
     $ret->setBuildLabel($rs->getBuildLabel());
     $ret->setDateCreation($rs->getDateCreation());
-    $ret->getDateCheckedForChanges($rs->getDateCheckedForChanges());
+    $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
     $ret->setReleaseMajor($rs->getReleaseMajor());
