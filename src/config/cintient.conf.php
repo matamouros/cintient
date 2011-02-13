@@ -22,9 +22,11 @@
  */
 
 error_reporting(-1);
+
+
 define('LOG_FILE', '/var/log/cintient.log');
 define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulled from the user .ini config file
-
+define('CINTIENT_INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
 define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
 
 define('CINTIENT_BASE_URL', 'http://cintient'); // Without trailing slash
@@ -47,7 +49,6 @@ define('CINTIENT_INTERNAL_BUILDER_ACTIVE', 1);
 
 define('DEFAULT_DIR_MASK', 0777);
 
-define('CINTIENT_INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
 define('CINTIENT_CONFIG_FILE' , CINTIENT_INSTALL_DIR . 'src/config/config.inc.php');
 
 define('AUTH_METHOD', 'local'); // Taken from src/core/Auth/
