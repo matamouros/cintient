@@ -84,7 +84,8 @@ EOT;
     $properties = $o->getProperties();
     if ($o->getProperties()) {
       foreach ($properties as $property) {
-        $php .= self::BuilderElement_Type_Property($property);
+        $php .= "
+" . self::BuilderElement_Type_Property($property);
       }
     }
     $targets = $o->getTargets();
@@ -93,7 +94,8 @@ EOT;
         $php .= <<<EOT
 \$GLOBALS['targets'][] = '{$target->getName()}';
 EOT;
-        $php .= self::BuilderElement_Target($target);
+        $php .= "
+" . self::BuilderElement_Target($target);
       }
     }
     $php .= <<<EOT
@@ -129,9 +131,8 @@ EOT;
       if ($o->getProperties()) {
         $properties = $o->getProperties();
         foreach ($properties as $property) {
-          $php .= <<<EOT
-  {self::BuilderElement_Type_Property($property)}
-EOT;
+          $php .= "
+  " . self::BuilderElement_Type_Property($property);
         }
       }
       if ($o->getDependencies()) {
@@ -156,7 +157,9 @@ EOT;
 }
 EOT;
     } else {
-      $php .= "// Function {$o->getName()}() already declared.";
+      $php .= <<<EOT
+// Function {$o->getName()}() already declared.
+EOT;
     }
     return $php;
   }
@@ -171,7 +174,8 @@ EOT;
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $php .= self::BuilderElement_Type_Fileset($fileset);
+        $php .= "
+" . self::BuilderElement_Type_Fileset($fileset);
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -242,7 +246,8 @@ EOT;
     if ($o->getArgs()) {
       $args = ' ' . implode(' ', $o->getArgs());
     }
-    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
+    $php .= "
+\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
 output('exec', 'Executing \"{$dir}{$o->getExecutable()}{$args}\".');
 \$ret = exec('{$dir}{$o->getExecutable()}{$args}', \$lines, \$retval);
 foreach (\$lines as \$line) {
@@ -250,10 +255,12 @@ foreach (\$lines as \$line) {
 }
 ";
     if ($o->getOutputProperty()) {
-      $php .= "\$GLOBALS['properties']['{$o->getOutputProperty()}'] = \$ret;
+      $php .= "
+\$GLOBALS['properties']['{$o->getOutputProperty()}'] = \$ret;
 ";
     }
-    $php .= "if (\$retval > 0) {
+    $php .= "
+if (\$retval > 0) {
   output('exec', 'Failed.');
 } else {
   output('exec', 'Success.');
@@ -278,7 +285,8 @@ return true;
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
       return false;
     }
-    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
+    $php .= "
+\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
 if (!file_exists('{$o->getDir()}')) {
   if (mkdir('{$o->getDir()}', " . DEFAULT_DIR_MASK . ", true) === false) {
     \$GLOBALS['result']['ok'] = false;
@@ -301,13 +309,15 @@ if (!file_exists('{$o->getDir()}')) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHP lint.', __METHOD__);
       return false;
     }
-    $php .= "\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
+    $php .= "
+\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
 output('phplint', 'Starting...');
 ";
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $php .= self::BuilderElement_Type_Fileset($fileset);
+        $php .= "
+" . self::BuilderElement_Type_Fileset($fileset);
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -350,7 +360,8 @@ if (!fileset{$fileset->getId()}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHPUnit.', __METHOD__);
       return false;
     }
-    $php .= "\$GLOBALS['result']['task'] = 'phpunit';
+    $php .= "
+\$GLOBALS['result']['task'] = 'phpunit';
 output('phpunit', 'Starting unit tests...');
 ";
     $logJunitXmlFile = '';
@@ -380,7 +391,8 @@ output('phpunit', 'Code coverage only possible with the Xdebug extension loaded.
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $php .= self::BuilderElement_Type_Fileset($fileset);
+        $php .= "
+" . self::BuilderElement_Type_Fileset($fileset);
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -429,7 +441,8 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     //TODO: Implement $isCaseSensitive!!!!
     //TODO: Implement only a single top level class for this
     
-    $php = "if (!class_exists('FilesetFilterIterator', false)) {
+    $php = "
+if (!class_exists('FilesetFilterIterator', false)) {
   class FilesetFilterIterator extends FilterIterator
   {
     private \$_filesetId;
@@ -479,7 +492,8 @@ if (!fileset{$fileset->getId()}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'Root dir not set for type fileset.', __METHOD__);
       return false;
     }
-    $php .= "\$GLOBALS['filesets']['{$o->getId()}'] = array();
+    $php .= "
+\$GLOBALS['filesets']['{$o->getId()}'] = array();
 \$GLOBALS['filesets']['{$o->getId()}']['dir'] = '';
 \$GLOBALS['filesets']['{$o->getId()}']['defaultExcludes'] = array(
   '**/*~',
@@ -515,24 +529,28 @@ if (!fileset{$fileset->getId()}(\$callback)) {
 \$GLOBALS['filesets']['{$o->getId()}']['include'] = array();
 ";
     if ($o->getDir()) {
-      $php .= "\$GLOBALS['filesets']['{$o->getId()}']['dir'] = '{$o->getDir()}';
+      $php .= "
+\$GLOBALS['filesets']['{$o->getId()}']['dir'] = '{$o->getDir()}';
 ";
     }
     if (!$o->getDefaultExcludes()) {
-      $php .= "\$GLOBALS['filesets']['{$o->getId()}']['defaultExcludes'] = array();
+      $php .= "
+\$GLOBALS['filesets']['{$o->getId()}']['defaultExcludes'] = array();
 ";
     }
     if ($o->getInclude()) {
       $includes = $o->getInclude();
       foreach ($includes as $include) {
-        $php .= "\$GLOBALS['filesets']['{$o->getId()}']['include'][] = '{$include}';
+        $php .= "
+\$GLOBALS['filesets']['{$o->getId()}']['include'][] = '{$include}';
 ";
       }
     }
     if ($o->getExclude()) {
       $excludes = $o->getExclude();
       foreach ($excludes as $exclude) {
-        $php .= "\$GLOBALS['filesets']['{$o->getId()}']['exclude'][] = '{$exclude}';
+        $php .= "
+\$GLOBALS['filesets']['{$o->getId()}']['exclude'][] = '{$exclude}';
 ";
       }
     }
@@ -541,7 +559,8 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     // are only processed after *all* their children are.
     //
     if (!function_exists("fileset{$o->getId()}")) {
-      $php .= "function fileset{$o->getId()}(\$callback)
+      $php .= "
+function fileset{$o->getId()}(\$callback)
 {
   try {
     foreach (new FilesetFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST), '{$o->getId()}') as \$entry) {
@@ -560,8 +579,6 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     return false;
   }
   return true;
-";
-      $php .= "
 }
 ";
     }
@@ -584,6 +601,7 @@ EOT;
   static public function execute($code)
   {
     eval ($code);
+    SystemEvent::raise(SystemEvent::DEBUG, "Code: " . print_r($code, true), __METHOD__);
     if ($GLOBALS['result']['ok'] !== true) {
       if (!empty($GLOBALS['result']['task'])) {
         SystemEvent::raise(SystemEvent::INFO, "Failed on specific task. [TASK={$GLOBALS['result']['task']}] [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
