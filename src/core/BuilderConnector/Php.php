@@ -600,8 +600,8 @@ EOT;
   
   static public function execute($code)
   {
-    eval ($code);
     SystemEvent::raise(SystemEvent::DEBUG, "Code: " . print_r($code, true), __METHOD__);
+    eval ($code);
     if ($GLOBALS['result']['ok'] !== true) {
       if (!empty($GLOBALS['result']['task'])) {
         SystemEvent::raise(SystemEvent::INFO, "Failed on specific task. [TASK={$GLOBALS['result']['task']}] [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
