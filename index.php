@@ -24,7 +24,7 @@
 /**
  *  
  *  This is Cintient's installation script. The only way to make it past
- *  installation is to delete this and boot.xml, which should be done at
+ *  installation is to delete this, which should be done automatically at
  *  the end of this very script, if every pre-requisite is satisfied.
  *  
  *  @author Pedro Eugenio <voxmachina@gmail.com>
@@ -96,7 +96,10 @@ if (isset($_POST) && count($_POST) > 0) {
   }
   
   // test xml install file one more time
-  $configVars = new SimpleXMLElement(dirname(__FILE__) . '/boot.xml', LIBXML_NOCDATA, true);
+  $fpThis = fopen(__FILE__, "r");
+  fseek($fpThis, __COMPILER_HALT_OFFSET__);
+  $configVars = new SimpleXMLElement(stream_get_contents($fpThis), LIBXML_NOCDATA);
+  fclose($fpThis);
   if (!$configVars instanceOf SimpleXMLElement) {
     die("ERROR: Could not load installation file!");
   }
@@ -205,7 +208,10 @@ exit;
 //
 // Try to read settings file
 //
-$settings = new SimpleXMLElement(dirname(__FILE__) . '/boot.xml', LIBXML_NOCDATA, true);
+$fpThis = fopen(__FILE__, "r");
+fseek($fpThis, __COMPILER_HALT_OFFSET__);
+$settings = new SimpleXMLElement(stream_get_contents($fpThis), LIBXML_NOCDATA);
+fclose($fpThis);
 if (!$settings instanceOf SimpleXMLElement) {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -219,7 +225,7 @@ if (!$settings instanceOf SimpleXMLElement) {
 </head>
 <body>
   <h1>Cintient</h1>
-  <h2><span class="error">Error:</span>Could not load settings file, check for file: 'boot.xml' at the web project root</h2>
+  <h2><span class="error">Error:</span>Could not load settings file...</h2>
 </body>
 </html>
 <?php
@@ -432,3 +438,242 @@ $(document).ready(function() {
 ?>
 </body>
 </html>
+<?php
+__halt_compiler();<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <!-- REQUIREMENTS -->
+  <step number="1" description="Requirements checklist">
+    <item title="Server">
+      <items>
+        <!-- mod_rewrite -->
+        <item label="Apache mod_rewrite">
+          <methods>
+            <method><![CDATA[in_array("mod_rewrite", apache_get_modules());]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Detected.";]]></success>
+            <error><![CDATA["Apache mod_rewrite is required.";]]></error>
+          </messages>
+        </item>
+        <!-- /mod_rewrite -->
+        <!-- PHP -->
+        <item label="PHP 5.3.x">
+          <methods>
+            <method><![CDATA[version_compare(phpversion(), '5.3.3', '>=');]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Detected version ".phpversion().".";]]></success>
+            <error><![CDATA["Version 5.3.3 or higher is required.";]]></error>
+          </messages>
+        </item>
+        <!-- /PHP -->
+        <!-- sqlite3 -->
+        <item label="PHP compiled with SQLite3 2.5.x">
+          <methods>
+            <method><![CDATA[extension_loaded('sqlite3') && sqlite_libversion() > '2.5';]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Detected version ".sqlite_libversion().".";]]></success>
+            <error><![CDATA["PHP with sqlite3 version 2.5 or higher required.";]]></error>
+          </messages>
+        </item>
+        <!-- /sqlite3 -->
+        <!-- GD -->
+        <item label="PHP compiled with GD">
+          <methods>
+            <method><![CDATA[($gdInfo = gd_info());]]></method>
+            <method><![CDATA[
+              ((isset($gdInfo['PNG Support']) && $gdInfo['PNG Support'] !== false))
+              && ((isset($gdInfo['FreeType Support']) && $gdInfo['FreeType Support'] !== false));
+            ]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Detected version ".$gdInfo['GD Version'].".";]]></success>
+            <error><![CDATA["PHP with GD (with PNG and FreeType support) is required.";]]></error>
+          </messages>
+        </item>
+        <!-- /GD -->
+      </items>
+    </item>
+  </step>
+  <!-- /REQUIREMENTS -->
+  <!-- PERMISSIONS -->
+  <step number="2" description="Local filesystem permissions">
+    <item title="File permissions">
+      <items>
+        <!-- BASE URL -->
+        <item label="Base URL where Cintient will run from">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" style="width: 450px;" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /BASE URL -->
+        <!-- LOG FILE -->
+        <item label="The application log file">
+          <methods>
+            <method><![CDATA[$fp = @fopen('/var/log/cintient.log', 'a');]]></method>
+            <method><![CDATA[@fclose($fp);]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the file location.";]]></error>
+          </messages>
+        </item>
+        <!-- /LOG FILE -->
+        <!-- WORKING DIR -->
+        <item label="Application work directory">
+          <methods>
+            <method><![CDATA[@mkdir('/var/run/cintient/.install', 0777, true);]]></method>
+            <method><![CDATA[@rmdir('/var/run/cintient/.install');]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the directory location.";]]></error>
+          </messages>
+        </item>
+        <!-- /WORKING DIR -->
+        <!-- HTACCESS File -->
+        <!--item label=".htaccess">
+          <methods>
+            <method><![CDATA[$fp = @fopen("www/.htaccess" , "a+");]]></method>
+            <method><![CDATA[@fclose($fp);]]></method>
+          </methods>
+          <messages>
+            <success><![CDATA["Ready.";]]></success>
+            <error><![CDATA["Check write permissions on the file location.";]]></error>
+          </messages>
+        </item-->
+        <!-- /HTACCESS File -->
+      </items>
+    </item>
+  </step>
+  <!-- /PERMISSIONS -->  
+  <!-- ADMIN SETTINGS -->
+  <step number="3" description="Administration account">
+    <item title="Admin settings">
+      <items>
+        <!-- NAME -->
+        <item label="Name">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /EMAIL -->
+        <!-- EMAIL -->
+        <item label="Email">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 406px;"><input class="textfield" style="width: 400px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /EMAIL -->
+        <!-- USERNAME -->
+        <item label="Username">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /USERNAME -->
+        <!-- PASSWORD -->
+        <item label="Password">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /PASSWORD -->
+        <!-- PASSWORD 2 -->
+        <item label="Repeat Password">
+          <methods>
+            <method><![CDATA[true;]]></method>
+          </methods>
+          <inputs>
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" /></div>';]]></input> 
+          </inputs>
+          <messages>
+            <success><![CDATA["";]]></success>
+            <error><![CDATA["";]]></error>
+          </messages>
+        </item>
+        <!-- /PASSWORD 2 -->
+      </items>
+    </item>
+  </step>
+  <!-- /DATABASE --> 
+  <!-- CONFIG FILE VARS -->
+  <config>
+    <var name="CINTIENT_CONFIG_FILE"><![CDATA[CINTIENT_INSTALL_DIR . " . 'src/config/cintient.conf.php'"]]></var>
+    <var name="AUTH_METHOD">"'local'"</var>
+    <var name="SCM_DEFAULT_CONNECTOR">"'svn'"</var>
+    <var name="SMARTY_DEBUG">"false"</var>
+    <var name="SMARTY_FORCE_COMPILE">"false"</var>
+    <var name="SMARTY_COMPILE_CHECK">"true"</var>
+    <var name="SMARTY_TEMPLATE_DIR"><![CDATA[CINTIENT_INSTALL_DIR . " . 'src/templates/'"]]></var>
+    <var name="SMARTY_COMPILE_DIR">"'/tmp/'"</var>
+    <var name="PASSWORD_SALT">"'rOTA4spNYI3yXvAL'"</var>
+    <var name="SERVER">"'localhost'"</var>
+    <var name="CINTIENT_DATABASE_FILE"><![CDATA[CINTIENT_WORK_DIR . " . 'cintient.sqlite'"]]></var>
+    <var name="CINTIENT_NULL_BYTE_TOKEN">"'=='"</var>
+    <var name="CINTIENT_PHP_BINARY">"'php'"</var>
+    <var name="CINTIENT_PHPUNIT_BINARY"><![CDATA[CINTIENT_INSTALL_DIR . " . 'lib/PEAR/bin/phpunit'"]]></var>
+    <var name="CINTIENT_BUILDS_PAGE_LENGTH">"12"</var>
+  </config>
+  <!-- /CONFIG FILE VARS -->
+  <!-- AUTOLOAD CODE -->
+  <autoload>
+<![CDATA[set_include_path(CINTIENT_INSTALL_DIR);
+
+// Register our autoloader
+function autoloadCintient($classname)
+{
+  if (strpos($classname, '_') !== false) {
+    $classname = str_replace('_', '/', $classname);
+  }
+  if (is_file(CINTIENT_INSTALL_DIR . 'src/core/' . $classname . '.php')) {
+    include 'src/core/' . $classname . '.php';
+  }
+}
+spl_autoload_register('autoloadCintient');
+]]>
+  </autoload>
+  <!-- /AUTOLOAD CODE -->
+</settings>
