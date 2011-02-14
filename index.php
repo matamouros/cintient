@@ -121,8 +121,9 @@ if (isset($_POST) && count($_POST) > 0) {
   $fp   = fopen($file, 'w');
   if ($fp) {
     fwrite($fp, "RewriteEngine on\n");
-    fwrite($fp, "RewriteRule ^(?!/js/)(.*)$ WebHandler.php [L]\n");
-    fwrite($fp, "php_value include_path '.:".$installDir."/'");
+    fwrite($fp, "RewriteRule ^/ajax/ /ajaxHandler.php [L]\n");
+    fwrite($fp, "RewriteRule ^(?!/js/)(?!/css/)(?!/imgs/)(?!/fonts/)(.*)$ /webHandler.php [L]\n");
+    fwrite($fp, "php_value include_path " . $installDir);
     fclose($fp);
   }
   
