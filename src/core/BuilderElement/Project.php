@@ -31,14 +31,23 @@ class BuilderElement_Project extends BuilderElementAbstract
   protected $_name;
   protected $_properties; // An array with references to Property objects
   protected $_targets;    // An array with references to all target objects
+
+  protected $_uniqueId;   // A system wide unique identifier. Vital for
+                          // our Integration connector, ignored by all others.
+                          // The platform should warrant this at integration
+                          // builder creation time!
   
-  public function __construct()
+  public function __construct($uniqueId = null)
   {
     $this->_baseDir = null;
     $this->_defaultTarget = null;
     $this->_name = null;
     $this->_properties = array();
     $this->_targets = array();
+    if ($uniqueId === null) {
+      $uniqueId = uniqid(); // Some level of protection in case it's not overriden
+    }
+    $this->_uniqueId;
   }
   
   public function addProperty(BuilderElement_Type_Property $o)

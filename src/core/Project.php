@@ -191,7 +191,7 @@ class Project
       $this->setStatus(self::STATUS_MODIFIED);
       return false;
     }
-    $php = $this->_integrationBuilder->toString('php');
+    $php = $this->_integrationBuilder->toString('cintientintegration');
     $buildOk = BuilderConnector_Php::execute($php);
     $build = new ProjectBuild($this);
     $build->setScmRevision($rev);
@@ -352,6 +352,16 @@ class Project
     $target->setTasks(array($echo, $lint, $phpunit, $echo2));
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
+    //
+    // TODO: VERY IMPORTANT!!!!
+    // At builder creation, make sure a unique identifier is given to the
+    // project builder. This is vital for the way our Integration connector is
+    // rigged!
+    //
+    // Also, replace this md5 of the project ID with possibly a unique
+    // string identifier generated at the project creation time!
+    //
+    $this->_integrationBuilder->setUniqueId(md5($this->getId()));
     //
     // Save the project and take care of all database dependencies.
     //

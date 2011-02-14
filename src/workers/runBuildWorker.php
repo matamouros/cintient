@@ -30,14 +30,16 @@ do {
   if ($project instanceof Project) {
     SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
     if (!$project->build()) {
-      SystemEvent::raise(SystemEvent::INFO, "Project build failed. [PID={$project->getId()}]", 'runBuildWorker');
-      $project->log("Building failed.");
+      SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
     } else {
-      SystemEvent::raise(SystemEvent::INFO, "Project build successful. [PID={$project->getId()}]", 'runBuildWorker');
-      $project->log("Building successful.");
+      SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
     }
   } else {
     SystemEvent::raise(SystemEvent::DEBUG, "No projects to build for now. Sleeping...", 'runBuildWorker');
+    if (memory_get_usage(true) > ((int)(Utility::phpIniSizeToBytes(ini_get('memory_limit'))*0.9))) {
+      SystemEvent::raise(SystemEvent::INFO, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
+      exit(0);
+    }
     sleep(60);
   }
   $project = null;
