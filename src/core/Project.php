@@ -128,6 +128,7 @@ class Project
     $params['password'] = $this->getScmPassword();
     
     if ($this->getStatus() == self::STATUS_ERROR && !$force) {
+      $this->touchDateCheckedForChanges();
       SystemEvent::raise(SystemEvent::INFO, "Project is in error state, to build you need to force. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
