@@ -69,9 +69,9 @@ class BuilderConnector_CintientIntegration
     //
     // TODO: uncomment this in production
     //
-    $php .= <<<EOT
+    $php .= "
 //error_reporting(0);
-EOT;
+";
     if ($o->getBaseDir() !== null) {
       $php .= <<<EOT
 set_include_path(get_include_path() . PATH_SEPARATOR . {$o->getBaseDir()});
@@ -109,9 +109,6 @@ EOT;
     $targets = $o->getTargets();
     if ($o->getTargets()) {
       foreach ($targets as $target) {
-        $php .= <<<EOT
-\$GLOBALS['targets'][] = '{$target->getName()}_{$context['id']}';
-EOT;
         $php .= self::BuilderElement_Target($target, $context);
       }
     }
@@ -139,6 +136,9 @@ EOT;
       return false;
     }
     $targetName = "{$o->getName()}_{$context['id']}";
+    $php .= <<<EOT
+\$GLOBALS['targets']['{$targetName}'] = '{$targetName}';
+EOT;
     if (!function_exists($targetName)) {
       $php .= <<<EOT
 function {$targetName}() {
