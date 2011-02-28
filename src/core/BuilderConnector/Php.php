@@ -22,26 +22,53 @@
  */
 
 /**
+ * The decision was made to fork this connector and make a specific one
+ * for Cintient integration builders. This was initially required because
+ * the integration builder required a continuous run, and the PHP
+ * connector only allowed a one-time execution of the exported builder.
+ * Since then I've decided to bring back these changes into the PHP
+ * connector - thus at first glance rendering the initial fork useless -
+ * but this doesn't mean that in the very near future the two connectors
+ * won't have to go again separate ways. They are two logically different
+ * connectors, and only temporarily and extraordinarilly are implemented
+ * exactly the same way.
+ * 
  * What to consider:
  *  $GLOBALS['filesets'][<ID>]                      Holds all filesets
  *  $GLOBALS['filesets'][<ID>]['dir']               The fileset root dir
  *  $GLOBALS['filesets'][<ID>]['defaultExcludes']   Holds default exclusions (optional, default is use them)
  *  $GLOBALS['filesets'][<ID>]['exclude']           Holds files/dirs to exclude
  *  $GLOBALS['filesets'][<ID>]['include']           Holds files/dirs to include
+ *  $GLOBALS['id']                     Holds an ID of the current builder
  *  $GLOBALS['properties'][]           Holds global project properties
  *  $GLOBALS['properties'][<TASK>][]   Holds local task related properties
  *  $GLOBALS['result']['ok']           Holds the success or failure of last task's execution
  *  $GLOBALS['result']['output']       Holds the output of the last task's execution, if any
  *  $GLOBALS['result']['stacktrace']   The stacktrace of the error
  *  $GLOBALS['result']['task']         Holds the last task executed
- *  $GLOBALS['targets']['default']     Holds the name of the default target to execute
  *  $GLOBALS['targets'][]              0-index based array with all the targets in their actual execution order
+ *  $GLOBALS['targetsDefault']         Holds the name of the default target to execute
+ *  $GLOBALS['targetsDeps'][<ID>][]    Holds the names of the target's dependency targets
  */
 class BuilderConnector_Php
 {
+  /**
+   * 
+   * Mandatory attributes:
+   * . targets
+   * . defaultTarget
+   * 
+   * @param BuilderElement_Project $o
+   */
   static public function BuilderElement_Project(BuilderElement_Project $o)
   {
     $php = '';
+    $context = array();
+    $context['id'] = $o->getUniqueId();
+    if (empty($context['id'])) {
+      SystemEvent::raise(SystemEvent::ERROR, 'A unique identifier for the project is required.', __METHOD__);
+      return false;
+    }
     if (!$o->getTargets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No targets set for the project.', __METHOD__);
       return false;
@@ -50,9 +77,12 @@ class BuilderConnector_Php
       SystemEvent::raise(SystemEvent::ERROR, 'No default target set for the project.', __METHOD__);
       return false;
     }
-    $php .= <<<EOT
+    //
+    // TODO: uncomment this in production
+    //
+    $php .= "
 //error_reporting(0);
-EOT;
+";
     if ($o->getBaseDir() !== null) {
       $php .= <<<EOT
 set_include_path(get_include_path() . PATH_SEPARATOR . {$o->getBaseDir()});
@@ -61,7 +91,7 @@ EOT;
     if ($o->getDefaultTarget() !== null) {
       $php .= <<<EOT
 \$GLOBALS['targets'] = array();
-\$GLOBALS['targetDefault'] = '{$o->getDefaultTarget()}';
+\$GLOBALS['targetDefault'] = '{$o->getDefaultTarget()}_{$context['id']}';
 \$GLOBALS['result'] = array();
 \$GLOBALS['result']['ok'] = false;
 \$GLOBALS['result']['output'] = '';
@@ -84,18 +114,13 @@ EOT;
     $properties = $o->getProperties();
     if ($o->getProperties()) {
       foreach ($properties as $property) {
-        $php .= "
-" . self::BuilderElement_Type_Property($property);
+        $php .= self::BuilderElement_Type_Property($property, $context);
       }
     }
     $targets = $o->getTargets();
     if ($o->getTargets()) {
       foreach ($targets as $target) {
-        $php .= <<<EOT
-\$GLOBALS['targets'][] = '{$target->getName()}';
-EOT;
-        $php .= "
-" . self::BuilderElement_Target($target);
+        $php .= self::BuilderElement_Target($target, $context);
       }
     }
     $php .= <<<EOT
@@ -114,32 +139,35 @@ EOT;
     return $php;
   }
   
-  static public function BuilderElement_Target(BuilderElement_Target $o)
+  static public function BuilderElement_Target(BuilderElement_Target $o, array &$context = array())
   {
     $php = '';
     if (!$o->getName()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No name set for the target.', __METHOD__);
       return false;
     }
-    //
-    // TODO: Make sure these function names cannot colide with existing functions!
-    //
-    if (!function_exists($o->getName())) {
+    $targetName = "{$o->getName()}_{$context['id']}";
+    $php .= <<<EOT
+\$GLOBALS['targets']['{$targetName}'] = '{$targetName}';
+EOT;
+    if (!function_exists($targetName)) {
       $php .= <<<EOT
-function {$o->getName()}() {
+function {$targetName}() {
 EOT;
       if ($o->getProperties()) {
         $properties = $o->getProperties();
         foreach ($properties as $property) {
-          $php .= "
-  " . self::BuilderElement_Type_Property($property);
+          $php .= self::BuilderElement_Type_Property($property, $context);
         }
       }
       if ($o->getDependencies()) {
         $deps = $o->getDependencies();
+        $php .= <<<EOT
+  \$GLOBALS['targetDeps']['{$targetName}'] = array();
+EOT;
         foreach ($deps as $dep) {
           $php .= <<<EOT
-  \$GLOBALS['targetDeps']['{$o->getName()}'][] = '{$dep}';
+  \$GLOBALS['targetDeps']['{$targetName}'][] = '{$dep}';
 EOT;
         }
       }
@@ -147,7 +175,7 @@ EOT;
         $tasks = $o->getTasks();
         foreach ($tasks as $task) {
           $method = get_class($task);
-          $taskOutput = self::$method($task);
+          $taskOutput = self::$method($task, $context);
           $php .= <<<EOT
   {$taskOutput}
 EOT;
@@ -157,14 +185,14 @@ EOT;
 }
 EOT;
     } else {
-      $php .= <<<EOT
-// Function {$o->getName()}() already declared.
-EOT;
+      $php .= "
+// Function {$targetName}() already declared.
+";
     }
     return $php;
   }
   
-  static public function BuilderElement_Task_Delete(BuilderElement_Task_Delete $o)
+  static public function BuilderElement_Task_Delete(BuilderElement_Task_Delete $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -175,7 +203,8 @@ EOT;
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset);
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+";
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -194,7 +223,7 @@ EOT;
   }
   return \$ret;
 };
-if (!fileset{$fileset->getId()}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
   \$GLOBALS['result']['ok'] = false;
   if ({$o->getFailOnError()}) { // failonerror
     return false;
@@ -206,7 +235,7 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     return $php;
   }
   
-  static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
+  static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o, array &$context = array())
   {
     $php = '';
     if (!$o->getMessage()) {
@@ -231,7 +260,7 @@ EOT;
     return $php;
   }
   
-  static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
+  static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
   {
     $php = '';
     if (!$o->getExecutable()) {
@@ -278,7 +307,7 @@ return true;
     return $php;
   }
   
-  static public function BuilderElement_Task_Mkdir(BuilderElement_Task_Mkdir $o)
+  static public function BuilderElement_Task_Mkdir(BuilderElement_Task_Mkdir $o, array &$context = array())
   {
     $php = '';
     if (!$o->getDir()) {
@@ -302,7 +331,7 @@ if (!file_exists('{$o->getDir()}')) {
     return $php;
   }
   
-  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
+  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -317,7 +346,8 @@ output('phplint', 'Starting...');
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset);
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+";
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -339,7 +369,7 @@ output('phplint', 'Starting...');
   }
   return true;
 };
-if (!fileset{$fileset->getId()}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
   output('phplint', 'Failed.');
   if ({$o->getFailOnError()}) { // failonerror
     return false;
@@ -353,7 +383,7 @@ if (!fileset{$fileset->getId()}(\$callback)) {
     return $php;
   }
   
-  static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o)
+  static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -392,7 +422,8 @@ output('phpunit', 'Code coverage only possible with the Xdebug extension loaded.
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset);
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+";
         //
         // In the following callback we assume that the fileset returns a
         // directory only *after* all it's content.
@@ -413,7 +444,7 @@ output('phpunit', 'Code coverage only possible with the Xdebug extension loaded.
   }
   return true;
 };
-if (!fileset{$fileset->getId()}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
   output('phpunit', 'Tests failed.');
   if ({$o->getFailOnError()}) { // failonerror
     return false;
@@ -432,7 +463,7 @@ if (!fileset{$fileset->getId()}(\$callback)) {
    * 
    * @param BuilderElement_Type_Fileset $o
    */
-  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o)
+  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, array &$context = array())
   {
     $php = '';
     //
@@ -454,7 +485,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
     }
     
     public function accept()
-    {      
+    {
+      // if it is default excluded promptly return false
+      foreach (\$GLOBALS['filesets'][\$this->_filesetId]['defaultExcludes'] as \$exclude) {
+        if (\$this->_isMatch(\$exclude)) {
+          return false;
+        }
+      }
       // if it is excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['exclude'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
@@ -493,9 +530,9 @@ if (!class_exists('FilesetFilterIterator', false)) {
       return false;
     }
     $php .= "
-\$GLOBALS['filesets']['{$o->getId()}'] = array();
-\$GLOBALS['filesets']['{$o->getId()}']['dir'] = '';
-\$GLOBALS['filesets']['{$o->getId()}']['defaultExcludes'] = array(
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}'] = array();
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'] = '';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['defaultExcludes'] = array(
   '**/*~',
   '**/#*#',
   '**/.#*',
@@ -525,24 +562,24 @@ if (!class_exists('FilesetFilterIterator', false)) {
   '**/.bzr/**',
   '**/.bzrignore',
 );
-\$GLOBALS['filesets']['{$o->getId()}']['exclude'] = array();
-\$GLOBALS['filesets']['{$o->getId()}']['include'] = array();
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['exclude'] = array();
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'] = array();
 ";
     if ($o->getDir()) {
       $php .= "
-\$GLOBALS['filesets']['{$o->getId()}']['dir'] = '{$o->getDir()}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'] = '{$o->getDir()}';
 ";
     }
-    if (!$o->getDefaultExcludes()) {
+    if ($o->getDefaultExcludes() === false) {
       $php .= "
-\$GLOBALS['filesets']['{$o->getId()}']['defaultExcludes'] = array();
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['defaultExcludes'] = array();
 ";
     }
     if ($o->getInclude()) {
       $includes = $o->getInclude();
       foreach ($includes as $include) {
         $php .= "
-\$GLOBALS['filesets']['{$o->getId()}']['include'][] = '{$include}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'][] = '{$include}';
 ";
       }
     }
@@ -550,7 +587,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
       $excludes = $o->getExclude();
       foreach ($excludes as $exclude) {
         $php .= "
-\$GLOBALS['filesets']['{$o->getId()}']['exclude'][] = '{$exclude}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['exclude'][] = '{$exclude}';
 ";
       }
     }
@@ -558,34 +595,48 @@ if (!class_exists('FilesetFilterIterator', false)) {
     // Make sure RecursiveIteratorIterator::CHILD_FIRST is used, so that dirs
     // are only processed after *all* their children are.
     //
-    if (!function_exists("fileset{$o->getId()}")) {
-      $php .= "
-function fileset{$o->getId()}(\$callback)
-{
-  try {
-    foreach (new FilesetFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST), '{$o->getId()}') as \$entry) {
-      if (!\$callback(\$entry, '{$o->getDir()}')) {
-        \$GLOBALS['result']['ok'] = false;
-        \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}]';
-        \$GLOBALS['result']['output'] = \$msg;
-        //output(__METHOD__, \$msg);
-        return false;
-      }
+    $php .= "
+if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
+  function fileset{$o->getId()}_{$context['id']}(\$callback)
+  {
+    \$recursiveIt = false;
+    \$dirIt = 'DirectoryIterator';
+    \$itIt = 'IteratorIterator';
+    foreach (\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'] as \$include) {
+      if (strpos(\$include, '**') !== false ||
+         (substr_count(\$include, '/') > 1 && substr_count(\$include, '//') === 0) ||
+          substr_count(\$include, '/') == 1 && strpos(\$include, '/') !== 0)
+      {
+        \$recursiveIt = true;
+        \$dirIt = 'Recursive' . \$dirIt;
+        \$itIt = 'Recursive' . \$itIt;
+        break;
+      } 
     }
-  } catch (UnexpectedValueException \$e) { // Typical permission denied
-    \$GLOBALS['result']['ok'] = false;
-    \$GLOBALS['result']['output'] = \$e->getMessage();
-    output(__METHOD__, \$e->getMessage());
-    return false;
+    try {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}') as \$entry) {
+        if (!\$callback(\$entry, '{$o->getDir()}')) {
+          \$GLOBALS['result']['ok'] = false;
+          \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';
+          \$GLOBALS['result']['output'] = \$msg;
+          //output(__METHOD__, \$msg);
+          return false;
+        }
+      }
+    } catch (UnexpectedValueException \$e) { // Typical permission denied
+      \$GLOBALS['result']['ok'] = false;
+      \$GLOBALS['result']['output'] = \$e->getMessage();
+      output(__METHOD__, \$e->getMessage());
+      return false;
+    }
+    return true;
   }
-  return true;
 }
 ";
-    }
     return $php;
   }
   
-  static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
+  static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
   {
     $php = '';
     if (!$o->getName() || !$o->getValue()) {
@@ -593,7 +644,7 @@ function fileset{$o->getId()}(\$callback)
       return false;
     }
     $php .= <<<EOT
-\$GLOBALS['properties']['{$o->getName()}'] = '{$o->getValue()}';
+\$GLOBALS['properties']['{$o->getName()}_{$context['id']}'] = '{$o->getValue()}';
 EOT;
     return $php;
   }
