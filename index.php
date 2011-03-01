@@ -351,7 +351,10 @@ $('#mainMenu').hide();
       }
       ?>
         <div class="label"><?php echo (string)$element['label']; ?></div>
-      <?php 
+<?php if (isset($element['fineprint']) && !empty($element['fineprint'])) { ?>
+        <div class="fineprintLabel"><?php echo $element['fineprint']; ?></div>
+<?php } ?>
+<?php 
       if ($hasInputs) {
         foreach ($element->inputs as $input) {
           eval("\$out=".(string)$input->input);
@@ -442,7 +445,7 @@ $(document).ready(function() {
 __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
 <settings>
   <!-- REQUIREMENTS -->
-  <step number="1" description="Requirements checklist">
+  <step number="1" description="Minimum requirements">
     <item title="Server">
       <items>
         <!-- mod_rewrite -->
@@ -502,7 +505,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
     <item title="File permissions">
       <items>
         <!-- BASE URL -->
-        <item label="Base URL where Cintient will run from">
+        <item label="Base URL where Cintient will run from" fineprint="(if unsure, go with the default)">
           <methods>
             <method><![CDATA[true;]]></method>
           </methods>
