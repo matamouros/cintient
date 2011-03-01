@@ -474,7 +474,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
     }
     
     public function accept()
-    {      
+    {
+      // if it is default excluded promptly return false
+      foreach (\$GLOBALS['filesets'][\$this->_filesetId]['defaultExcludes'] as \$exclude) {
+        if (\$this->_isMatch(\$exclude)) {
+          return false;
+        }
+      }   
       // if it is excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['exclude'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
@@ -553,7 +559,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
 \$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'] = '{$o->getDir()}';
 ";
     }
-    if (!$o->getDefaultExcludes()) {
+    if ($o->getDefaultExcludes() === false) {
       $php .= "
 \$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['defaultExcludes'] = array();
 ";
@@ -582,8 +588,22 @@ if (!class_exists('FilesetFilterIterator', false)) {
 if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
   function fileset{$o->getId()}_{$context['id']}(\$callback)
   {
+    \$recursiveIt = false;
+    \$dirIt = 'DirectoryIterator';
+    \$itIt = 'IteratorIterator';
+    foreach (\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'] as \$include) {
+      if (strpos(\$include, '**') !== false ||
+         (substr_count(\$include, '/') > 1 && substr_count(\$include, '//') === 0) ||
+          substr_count(\$include, '/') == 1 && strpos(\$include, '/') !== 0)
+      {
+        \$recursiveIt = true;
+        \$dirIt = 'Recursive' . \$dirIt;
+        \$itIt = 'Recursive' . \$itIt;
+        break;
+      } 
+    }
     try {
-      foreach (new FilesetFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('{$o->getDir()}'), RecursiveIteratorIterator::CHILD_FIRST), '{$o->getId()}_{$context['id']}') as \$entry) {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}') as \$entry) {
         if (!\$callback(\$entry, '{$o->getDir()}')) {
           \$GLOBALS['result']['ok'] = false;
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';
