@@ -102,7 +102,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
   
-  static public function BuilderElement_Task_Delete(BuilderElement_Task_Delete $o)
+  static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('delete');
@@ -174,7 +174,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
   
-  static public function BuilderElement_Task_Mkdir(BuilderElement_Task_Mkdir $o)
+  static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
   {
     if (!$o->getDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);

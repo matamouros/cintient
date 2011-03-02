@@ -192,7 +192,7 @@ EOT;
     return $php;
   }
   
-  static public function BuilderElement_Task_Delete(BuilderElement_Task_Delete $o, array &$context = array())
+  static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -307,7 +307,7 @@ return true;
     return $php;
   }
   
-  static public function BuilderElement_Task_Mkdir(BuilderElement_Task_Mkdir $o, array &$context = array())
+  static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
   {
     $php = '';
     if (!$o->getDir()) {

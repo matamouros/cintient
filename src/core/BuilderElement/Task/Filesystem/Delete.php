@@ -24,12 +24,16 @@
 /**
  * 
  */
-class BuilderElement_Task_Mkdir extends BuilderElementAbstract
+class BuilderElement_Task_Filesystem_Delete extends BuilderElementAbstract
 {
-  protected $_dir;
+  protected $_failOnError; 
+  protected $_includeEmptyDirs;
+  protected $_filesets;          // An array of fileset types
   
   public function __construct()
   {
-    $this->_dir = null;
+    $this->_failOnError = true;
+    $this->_includeEmptyDirs = false;
+    $this->_filesets = null;
   }
 }

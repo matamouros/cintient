@@ -108,7 +108,7 @@ class TemplateManager
     $exec->setOutputProperty('xpto');
     //echo $exec->toString('ant');
     
-    $delete = new BuilderElement_Task_Delete();
+    $delete = new BuilderElement_Task_Filesystem_Delete();
     $delete->setIncludeEmptyDirs(true);
     $delete->setFailOnError(true);
     $fileset = new BuilderElement_Type_Fileset();
@@ -126,7 +126,7 @@ class TemplateManager
     $echo2->setFile('/tmp/test.log');
     $echo2->setAppend(true);
     
-    $mkdir = new BuilderElement_Task_Mkdir();
+    $mkdir = new BuilderElement_Task_Filesystem_Mkdir();
     //$mkdir->setDir('/tmp/tmp2/tmp3');
     $mkdir->setDir('/lixo');
     
