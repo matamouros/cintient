@@ -176,7 +176,7 @@ if (isset($_POST) && count($_POST) > 0) {
   $user->init();
   $user->setPassword($userPassword);
   
-  header('Location: ' . URLManager::getForDashboard());
+  header('Location: ' . UrlManager::getForDashboard());
   exit;
 }
 

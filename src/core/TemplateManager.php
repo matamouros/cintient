@@ -646,7 +646,7 @@ EOT;
   static public function authentication()
   {
     if (isset($GLOBALS['user']) && $GLOBALS['user'] instanceof User) {
-      header("Location: " . URLManager::getForDashboard());
+      header("Location: " . UrlManager::getForDashboard());
       exit;
     }
   }
@@ -709,7 +709,7 @@ EOT;
     // Test user setup
     //
     self::tests_init();
-    header('Location: ' . URLManager::getForDashboard());
+    header('Location: ' . UrlManager::getForDashboard());
     exit;
   }
   
@@ -742,7 +742,7 @@ EOT;
       //
       // TODO: this should really be a redirect to the previous page.
       //
-      Redirector::redirectToUri(URLManager::getForDashboard());
+      Redirector::redirectToUri(UrlManager::getForDashboard());
       exit;
     }
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
@@ -756,7 +756,7 @@ EOT;
       //TODO: Notify user and redirect
       //
       SystemEvent::raise(SystemEvent::INFO, "User not authorized to edit project. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
-      Redirector::redirectToUri(URLManager::getForProjectView());
+      Redirector::redirectToUri(UrlManager::getForProjectView());
       exit;
     }
     
@@ -954,7 +954,7 @@ EOT;
         $GLOBALS['project'] = $project;
         $_SESSION['projectId'] = $GLOBALS['project']->getId();
         $GLOBALS['project']->log("Project created.");
-        Redirector::redirectToUri(URLManager::getForDashboard());
+        Redirector::redirectToUri(UrlManager::getForDashboard());
         exit;
       }
     } else {
@@ -1059,7 +1059,7 @@ EOT;
         // Log the user in
         //
         Auth::authenticate();
-        Redirector::redirectToUri(URLManager::getForDashboard());
+        Redirector::redirectToUri(UrlManager::getForDashboard());
         exit;
       }
     }

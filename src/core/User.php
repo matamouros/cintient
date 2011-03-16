@@ -148,7 +148,7 @@ class User
   public function getAvatarUrl()
   {
     if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {
-      return URLManager::getForAsset(substr($this->getAvatar(), 6), array('avatar' => 1));
+      return UrlManager::getForAsset(substr($this->getAvatar(), 6), array('avatar' => 1));
     } elseif (($pos = strpos($this->getAvatar(), 'gravatar:')) === 0) {
       // TODO: Maybe it's best to keep a user's gravatar email a hash it on-the-fly
       // instead of storing the definitive URL to it.

@@ -171,7 +171,7 @@ class AjaxManager
     // the final URL will get encoded and on the client side via JS we
     // won't be able to easily turn that into an URL to refresh avatar
     //
-    echo json_encode(array('success' => true, 'url' => URLManager::getForAsset($filename, array('avatar' => 1))));
+    echo json_encode(array('success' => true, 'url' => UrlManager::getForAsset($filename, array('avatar' => 1))));
     exit;
   }
   
@@ -277,7 +277,7 @@ class AjaxManager
                 <div class="username">{$user->getUsername()}</div>
 EOT;
     if (!$GLOBALS['project']->userHasAccessLevel($user, Access::OWNER)) {
-      $removeLink = URLManager::getForAjaxProjectRemoveUser($user->getUsername());
+      $removeLink = UrlManager::getForAjaxProjectRemoveUser($user->getUsername());
       $html .= <<<EOT
                 <div class="remove"><a class="{$user->getUsername()}" href="{$removeLink}">remove</a></div>
                 <div class="accessLevelPane">
