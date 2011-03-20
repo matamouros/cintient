@@ -39,7 +39,7 @@
  *  $GLOBALS['targetsDefault']         Holds the name of the default target to execute
  *  $GLOBALS['targetsDeps'][<ID>][]    Holds the names of the target's dependency targets
  */
-class BuilderConnector_CintientIntegration
+class BuilderConnector_Cintient
 {
   /**
    * 

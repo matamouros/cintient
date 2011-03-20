@@ -192,7 +192,7 @@ class Project
       $this->setStatus(self::STATUS_MODIFIED);
       return false;
     }
-    $php = $this->_integrationBuilder->toString('cintientintegration');
+    $php = $this->_integrationBuilder->toString('Cintient');
     $buildOk = BuilderConnector_Php::execute($php);
     $build = new ProjectBuild($this);
     $build->setScmRevision($rev);
