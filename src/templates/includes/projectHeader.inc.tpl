@@ -37,7 +37,7 @@ function forceBuild()
   // XHR trigger the build
   //
   $.ajax({
-    url: '{URLManager::getForAjaxProjectBuild()}',
+    url: '{UrlManager::getForAjaxProjectBuild()}',
     cache: false,
     dataType: 'json',
     success: function(data, textStatus, XMLHttpRequest) {

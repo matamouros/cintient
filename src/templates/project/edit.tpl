@@ -31,10 +31,10 @@
 {include file='includes/header.inc.tpl'
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
-  backLink="{URLManager::getForProjectView()}"}
+  backLink="{UrlManager::getForProjectView()}"}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
-        <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
+        <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
         <div class="projectEditContainer container">
           <div class="label">Project title</div>
           <div class="textfieldContainer" style="width: 404px;">
@@ -53,7 +53,7 @@
         </form>
       </div>
       <div id="scmPane" class="exclusivePane">
-        <form action="{if isset($smarty.get.new)}{URLManager::getForProjectNew()}{else}{URLManager::getForProjectEdit()}{/if}" method="post">
+        <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
         <div class="projectEditContainer container">
           <div class="label">The SCM connector</div>
           <div class="dropdownContainer">
@@ -108,7 +108,7 @@ $(document).ready(function() {
         $('#searchUserPane ul li').remove();
         $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/loading-3.gif" /></li>');
         $.ajax({
-          url: '{URLManager::getForAjaxSearchUser()}',
+          url: '{UrlManager::getForAjaxSearchUser()}',
           data: { userTerm: userTermVal },
           type: 'GET',
           cache: false,
@@ -164,7 +164,7 @@ $(document).ready(function() {
   //
   $('#searchUserPane ul a').live('click', function() {
     $.ajax({
-      url: '{URLManager::getForAjaxProjectAddUser()}',
+      url: '{UrlManager::getForAjaxProjectAddUser()}',
       data: { username: $(this).attr('class') },
       type: 'GET',
       cache: false,
@@ -228,7 +228,7 @@ $(document).ready(function() {
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
                 <div class="username">{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
 {if !$globals_project->userHasAccessLevel($user, Access::OWNER)}
-                <div class="remove"><a class="{$user->getUsername()}" href="{URLManager::getForAjaxProjectRemoveUser()}">remove</a></div>
+                <div class="remove"><a class="{$user->getUsername()}" href="{UrlManager::getForAjaxProjectRemoveUser()}">remove</a></div>
                 <div class="accessLevelPane">
                   <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
                   <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
@@ -325,7 +325,7 @@ $(document).ready(function() {
   //
   $('.accessLevelPane input.accessLevelPaneLevelsCheckbox').live('click', function() {
     $.ajax({
-      url: '{URLManager::getForAjaxProjectAccessLevelChange()}',
+      url: '{UrlManager::getForAjaxProjectAccessLevelChange()}',
       data: { change: $(this).attr('value') },
       type: 'GET',
       cache: false,

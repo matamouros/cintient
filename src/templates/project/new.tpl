@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl' subSectionTitle="New project" level=1}
-    <form action="{URLManager::getForProjectNew()}" method="post">
+    <form action="{UrlManager::getForProjectNew()}" method="post">
     <div id="newProjectContainer" class="container">
       <div class="label">Project title</div>
       <div class="textfieldContainer" style="width: 404px;">

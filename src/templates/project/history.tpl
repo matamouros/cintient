@@ -24,7 +24,7 @@
 {include file='includes/header.inc.tpl'
   subSectionTitle="Build history"
   menuLinks=$menuLinks
-  backLink="{URLManager::getForProjectView()}"}
+  backLink="{UrlManager::getForProjectView()}"}
 {$project_latestBuild=""}
 {if !empty($project_buildList)}
   {$project_latestBuild=$project_buildList.0}
@@ -44,7 +44,7 @@ $(document).ready(function() {
 </script>
       <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-        <option value="{URLManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
+        <option value="{UrlManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
       </select>
 {/if}  
@@ -95,7 +95,7 @@ $(document).ready(function() {
 {if !empty($project_buildJunit)}
 {foreach from=$project_buildJunit item=classTest}
         <div class="classTest">{$classTest->getName()}</div>
-        <div class="chart"><img width="{$smarty.const.CHART_JUNIT_DEFAULT_WIDTH}" src="{URLManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
+        <div class="chart"><img width="{$smarty.const.CHART_JUNIT_DEFAULT_WIDTH}" src="{UrlManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
 {/foreach}
 {else}
 Due to a build error, the unit tests chart could not be generated. Please check the raw output of the build for problems, such as a PHP Fatal error.

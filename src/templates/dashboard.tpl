@@ -19,14 +19,14 @@
 
 *}{include file='includes/header.inc.tpl'
   subSectionTitle="Dashboard"
-  menuLinks="<a href=\"{URLManager::getForProjectNew()}\">new project</a>"}
+  menuLinks="<a href=\"{UrlManager::getForProjectNew()}\">new project</a>"}
 {if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
 {$dashboard_latestBuild=ProjectBuild::getLatest($project, $globals_user)}
       <li class="projectDraggableContainer container">
-        <a href="{URLManager::getForProjectView($project)}" class="projectLink">
+        <a href="{UrlManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
         <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
         <div class="projectDetails">
@@ -71,6 +71,6 @@ $(document).ready(function() {
 // ]]> 
 </script>
 {else}
-    <div class="messageInfo container">You don't have any projects, but you can always <a href="{URLManager::getForProjectNew()}">create a new one</a>.</div>
+    <div class="messageInfo container">You don't have any projects, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>
 {/if}
 {include file='includes/footer.inc.tpl'}

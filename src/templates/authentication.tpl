@@ -35,7 +35,7 @@
   POSSIBILITY OF SUCH DAMAGE.
     
 *}{include file='includes/header.inc.tpl'}
-    <form action="{URLManager::getForAuthentication()}" method="post">
+    <form action="{UrlManager::getForAuthentication()}" method="post">
     <div id="loginContainer" class="container">
       <div class="loginLabel">Username</div>
       <div class="loginTextfieldContainer">
@@ -47,7 +47,7 @@
       </div>
       <input type="hidden" value="{if isset($authentication_redirectUri)}{$authentication_redirectUri}{/if}" name="redirect">
       <input id="loginSubmitButton" type="submit" value="Go!" />
-      {if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}<a href="{URLManager::getForRegistration()}" class="optionLink">register</a>{/if}
+      {if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}<a href="{UrlManager::getForRegistration()}" class="optionLink">register</a>{/if}
     </div>
     </form>
 <script type="text/javascript">

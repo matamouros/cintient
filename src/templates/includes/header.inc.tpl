@@ -47,7 +47,7 @@
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
               <div id="username">{$globals_user->getUsername()}</div>
-              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{URLManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
+              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{UrlManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
             </div>
           </nav>
         </hgroup>
@@ -57,7 +57,7 @@
   <div id="menu" class="containerTopLevel">
     <nav id="mainMenu">
       <ul>
-        <li id="historyBack">{if isset($backLink)}<a href="{URLManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{URLManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
+        <li id="historyBack">{if isset($backLink)}<a href="{UrlManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
         <li id="sectionName">{$subSectionTitle}</li>
         {if isset($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
       </ul>
@@ -82,7 +82,7 @@ $(document).ready(function() {
   <div id="menu" class="containerTopLevel">
     <nav id="mainMenu">
       <ul>
-        <li id="historyBack"><a href="{URLManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
+        <li id="historyBack"><a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
         <li id="sectionName">{$subSectionTitle}</li>
       </ul>
     </nav>

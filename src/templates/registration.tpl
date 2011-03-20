@@ -20,7 +20,7 @@
 *}{include file='includes/header.inc.tpl'
   subSectionTitle="Registration"}
     <div class="registrationContainer container">
-      <form action="{URLManager::getForRegistration()}" method="post">
+      <form action="{UrlManager::getForRegistration()}" method="post">
       <ul class="item">
         <li class="element">
           <div class="label">Name</div>

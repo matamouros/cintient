@@ -51,7 +51,7 @@
 $(document).ready(function() {
 	var uploader = new qq.FileUploader({
     element: document.getElementById('avatarUploader'),
-    action: '{URLManager::getForAjaxAvatarUpload()}',
+    action: '{UrlManager::getForAjaxAvatarUpload()}',
     multiple: false,
     allowedExtensions: ['jpg', 'jpeg', 'png'],
     sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
