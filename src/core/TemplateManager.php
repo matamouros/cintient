@@ -50,18 +50,6 @@ class TemplateManager
   |* | TESTS                                                          | *|
   \* +----------------------------------------------------------------+ */
 
-  static public function tests_init()
-  {
-    $user = new User();
-    $user->setEmail('pedro.matamouros@gmail.com');
-    $user->setNotificationEmails('pedro.matamouros@gmail.com,');
-    $user->setName('Pedro Mata-Mouros');
-    $user->setUsername('matamouros');
-    $user->setCos(UserCos::ROOT);
-    $user->init();
-    $user->setPassword('pedro');
-  }
-  
   static public function tests_phpinfo()
   {
     echo phpinfo();
@@ -708,7 +696,14 @@ EOT;
     //
     // Test user setup
     //
-    self::tests_init();
+    $user = new User();
+    $user->setEmail('pedro.matamouros@gmail.com');
+    $user->setNotificationEmails('pedro.matamouros@gmail.com,');
+    $user->setName('Pedro Mata-Mouros');
+    $user->setUsername('matamouros');
+    $user->setCos(UserCos::ROOT);
+    $user->init();
+    $user->setPassword('pedro');
     header('Location: ' . UrlManager::getForDashboard());
     exit;
   }
