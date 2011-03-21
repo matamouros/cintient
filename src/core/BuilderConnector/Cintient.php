@@ -498,13 +498,11 @@ if (!class_exists('FilesetFilterIterator', false)) {
     private function _isMatch(\$pattern)
     {
       \$current = \$this->current();
-      if (strpos(\$current, DIRECTORY_SEPARATOR) === false) {
-        \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
-        if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
-          \$dir .= DIRECTORY_SEPARATOR;
-        }
-        \$current = \$dir . \$current;
+      \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
+      /*if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
+        \$dir .= DIRECTORY_SEPARATOR;
       }
+      \$current = \$dir . \$current;*/
       \$isCaseSensitive = true;
       \$rePattern = preg_quote(\$GLOBALS['filesets'][\$this->_filesetId]['dir'] . \$pattern, '/');
       \$dirSep = preg_quote(DIRECTORY_SEPARATOR, '/');
@@ -600,15 +598,15 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     \$dirIt = 'DirectoryIterator';
     \$itIt = 'IteratorIterator';
     foreach (\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'] as \$include) {
-      if (strpos(\$include, '**') !== false ||
+      /*if (strpos(\$include, '**') !== false ||
          (substr_count(\$include, '/') > 1 && substr_count(\$include, '//') === 0) ||
           substr_count(\$include, '/') == 1 && strpos(\$include, '/') !== 0)
-      {
+      {*/
         \$recursiveIt = true;
         \$dirIt = 'Recursive' . \$dirIt;
         \$itIt = 'Recursive' . \$itIt;
         break;
-      } 
+      /*}*/ 
     }
     try {
       foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}') as \$entry) {
