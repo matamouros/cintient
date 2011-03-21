@@ -497,6 +497,14 @@ if (!class_exists('FilesetFilterIterator', false)) {
     
     private function _isMatch(\$pattern)
     {
+      \$current = \$this->current();
+      if (strpos(\$current, DIRECTORY_SEPARATOR) === false) {
+        \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
+        if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
+          \$dir .= DIRECTORY_SEPARATOR;
+        }
+        \$current = \$dir . \$current;
+      }
       \$isCaseSensitive = true;
       \$rePattern = preg_quote(\$GLOBALS['filesets'][\$this->_filesetId]['dir'] . \$pattern, '/');
       \$dirSep = preg_quote(DIRECTORY_SEPARATOR, '/');
@@ -509,7 +517,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
       );
       \$rePattern = str_replace(array_keys(\$patternReplacements), array_values(\$patternReplacements), \$rePattern);
       \$rePattern = '/^'.\$rePattern.'$/'.(\$isCaseSensitive ? '' : 'i');
-      return (bool) preg_match(\$rePattern, \$this->current());
+      return (bool) preg_match(\$rePattern, \$current);
     }
   }
 }
