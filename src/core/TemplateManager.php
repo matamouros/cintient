@@ -792,17 +792,12 @@ EOT;
         $GLOBALS['smarty']->assign('formData', $formData);
         $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
       } else {
-        if (isset($_GET['edit'])) {
-          if (!($GLOBALS['project'] instanceof Project)) {
-            SystemEvent::raise(SystemEvent::ERROR, "Editing project not possible, because of probable session expire.", __METHOD__);
-            return false;
-          }
-          $project = $GLOBALS['project'];
-          $project->setId($GLOBALS['project']->getId());
-        } else {
-          $GLOBALS['project'] = null;
-          $project = new Project();
+        if (!($GLOBALS['project'] instanceof Project)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Editing project not possible, because of probable session expire.", __METHOD__);
+          return false;
         }
+        $project = $GLOBALS['project'];
+        $project->setId($GLOBALS['project']->getId());
         $project->setTitle($_POST['title']);
         $project->setBuildLabel($_POST['buildLabel']);
         $project->setDescription($_POST['description']);
@@ -814,22 +809,8 @@ EOT;
           $GLOBALS['user']->getId(),
           Access::OWNER)
         );
-        
-        if (isset($_GET['new']) && !$project->init()) {
-          SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
-          //
-          // TODO: Notification
-          //
-          header('Location: ' . UrlManager::getForProjectNew());
-          exit;
-        }
-        if (isset($_GET['new'])) {
-          $GLOBALS['project'] = $project;
-          $_SESSION['projectId'] = $GLOBALS['project']->getId();
-          $GLOBALS['project']->log("Project created.");
-        } else {
-          $GLOBALS['project']->log("Project edited.");
-        }
+        $GLOBALS['project'] = $project;
+        $GLOBALS['project']->log("Project edited.");
       }
       
       //

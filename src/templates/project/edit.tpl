@@ -50,10 +50,11 @@
           </div>
           <input type="submit" value="Edit!" id="submitButton">
         </div>
-        </form>
+        {*</form>*}
       </div>
       <div id="scmPane" class="exclusivePane">
-        <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
+        {* TODO: this should be a separate form so that we don't erroneously send a hidden tab's form that the user didn't intend to *}
+        {*<form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">*}
         <div class="projectEditContainer container">
           <div class="label">The SCM connector</div>
           <div class="dropdownContainer">
