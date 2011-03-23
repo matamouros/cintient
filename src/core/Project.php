@@ -337,13 +337,13 @@ class Project
     $target->setName('build');
     $lint = new BuilderElement_Task_PhpLint();
     $fileset = new BuilderElement_Type_Fileset();
-    $fileset->setDir('/Users/pfonseca/Dev/'.$this->getBuildLabel().'/');
+    $fileset->setDir($this->getScmLocalWorkingCopy());
     $fileset->addInclude('**/*.php');
     $lint->setFilesets(array($fileset));
     $phpunit = new BuilderElement_Task_PhpUnit();
     $fileset2 = new BuilderElement_Type_Fileset();
-    $fileset2->setDir('/Users/pfonseca/Dev/'.$this->getBuildLabel().'/src/tests/');
-    $fileset2->addInclude('*Test.php');
+    $fileset2->setDir($this->getScmLocalWorkingCopy() . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR);
+    $fileset2->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
     $phpunit->setFilesets(array($fileset2));
     $phpunit->setLogJunitXmlFile($this->getReportsWorkingDir() . 'log-junit.xml');
     $phpunit->setCodeCoverageXmlFile($this->getReportsWorkingDir() . 'codecoverage.xml');

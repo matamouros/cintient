@@ -23,6 +23,9 @@
 
 error_reporting(-1);
 
+define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR', 'src/tests/');
+define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH', '*Test.php');
+
 
 define('LOG_FILE', '/var/log/cintient.log');
 define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulled from the user .ini config file
