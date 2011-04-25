@@ -344,7 +344,7 @@ class ProjectBuild
     // TODO: only if unit tests were comissioned!!!!
     //
     //if (UNIT_TESTES_WERE_DONE) {
-      if (!@rename($this->getProject()->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
+      if (!@copy($this->getProject()->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
         SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
       }
     //}
