@@ -939,6 +939,47 @@ EOT;
   }
   
   /**
+   * Provider method for getting all builder elements nicely fit on an
+   * array. Originally intended for the builders setup of project edit.
+   */
+  static public function providerAvailableBuilderElements()
+  {
+    $dir = CINTIENT_INSTALL_DIR . 'src/core/BuilderElement/';
+    $elements = array();
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
+    //
+    // TODO: Disabling support for Target and Project at the moment, for simplification purposes.
+    //
+    foreach (new FilesystemFilterIterator($it, $dir, array('**/*'), array('**/Target.php', '**/Project.php')) as $entry) {
+      $levels = explode('/', substr($entry, strlen($dir)));
+      $basename = basename($entry);
+      $levelsPath = '$elements';
+      if (strrpos($basename, '.php') !== false) {
+        foreach ($levels as $level) {
+          if ($basename != $level) {
+            $levelsPath .= "['$level']";
+          } else {
+            $name = substr($basename, 0 , strrpos($basename, '.php'));
+            $levelsPath .= "['$name'] = '$name';";
+          }
+        }
+      } else {
+        foreach ($levels as $level) {
+          if ($basename != $level) {
+            $levelsPath .= "['$level']";
+          } else {
+            $levelsPath .= "['$level'] = array();";
+          }
+        }
+      }
+      eval($levelsPath);
+    }
+    $it = null;
+    unset($it);
+    $GLOBALS['smarty']->assign('providerAvailableBuilderElements_elements', $elements);
+  }
+  
+  /**
    * Provider method for installation stats to footer.inc.tpl. See this
    * file's header for more details on provider methods.
    */

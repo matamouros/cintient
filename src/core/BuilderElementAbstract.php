@@ -52,4 +52,11 @@ class BuilderElementAbstract
     }*/
     return $class::$method($this);
   }
+  
+  public function toHtml()
+  {
+    $method = get_class($this);
+    $class = 'BuilderConnector_Html';
+    return $class::$method($this);
+  }
 }

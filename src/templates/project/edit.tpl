@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilder\">deployment</a> | <a href=\"#\" class=\"integrationBuilder\">integration</a>"}
+{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilderPane\">deployment</a> | <a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
 {$defaultPane="#deploymentBuilder"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
   {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
@@ -253,8 +253,13 @@ $(document).ready(function() {
       </div>
 {/if}
       <div id="deploymentBuilderPane" class="exclusivePane">
+        <div class="projectEditContainer container">
+        </div>
       </div>
       <div id="integrationBuilderPane" class="exclusivePane">
+        <div class="projectEditContainer container">
+{include file='includes/builderEditor.inc.tpl'}
+        </div>
       </div>
     </div>
 <script type="text/javascript">

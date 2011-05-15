@@ -27,7 +27,7 @@
 class BuilderElement_Task_Echo extends BuilderElementAbstract
 {
   protected $_message; 
-  protected $_file;            // The arguments to the executable command, if any
+  protected $_file;            // If present, message will be written to this file
   protected $_append;          // The directory in which the command should be executed in
   
   public function __construct()

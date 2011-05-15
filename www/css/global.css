@@ -644,11 +644,12 @@ html
 .exclusivePane
 {
   display: none;
+  float: left;
 }
 
 .projectEditContainer
 {
-  width: 500px;
+  width: auto;
 }
 
 .projectEditContainer .user .avatar
@@ -694,6 +695,109 @@ html
 {
   padding-left: 6px;
   vertical-align: 5px;
+}
+
+.projectEditContainer .builderElementsAvailable
+{
+  width: auto;
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen
+{
+  width: auto;
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen .builderElement
+{
+  border: 1px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #444));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  /*position: absolute;*/
+  font-size: 10pt;
+  margin-bottom: 10px;
+  width: 314px;
+  padding-top: 7px;
+  padding-bottom: 1px;
+  padding-left: 10px;
+  padding-right: 12px;
+  clear: both;
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementForm
+{
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementTitle
+{
+  font-size: 11pt;
+  margin-bottom: 10px;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementTitle p.title
+{
+  float: left;
+  margin-bottom: 10px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementTitle ul
+{
+  float: right;
+  margin-bottom: 10px;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementTitle li
+{
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen .builderElementTitle li p.pipe
+{
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.projectEditContainer .builderElementsChosen .builderElement .label
+{
+  font-size: 10pt;
+  width: auto;
+  float: left;
+  margin-right: 6px;
+  clear: left;
+}
+
+.projectEditContainer .builderElementsChosen .builderElement .checkboxContainer
+{
+  font-size: 12pt;
+  float: left;
+  margin-bottom: 10px;
+}
+
+.projectEditContainer .builderElementsChosen .builderElement .textfieldContainer
+{
+  font-size: 10pt;
+  margin-bottom: 8px;
+  float: left;
+}
+
+.projectEditContainer .builderElementsChosen #submitButton
+{
+  clear: both;
 }
 
 /* @end */
