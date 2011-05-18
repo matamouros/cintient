@@ -36,6 +36,7 @@ class BuilderElement_Task_Chmod extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_executable = null;
     $this->_args = null;
     $this->_dir = null;

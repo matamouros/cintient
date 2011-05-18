@@ -34,9 +34,10 @@ class BuilderElement_Type_Fileset extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_dir = null;
     $this->_file = null;
-    $this->_defaultExcludes = null;
+    $this->_defaultExcludes = true;
     $this->_id = null;
     $this->_include = array();
     $this->_exclude = array();

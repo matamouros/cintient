@@ -64,7 +64,7 @@ class BuilderConnector_Php
   {
     $php = '';
     $context = array();
-    $context['id'] = $o->getUniqueId();
+    $context['id'] = $o->getInternalId();
     if (empty($context['id'])) {
       SystemEvent::raise(SystemEvent::ERROR, 'A unique identifier for the project is required.', __METHOD__);
       return false;
@@ -509,13 +509,11 @@ if (!class_exists('FilesetFilterIterator', false)) {
     private function _isMatch(\$pattern)
     {
       \$current = \$this->current();
-      if (strpos(\$current, DIRECTORY_SEPARATOR) === false) {
-        \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
-        if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
-          \$dir .= DIRECTORY_SEPARATOR;
-        }
-        \$current = \$dir . \$current;
+      \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
+      if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
+        \$dir .= DIRECTORY_SEPARATOR;
       }
+      \$current = \$dir . \$current;
       \$isCaseSensitive = true;
       \$rePattern = preg_quote(\$GLOBALS['filesets'][\$this->_filesetId]['dir'] . \$pattern, '/');
       \$dirSep = preg_quote(DIRECTORY_SEPARATOR, '/');

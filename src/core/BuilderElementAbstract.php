@@ -26,6 +26,13 @@
  */
 class BuilderElementAbstract
 {
+  protected $_internalId;
+  
+  public function __construct()
+  {
+    $this->_internalId = Utility::generateRandomString() . uniqid();
+  }
+  
   public function __call($name, $args)
   {
     if (strpos($name, 'get') === 0) {
@@ -38,6 +45,11 @@ class BuilderElementAbstract
     }
     trigger_error("No valid method available for calling [METHOD={$name}]", E_USER_ERROR);
     exit;
+  }
+  
+  public function __wakeup()
+  {
+    $GLOBALS['builderElementsIndex'][$this->_internalId] = $this;
   }
   
   public function toString($connectorType)

@@ -31,6 +31,7 @@ class BuilderElement_Task_PhpLint extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_failOnError = true;
     $this->_filesets = array();
   }

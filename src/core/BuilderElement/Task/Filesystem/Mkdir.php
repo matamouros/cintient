@@ -30,6 +30,7 @@ class BuilderElement_Task_Filesystem_Mkdir extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_dir = null;
   }
 }

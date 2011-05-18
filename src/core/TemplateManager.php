@@ -63,30 +63,6 @@ class TemplateManager
     exit;
   }
   
-  static public function tests_svnCheckout()
-  {
-    $project = new Project(
-      'svn',
-      'svn://trac.intra.sapo.pt/fotos2/branches/2009.10.29_layout',
-      '/tmp/project-ci2/',
-      'pfonseca',
-      'segula'
-    );
-    $project->init();
-  }
-  
-  static public function tests_svnModified()
-  {
-    $project = new Project(
-      'svn',
-      'svn://trac.intra.sapo.pt/fotos2/branches/2009.10.29_layout',
-      '/tmp/project-ci2/',
-      'pfonseca',
-      'segula'
-    );
-    $project->isModified();
-  }
-  
   static public function tests_tasks()
   {
     $exec = new BuilderElement_Task_Exec();

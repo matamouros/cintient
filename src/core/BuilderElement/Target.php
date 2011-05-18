@@ -33,6 +33,7 @@ class BuilderElement_Target extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_dependencies = array();
     $this->_properties = array();
     $this->_tasks = array();

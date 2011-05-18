@@ -61,6 +61,7 @@ SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT
 //
 // Volatile stuff
 //
+$GLOBALS['builderElementsIndex'] = array();
 $GLOBALS['section'] = null;
 $GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings
 $GLOBALS['smarty'] = null;

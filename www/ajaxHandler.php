@@ -51,6 +51,7 @@ SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT
 // Volatile stuff
 //
 $GLOBALS['ajaxMethod'] = null;
+$GLOBALS['builderElementsIndex'] = array();
 $GLOBALS['section'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) != '/' ? '/' : '');

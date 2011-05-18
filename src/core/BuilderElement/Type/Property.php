@@ -31,6 +31,7 @@ class BuilderElement_Type_Property extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_name = null;
     $this->_value = null;
   }

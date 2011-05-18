@@ -358,6 +358,99 @@ EOT;
     exit;
   }
   
+	/**
+   * 
+   */
+  static public function project_integrationBuilderDeleteElement()
+  {
+    
+  }
+  
+	/**
+   * 
+   */
+  static public function project_integrationBuilderSaveElement()
+  {
+    /*
+    
+    matamouros 2011.05.18:
+    
+    In order to simpflify a great deal of things, I've opted for the following:
+    . filesets in HTML are abstracted as seamlessly part of the respective
+      tasks where they are used. In truth, filesets should be completely
+      independent editable forms, and tasks should then reference them
+      (perhaps on a select dropdown).
+    . The above means that, for now, only one fileset is allowed for
+      each task that uses it.
+    
+    Alas, this simplification accounts for slightly bloatier code in
+    this method, namely because we now have to special case the processing
+    of seamless embedded filesets and make sure that backstage they are
+    still properly updating the corresponding BuilderElement_Fileset object.
+    
+    */
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
+        empty($_REQUEST['internalId'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+
+    if (!isset($GLOBALS['builderElementsIndex'][$_REQUEST['internalId']['value']])) {
+      $msg = 'Unknown task specified';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    $o = $GLOBALS['builderElementsIndex'][$_REQUEST['internalId']['value']];
+    foreach ($_REQUEST as $attributeName => $attributeValue) {
+      $method = 'set' . ucfirst($attributeName);
+      $value = $attributeValue['value'];
+      if ($attributeValue['type'] == 'checkbox') {
+        $value = ($attributeValue['value'] ? true : false);
+      }
+      if (($attributeName == 'include' || $attributeName == 'exclude' ||
+           $attributeName == 'defaultExcludes' || $attributeName == 'dir') &&
+          ($o instanceof BuilderElement_Task_PhpUnit || $o instanceof BuilderElement_Task_PhpLint)
+      ) {
+        $filesets = $o->getFilesets(); // Only one is expected, for now
+        if ($attributeName == 'include' || $attributeName == 'exclude') {
+          $value = array($value);
+        }
+        $filesets[0]->$method($value);
+      } else {
+        $o->$method($value);
+      }
+    }
+    
+    $GLOBALS['project']->log("Integration builder changed.");
+    
+    SystemEvent::raise(SystemEvent::DEBUG, "Builder element properly edited.", __METHOD__);
+    echo json_encode(array(
+      'success' => true,
+    ));
+    exit;
+  }
+  
   static public function project_removeUser()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);

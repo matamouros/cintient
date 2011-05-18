@@ -32,6 +32,7 @@ class BuilderElement_Task_Echo extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_message = null;
     $this->_file = null;
     $this->_append = null;

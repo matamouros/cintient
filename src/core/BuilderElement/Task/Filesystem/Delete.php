@@ -32,6 +32,7 @@ class BuilderElement_Task_Filesystem_Delete extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_failOnError = true;
     $this->_includeEmptyDirs = false;
     $this->_filesets = null;

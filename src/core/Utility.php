@@ -39,4 +39,16 @@ class Utility
     }
     return $size;
   }
+  
+  /**
+   * This provides $universe^$size, e.g., 61^4 = 13,845,841
+   */
+  static public function generateRandomString($size = 4, $universe = 'abcdefghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789')
+  {
+    $uid = '';
+    for ($i = 0; $i < $size; $i++) {
+      $uid .= substr($universe, rand(0, strlen($universe)), 1);
+    }
+    return $uid;
+  }
 }

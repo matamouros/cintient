@@ -28,7 +28,12 @@ class UrlManager
 {
   static public function getForAjaxAvatarUpload()
   {
-    return CINTIENT_BASE_URL . '/ajax/avatar-upload/'; 
+    return CINTIENT_BASE_URL . '/ajax/avatar-upload/';
+  }
+  
+  static public function getForAjaxProjectIntegrationBuilderSaveElement()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/integration-builder-save-element/';
   }
   
   static public function getForAjaxProjectAccessLevelChange()

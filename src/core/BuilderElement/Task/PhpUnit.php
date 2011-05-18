@@ -39,6 +39,7 @@ class BuilderElement_Task_PhpUnit extends BuilderElementAbstract
   
   public function __construct()
   {
+    parent::__construct();
     $this->_codeCoverageXmlFile = null;
     $this->_codeCoverageHtmlDir = null;
     $this->_failOnError = true;

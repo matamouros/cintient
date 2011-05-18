@@ -38,7 +38,7 @@ class BuilderConnector_Html
     h::div(array('class' => 'builderElementTitle'), function() use ($params) {
       h::p(array('class' => 'title'), $params['title']);
       h::ul(array('class' => 'options'), function() {
-        h::li(function() {h::a('save', '#');});
+        h::li(function() {h::a('save', '#', array('class' => 'submit'));});
         h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
         h::li(function() {h::a('x', '#');});
       });
@@ -52,7 +52,7 @@ class BuilderConnector_Html
     h::div(array('class' => 'builderElement'), function() use ($o) {
       h::div(array('class' => 'builderElementTitle'), 'Project');
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => '', 'action' => ''), function() use ($o) {
+        h::form(array('id' => '', 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
           // Name, textfield
           h::div(array('class' => 'label'), 'Name');
           h::div(array('class' => 'textfieldContainer'), function() use ($o) {
@@ -61,22 +61,22 @@ class BuilderConnector_Html
           // Basedir, textfield
           h::div(array('class' => 'label'), 'Basedir');
           h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'basedir', 'value' => $o->getBaseDir()));
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'baseDir', 'value' => $o->getBaseDir()));
           });
           // Default target, textfield
           h::div(array('class' => 'label'), 'Default target');
           h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'default', 'value' => $o->getDefaultTarget()));
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'defaultTarget', 'value' => $o->getDefaultTarget()));
           });
           // TODO: Properties, with support for "add more" automatically
           h::div(array('class' => 'label'), 'Basedir');
           h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'basedir', 'value' => $o->getBaseDir()));
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'baseDir', 'value' => $o->getBaseDir()));
           });
         });
       });
     });*/
-    h::form(array('id' => '', 'action' => ''), function() use ($o) {
+    //h::form(array('id' => '', 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
       if ($o->getTargets()) {
         $targets = $o->getTargets();
         foreach ($targets as $target) {
@@ -84,8 +84,8 @@ class BuilderConnector_Html
           BuilderConnector_Html::BuilderElement_Target($target);
         }
       }
-      h::input(array('type' => 'submit', 'value' => 'Save all!', 'id' => 'submitButton'));
-    });
+      //h::input(array('type' => 'submit', 'value' => 'Save all!', 'id' => 'submitButton'));
+    //});
   }
   
   static public function BuilderElement_Target(BuilderElement_Target $o)
@@ -131,7 +131,9 @@ class BuilderConnector_Html
     h::div(array('class' => 'builderElement'), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Echo'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => '', 'action' => ''), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
           // Message, textfield
           h::div(array('class' => 'label'), 'Message');
           h::div(array('class' => 'textfieldContainer'), function() use ($o) {
@@ -145,7 +147,11 @@ class BuilderConnector_Html
           // Append, checkbox
           h::div(array('class' => 'label'), 'Append?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'append', 'selected' => ($o->getAppend()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'append',);
+            if ($o->getAppend()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
         });
       });
@@ -200,11 +206,17 @@ class BuilderConnector_Html
     h::div(array('class' => 'builderElement'), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => '', 'action' => ''), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
           // Fail on error, checkbox
           h::div(array('class' => 'label'), 'Fail on error?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failonerror', 'selected' => ($o->getFailOnError()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+            if ($o->getFailOnError()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           if ($o->getFilesets()) {
             $filesets = $o->getFilesets();
@@ -224,26 +236,44 @@ class BuilderConnector_Html
     h::div(array('class' => 'builderElement'), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => '', 'action' => ''), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
           // Fail on error, checkbox
           h::div(array('class' => 'label'), 'Fail on error?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failonerror', 'selected' => ($o->getFailOnError()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+            if ($o->getFailOnError()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           // Fail on failure, checkbox
           h::div(array('class' => 'label'), 'Fail on failure?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failonfailure', 'selected' => ($o->getFailOnFailure()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnFailure',);
+            if ($o->getFailOnFailure()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           // Fail on incomplete, checkbox
           h::div(array('class' => 'label'), 'Fail on incomplete?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failonincomplete', 'selected' => ($o->getFailOnIncomplete()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnIncomplete',);
+            if ($o->getFailOnIncomplete()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           // Fail on skipped, checkbox
           h::div(array('class' => 'label'), 'Fail on skipped?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failonskipped', 'selected' => ($o->getFailOnSkipped()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnSkipped',);
+            if ($o->getFailOnSkipped()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           if ($o->getFilesets()) {
             $filesets = $o->getFilesets();
@@ -263,11 +293,17 @@ class BuilderConnector_Html
     //h::div(array('class' => 'builderElement'), function() use ($o) {
     //  h::div(array('class' => 'builderElementTitle'), 'Fileset');
     //  h::div(array('class' => 'builderElementForm'), function() use ($o) {
-    //    h::form(array('id' => '', 'action' => ''), function() use ($o) {
+    //    h::form(array('id' => '', 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          //h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
           // Default excludes, checkbox
           h::div(array('class' => 'label'), 'Default excludes?');
           h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            h::input(array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultexcludes', 'selected' => ($o->getDefaultExcludes()?'selected':'')));
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultExcludes',);
+            if ($o->getDefaultExcludes()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
           });
           // Dir, textfield
           h::div(array('class' => 'label'), 'Dir');
@@ -293,7 +329,7 @@ class BuilderConnector_Html
           // Includes, textfield
           h::div(array('class' => 'label'), 'Includes');
           h::div(array('class' => 'textfieldContainer'), function() use ($o, $includesLine) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'includes', 'value' => $includesLine));
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'include', 'value' => $includesLine));
           });
           $excludesLine = '';
           if ($o->getExclude()) {
@@ -309,7 +345,7 @@ class BuilderConnector_Html
           // Excludes, textfield
           h::div(array('class' => 'label'), 'Excludes');
           h::div(array('class' => 'textfieldContainer'), function() use ($o, $excludesLine) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludes', 'value' => $excludesLine));
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
           });
     //    });
     //  });

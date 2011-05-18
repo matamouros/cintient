@@ -53,7 +53,7 @@ class BuilderConnector_Cintient
   {
     $php = '';
     $context = array();
-    $context['id'] = $o->getUniqueId();
+    $context['id'] = $o->getInternalId();
     if (empty($context['id'])) {
       SystemEvent::raise(SystemEvent::ERROR, 'A unique identifier for the project is required.', __METHOD__);
       return false;

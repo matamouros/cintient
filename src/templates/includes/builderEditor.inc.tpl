@@ -55,10 +55,49 @@
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  $('.builderElementTitle').click(function() {
-    $(this).next().toggle();
+	//
+  // Set up elements animation
+  //
+  $('.builderElementTitle p.title').click(function() {
+    if ($(this).parent('.builderElementTitle').next().is(':visible')) {
+      $(this).parent('.builderElementTitle').next().fadeOut(110);
+    } else {
+    	$(this).parent('.builderElementTitle').next().fadeIn(200);
+    }
     return false;
-  }).next().hide();
+  }).parent('.builderElementTitle').next().hide();
+  //
+	// Set up submit links
+  //
+  $('.builderElementTitle a.submit').live('click', function(e) {
+      e.preventDefault();
+      var that = this;
+      var data = function() {
+        var x = {};
+        $(that).parents('.builderElementTitle').next('.builderElementForm').find('form input').each( function() {
+          x[this.name] = { type: this.type, value: this.value };
+        });
+        return x;
+      }();
+      $.ajax({
+        url: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form').attr('action'),
+        data: data,
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (!data.success) {
+            //TODO: treat this properly
+            alert('error');
+          } else {
+            //alert('ok');
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(errorThrown);
+        }
+      });
+  });
 });
 //]]> 
 </script>
