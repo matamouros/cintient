@@ -1,6 +1,6 @@
 <?php
 
-class Utility {
+class HtmlGenUtility {
   
   # php doesn't have this function; ftfy
   static public function array_kmap(Closure $callback, Array $input){
@@ -64,7 +64,7 @@ class HtmlGen {
       # block
       if($callback instanceof Closure){
         try {
-          echo "\n", Utility::capture($callback), self::indent(false);
+          echo "\n", HtmlGenUtility::capture($callback), self::indent(false);
         } catch (Exception $e) {
           echo "foobasket!";
         }
@@ -85,14 +85,14 @@ class HtmlGen {
     if(count($attributes) < 1){
       return null;
     }
-    return " ".implode(" ", Utility::array_kmap(function($k, $v){
+    return " ".implode(" ", HtmlGenUtility::array_kmap(function($k, $v){
       return "{$k}=\"".htmlspecialchars($v)."\"";
     }, $attributes));
   }
   
   # example convenience method override
   static public function a($text, $href, $html_attributes=array()){
-    Utility::reverse_merge($html_attributes, array('href' => $href));
+    HtmlGenUtility::reverse_merge($html_attributes, array('href' => $href));
     self::__callStatic("a", array($text, $html_attributes));
   }
   
