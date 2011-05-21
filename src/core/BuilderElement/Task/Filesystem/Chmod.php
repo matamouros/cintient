@@ -26,7 +26,7 @@
  * 
  * 
  */
-class BuilderElement_Task_Chmod extends BuilderElementAbstract
+class BuilderElement_Task_Chmod extends BuilderElement
 {
   protected $_executable; 
   protected $_args;            // The arguments to the executable command, if any, a space separated string

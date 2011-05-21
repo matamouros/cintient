@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Type_Property extends BuilderElementAbstract
+class BuilderElement_Type_Property extends BuilderElement
 {
   protected $_name;
   protected $_value;

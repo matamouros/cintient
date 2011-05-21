@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Target extends BuilderElementAbstract
+class BuilderElement_Target extends BuilderElement
 {
   protected $_dependencies; // An array of target names that this target depends on
   protected $_name;

@@ -26,7 +26,7 @@
  * 
  * 
  */
-class BuilderElement_Task_PhpUnit extends BuilderElementAbstract
+class BuilderElement_Task_PhpUnit extends BuilderElement
 {
   protected $_codeCoverageXmlFile;
   protected $_codeCoverageHtmlDir;

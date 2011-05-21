@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Type_Fileset extends BuilderElementAbstract
+class BuilderElement_Type_Fileset extends BuilderElement
 {
   protected $_dir;             // The root dir of this fileset
   protected $_defaultExcludes; // Set of definitions that are excluded from all matches (.svn, .CVS, etc)

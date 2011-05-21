@@ -24,7 +24,7 @@
 /**
  *
  */
-class BuilderElementAbstract
+class BuilderElement
 {
   protected $_internalId;
   

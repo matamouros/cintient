@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Project extends BuilderElementAbstract
+class BuilderElement_Project extends BuilderElement
 {
   protected $_baseDir;
   protected $_defaultTarget;

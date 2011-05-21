@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Task_Filesystem_Mkdir extends BuilderElementAbstract
+class BuilderElement_Task_Filesystem_Mkdir extends BuilderElement
 {
   protected $_dir;
   

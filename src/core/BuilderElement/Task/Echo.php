@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Task_Echo extends BuilderElementAbstract
+class BuilderElement_Task_Echo extends BuilderElement
 {
   protected $_message; 
   protected $_file;            // If present, message will be written to this file

@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Task_PhpLint extends BuilderElementAbstract
+class BuilderElement_Task_PhpLint extends BuilderElement
 {
   protected $_failOnError; 
   protected $_filesets;          // An array of fileset types

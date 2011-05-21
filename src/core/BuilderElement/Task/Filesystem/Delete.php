@@ -24,7 +24,7 @@
 /**
  * 
  */
-class BuilderElement_Task_Filesystem_Delete extends BuilderElementAbstract
+class BuilderElement_Task_Filesystem_Delete extends BuilderElement
 {
   protected $_failOnError; 
   protected $_includeEmptyDirs;

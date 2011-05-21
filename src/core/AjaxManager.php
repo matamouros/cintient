@@ -442,7 +442,7 @@ EOT;
     }
     
     $o = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']['value']);
-    if (!($o instanceof BuilderElementAbstract)) {
+    if (!($o instanceof BuilderElement)) {
       $msg = 'Unknown task specified';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(

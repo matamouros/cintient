@@ -31,7 +31,7 @@
  * $exec->setOutputProperty('fooBar');
  * echo $exec->toString('ant');
  */
-class BuilderElement_Task_Exec extends BuilderElementAbstract
+class BuilderElement_Task_Exec extends BuilderElement
 {
   protected $_executable; 
   protected $_args;            // The arguments to the executable command, if any, a space separated string
