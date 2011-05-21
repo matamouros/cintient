@@ -414,7 +414,7 @@ EOT;
     */
     if ($_REQUEST['task'] == 'PhpUnit' ||
         $_REQUEST['task'] == 'PhpLint' ||
-        $_REQUEST['task'] == 'Delete' ||
+        $_REQUEST['task'] == 'Delete'
     ) {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
