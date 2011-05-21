@@ -47,11 +47,6 @@ class BuilderElementAbstract
     exit;
   }
   
-  public function __wakeup()
-  {
-    $GLOBALS['builderElementsIndex'][$this->_internalId] = $this;
-  }
-  
   public function toString($connectorType)
   {
     $method = get_class($this);
@@ -70,5 +65,98 @@ class BuilderElementAbstract
     $method = get_class($this);
     $class = 'BuilderConnector_Html';
     return $class::$method($this);
+  }
+
+  public function getElement($id)
+  {
+    if ($id == $this->_internalId) {
+      return $this;
+    }
+    $internalId = null;
+    $attributes = get_object_vars($this);
+    foreach ($attributes as $attribute) {
+      if (is_object($attribute)) { // Go to the next nested level
+        $internalId = $attribute->getElement($id);
+      } elseif (is_array($attribute)) { // Tear down the array
+        if (!function_exists('f')) {
+          //
+          // Tears down an array until an element or the end is found
+          //
+          function f($array, $id)
+          {
+            $internalId = null;
+            foreach ($array as $attribute) {
+              if (is_object($attribute)) {
+                $internalId = $attribute->getElement($id); // Go down one level
+              } elseif (is_array($attribute)) {
+                $internalId = f($attribute, $id); // Tear down the array
+              }
+              if (!empty($internalId)) {
+                break;
+              }
+            }
+            return $internalId;
+          }
+        }
+        $internalId = f($attribute, $id);
+      }
+      if (!empty($internalId)) {
+        break;
+      }
+    }
+    return $internalId;
+  }
+  
+  /**
+   * Deletes an element with a given ID from the current builder elements
+   * hierarchical tree, wherever it may be. It actually implements a
+   * step by step slow copy of the whole tree, leaving out only the
+   * element referenced by the given id.
+   */
+  public function deleteElement($id)
+  {
+    $class = get_class($this);
+    $dest = new $class();
+    $attributes = get_object_vars($this);
+
+    //
+    // Closure for drilling down on an array
+    //
+    $f = function ($array, $id)
+    {
+      $ret = array();
+      foreach ($array as $attributeName => $attribute) {
+        if (is_object($attribute) && $attribute->getInternalId() == $id) {
+          continue;
+        } elseif (is_array($attribute)) {
+          array_push($ret, call_user_func(__FUNCTION__, $attribute, $id));
+        } elseif (is_object($attribute)) {
+          array_push($ret, $attribute->deleteElement($id));
+        } else {
+          array_push($ret, $attribute);
+        }
+      }
+      return $ret;
+    };
+    
+    //
+    // This foreach processes this element's attributes and delegates
+    // work on whatever is found:
+    // . an array attribute is delivered to the above closure
+    // . an object is delivered recursively to this method again
+    // . a simple type is copied directly
+    //
+    foreach ($attributes as $attributeName => $attribute) {
+      if (is_object($attribute) && $attribute->getInternalId() == $id) {
+        continue;
+      } elseif (is_array($attribute)) {
+        $dest->$attributeName = $f($attribute, $id);
+      } elseif (is_object($attribute)) {
+        $dest->$attributeName = $attribute->deleteElement($id);
+      } else {
+        $dest->$attributeName = $attribute;
+      }
+    }
+    return $dest;
   }
 }

@@ -40,7 +40,7 @@ class BuilderConnector_Html
       h::ul(array('class' => 'options'), function() {
         h::li(function() {h::a('save', '#', array('class' => 'submit'));});
         h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
-        h::li(function() {h::a('x', '#');});
+        h::li(function() {h::a('x', '#', array('class' => 'delete'));});
       });
     });
   }

@@ -38,4 +38,9 @@ class BuilderElement_Target extends BuilderElementAbstract
     $this->_properties = array();
     $this->_tasks = array();
   }
+  
+  public function addTask($o)
+  {
+    $this->_tasks[] = $o;
+  }
 }

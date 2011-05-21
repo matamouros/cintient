@@ -363,11 +363,41 @@ EOT;
    */
   static public function project_integrationBuilderDeleteElement()
   {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
     
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
+        empty($_REQUEST['internalId'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    $newBuilder = $GLOBALS['project']->getIntegrationBuilder()->deleteElement($_REQUEST['internalId']);
+    $GLOBALS['project']->setIntegrationBuilder($newBuilder);
+    $GLOBALS['project']->log("Integration builder changed, element removed.");
+    
+    SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
+    echo json_encode(array(
+      'success' => true,
+    ));
+    exit;
   }
   
 	/**
-   * 
+   * Saves one builder element at a time on project edit.
    */
   static public function project_integrationBuilderSaveElement()
   {
@@ -410,8 +440,9 @@ EOT;
       ));
       exit;
     }
-
-    if (!isset($GLOBALS['builderElementsIndex'][$_REQUEST['internalId']['value']])) {
+    
+    $o = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']['value']);
+    if (!($o instanceof BuilderElementAbstract)) {
       $msg = 'Unknown task specified';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -420,8 +451,7 @@ EOT;
       ));
       exit;
     }
-    
-    $o = $GLOBALS['builderElementsIndex'][$_REQUEST['internalId']['value']];
+
     foreach ($_REQUEST as $attributeName => $attributeValue) {
       $method = 'set' . ucfirst($attributeName);
       $value = $attributeValue['value'];

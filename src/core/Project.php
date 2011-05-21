@@ -350,7 +350,11 @@ class Project
     $phpunit->setCodeCoverageHtmlFile($this->getReportsWorkingDir() . 'codecoverage.html');
     $echo2 = new BuilderElement_Task_Echo();
     $echo2->setMessage('Done!');
-    $target->setTasks(array($echo, $lint, $phpunit, $echo2));
+    //$target->setTasks(array($echo, $lint, $phpunit, $echo2));
+    $target->addTask($echo);
+    $target->addTask($lint);
+    $target->addTask($phpunit);
+    $target->addTask($echo2);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
     //
@@ -752,12 +756,14 @@ EOT;
       $integrationBuilder = new BuilderElement_Project();
     }
     $ret->setIntegrationBuilder($integrationBuilder);
+    
     $unsafeSerializedDeploymentBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getDeploymentBuilder()); 
     if (($deploymentBuilder = unserialize($unsafeSerializedDeploymentBuilder)) === false) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize deployment builder for this project [PID={$ret->getId()}]");
       $deploymentBuilder = new BuilderElement_Project();
     }
     $ret->setDeploymentBuilder($deploymentBuilder);
+    
     if ($options['loadUsers']) {
       $ret->loadUsers();
     }

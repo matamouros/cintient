@@ -67,36 +67,67 @@ $(document).ready(function() {
     return false;
   }).parent('.builderElementTitle').next().hide();
   //
-	// Set up submit links
+	// Set up save links
   //
   $('.builderElementTitle a.submit').live('click', function(e) {
-      e.preventDefault();
-      var that = this;
-      var data = function() {
-        var x = {};
-        $(that).parents('.builderElementTitle').next('.builderElementForm').find('form input').each( function() {
-          x[this.name] = { type: this.type, value: this.value };
-        });
-        return x;
-      }();
-      $.ajax({
-        url: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form').attr('action'),
-        data: data,
-        type: 'POST',
-        cache: false,
-        dataType: 'json',
-        success: function(data, textStatus, XMLHttpRequest) {
-          if (!data.success) {
-            //TODO: treat this properly
-            alert('error');
-          } else {
-            //alert('ok');
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert(errorThrown);
-        }
+    e.preventDefault();
+    var that = this;
+    var data = function() {
+      var x = {};
+      $(that).parents('.builderElementTitle').next('.builderElementForm').find('form input').each( function() {
+        x[this.name] = { type: this.type, value: this.value };
       });
+      return x;
+    }();
+    $.ajax({
+      url: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form').attr('action'),
+      data: data,
+      type: 'POST',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (!data.success) {
+          //TODO: treat this properly
+          alert('error');
+        } else {
+          //alert('ok');
+        }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+  });
+  //
+	// Set up remove links
+  //
+  $('.builderElementTitle a.delete').live('click', function(e) {
+    e.preventDefault();
+    var that = this;
+    $.ajax({
+      url: '{UrlManager::getForAjaxProjectIntegrationBuilderDeleteElement()}',
+      data: { internalId: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form input[name=internalId]').val()},
+      type: 'POST',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (!data.success) {
+          //TODO: treat this properly
+          alert('error');
+        } else {
+        	$(that).parents('.builderElement').fadeOut(350);
+        	setTimeout(
+    		    function() {
+    		    	$(that).parents('.builderElement').remove();
+    		    },
+    		    300 // Slightly faster than the fadeOut, so that the next items get pulled up before the element fades first
+    		  );
+        }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
   });
 });
 //]]> 
