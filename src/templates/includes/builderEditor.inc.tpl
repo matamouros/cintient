@@ -139,7 +139,7 @@ $(document).ready(function() {
     e.preventDefault();
     $.ajax({
       url: '{UrlManager::getForAjaxProjectIntegrationBuilderAddElement()}',
-      data: { task: $(this).prop('innerText'), parent: $(this).attr('class') },
+      data: { task: $(this).text(), parent: $(this).attr('class') },
       type: 'POST',
       cache: false,
       dataType: 'html',
