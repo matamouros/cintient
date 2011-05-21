@@ -31,6 +31,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/avatar-upload/';
   }
   
+  static public function getForAjaxProjectIntegrationBuilderAddElement()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/integration-builder-add-element/';
+  }
+  
   static public function getForAjaxProjectIntegrationBuilderDeleteElement()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-delete-element/';

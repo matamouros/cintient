@@ -361,6 +361,79 @@ EOT;
 	/**
    * 
    */
+  static public function project_integrationBuilderAddElement()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
+        empty($_REQUEST['task']) || empty($_REQUEST['parent'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    $class = 'BuilderElement' . $_REQUEST['parent'] . '_' . $_REQUEST['task'];
+    if (!class_exists($class)) {
+      $msg = 'Unexisting builder element';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    
+    $element = new $class();
+    /*
+    
+    matamouros 2011.05.21:
+    
+    In order to simpflify a great deal of things, I've opted for the following:
+    . filesets in HTML are abstracted as seamlessly part of the respective
+      tasks where they are used. In truth, filesets should be completely
+      independent editable forms, and tasks should then reference them
+      (perhaps on a select dropdown).
+    . The above means that, for now, only one fileset is allowed for
+      each task that uses it.
+    
+    This means that right up next, we have pretty ugly code coming up,
+    setting up filesets preemptively for specific types of tasks. For now...
+    
+    */
+    if ($_REQUEST['task'] == 'PhpUnit' ||
+        $_REQUEST['task'] == 'PhpLint' ||
+        $_REQUEST['task'] == 'Delete' ||
+    ) {
+      $fileset = new BuilderElement_Type_Fileset();
+      $element->setFilesets(array($fileset));
+    }
+    
+    $targets = $GLOBALS['project']->getIntegrationBuilder()->getTargets();
+    $target = $targets[0];
+    $target->addTask($element);
+    
+    $GLOBALS['project']->log("Integration builder changed, element added.");
+    SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
+
+    echo $element->toHtml();
+    exit;
+  }
+  
+	/**
+   * 
+   */
   static public function project_integrationBuilderDeleteElement()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);

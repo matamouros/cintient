@@ -20,7 +20,7 @@
 *}
         
           <div class="builderElementsAvailable">
-{function name=builderElement depth=0}
+{function name=builderElement depth=0 context=''}
 {if is_array($element)}
 {if $depth!=0}
               <li>
@@ -30,9 +30,12 @@
 {/if}
 {foreach $element as $key => $value}
 {if is_array($value)}
-{builderElement element=[$key => $value] depth=$depth+1}
+{$originalContext=$context}
+{$context="{$context}_$key"}
+{builderElement element=[$key => $value] depth=$depth+1 context=$context}
+{$context=$originalContext}
 {else}
-                  <li>{$value}</li>
+                  <li><a href="#" class="{$context}">{$value}</a></li>
 {/if}
 {/foreach}
 {if $depth!=0}
@@ -40,7 +43,7 @@
               </li>
 {/if}
 {else}
-              <li>{$element}</li>
+              <li><a href="#" class="{$context}">{$element}</a></li>
 {/if}
 {/function}
             <ul class="builderElementDepth_0">
@@ -54,11 +57,11 @@
           </div>
 <script type="text/javascript">
 // <![CDATA[
-$(document).ready(function() {
+$(document).ready(function() {	  
 	//
   // Set up elements animation
   //
-  $('.builderElementTitle p.title').click(function() {
+  $('.builderElementTitle p.title').live('click', function() {
     if ($(this).parent('.builderElementTitle').next().is(':visible')) {
       $(this).parent('.builderElementTitle').next().fadeOut(110);
     } else {
@@ -123,6 +126,25 @@ $(document).ready(function() {
     		    300 // Slightly faster than the fadeOut, so that the next items get pulled up before the element fades first
     		  );
         }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+  });
+  //
+  // Set up add links
+  //
+  $('.builderElementsAvailable a').click(function(e) {
+    e.preventDefault();
+    $.ajax({
+      url: '{UrlManager::getForAjaxProjectIntegrationBuilderAddElement()}',
+      data: { task: $(this).prop('innerText'), parent: $(this).attr('class') },
+      type: 'POST',
+      cache: false,
+      dataType: 'html',
+      success: function(data, textStatus, XMLHttpRequest) {
+        $('.builderElementsChosen').append(data);
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
         alert(errorThrown);

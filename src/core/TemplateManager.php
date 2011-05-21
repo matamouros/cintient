@@ -926,7 +926,8 @@ EOT;
     //
     // TODO: Disabling support for Target and Project at the moment, for simplification purposes.
     //
-    foreach (new FilesystemFilterIterator($it, $dir, array('**/*'), array('**/Target.php', '**/Project.php')) as $entry) {
+    $exceptions = array('**/Target.php', '**/Project.php', '**/Fileset.php');
+    foreach (new FilesystemFilterIterator($it, $dir, array('**/*'), $exceptions) as $entry) {
       $levels = explode('/', substr($entry, strlen($dir)));
       $basename = basename($entry);
       $levelsPath = '$elements';
