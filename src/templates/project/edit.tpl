@@ -18,7 +18,8 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilderPane\">deployment</a> | <a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
+{*$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilderPane\">deployment</a> | <a href=\"#\" class=\"integrationBuilderPane\">integration</a>"*}
+{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
 {$defaultPane="#deploymentBuilder"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
   {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
