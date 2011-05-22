@@ -396,26 +396,34 @@ EOT;
     }
     
     $element = new $class();
-    /*
     
-    matamouros 2011.05.21:
+    //
+    // Setup PhpLint tasks to check all PHP files under the sources dir
+    //
+    if ($_REQUEST['task'] == 'PhpLint') {
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->setDir($GLOBALS['project']->getScmLocalWorkingCopy());
+      $fileset->addInclude('**/*.php');
+      $element->setFilesets(array($fileset));
+    }
     
-    In order to simpflify a great deal of things, I've opted for the following:
-    . filesets in HTML are abstracted as seamlessly part of the respective
-      tasks where they are used. In truth, filesets should be completely
-      independent editable forms, and tasks should then reference them
-      (perhaps on a select dropdown).
-    . The above means that, for now, only one fileset is allowed for
-      each task that uses it.
+    //
+    // Setup PhpUnit tasks with default values
+    //
+    elseif ($_REQUEST['task'] == 'PhpUnit') {
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->setDir($GLOBALS['project']->getScmLocalWorkingCopy() . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR);
+      $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
+      $element->setFilesets(array($fileset));
+      $element->setLogJunitXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'log-junit.xml');
+      $element->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.xml');
+      $element->setCodeCoverageHtmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.html');
+    }
     
-    This means that right up next, we have pretty ugly code coming up,
-    setting up filesets preemptively for specific types of tasks. For now...
-    
-    */
-    if ($_REQUEST['task'] == 'PhpUnit' ||
-        $_REQUEST['task'] == 'PhpLint' ||
-        $_REQUEST['task'] == 'Delete'
-    ) {
+    //
+    // Setup Delete tasks
+    //
+    elseif ($_REQUEST['task'] == 'Delete') {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }

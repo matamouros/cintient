@@ -231,6 +231,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
       return false;
     }
+    $msg = addslashes($o->getMessage());
     if ($o->getFile()) {
       $append = 'w'; // the same as append == false (default for Ant and Phing)
       if ($o->getAppend()) {
@@ -238,12 +239,13 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       }
       $php .= <<<EOT
 \$fp = fopen('{$o->getFile()}', '{$append}');
-\$GLOBALS['result']['ok'] = (fwrite(\$fp, '{$o->getMessage()}') === false ?:true);
+\$GLOBALS['result']['ok'] = (fwrite(\$fp, '{$msg}') === false ?:true);
 fclose(\$fp);
 EOT;
     } else {
       $php .= <<<EOT
-output('echo', '{$o->getMessage()}');
+\$GLOBALS['result']['ok'] = true;
+output('echo', '{$msg}');
 EOT;
     }
     return $php;
