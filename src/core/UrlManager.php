@@ -46,6 +46,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-save-element/';
   }
   
+  static public function getForAjaxProjectIntegrationBuilderSortElements()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/integration-builder-sort-elements/';
+  }
+  
   static public function getForAjaxProjectAccessLevelChange()
   {
     return CINTIENT_BASE_URL . '/ajax/project/access-level/';

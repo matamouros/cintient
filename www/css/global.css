@@ -701,12 +701,40 @@ html
 {
   width: auto;
   float: left;
+  margin-left: 10px;
+}
+
+.projectEditContainer .builderElementsAvailable h1
+{
+  text-decoration: underline;
+}
+
+.projectEditContainer .builderElementsAvailable li
+{
+  margin: 1px;
+  list-style-type: disc;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_0
+{
+  margin-left: 15px;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_1
+{
+  margin-left: 15px;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_2
+{
+  margin-left: 15px;
 }
 
 .projectEditContainer .builderElementsChosen
 {
   width: auto;
   float: left;
+  margin-left: 50px;
 }
 
 .projectEditContainer .builderElementsChosen .builderElement

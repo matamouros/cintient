@@ -51,10 +51,10 @@
 {builderElement element=$providerAvailableBuilderElements_elements}
             </ul>
           </div>
-      
-          <div class="builderElementsChosen">
-{$globals_project->getIntegrationBuilder()->toHtml()}
-          </div>
+  
+          <ul id="sortable" class="builderElementsChosen">
+{$globals_project->getIntegrationBuilder()->toString('Html')}
+          </ul>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {	  
@@ -151,6 +151,53 @@ $(document).ready(function() {
       }
     });
   });
+  
+  //
+  // Setup sorting
+  //
+  var builderElementsChosen = $('#sortable');
+  
+  // Enable sorting
+  builderElementsChosen.sortable(
+    {
+      axis: 'y',
+      cursor: 'move',
+      //cursorAt: 'top',
+      disabled: false,
+      distance: 20,
+      //items: '.builderElement',
+      opacity: 0.6,
+      //placeholder: 'ui-state-highlight',
+      //revert: 100,
+      scroll: true,
+      stop: function(event, ui) {
+    	  var newSort = builderElementsChosen.sortable('toArray');
+        if (newSort.join('') != initialSort.join('')) { // is toString() equally ubiquous?
+        	$.ajax({
+    	      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSortElements()}',
+    	      data: { sortedElements: newSort },
+    	      type: 'POST',
+    	      cache: false,
+    	      dataType: 'json',
+    	      success: function(data, textStatus, XMLHttpRequest) {
+    	        if (!data.success) {
+    	          //TODO: treat this properly
+    	          alert('error');
+    	        } else {
+    	          //alert('ok');
+    	        }
+    	      },
+    	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+    	        alert(errorThrown);
+    	      }
+    	    });
+        }
+     	},
+    }
+  );
+
+  // Get initial sort in order to detect changes
+  initialSort = builderElementsChosen.sortable('toArray');
 });
 //]]> 
 </script>

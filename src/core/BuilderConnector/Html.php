@@ -128,7 +128,7 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
   {
-    h::div(array('class' => 'builderElement'), function() use ($o) {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Echo'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
@@ -203,7 +203,7 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
   {
-    h::div(array('class' => 'builderElement'), function() use ($o) {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
@@ -233,7 +233,7 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o)
   {
-    h::div(array('class' => 'builderElement'), function() use ($o) {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {

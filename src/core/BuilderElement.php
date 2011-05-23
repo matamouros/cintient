@@ -60,13 +60,6 @@ class BuilderElement
     return $class::$method($this);
   }
   
-  public function toHtml()
-  {
-    $method = get_class($this);
-    $class = 'BuilderConnector_Html';
-    return $class::$method($this);
-  }
-
   public function getElement($id)
   {
     if ($id == $this->_internalId) {
@@ -105,6 +98,55 @@ class BuilderElement
       }
     }
     return $internalId;
+  }
+  
+  /**
+   * I'm pretty sure I will one day look at this method and either cry or laugh...
+   * Don't publicly call this with the second parameter set. It's for
+   * internal purposes only... Oh my...
+   * 
+   */
+  public function getParent($id, &$parentElement = null)
+  {
+    if ($id == $this->_internalId) {
+      return $this;
+    }
+    $attributes = get_object_vars($this);
+    $currentElement = $this;
+    $oldParent = $parentElement;
+    foreach ($attributes as $attribute) {
+      if (is_object($attribute)) { // Go to the next nested level
+        $parentElement = $currentElement;
+        $res = $attribute->getParent($id, $parentElement);
+      } elseif (is_array($attribute)) { // Tear down the array
+        //
+        // Tears down an array until an element or the end is found
+        //
+        $f = function ($array, $id) use (&$parentElement)
+        {
+          $res = null;
+          foreach ($array as $attribute) {
+            if (is_object($attribute)) {
+              $res = $attribute->getParent($id, $parentElement); // Go down one level
+            } elseif (is_array($attribute)) {
+              $res = call_user_func(__FUNCTION__, $attribute, $id); // Tear down the array
+            }
+            if (!empty($res)) {
+              return $res;
+            }
+          }
+          return false;
+        };
+        $parentElement = $currentElement;
+        $res = $f($attribute, $id);
+      }
+      if (!empty($res)) {
+        return $parentElement;
+      } else {
+        $parentElement = $oldParent;
+      }
+    }
+    return false;
   }
   
   /**
@@ -158,5 +200,64 @@ class BuilderElement
       }
     }
     return $dest;
+  }
+  
+  public function sortElements(Array $orderedIds, Array &$elements = array())
+  {
+    $s = function (Array $unorderedElements, Array $orderedIds, Array &$orderedElements)
+    {
+      $orderedElements = array();
+      foreach ($orderedIds as $id) {
+        foreach ($unorderedElements as $element) {
+          if ($element->getInternalId() == $id) {
+            $orderedElements[] = $element;
+            $element = null;
+            unset($element);
+            break;
+          }
+        }
+      }
+    };
+    
+    $id = $orderedIds[0];
+    if ($id == $this->_internalId) {
+      return $this;
+    }
+    $internalId = null;
+    $attributes = get_object_vars($this);
+    foreach ($attributes as $name => $attribute) {
+      if (is_object($attribute)) { // Go to the next nested level
+        $internalId = $attribute->sortElements($orderedIds, $elements);
+        if (!empty($elements)) {
+          return $elements;
+        } elseif (!empty($internalId)) {
+          $s($attributes, $orderedIds, $elements);
+          //return $elements;
+        }
+      } elseif (is_array($attribute)) { // Tear down the array
+        //
+        // Tears down an array until an element or the end is found
+        //
+        $f = function ($array, $id, &$elements) use ($orderedIds, $s)
+        {
+          $internalId = null;
+          foreach ($array as $attribute) {
+            if (is_object($attribute)) {
+              $internalId = $attribute->sortElements($orderedIds, $elements); // Go down one level
+              if (!empty($elements)) {
+                return $elements;
+              } elseif (!empty($internalId)) {
+                $s($array, $orderedIds, $elements);
+                //return $elements;
+              }
+            } elseif (is_array($attribute)) {
+              $internalId = call_user_func(__FUNCTION__, $attribute, $id, $elements); // Tear down the array
+            }
+          }
+        };
+        $internalId = $f($attribute, $id, $elements);
+      }
+    }
+    return $elements;
   }
 }

@@ -435,7 +435,7 @@ EOT;
     $GLOBALS['project']->log("Integration builder changed, element added.");
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
 
-    echo $element->toHtml();
+    echo $element->toString('Html');
     exit;
   }
   
@@ -556,6 +556,51 @@ EOT;
     $GLOBALS['project']->log("Integration builder changed.");
     
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element properly edited.", __METHOD__);
+    echo json_encode(array(
+      'success' => true,
+    ));
+    exit;
+  }
+  
+  static public function project_integrationBuilderSortElements()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
+        empty($_REQUEST['sortedElements'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
+
+    //
+    // It works like this: in here we get an array of ordered IDs. We assume
+    // those IDs are all at the same level. We get the first ID and go get
+    // that element's parent. We sort all the elements corresponding to
+    // the IDs and then reassign them to the parent element.
+    //
+    // For now, and for simplification purposes, we assume that we are
+    // always only sorting tasks and that all parents are always a target.
+    //
+    $parent = $GLOBALS['project']->getIntegrationBuilder()->getParent($_REQUEST['sortedElements'][0]);
+    $parent->setTasks($parent->sortElements($_REQUEST['sortedElements']));
+    
+    $GLOBALS['project']->log("Integration builder changed, reordered tasks.");
+    
+    SystemEvent::raise(SystemEvent::DEBUG, "Project tasks reordered.", __METHOD__);
     echo json_encode(array(
       'success' => true,
     ));

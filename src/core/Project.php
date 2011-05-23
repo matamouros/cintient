@@ -554,9 +554,9 @@ EOT;
   
   public function loadUsers()
   {
+    $ret = array();
     $sql = "SELECT * FROM projectuser WHERE projectid=?";
     if ($rs = Database::query($sql, array($this->getId()))) {
-      $ret = array();
       while ($rs->nextRow()) {
         $ret[] = array($rs->getUserId(), $rs->getAccess());
       }
