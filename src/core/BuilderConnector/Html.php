@@ -217,15 +217,20 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
   {
-    if (!$o->getDir()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
-      return false;
-    }
-    $xml = new XmlBuilderElement();
-    $xml->startElement('mkdir');
-    $xml->writeAttribute('dir', $o->getDir());
-    $xml->endElement();
-    return $xml->flush();
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Mkdir'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
+          // Dir, textfield
+          h::div(array('class' => 'label'), 'Dir');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
+          });
+        });
+      });
+    });
   }
   
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
@@ -381,15 +386,24 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
-    $xml = new XmlBuilderElement();
-    $xml->startElement('property');
-    if (!$o->getName() || !$o->getValue()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Name and value not set for type property.', __METHOD__);
-      return false;
-    }
-    $xml->writeAttribute('name', $o->getName());
-    $xml->writeAttribute('value', $o->getValue());
-    $xml->endElement();
-    return $xml->flush();
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Property'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
+          // Name, textfield
+          h::div(array('class' => 'label'), 'Name');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'name', 'value' => $o->getName()));
+          });
+          // Value, textfield
+          h::div(array('class' => 'label'), 'Value');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'value', 'value' => $o->getValue()));
+          });
+        });
+      });
+    });
   }
 }

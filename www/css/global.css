@@ -809,6 +809,11 @@ html
   clear: left;
 }
 
+.projectEditContainer .builderElementsChosen .builderElement .fineprintLabel
+{
+  color: white;
+}
+
 .projectEditContainer .builderElementsChosen .builderElement .checkboxContainer
 {
   font-size: 12pt;
