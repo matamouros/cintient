@@ -546,6 +546,8 @@ EOT;
         $filesets = $o->getFilesets(); // Only one is expected, for now
         if ($attributeName == 'include' || $attributeName == 'exclude') {
           $value = array($value);
+        } elseif ($attributeName == 'dir') { // On the Html connector this value is cleaned for better user readability. Put it back on now.
+          $value = $GLOBALS['project']->getScmLocalWorkingCopy() . $value;
         }
         $filesets[0]->$method($value);
       } else {
