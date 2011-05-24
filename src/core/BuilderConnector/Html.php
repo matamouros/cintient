@@ -160,32 +160,46 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
   {
-    if (!$o->getExecutable()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
-      return false;
-    }
-    $xml = new XmlBuilderElement();
-    $xml->startElement('exec');
-    if ($o->getOutputProperty()) {
-      $xml->writeAttribute('outputproperty', $o->getOutputProperty());
-    }
-    if ($o->getDir()) {
-      $xml->writeAttribute('dir', $o->getDir());
-    }
-    if ($o->getFailOnError() !== null) {
-      $xml->writeAttribute('failonerror', ($o->getFailOnError()?'true':'false'));
-    }
-    $xml->writeAttribute('executable', $o->getExecutable());
-    if ($o->getArgs()) {
-      $args = $o->getArgs();
-      foreach ($args as $arg) {
-        $xml->startElement('arg');
-        $xml->writeAttribute('line', $arg);
-        $xml->endElement();
-      }
-    }
-    $xml->endElement();
-    return $xml->flush();
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Exec'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
+          // Executable, textfield
+          h::div(array('class' => 'label'), 'Executable');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'executable', 'value' => $o->getExecutable()));
+          });
+          // Args, textfield
+          h::div(array('class' => 'label'), 'Args <span class="fineprintLabel">(space separated)</span>');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'args', 'value' => $o->getArgs()));
+          });
+          // Dir, textfield
+          h::div(array('class' => 'label'), 'Dir');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
+          });
+          // Output property, textfield
+          h::div(array('class' => 'label'), 'Output property');
+          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'outputProperty', 'value' => $o->getOutputProperty()));
+          });
+          // Fail on error, checkbox
+          h::div(array('class' => 'label'), 'Fail on error?');
+          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+            if ($o->getFailOnError()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
+          });
+        });
+      });
+    });
+    
+    
   }
   
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
