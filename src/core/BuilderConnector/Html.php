@@ -104,26 +104,41 @@ class BuilderConnector_Html
   
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
-    $xml = new XmlBuilderElement();
-    $xml->startElement('delete');
-    if (!$o->getFilesets()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'No files set for task delete.', __METHOD__);
-      return false;
-    }
-    if ($o->getFailOnError() !== null) {
-      $xml->writeAttribute('failonerror', ($o->getFailOnError()?'true':'false'));
-    }
-    if ($o->getIncludeEmptyDirs()) {
-      $xml->writeAttribute('includeemptydirs', ($o->getIncludeEmptyDirs()?'true':'false'));
-    }
-    if ($o->getFilesets()) {
-      $filesets = $o->getFilesets();
-      foreach ($filesets as $fileset) {
-        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
-      }
-    }
-    $xml->endElement();
-    return $xml->flush();
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Delete'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
+          // Internal Id
+          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
+          // Fail on error, checkbox
+          h::div(array('class' => 'label'), 'Fail on error?');
+          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+            if ($o->getFailOnError()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
+          });
+          // Fail on error, checkbox
+          h::div(array('class' => 'label'), 'Include empty dirs?');
+          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'includeEmptyDirs',);
+            if ($o->getIncludeEmptyDirs()) {
+              $params['checked'] = 'checked';
+            }
+            h::input($params);
+          });
+          // Filesets
+          if ($o->getFilesets()) {
+            $filesets = $o->getFilesets();
+            foreach ($filesets as $fileset) {
+              // self:: doesn't work here...
+              BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+            }
+          }
+        });
+      });
+    });
   }
   
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
@@ -198,8 +213,6 @@ class BuilderConnector_Html
         });
       });
     });
-    
-    
   }
   
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
