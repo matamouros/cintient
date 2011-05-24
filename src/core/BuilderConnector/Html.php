@@ -107,36 +107,32 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Delete'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Fail on error, checkbox
-          h::div(array('class' => 'label'), 'Fail on error?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-            if ($o->getFailOnError()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Fail on error, checkbox
-          h::div(array('class' => 'label'), 'Include empty dirs?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'includeEmptyDirs',);
-            if ($o->getIncludeEmptyDirs()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Filesets
-          if ($o->getFilesets()) {
-            $filesets = $o->getFilesets();
-            foreach ($filesets as $fileset) {
-              // self:: doesn't work here...
-              BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
-            }
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
           }
+          h::input($params);
         });
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Include empty dirs?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'includeEmptyDirs',);
+          if ($o->getIncludeEmptyDirs()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
       });
     });
   }
@@ -146,28 +142,24 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Echo'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Message, textfield
-          h::div(array('class' => 'label'), 'Message');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'message', 'value' => $o->getMessage()));
-          });
-          // File, textfield
-          h::div(array('class' => 'label'), 'File');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
-          });
-          // Append, checkbox
-          h::div(array('class' => 'label'), 'Append?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'append',);
-            if ($o->getAppend()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
+        // Message, textfield
+        h::div(array('class' => 'label'), 'Message');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'message', 'value' => $o->getMessage()));
+        });
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });
+        // Append, checkbox
+        h::div(array('class' => 'label'), 'Append?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'append',);
+          if ($o->getAppend()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
         });
       });
     });
@@ -178,38 +170,34 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Exec'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Executable, textfield
-          h::div(array('class' => 'label'), 'Executable');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'executable', 'value' => $o->getExecutable()));
-          });
-          // Args, textfield
-          h::div(array('class' => 'label'), 'Args <span class="fineprintLabel">(space separated)</span>');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'args', 'value' => $o->getArgs()));
-          });
-          // Dir, textfield
-          h::div(array('class' => 'label'), 'Dir');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
-          });
-          // Output property, textfield
-          h::div(array('class' => 'label'), 'Output property');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'outputProperty', 'value' => $o->getOutputProperty()));
-          });
-          // Fail on error, checkbox
-          h::div(array('class' => 'label'), 'Fail on error?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-            if ($o->getFailOnError()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
+        // Executable, textfield
+        h::div(array('class' => 'label'), 'Executable');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'executable', 'value' => $o->getExecutable()));
+        });
+        // Args, textfield
+        h::div(array('class' => 'label'), 'Args <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'args', 'value' => $o->getArgs()));
+        });
+        // Dir, textfield
+        h::div(array('class' => 'label'), 'Dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
+        });
+        // Output property, textfield
+        h::div(array('class' => 'label'), 'Output property');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'outputProperty', 'value' => $o->getOutputProperty()));
+        });
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
         });
       });
     });
@@ -220,14 +208,10 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Mkdir'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Dir, textfield
-          h::div(array('class' => 'label'), 'Dir');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
-          });
+        // Dir, textfield
+        h::div(array('class' => 'label'), 'Dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
         });
       });
     });
@@ -238,27 +222,23 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Fail on error, checkbox
-          h::div(array('class' => 'label'), 'Fail on error?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-            if ($o->getFailOnError()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          if ($o->getFilesets()) {
-            $filesets = $o->getFilesets();
-            foreach ($filesets as $fileset) {
-              // self:: doesn't work here...
-              BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
-            }
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
           }
-          // TODO: Add HTML button for adding new fileset.
+          h::input($params);
         });
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
+        // TODO: Add HTML button for adding new fileset.
       });
     });
   }
@@ -268,54 +248,50 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Fail on error, checkbox
-          h::div(array('class' => 'label'), 'Fail on error?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-            if ($o->getFailOnError()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Fail on failure, checkbox
-          h::div(array('class' => 'label'), 'Fail on failure?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnFailure',);
-            if ($o->getFailOnFailure()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Fail on incomplete, checkbox
-          h::div(array('class' => 'label'), 'Fail on incomplete?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnIncomplete',);
-            if ($o->getFailOnIncomplete()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Fail on skipped, checkbox
-          h::div(array('class' => 'label'), 'Fail on skipped?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnSkipped',);
-            if ($o->getFailOnSkipped()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          if ($o->getFilesets()) {
-            $filesets = $o->getFilesets();
-            foreach ($filesets as $fileset) {
-              // self:: doesn't work here...
-              BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
-            }
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
           }
-          // TODO: Add HTML button for adding new fileset.
+          h::input($params);
         });
+        // Fail on failure, checkbox
+        h::div(array('class' => 'label'), 'Fail on failure?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnFailure',);
+          if ($o->getFailOnFailure()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Fail on incomplete, checkbox
+        h::div(array('class' => 'label'), 'Fail on incomplete?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnIncomplete',);
+          if ($o->getFailOnIncomplete()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Fail on skipped, checkbox
+        h::div(array('class' => 'label'), 'Fail on skipped?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnSkipped',);
+          if ($o->getFailOnSkipped()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
+        // TODO: Add HTML button for adding new fileset.
       });
     });
   }
@@ -389,19 +365,15 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Property'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        h::form(array('id' => $o->getInternalId(), 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Name, textfield
-          h::div(array('class' => 'label'), 'Name');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'name', 'value' => $o->getName()));
-          });
-          // Value, textfield
-          h::div(array('class' => 'label'), 'Value');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'value', 'value' => $o->getValue()));
-          });
+        // Name, textfield
+        h::div(array('class' => 'label'), 'Name');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'name', 'value' => $o->getName()));
+        });
+        // Value, textfield
+        h::div(array('class' => 'label'), 'Value');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'value', 'value' => $o->getValue()));
         });
       });
     });

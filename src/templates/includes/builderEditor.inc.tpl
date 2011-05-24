@@ -77,13 +77,14 @@ $(document).ready(function() {
     var that = this;
     var data = function() {
       var x = {};
-      $(that).parents('.builderElementTitle').next('.builderElementForm').find('form input').each( function() {
+      $(that).parents('.builderElement').find('.builderElementForm input').each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
+      x['internalId'] = { type: 'hidden', value: $(that).parents('.builderElement').attr('id') }
       return x;
     }();
     $.ajax({
-      url: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form').attr('action'),
+      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()}',
       data: data,
       type: 'POST',
       cache: false,
@@ -109,7 +110,7 @@ $(document).ready(function() {
     var that = this;
     $.ajax({
       url: '{UrlManager::getForAjaxProjectIntegrationBuilderDeleteElement()}',
-      data: { internalId: $(this).parents('.builderElementTitle').next('.builderElementForm').find('form input[name=internalId]').val()},
+      data: { internalId: $(this).parents('.builderElement').attr('id') },
       type: 'POST',
       cache: false,
       dataType: 'json',
