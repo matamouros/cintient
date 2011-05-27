@@ -193,7 +193,7 @@ class Project
       return false;
     }
     $php = $this->_integrationBuilder->toString('Cintient');
-    $buildOk = BuilderConnector_Php::execute($php);
+    $buildOk = BuilderConnector_Cintient::execute($php);
     $build = new ProjectBuild($this);
     $build->setScmRevision($rev);
     $build->setOutput(implode("\n", $GLOBALS['result']['stacktrace']));
