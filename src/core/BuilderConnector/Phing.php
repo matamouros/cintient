@@ -102,6 +102,30 @@ class BuilderConnector_Phing
     return $xml->flush();
   }
   
+  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
+  {
+    $xml = new XmlBuilderElement();
+    $xml->startElement('chmod');
+    if (!$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files set for task chmod.', __METHOD__);
+      return false;
+    }
+    $mode = $o->getMode();
+    if (empty($mode) || !preg_match('/^\d{3}$/', $mode)) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No mode set for task chmod.', __METHOD__);
+      return false;
+    }
+    $xml->writeAttribute('mode', $mode);
+    if ($o->getFilesets()) {
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+      }
+    }
+    $xml->endElement();
+    return $xml->flush();
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     $xml = new XmlBuilderElement();

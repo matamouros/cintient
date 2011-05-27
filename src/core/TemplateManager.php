@@ -97,9 +97,13 @@ class TemplateManager
     $lint = new BuilderElement_Task_PhpLint();
     $lint->setFilesets(array($fileset));
     
+    $chmod = new BuilderElement_Task_Filesystem_Chmod();
+    $chmod->setMode('644');
+    $chmod->setFilesets(array($fileset));
+    
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($exec, $lint));
+    $target->setTasks(array($exec, $lint, $chmod));
     //echo $target->toString('php');
     
     $target2 = new BuilderElement_Target();
@@ -113,7 +117,7 @@ class TemplateManager
     $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);
     $project->setDefaultTarget($target->getName());
-    $code = $project->toString('phing');
+    $code = $project->toString('ant');
     
     echo $code;
     //var_dump(BuilderConnector_Php::execute($code));

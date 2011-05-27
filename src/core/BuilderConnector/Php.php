@@ -192,6 +192,11 @@ EOT;
     return $php;
   }
   
+  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
+  {
+    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Chmod($o, $context);
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
@@ -479,8 +484,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
   class FilesetFilterIterator extends FilterIterator
   {
     private \$_filesetId;
+    private \$_type;
     
-    public function __construct(\$o, \$filesetId)
+    const FILE = 0;
+    const DIR  = 1;
+    const BOTH = 2;
+    
+    public function __construct(\$o, \$filesetId, \$type = self::FILE)
     {
       \$this->_filesetId = \$filesetId;
       parent::__construct(\$o);
@@ -488,6 +498,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
     
     public function accept()
     {
+      // Check for type, first of all
+      if (\$this->_type == self::FILE && !is_file(\$this->current()) ||
+      		\$this->_type == self::DIR && !is_dir(\$this->current()))
+      {
+        return false;
+      }
+      
       // if it is default excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['defaultExcludes'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
@@ -512,10 +529,10 @@ if (!class_exists('FilesetFilterIterator', false)) {
     {
       \$current = \$this->current();
       \$dir = \$GLOBALS['filesets'][\$this->_filesetId]['dir'];
-      if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
+      /*if (substr(\$dir, -1) != DIRECTORY_SEPARATOR) {
         \$dir .= DIRECTORY_SEPARATOR;
       }
-      \$current = \$dir . \$current;
+      \$current = \$dir . \$current;*/
       \$isCaseSensitive = true;
       \$rePattern = preg_quote(\$GLOBALS['filesets'][\$this->_filesetId]['dir'] . \$pattern, '/');
       \$dirSep = preg_quote(DIRECTORY_SEPARATOR, '/');
@@ -611,18 +628,18 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     \$dirIt = 'DirectoryIterator';
     \$itIt = 'IteratorIterator';
     foreach (\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'] as \$include) {
-      if (strpos(\$include, '**') !== false ||
+      /*if (strpos(\$include, '**') !== false ||
          (substr_count(\$include, '/') > 1 && substr_count(\$include, '//') === 0) ||
           substr_count(\$include, '/') == 1 && strpos(\$include, '/') !== 0)
-      {
+      {*/
         \$recursiveIt = true;
         \$dirIt = 'Recursive' . \$dirIt;
         \$itIt = 'Recursive' . \$itIt;
         break;
+      /*}*/ 
       } 
-    }
     try {
-      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}') as \$entry) {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
         if (!\$callback(\$entry, '{$o->getDir()}')) {
           \$GLOBALS['result']['ok'] = false;
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';

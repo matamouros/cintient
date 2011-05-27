@@ -181,6 +181,59 @@ EOT;
     return $php;
   }
   
+  /**
+   * 
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   * 
+   */
+  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
+  {
+    $php = '';
+    if (!$o->getFile() && !$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task chmod.', __METHOD__);
+      return false;
+    }
+    $mode = $o->getMode();
+    if (empty($mode) || !preg_match('/^\d{3}$/', $mode)) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No mode set for chmod.', __METHOD__);
+      return false;
+    }
+    $mode = '0' . $mode;
+    
+    $php .= "
+\$callback = function (\$entry) {
+  \$ret = chmod(\$entry, {$o->getMode()});
+  if (!\$ret) {
+    output('chmod', \"Failed setting {$o->getMode()} on \$entry.\");
+  } else {
+    output('chmod', \"Ok setting {$o->getMode()} on \$entry.\");
+    //echo \"\\n  Ok setting {$o->getMode()} on \$entry.\";
+  }
+  return \$ret;
+};";
+    if ($o->getFile()) {
+      $php .= "
+if (!\$callback('{$o->getFile()}') && {$o->getFailOnError()}) { // failonerror
+  return false;
+}
+";
+    } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $php .= "
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+  \$GLOBALS['result']['ok'] = false;
+  if ({$o->getFailOnError()}) { // failonerror
+    return false;
+  }
+}
+";
+      }
+    }
+    return $php;
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
