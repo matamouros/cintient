@@ -387,7 +387,7 @@ EOT;
     $class = 'BuilderElement' . $_REQUEST['parent'] . '_' . $_REQUEST['task'];
     if (!class_exists($class)) {
       $msg = 'Unexisting builder element';
-      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      SystemEvent::raise(SystemEvent::INFO, $msg . " [ELEMENT={$class}]", __METHOD__);
       echo json_encode(array(
         'success' => false,
         'error' => $msg,
@@ -421,9 +421,11 @@ EOT;
     }
     
     //
-    // Setup Delete tasks
+    // Setup tasks with empty filesets
     //
-    elseif ($_REQUEST['task'] == 'Delete') {
+    elseif ($_REQUEST['task'] == 'Delete' ||
+            $_REQUEST['task'] == 'Chmod'
+    ) {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }
@@ -535,12 +537,16 @@ EOT;
 
     foreach ($_REQUEST as $attributeName => $attributeValue) {
       $method = 'set' . ucfirst($attributeName);
+      if (!isset($attributeValue['value'])) { // Unselected radio buttons cause the value attribute to not be sent
+        $attributeValue['value'] = null;
+      }
       $value = $attributeValue['value'];
       if ($attributeValue['type'] == 'checkbox') {
         $value = ($attributeValue['value'] ? true : false);
       }
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
-           $attributeName == 'defaultExcludes' || $attributeName == 'dir') &&
+           $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
+           $attributeName == 'type' ) &&
           ($o instanceof BuilderElement_Task_PhpUnit || $o instanceof BuilderElement_Task_PhpLint)
       ) {
         $filesets = $o->getFilesets(); // Only one is expected, for now
@@ -548,6 +554,12 @@ EOT;
           $value = array($value);
         } elseif ($attributeName == 'dir') { // On the Html connector this value is cleaned for better user readability. Put it back on now.
           $value = $GLOBALS['project']->getScmLocalWorkingCopy() . $value;
+        } elseif ($attributeName == 'type' &&
+                  $value != BuilderElement_Type_Fileset::BOTH &&
+                  $value != BuilderElement_Type_Fileset::FILE &&
+                  $value != BuilderElement_Type_Fileset::DIR  )
+        {
+          $value = BuilderElement_Type_Fileset::getDefaultType();
         }
         $filesets[0]->$method($value);
       } else {

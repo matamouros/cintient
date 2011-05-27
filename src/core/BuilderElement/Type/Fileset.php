@@ -22,7 +22,11 @@
  */
 
 /**
- * 
+ * The Fileset builder element as an extended functionality to deal with
+ * files only, dirs only or both. In practice this means that it can
+ * alone emulate an Ant Fileset and a Dirset. On the other hand Phing
+ * only supports Fileset (although I don't quite know if it embeds Dirset
+ * functionality)
  */
 class BuilderElement_Type_Fileset extends BuilderElement
 {
@@ -31,6 +35,11 @@ class BuilderElement_Type_Fileset extends BuilderElement
   protected $_id;
   protected $_include;
   protected $_exclude;
+  protected $_type;            // Either FILE, DIR or BOTH (defaults to both)
+  
+  const FILE = 0;
+  const DIR  = 1;
+  const BOTH = 2;
   
   public function __construct()
   {
@@ -41,6 +50,12 @@ class BuilderElement_Type_Fileset extends BuilderElement
     $this->_id = null;
     $this->_include = array();
     $this->_exclude = array();
+    $this->_type = self::getDefaultType();
+  }
+  
+  static public function getDefaultType()
+  {
+    return self::FILE;
   }
   
   public function getId()

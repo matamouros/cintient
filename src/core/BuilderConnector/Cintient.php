@@ -468,8 +468,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
   class FilesetFilterIterator extends FilterIterator
   {
     private \$_filesetId;
+    private \$_type;
     
-    public function __construct(\$o, \$filesetId)
+    const FILE = 0;
+    const DIR  = 1;
+    const BOTH = 2;
+    
+    public function __construct(\$o, \$filesetId, \$type = self::FILE)
     {
       \$this->_filesetId = \$filesetId;
       parent::__construct(\$o);
@@ -477,6 +482,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
     
     public function accept()
     {
+      // Check for type, first of all
+      if (\$this->_type == self::FILE && !is_file(\$this->current()) ||
+      		\$this->_type == self::DIR && !is_dir(\$this->current()))
+      {
+        return false;
+      }
+      
       // if it is default excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['defaultExcludes'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
@@ -611,7 +623,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
       /*}*/ 
     }
     try {
-      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}') as \$entry) {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
         if (!\$callback(\$entry, '{$o->getDir()}')) {
           \$GLOBALS['result']['ok'] = false;
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';

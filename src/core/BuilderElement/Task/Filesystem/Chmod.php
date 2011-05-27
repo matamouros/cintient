@@ -26,21 +26,19 @@
  * 
  * 
  */
-class BuilderElement_Task_Chmod extends BuilderElement
+class BuilderElement_Task_Filesystem_Chmod extends BuilderElement
 {
-  protected $_executable; 
-  protected $_args;            // The arguments to the executable command, if any, a space separated string
-  protected $_dir;             // The directory in which the command should be executed in
-  protected $_outputProperty;  // Log the command's output to the variable with this name
+  protected $_file;            // A string containing a single file or dir to act upon
+  protected $_mode;            // A string representation of the new permissions (octal, i.e. with a leading 0)
   protected $_failOnError;     // Stop the build if the command fails (Ant only)
+  protected $_filesets;        // An array of fileset types
   
   public function __construct()
   {
     parent::__construct();
-    $this->_executable = null;
-    $this->_args = null;
-    $this->_dir = null;
-    $this->_outputProperty = null;
+    $this->_file = null;
+    $this->_mode = null;
     $this->_failOnError = null;
+    $this->_filesets = null;
   }
 }

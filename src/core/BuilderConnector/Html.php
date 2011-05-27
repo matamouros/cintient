@@ -102,6 +102,43 @@ class BuilderConnector_Html
     }
   }
   
+  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
+  {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Chmod'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        /*
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });*/
+        // Mode, textfield
+        h::div(array('class' => 'label'), 'Mode <span class="fineprintLabel">(octal, i.e., with leading 0)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'mode', 'value' => $o->getMode()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
+      });
+    });
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
@@ -170,6 +207,15 @@ class BuilderConnector_Html
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle(array('title' => 'Exec'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
         // Executable, textfield
         h::div(array('class' => 'label'), 'Executable');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {
@@ -189,15 +235,6 @@ class BuilderConnector_Html
         h::div(array('class' => 'label'), 'Output property');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {
           h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'outputProperty', 'value' => $o->getOutputProperty()));
-        });
-        // Fail on error, checkbox
-        h::div(array('class' => 'label'), 'Fail on error?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-          if ($o->getFailOnError()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
         });
       });
     });
@@ -296,68 +333,86 @@ class BuilderConnector_Html
     });
   }
   
-  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o)
+  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, BuilderElement $parent = null)
   {
-    //h::div(array('class' => 'builderElement'), function() use ($o) {
-    //  h::div(array('class' => 'builderElementTitle'), 'Fileset');
-    //  h::div(array('class' => 'builderElementForm'), function() use ($o) {
-    //    h::form(array('id' => '', 'action' => UrlManager::getForAjaxProjectIntegrationBuilderSaveElement()), function() use ($o) {
-          // Internal Id
-          //h::input(array('type' => 'hidden', 'name' => 'internalId', 'value' => $o->getInternalId()));
-          // Default excludes, checkbox
-          h::div(array('class' => 'label'), 'Default excludes?');
-          h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-            $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultExcludes',);
-            if ($o->getDefaultExcludes()) {
-              $params['checked'] = 'checked';
-            }
-            h::input($params);
-          });
-          // Dir, textfield
-          h::div(array('class' => 'label'), 'Dir <span class="fineprintLabel">(relative to project sources. Empty is at root)</span>');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
-          });
-          // Id, textfield
-          /*h::div(array('class' => 'label'), 'Id');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'id', 'value' => $o->getId()));
-          });*/
-          $includesLine = '';
-          if ($o->getInclude()) {
-            $includes = $o->getInclude();
-            foreach ($includes as $include) {
-              $includesLine .= $include . ', ';
-            }
-            // TODO: Oh god... Seriously do this better:
-            if (!empty($includesLine)) {
-              $includesLine = substr($includesLine, 0, strlen($includesLine)-2); // Oh god...
-            }
-          }
-          // Includes, textfield
-          h::div(array('class' => 'label'), 'Includes');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o, $includesLine) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'include', 'value' => $includesLine));
-          });
-          $excludesLine = '';
-          if ($o->getExclude()) {
-            $excludes = $o->getExclude();
-            foreach ($excludes as $exclude) {
-              $excludesLine .= $exclude . ', ';
-            }
-            // TODO: Oh god... Seriously do this better:
-            if (!empty($excludesLine)) {
-              $excludesLine = substr($excludesLine, 0, strlen($excludesLine)-2); // Oh god...
-            }
-          }
-          // Excludes, textfield
-          h::div(array('class' => 'label'), 'Excludes');
-          h::div(array('class' => 'textfieldContainer'), function() use ($o, $excludesLine) {
-            h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
-          });
-    //    });
-    //  });
-    //});
+    h::hr();
+    if (empty($parent)) {
+    }
+    // Type, radio button
+    h::ul(array('class' => 'radioContainer'), function() use ($o) {
+      h::li(function() use ($o) {
+        h::div(array('class' => 'label'), 'Files only');
+        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => BuilderElement_Type_Fileset::FILE);
+        if ($o->getType() == BuilderElement_Type_Fileset::FILE) {
+          $params['checked'] = 'checked';
+        }
+        h::input($params);
+      });
+      h::li(function() use ($o) {
+        h::div(array('class' => 'label'), 'Dirs only');
+        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => BuilderElement_Type_Fileset::DIR);
+        if ($o->getType() == BuilderElement_Type_Fileset::DIR) {
+          $params['checked'] = 'checked';
+        }
+        h::input($params);
+      });
+
+      h::li(function() use ($o) {
+        h::div(array('class' => 'label'), 'Both');
+        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => BuilderElement_Type_Fileset::BOTH);
+        if ($o->getType() == BuilderElement_Type_Fileset::BOTH) {
+          $params['checked'] = 'checked';
+        }
+        h::input($params);
+      });
+    });
+    
+    // Default excludes, checkbox
+    h::div(array('class' => 'label'), 'Default excludes?');
+    h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+      $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultExcludes',);
+      if ($o->getDefaultExcludes()) {
+        $params['checked'] = 'checked';
+      }
+      h::input($params);
+    });
+    // Dir, textfield
+    h::div(array('class' => 'label'), 'Base dir <span class="fineprintLabel">(relative to project sources. Empty is at root)</span>');
+    h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
+    });
+    $includesLine = '';
+    if ($o->getInclude()) {
+      $includes = $o->getInclude();
+      foreach ($includes as $include) {
+        $includesLine .= $include . ', ';
+      }
+      // TODO: Oh god... Seriously do this better:
+      if (!empty($includesLine)) {
+        $includesLine = substr($includesLine, 0, strlen($includesLine)-2); // Oh god 2x...
+      }
+    }
+    // Includes, textfield
+    h::div(array('class' => 'label'), 'Files/dirs to include');
+    h::div(array('class' => 'textfieldContainer'), function() use ($o, $includesLine) {
+      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'include', 'value' => $includesLine));
+    });
+    $excludesLine = '';
+    if ($o->getExclude()) {
+      $excludes = $o->getExclude();
+      foreach ($excludes as $exclude) {
+        $excludesLine .= $exclude . ', ';
+      }
+      // TODO: Oh god... Seriously do this better:
+      if (!empty($excludesLine)) {
+        $excludesLine = substr($excludesLine, 0, strlen($excludesLine)-2); // Oh god...
+      }
+    }
+    // Excludes, textfield
+    h::div(array('class' => 'label'), 'Files/dirs to exclude');
+    h::div(array('class' => 'textfieldContainer'), function() use ($o, $excludesLine) {
+      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
+    });
   }
   
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
