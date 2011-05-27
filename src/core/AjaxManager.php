@@ -553,10 +553,17 @@ EOT;
       if ($attributeValue['type'] == 'checkbox') {
         $value = ($attributeValue['value'] ? true : false);
       }
+      //
+      // Specific handling for filesets
+      //
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
            $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
-           $attributeName == 'type' ) &&
-          ($o instanceof BuilderElement_Task_PhpUnit || $o instanceof BuilderElement_Task_PhpLint)
+           $attributeName == 'type' )/* &&
+          ($o instanceof BuilderElement_Task_PhpUnit ||
+           $o instanceof BuilderElement_Task_PhpLint ||
+           $o instanceof BuilderElement_Task_Filesystem_Chmod ||
+           $o instanceof BuilderElement_Task_Filesystem_Delete
+          )*/
       ) {
         $filesets = $o->getFilesets(); // Only one is expected, for now
         if ($attributeName == 'include' || $attributeName == 'exclude') {
