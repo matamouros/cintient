@@ -228,6 +228,26 @@ html
   padding: 2px 10px 2px 2px;
 }
 
+hr
+{
+  /* http://jasonmillerdesign.com/Programming/Style_HR_Horizontal_Rule_with_CSS */
+  font-size: 1px;
+  line-height: 0;
+  overflow: visible;
+  display: block;
+  position: relative;
+  padding: 0;
+  margin: 8px auto;
+  width: 90%;
+  clear: both;
+  border: none;
+  border-top: 1px solid #AAA;
+  border-bottom: 1px solid #FFF;
+  font-size: 1px;
+  line-height: 0;
+  overflow: visible;
+}
+
 /* @end */
 
 /* @group Forms */
@@ -841,6 +861,31 @@ html
 .registrationContainer
 {
   width: 500px;
+}
+
+/* @end */
+
+/* @group Builder Elements */
+/* +----------------------------------------------------------------+ *\
+|* | BUILDER ELEMENTS                                               | *|
+\* +----------------------------------------------------------------+ */
+
+.builderElement .labelRadio
+{
+  float: left;
+}
+
+.builderElement .radioContainer
+{
+  clear: both;
+  float: left;
+  margin-bottom: 15px;
+}
+
+.builderElement .radioContainer li
+{
+  float: left;
+  margin-right: 20px;
 }
 
 /* @end */
