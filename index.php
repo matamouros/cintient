@@ -43,26 +43,31 @@ if (!preg_match('/(.+\/www)\/?$/', $_SERVER['DOCUMENT_ROOT'], $matches) ||
   $uriPrefix = 'www/';
 }
 $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $uriPrefix;
+if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query 
+  $baseUrl = substr($baseUrl, 0, $pos);
+}
 
 //
-// Check for php support
+// Check for PHP support
 //
 if (false) {
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Error: PHP is not running</title>
+  <meta charset="UTF-8" />
+  <title>Cintient installation aborted!</title>
+  <link rel="icon" href="/favicon.ico">
+  <meta name="generator" content="Cintient Engine" />
   <style type="text/css">
     .error {color:red;font-weight:bold;}
   </style>
 </head>
 <body>
   <h1>Cintient</h1>
-  <h2><span class="error">Error:</span> PHP is not running</h2>
-  <p>You'll need <a href="http://php.net">php</a> in order to start using Cintient</p>
-  <p>Be sure to fulfill the <a href="#">requirements</a></p>
+  <h2><span class="error">Error:</span> PHP environment not found!</h2>
+  <p>Cintient requires a <a href="http://php.net">PHP</a> environment in order to run.</p>
+  <p>Please install PHP and try again.</p>
 </body>
 </html>
 <?php
@@ -134,11 +139,11 @@ if (isset($_POST) && count($_POST) > 0) {
   // TODO: warn the user about this
   //       permissions on .htaccess and config file
   //       should have the right ones after installation
-  chmod('.htaccess',         755);
-  chmod($configFileLocation, 755);
+  chmod('.htaccess',         0755);
+  chmod($configFileLocation, 0755);
   
   // install user admin info
-  eval($content); /* now we ca use config settings */
+  eval($content); /* now we can use config settings */
   $userName     = "";
   $userEmail    = "";
   $userUsername = "";
