@@ -421,11 +421,20 @@ EOT;
     }
     
     //
+    // Setup Delete with default values
+    //
+    elseif ($_REQUEST['task'] == 'Delete') {
+      $element->setIncludeEmptyDirs(true);
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+      $fileset->setDefaultExcludes(false);
+      $element->setFilesets(array($fileset));
+    }
+    
+    //
     // Setup tasks with empty filesets
     //
-    elseif ($_REQUEST['task'] == 'Delete' ||
-            $_REQUEST['task'] == 'Chmod'
-    ) {
+    elseif ($_REQUEST['task'] == 'Chmod') {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }
