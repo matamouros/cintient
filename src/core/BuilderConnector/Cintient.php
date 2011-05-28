@@ -202,12 +202,62 @@ EOT;
     
     $php .= "
 \$callback = function (\$entry) {
-  \$ret = chmod(\$entry, {$o->getMode()});
+  \$ret = @chmod(\$entry, {$o->getMode()});
   if (!\$ret) {
     output('chmod', \"Failed setting {$o->getMode()} on \$entry.\");
   } else {
     output('chmod', \"Ok setting {$o->getMode()} on \$entry.\");
     //echo \"\\n  Ok setting {$o->getMode()} on \$entry.\";
+  }
+  return \$ret;
+};";
+    if ($o->getFile()) {
+      $php .= "
+if (!\$callback('{$o->getFile()}') && {$o->getFailOnError()}) { // failonerror
+  return false;
+}
+";
+    } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $php .= "
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+  \$GLOBALS['result']['ok'] = false;
+  if ({$o->getFailOnError()}) { // failonerror
+    return false;
+  }
+}
+";
+      }
+    }
+    return $php;
+  }
+  
+  /**
+   * 
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   * 
+   */
+  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
+  {
+    $php = '';
+    if (!$o->getFile() && !$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task chown.', __METHOD__);
+      return false;
+    }
+    if (!$o->getUser()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No user set for chown.', __METHOD__);
+      return false;
+    }
+    $php .= "
+\$callback = function (\$entry) {
+  \$ret = @chown(\$entry, '{$o->getUser()}');
+  if (!\$ret) {
+    output('chown', \"Failed setting {$o->getUser()} on \$entry.\");
+  } else {
+    output('chown', \"Ok setting {$o->getUser()} on \$entry.\");
+    //echo \"\\n  Ok setting {$o->getUser()} on \$entry.\";
   }
   return \$ret;
 };";

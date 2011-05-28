@@ -434,7 +434,9 @@ EOT;
     //
     // Setup tasks with empty filesets
     //
-    elseif ($_REQUEST['task'] == 'Chmod') {
+    elseif ($_REQUEST['task'] == 'Chmod' ||
+            $_REQUEST['task'] == 'Chown'
+    ) {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }

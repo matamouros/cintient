@@ -106,7 +106,7 @@ class BuilderConnector_Ant
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('chmod');
-    if (!$o->getFilesets()) {
+    if (!$o->getFile() && !$o->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files set for task chmod.', __METHOD__);
       return false;
     }
@@ -116,7 +116,39 @@ class BuilderConnector_Ant
       return false;
     }
     $xml->writeAttribute('perm', $mode);
-    if ($o->getFilesets()) {
+    if ($o->getFile()) {
+      $xml->writeAttribute('file', $o->getFile());
+    } elseif ($o->getFilesets()) {
+      $filesets = $o->getFilesets();
+      foreach ($filesets as $fileset) {
+        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+      }
+    }
+    $xml->endElement();
+    return $xml->flush();
+  }
+  
+  /**
+   * 
+   * !! BuilderConnector_Phing has a direct dependency on this !!
+   * 
+   */
+  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
+  {
+    $xml = new XmlBuilderElement();
+    $xml->startElement('chown');
+    if (!$o->getFile() && !$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files set for task chown.', __METHOD__);
+      return false;
+    }
+    if (!$o->getUser()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No user set for task chown.', __METHOD__);
+      return false;
+    }
+    $xml->writeAttribute('user', $o->getUser());
+    if ($o->getFile()) {
+      $xml->writeAttribute('file', $o->getFile());
+    } elseif ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));

@@ -123,9 +123,46 @@ class BuilderConnector_Html
           h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
         });*/
         // Mode, textfield
-        h::div(array('class' => 'label'), 'Mode <span class="fineprintLabel">(octal, i.e., with leading 0)</span>');
+        h::div(array('class' => 'label'), 'Mode <span class="fineprintLabel">(e.g., 755, 644, 640, etc)</span>');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {
           h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'mode', 'value' => $o->getMode()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
+      });
+    });
+  }
+  
+  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
+  {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Chown'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        /*
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });*/
+        // User, textfield
+        h::div(array('class' => 'label'), 'User <span class="fineprintLabel">(or user.group)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'user', 'value' => $o->getUser()));
         });
         // Filesets
         if ($o->getFilesets()) {

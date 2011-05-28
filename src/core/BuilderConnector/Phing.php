@@ -106,7 +106,7 @@ class BuilderConnector_Phing
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('chmod');
-    if (!$o->getFilesets()) {
+    if (!$o->getFile() && !$o->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files set for task chmod.', __METHOD__);
       return false;
     }
@@ -116,7 +116,9 @@ class BuilderConnector_Phing
       return false;
     }
     $xml->writeAttribute('mode', $mode);
-    if ($o->getFilesets()) {
+    if ($o->getFile()) {
+      $xml->writeAttribute('file', $o->getFile());
+    } elseif ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
@@ -124,6 +126,11 @@ class BuilderConnector_Phing
     }
     $xml->endElement();
     return $xml->flush();
+  }
+  
+  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
+  {
+    return BuilderConnector_Ant::BuilderElement_Task_Filesystem_Chown($o);
   }
   
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
