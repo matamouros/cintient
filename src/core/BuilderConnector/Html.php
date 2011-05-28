@@ -264,9 +264,9 @@ class BuilderConnector_Html
           h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'args', 'value' => $o->getArgs()));
         });
         // Dir, textfield
-        h::div(array('class' => 'label'), 'Dir');
+        h::div(array('class' => 'label'), 'Base dir');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'basedir', 'value' => $o->getBaseDir()));
         });
         // Output property, textfield
         h::div(array('class' => 'label'), 'Output property');

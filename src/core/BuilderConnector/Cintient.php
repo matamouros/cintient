@@ -362,8 +362,8 @@ EOT;
       return false;
     }
     $dir = '';
-    if ($o->getDir()) {
-      $dir = "cd {$o->getDir()}; ";
+    if ($o->getBaseDir()) {
+      $dir = "cd {$o->getBaseDir()}; ";
     }
     $args = '';
     if ($o->getArgs()) {

@@ -186,8 +186,8 @@ class BuilderConnector_Phing
     if ($o->getOutputProperty()) {
       $xml->writeAttribute('outputProperty', $o->getOutputProperty());
     }
-    if ($o->getDir()) {
-      $xml->writeAttribute('dir', $o->getDir());
+    if ($o->getBaseDir()) {
+      $xml->writeAttribute('dir', $o->getBaseDir());
     }
     $args = '';
     if ($o->getArgs()) {

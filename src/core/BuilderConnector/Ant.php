@@ -211,8 +211,8 @@ class BuilderConnector_Ant
     if ($o->getOutputProperty()) {
       $xml->writeAttribute('outputproperty', $o->getOutputProperty());
     }
-    if ($o->getDir()) {
-      $xml->writeAttribute('dir', $o->getDir());
+    if ($o->getBaseDir()) {
+      $xml->writeAttribute('dir', $o->getBaseDir());
     }
     if ($o->getFailOnError() !== null) {
       $xml->writeAttribute('failonerror', ($o->getFailOnError()?'true':'false'));

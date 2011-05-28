@@ -274,49 +274,7 @@ EOT;
   
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
   {
-    $php = '';
-    if (!$o->getExecutable()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
-      return false;
-    }
-    $dir = '';
-    if ($o->getDir()) {
-      $dir = "cd {$o->getDir()}; ";
-    }
-    $args = '';
-    if ($o->getArgs()) {
-      $args = ' ' . implode(' ', $o->getArgs());
-    }
-    $php .= "
-\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-output('exec', 'Executing \"{$dir}{$o->getExecutable()}{$args}\".');
-\$ret = exec('{$dir}{$o->getExecutable()}{$args}', \$lines, \$retval);
-foreach (\$lines as \$line) {
-  output('exec', \$line);
-}
-";
-    if ($o->getOutputProperty()) {
-      $php .= "
-\$GLOBALS['properties']['{$o->getOutputProperty()}'] = \$ret;
-";
-    }
-    $php .= "
-if (\$retval > 0) {
-  output('exec', 'Failed.');
-} else {
-  output('exec', 'Success.');
-}
-";
-    //TODO: bullet proof this for boolean falses (they're not showing up)
-    /*
-    $php .= "if ({$o->getFailOnError()} && !\$ret) {
-  \$GLOBALS['result']['ok'] = false;
-  return false;
-}
-\$GLOBALS['result']['ok'] = true;
-return true;
-";*/
-    return $php;
+    return BuilderConnector_Cintient::BuilderElement_Task_Exec($o, $context);
   }
   
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
