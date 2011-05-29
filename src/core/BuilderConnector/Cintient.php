@@ -317,7 +317,7 @@ if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true))
     $php .= "
 \$callback = function (\$entry) {
   if (is_file(\$entry)) {
-    \$ret = @copy(\$entry, '{$dest}');
+    \$ret = @copy(\$entry, '{$dest}'); // THE PROBLEM IS HERE, THE SECOND ARG SOMETIMES IS A DIR!! OUTPUT THE CODE AND RUN IT WITHOUT @ ON THE COPY CALL!
   } elseif (is_dir(\$entry)) {
   	if (!file_exists('{$dest}') && !@mkdir('{$dest}', 0755, true)) {
   	  \$ret = false;
@@ -340,9 +340,9 @@ if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true))
     //
     $filesets = array();
     if ($o->getFile()) {
-      $path = pathinfo($o->getToFile());
+      $path = pathinfo($o->getFile());
       $fileset = new BuilderElement_Type_Fileset();
-      $fileset->addInclude('/'.$o->getFile());
+      $fileset->addInclude($path['basename']);
       $fileset->setDir($path['dirname']);
       $filesets[] = $fileset;
     } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
@@ -828,6 +828,22 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
   }
 }
 ";
+    return $php;
+  }
+  
+  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
+  {
+    $php = '';
+    if (!$o->getText()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);
+      return false;
+    }
+    $properties = parse_ini_string($o->getText());
+    foreach ($properties as $key => $value) {
+      $php .= <<<EOT
+  \$GLOBALS['properties']['{$key}'] = '{$value}';
+EOT;
+    }
     return $php;
   }
   

@@ -269,6 +269,11 @@ class BuilderConnector_Phing
     return $xml->flush();
   }
   
+  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
+  {
+    return BuilderConnector_Ant::BuilderElement_Type_Properties($o);
+  }
+  
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
     $xml = new XmlBuilderElement();

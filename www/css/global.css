@@ -757,7 +757,29 @@ hr
   margin-left: 50px;
 }
 
-.projectEditContainer .builderElementsChosen .builderElement
+.projectEditContainer .builderElementsChosen #submitButton
+{
+  clear: both;
+}
+
+/* @end */
+
+
+/* @group Registration */
+
+.registrationContainer
+{
+  width: 500px;
+}
+
+/* @end */
+
+/* @group Builder Elements */
+/* +----------------------------------------------------------------+ *\
+|* | BUILDER ELEMENTS                                               | *|
+\* +----------------------------------------------------------------+ */
+
+.builderElement
 {
   border: 1px solid #999;
   -webkit-border-radius: 5px 5px 5px 5px;
@@ -784,43 +806,46 @@ hr
   float: left;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementForm
+.builderElement .builderElementForm
 {
   float: left;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementTitle
+.builderElement .builderElementTitle
 {
   font-size: 11pt;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
+  float: left;
+  width: 100%;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementTitle p.title
+.builderElement .builderElementTitle p.title
 {
   float: left;
   margin-bottom: 10px;
   text-decoration: underline;
   cursor: pointer;
+  float: left;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementTitle ul
+.builderElement .builderElementTitle ul
 {
   float: right;
   margin-bottom: 10px;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementTitle li
+.builderElement .builderElementTitle li
 {
   float: left;
 }
 
-.projectEditContainer .builderElementsChosen .builderElementTitle li p.pipe
+.builderElement .builderElementTitle li p.pipe
 {
   padding-left: 4px;
   padding-right: 4px;
 }
 
-.projectEditContainer .builderElementsChosen .builderElement .label
+.builderElement .label
 {
   font-size: 10pt;
   width: auto;
@@ -829,46 +854,24 @@ hr
   clear: left;
 }
 
-.projectEditContainer .builderElementsChosen .builderElement .fineprintLabel
+.builderElement .fineprintLabel
 {
   color: white;
 }
 
-.projectEditContainer .builderElementsChosen .builderElement .checkboxContainer
+.builderElement .checkboxContainer
 {
   font-size: 12pt;
   float: left;
   margin-bottom: 10px;
 }
 
-.projectEditContainer .builderElementsChosen .builderElement .textfieldContainer
+.builderElement .textfieldContainer
 {
   font-size: 10pt;
   margin-bottom: 8px;
   float: left;
 }
-
-.projectEditContainer .builderElementsChosen #submitButton
-{
-  clear: both;
-}
-
-/* @end */
-
-
-/* @group Registration */
-
-.registrationContainer
-{
-  width: 500px;
-}
-
-/* @end */
-
-/* @group Builder Elements */
-/* +----------------------------------------------------------------+ *\
-|* | BUILDER ELEMENTS                                               | *|
-\* +----------------------------------------------------------------+ */
 
 .builderElement .labelRadio
 {
@@ -887,6 +890,46 @@ hr
   float: left;
   margin-right: 20px;
 }
+
+.builderElement .textareaContainer
+{
+  float: left;
+  padding: 0;
+  padding-right: 3px;
+  width: 307px;
+  height: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.builderElement textarea
+{
+  font-size: 10pt;
+  font-family: "Anonymous Pro", "Andale Mono", Arial;
+  font-weight: normal;
+  float: left;
+  border: 0px solid #fff;
+  width: 300px;
+  height: 150px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  outline: none;
+}
+
+.builderElement .textfield
+{
+  width: 300px;
+}
+
 
 /* @end */
 

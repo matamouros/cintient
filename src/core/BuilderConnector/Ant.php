@@ -309,6 +309,28 @@ class BuilderConnector_Ant
     return $ret;
   }
   
+  /**
+   * 
+   * !! BuilderConnector_Phing has a direct dependency on this !!
+   * 
+   */
+  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
+  {
+    if (!$o->getText()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);
+      return false;
+    }
+    $xml = new XmlBuilderElement();
+    $properties = parse_ini_string($o->getText());
+    foreach ($properties as $key => $value) {
+      $xml->startElement('property');
+      $xml->writeAttribute('name', $key);
+      $xml->writeAttribute('value', $value);
+      $xml->endElement();
+    }
+    return $xml->flush();
+  }
+  
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
     $xml = new XmlBuilderElement();

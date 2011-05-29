@@ -27,16 +27,18 @@
 class BuilderElement
 {
   protected $_active;
+  protected $_deletable;      // Special system builder elements might not be deleted by the user.
+  protected $_editable;       // Special system builder elements might not be editable by the user.
   protected $_failOnError;
   protected $_internalId;
-  protected $_locked;       // Special system builder elements might not be removable by the user.
   
   public function __construct()
   {
     $this->_active = true;
+    $this->_deletable = true;
+    $this->_editable = true;
     $this->_failOnError = true;
     $this->_internalId = Utility::generateRandomString() . uniqid();
-    $this->_locked = false;
   }
   
   public function __call($name, $args)
@@ -48,6 +50,9 @@ class BuilderElement
       $var = '_' . lcfirst(substr($name, 3));
       $this->$var = $args[0];
       return true;
+    } elseif (strpos($name, 'is') === 0) {
+      $var = '_' . lcfirst(substr($name, 2));
+      return (bool)$this->$var;
     }
     trigger_error("No valid method available for calling [METHOD={$name}]", E_USER_ERROR);
     exit;

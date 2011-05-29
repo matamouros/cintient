@@ -479,6 +479,16 @@ EOT;
       ));
       exit;
     }
+    $builderElement = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']);
+    if (!$builderElement->isDeletable()) {
+      $msg = 'Builder element not deletable';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
     
     $newBuilder = $GLOBALS['project']->getIntegrationBuilder()->deleteElement($_REQUEST['internalId']);
     $GLOBALS['project']->setIntegrationBuilder($newBuilder);
@@ -515,6 +525,7 @@ EOT;
     
     */
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, print_r($_REQUEST, true), __METHOD__);
 
     if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
         empty($_REQUEST['internalId'])) {
@@ -546,13 +557,23 @@ EOT;
       ));
       exit;
     }
+    
+    if (!$o->isEditable()) {
+      $msg = 'Builder element not editable';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(array(
+        'success' => false,
+        'error' => $msg,
+      ));
+      exit;
+    }
 
     foreach ($_REQUEST as $attributeName => $attributeValue) {
       $method = 'set' . ucfirst($attributeName);
       if (!isset($attributeValue['value'])) { // Unselected radio buttons cause the value attribute to not be sent
         $attributeValue['value'] = null;
       }
-      $value = $attributeValue['value'];
+      $value = filter_var($attributeValue['value'], FILTER_SANITIZE_STRING);
       if ($attributeValue['type'] == 'checkbox') {
         $value = ($attributeValue['value'] ? true : false);
       }

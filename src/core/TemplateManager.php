@@ -101,9 +101,13 @@ class TemplateManager
     $chmod->setMode('644');
     $chmod->setFilesets(array($fileset));
     
+    $properties = new BuilderElement_Type_Properties();
+    $properties->setText("workDir = /tmp/
+title = Cintient");
+    
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($exec, $lint, $chmod));
+    $target->setTasks(array($exec, $lint, $chmod, $properties));
     //echo $target->toString('php');
     
     $target2 = new BuilderElement_Target();

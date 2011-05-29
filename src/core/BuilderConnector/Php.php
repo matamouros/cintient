@@ -624,6 +624,11 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     return $php;
   }
   
+  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
+  {
+    return BuilderConnector_Cintient::BuilderElement_Type_Properties($o, $context);
+  }
+  
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
   {
     $php = '';

@@ -327,16 +327,21 @@ class Project
     //
     // Setup the minimal integration builder setup
     //
+    $properties = new BuilderElement_Type_Properties();
+    $properties->setDeletable(false);
     $echo = new BuilderElement_Task_Echo();
     $echo->setMessage("WHAT YOU SAY !!");
     $propertySourcesDir = new BuilderElement_Type_Property();
     $propertySourcesDir->setName('sourcesDir');
     $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
     $propertySourcesDir->setFailOnError(false);
-    $propertySourcesDir->setLocked(true);
+    $propertySourcesDir->setEditable(false);
+    $propertySourcesDir->setDeletable(false);
     $target = new BuilderElement_Target();
     $target->setName('build');
-    $target->addTask($propertySourcesDir, $echo);
+    $target->addTask($properties);
+    $target->addTask($propertySourcesDir);
+    $target->addTask($echo);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
     //$this->_integrationBuilder->setBaseDir($this->getWorkDir());

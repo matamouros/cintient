@@ -33,14 +33,20 @@ class BuilderConnector_Html
    * Helper function for centralizing all Build Element's title HTML
    * @param Array $params
    */
-  static public function builderElementTitle(Array $params = array())
+  static public function builderElementTitle(BuilderElement $o, Array $params = array())
   {
-    h::div(array('class' => 'builderElementTitle'), function() use ($params) {
+    h::div(array('class' => 'builderElementTitle'), function() use ($o, $params) {
       h::p(array('class' => 'title'), $params['title']);
-      h::ul(array('class' => 'options'), function() {
-        h::li(function() {h::a('save', '#', array('class' => 'submit'));});
-        h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
-        h::li(function() {h::a('x', '#', array('class' => 'delete'));});
+      h::ul(array('class' => 'options'), function() use ($o) {
+        if ($o->isEditable()) {
+          h::li(function() {h::a('save', '#', array('class' => 'submit'));});
+        }
+        if ($o->isEditable() && $o->isDeletable()) {
+          h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
+        }
+        if ($o->isDeletable()) {
+          h::li(function() {h::a('x', '#', array('class' => 'delete'));});
+        }
       });
     });
   }
@@ -105,7 +111,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Chmod'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Chmod'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -142,7 +148,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Chown'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Chown'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -179,7 +185,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Copy'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Copy'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -220,7 +226,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Delete'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Delete'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -255,7 +261,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Echo'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Echo'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Message, textfield
         h::div(array('class' => 'label'), 'Message');
@@ -283,7 +289,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Exec'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Exec'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -321,7 +327,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Mkdir'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Mkdir'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Dir, textfield
         h::div(array('class' => 'label'), 'Dir');
@@ -335,7 +341,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'PhpLint'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -361,7 +367,7 @@ class BuilderConnector_Html
   static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'PhpUnit'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Fail on error, checkbox
         h::div(array('class' => 'label'), 'Fail on error?');
@@ -493,10 +499,24 @@ class BuilderConnector_Html
     });
   }
   
+  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
+  {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Properties'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Name, textfield
+        h::div(array('class' => 'label'), 'Name=value pairs <span class="fineprintLabel">(Comment lines with # character)</span>');
+        h::div(array('class' => 'textareaContainer'), function() use ($o) {
+          h::textarea(array('name' => 'text'), $o->getText());
+        });
+      });
+    });
+  }
+  
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::builderElementTitle(array('title' => 'Property'));
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'Property'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Name, textfield
         h::div(array('class' => 'label'), 'Name');

@@ -80,8 +80,13 @@ $(document).ready(function() {
       $(that).parents('.builderElement').find('.builderElementForm input').each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
+      $(that).parents('.builderElement').find('.builderElementForm textarea').each( function() {
+        x[this.name] = { type: this.type, value: this.value };
+      });
       x['internalId'] = { type: 'hidden', value: $(that).parents('.builderElement').attr('id') };
-      x['type'] = { type: 'radio', value: $(that).parents('.builderElement').find('.builderElementForm input:radio[name=type]:checked').val() };
+      $(that).parents('.builderElement').find('.builderElementForm input:radio[name=type]:checked').each( function() {
+    	  x['type'] = { type: 'radio', value: $(this).val() }; // This overwrites the previous input iteration with the correct value for type
+      });
       return x;
     }();
     $.ajax({
