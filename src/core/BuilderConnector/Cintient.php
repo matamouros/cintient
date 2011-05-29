@@ -284,6 +284,89 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     return $php;
   }
   
+  static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
+  {
+    $php = '';
+    /*if (!$o->getFile() && !$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task copy.', __METHOD__);
+      return false;
+    }
+    if (!$o->getToFile() && !$o->getToDir()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No destination set for task copy.', __METHOD__);
+      return false;
+    }
+
+    $dest = null;
+    if ($o->getToFile()) {
+      $dest = $o->getToFile();;
+      $php .= "
+\$path = pathinfo('{$o->getToFile()}');
+if (!file_exists(\$path['dirname']) && !@mkdir(\$path['dirname'], 0755, true)) {
+	output('copy', \"Failed creating dir \".\$path['dirname'].\".\");
+  return false;
+}";
+    } elseif ($o->getToDir()) {
+      $dest = $o->getToDir();
+      $php .= "
+if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true)) {
+	output('copy', \"Failed creating dir {$o->getToDir()}.\");
+  return false;
+}";
+    }
+    
+    $php .= "
+\$callback = function (\$entry) {
+  if (is_file(\$entry)) {
+    \$ret = @copy(\$entry, '{$dest}');
+  } elseif (is_dir(\$entry)) {
+  	if (!file_exists('{$dest}') && !@mkdir('{$dest}', 0755, true)) {
+  	  \$ret = false;
+  	}
+  } else {
+    \$ret = false;
+  }
+  if (!\$ret) {
+    output('copy', \"Failed copy of \$entry to {$dest}.\");
+  } else {
+    output('copy', \"Copied \$entry to {$dest}.\");
+    //echo \"\\n  Copied \$entry to {$dest}.\";
+  }
+  return \$ret;
+};
+";
+    
+    //
+    // Internally treat $o->getFile() as a fileset.
+    //
+    $filesets = array();
+    if ($o->getFile()) {
+      $path = pathinfo($o->getToFile());
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->addInclude('/'.$o->getFile());
+      $fileset->setDir($path['dirname']);
+      $filesets[] = $fileset;
+    } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
+      // Iterator mode for copy() must enforce parent dirs before their children,
+      // so that we can mkdir the parent without first trying to copy in the children
+      // on a non-existing dir.
+      $filesets = $o->getFilesets();
+    }
+    
+    $context['iteratorMode'] = RecursiveIteratorIterator::SELF_FIRST;
+    foreach ($filesets as $fileset) {
+      $php .= "
+" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+  \$GLOBALS['result']['ok'] = false;
+  if ({$o->getFailOnError()}) { // failonerror
+    return false;
+  }
+}
+";
+    }*/
+    return $php;
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
@@ -726,7 +809,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
       /*}*/ 
     }
     try {
-      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:\$itIt::CHILD_FIRST)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:" . (!empty($context['iteratorMode'])?:"\$itIt::CHILD_FIRST") . "), (!\$recursiveIt?:\$itIt::CATCH_GET_CHILD)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
         if (!\$callback(\$entry, '{$o->getDir()}')) {
           \$GLOBALS['result']['ok'] = false;
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';

@@ -329,11 +329,17 @@ class Project
     //
     $echo = new BuilderElement_Task_Echo();
     $echo->setMessage("WHAT YOU SAY !!");
+    $propertySourcesDir = new BuilderElement_Type_Property();
+    $propertySourcesDir->setName('sourcesDir');
+    $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
+    $propertySourcesDir->setFailOnError(false);
+    $propertySourcesDir->setLocked(true);
     $target = new BuilderElement_Target();
     $target->setName('build');
-    $target->addTask($echo);
+    $target->addTask($propertySourcesDir, $echo);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
+    //$this->_integrationBuilder->setBaseDir($this->getWorkDir());
     //
     // Save the project and take care of all database dependencies.
     //

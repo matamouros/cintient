@@ -176,6 +176,47 @@ class BuilderConnector_Html
     });
   }
   
+  static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o)
+  {
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle(array('title' => 'Copy'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });
+        // To file, textfield
+        h::div(array('class' => 'label'), 'Destination file');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'toFile', 'value' => $o->getToFile()));
+        });
+        // To dir, textfield
+        h::div(array('class' => 'label'), 'Destination dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'toDir', 'value' => $o->getToDir()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            // self:: doesn't work here...
+            BuilderConnector_Html::BuilderElement_Type_Fileset($fileset);
+          }
+        }
+      });
+    });
+  }
+  
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
