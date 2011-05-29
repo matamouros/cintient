@@ -26,13 +26,11 @@
  */
 class BuilderElement_Task_PhpLint extends BuilderElement
 {
-  protected $_failOnError; 
   protected $_filesets;          // An array of fileset types
   
   public function __construct()
   {
     parent::__construct();
-    $this->_failOnError = true;
     $this->_filesets = array();
   }
 }

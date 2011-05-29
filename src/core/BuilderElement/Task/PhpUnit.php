@@ -30,7 +30,6 @@ class BuilderElement_Task_PhpUnit extends BuilderElement
 {
   protected $_codeCoverageXmlFile;
   protected $_codeCoverageHtmlDir;
-  protected $_failOnError;         // Stop the build if the command fails (Ant only)
   protected $_failOnFailure;       // PHPUnit distinguishes failures from errors
   protected $_failOnIncomplete;
   protected $_failOnSkipped;
@@ -42,7 +41,6 @@ class BuilderElement_Task_PhpUnit extends BuilderElement
     parent::__construct();
     $this->_codeCoverageXmlFile = null;
     $this->_codeCoverageHtmlDir = null;
-    $this->_failOnError = true;
     $this->_failOnFailure = true;
     $this->_failOnIncomplete = true;
     $this->_failOnSkipped = false;

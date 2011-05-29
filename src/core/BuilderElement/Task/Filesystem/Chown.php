@@ -30,7 +30,6 @@ class BuilderElement_Task_Filesystem_Chown extends BuilderElement
 {
   protected $_file;            // A string containing a single file or dir to act upon
   protected $_user;            // The user or user and group (separated by a dot)
-  protected $_failOnError;     // Stop the build if the command fails (Ant only)
   protected $_filesets;        // An array of fileset types
   
   public function __construct()
@@ -38,7 +37,6 @@ class BuilderElement_Task_Filesystem_Chown extends BuilderElement
     parent::__construct();
     $this->_file = null;
     $this->_user = null;
-    $this->_failOnError = null;
     $this->_filesets = null;
   }
 }

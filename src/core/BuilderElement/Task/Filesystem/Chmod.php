@@ -30,7 +30,6 @@ class BuilderElement_Task_Filesystem_Chmod extends BuilderElement
 {
   protected $_file;            // A string containing a single file or dir to act upon
   protected $_mode;            // A string representation of the new permissions (octal, i.e. with a leading 0)
-  protected $_failOnError;     // Stop the build if the command fails (Ant only)
   protected $_filesets;        // An array of fileset types
   
   public function __construct()
@@ -38,7 +37,6 @@ class BuilderElement_Task_Filesystem_Chmod extends BuilderElement
     parent::__construct();
     $this->_file = null;
     $this->_mode = null;
-    $this->_failOnError = null;
     $this->_filesets = null;
   }
 }

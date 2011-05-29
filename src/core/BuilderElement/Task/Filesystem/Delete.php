@@ -26,14 +26,12 @@
  */
 class BuilderElement_Task_Filesystem_Delete extends BuilderElement
 {
-  protected $_failOnError; 
   protected $_includeEmptyDirs;
   protected $_filesets;          // An array of fileset types
   
   public function __construct()
   {
     parent::__construct();
-    $this->_failOnError = true;
     $this->_includeEmptyDirs = false;
     $this->_filesets = null;
   }

@@ -26,11 +26,17 @@
  */
 class BuilderElement
 {
+  protected $_active;
+  protected $_failOnError;
   protected $_internalId;
+  protected $_locked;       // Special system builder elements might not be removable by the user.
   
   public function __construct()
   {
+    $this->_active = true;
+    $this->_failOnError = true;
     $this->_internalId = Utility::generateRandomString() . uniqid();
+    $this->_locked = false;
   }
   
   public function __call($name, $args)

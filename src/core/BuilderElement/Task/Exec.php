@@ -35,9 +35,8 @@ class BuilderElement_Task_Exec extends BuilderElement
 {
   protected $_executable; 
   protected $_args;            // The arguments to the executable command, if any, a space separated string
-  protected $_baseDir;             // The directory in which the command should be executed in
+  protected $_baseDir;         // The directory in which the command should be executed in
   protected $_outputProperty;  // Log the command's output to the variable with this name
-  protected $_failOnError;     // Stop the build if the command fails (Ant only)
   
   public function __construct()
   {
@@ -46,6 +45,5 @@ class BuilderElement_Task_Exec extends BuilderElement
     $this->_args = null;
     $this->_baseDir = null;
     $this->_outputProperty = null;
-    $this->_failOnError = null;
   }
 }
