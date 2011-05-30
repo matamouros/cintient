@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
@@ -42,11 +42,11 @@
 class BuilderConnector_Cintient
 {
   /**
-   * 
+   *
    * Mandatory attributes:
    * . targets
    * . defaultTarget
-   * 
+   *
    * @param BuilderElement_Project $o
    */
   static public function BuilderElement_Project(BuilderElement_Project $o)
@@ -97,6 +97,20 @@ function output(\$task, \$message)
 {
   \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$task}] {\$message}";
 }
+// Callback to be used inside expandStr() only needs to be defined once here
+function cbToExpandStr(\$matches)
+{
+  \$key = \$matches[1] . '_{$context['id']}';
+  if (isset(\$GLOBALS['properties'][\$key])) {
+    return \$GLOBALS['properties'][\$key];
+  } else {
+    return \$matches[1];
+  }
+}
+function expandStr(\$str)
+{
+  return preg_replace_callback('/\\$\{(\w*)\}/', 'cbToExpandStr', \$str);
+}
 EOT;
       }
     }
@@ -127,7 +141,7 @@ foreach (\$GLOBALS['targets'] as \$target) {
 EOT;
     return $php;
   }
-  
+
   static public function BuilderElement_Target(BuilderElement_Target $o, array &$context = array())
   {
     $php = '';
@@ -180,11 +194,11 @@ EOT;
     }
     return $php;
   }
-  
+
   /**
-   * 
+   *
    * !! BuilderConnector_Php has a direct dependency on this !!
-   * 
+   *
    */
   static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
   {
@@ -199,7 +213,7 @@ EOT;
       return false;
     }
     $mode = '0' . $mode;
-    
+
     $php .= "
 \$callback = function (\$entry) {
   \$ret = @chmod(\$entry, {$o->getMode()});
@@ -233,11 +247,11 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     return $php;
   }
-  
+
   /**
-   * 
+   *
    * !! BuilderConnector_Php has a direct dependency on this !!
-   * 
+   *
    */
   static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
   {
@@ -283,7 +297,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     return $php;
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
   {
     $php = '';
@@ -313,7 +327,7 @@ if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true))
   return false;
 }";
     }
-    
+
     $php .= "
 \$callback = function (\$entry) {
   if (is_file(\$entry)) {
@@ -334,7 +348,7 @@ if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true))
   return \$ret;
 };
 ";
-    
+
     //
     // Internally treat $o->getFile() as a fileset.
     //
@@ -351,7 +365,7 @@ if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true))
       // on a non-existing dir.
       $filesets = $o->getFilesets();
     }
-    
+
     $context['iteratorMode'] = RecursiveIteratorIterator::SELF_FIRST;
     foreach ($filesets as $fileset) {
       $php .= "
@@ -366,7 +380,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }*/
     return $php;
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
@@ -409,7 +423,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     return $php;
   }
-  
+
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o, array &$context = array())
   {
     $php = '';
@@ -418,6 +432,9 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       return false;
     }
     $msg = addslashes($o->getMessage());
+    $php .= "
+\$msg_{$o->getInternalId()} = expandStr('{$msg}');
+";
     if ($o->getFile()) {
       $append = 'w'; // the same as append == false (default for Ant and Phing)
       if ($o->getAppend()) {
@@ -425,18 +442,18 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       }
       $php .= <<<EOT
 \$fp = fopen('{$o->getFile()}', '{$append}');
-\$GLOBALS['result']['ok'] = (fwrite(\$fp, '{$msg}') === false ?:true);
+\$GLOBALS['result']['ok'] = (fwrite(\$fp, \$msg_{$o->getInternalId()}) === false ?:true);
 fclose(\$fp);
 EOT;
     } else {
       $php .= <<<EOT
 \$GLOBALS['result']['ok'] = true;
-output('echo', '{$msg}');
+output('echo', \$msg_{$o->getInternalId()});
 EOT;
     }
     return $php;
   }
-  
+
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
   {
     $php = '';
@@ -483,7 +500,7 @@ return true;
 ";*/
     return $php;
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
   {
     $php = '';
@@ -507,7 +524,7 @@ if (!file_exists('{$o->getDir()}')) {
 ";
     return $php;
   }
-  
+
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o, array &$context = array())
   {
     $php = '';
@@ -559,7 +576,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     return $php;
   }
-  
+
   static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o, array &$context = array())
   {
     $php = '';
@@ -634,10 +651,10 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     return $php;
   }
-  
+
   /**
    * Loosely based on phing's SelectorUtils::matchPath.
-   * 
+   *
    * @param BuilderElement_Type_Fileset $o
    */
   static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, array &$context = array())
@@ -648,24 +665,24 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     //
     //TODO: Implement $isCaseSensitive!!!!
     //TODO: Implement only a single top level class for this
-    
+
     $php = "
 if (!class_exists('FilesetFilterIterator', false)) {
   class FilesetFilterIterator extends FilterIterator
   {
     private \$_filesetId;
     private \$_type;
-    
+
     const FILE = 0;
     const DIR  = 1;
     const BOTH = 2;
-    
+
     public function __construct(\$o, \$filesetId, \$type = self::FILE)
     {
       \$this->_filesetId = \$filesetId;
       parent::__construct(\$o);
     }
-    
+
     public function accept()
     {
       // Check for type, first of all
@@ -674,13 +691,13 @@ if (!class_exists('FilesetFilterIterator', false)) {
       {
         return false;
       }
-      
+
       // if it is default excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['defaultExcludes'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
           return false;
         }
-      }   
+      }
       // if it is excluded promptly return false
       foreach (\$GLOBALS['filesets'][\$this->_filesetId]['exclude'] as \$exclude) {
         if (\$this->_isMatch(\$exclude)) {
@@ -694,7 +711,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
         }
       }
     }
-    
+
     private function _isMatch(\$pattern)
     {
       \$current = \$this->current();
@@ -806,7 +823,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
         \$dirIt = 'Recursive' . \$dirIt;
         \$itIt = 'Recursive' . \$itIt;
         break;
-      /*}*/ 
+      /*}*/
     }
     try {
       foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:" . (!empty($context['iteratorMode'])?:"\$itIt::CHILD_FIRST") . "), (!\$recursiveIt?:\$itIt::CATCH_GET_CHILD)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
@@ -830,7 +847,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
 ";
     return $php;
   }
-  
+
   static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
   {
     $php = '';
@@ -841,12 +858,12 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     $properties = parse_ini_string($o->getText());
     foreach ($properties as $key => $value) {
       $php .= <<<EOT
-  \$GLOBALS['properties']['{$key}'] = '{$value}';
+  \$GLOBALS['properties']['{$key}_{$context['id']}'] = '{$value}';
 EOT;
     }
     return $php;
   }
-  
+
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
   {
     $php = '';
@@ -859,7 +876,7 @@ EOT;
 EOT;
     return $php;
   }
-  
+
   static public function execute($code)
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Code: " . print_r($code, true), __METHOD__);

@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,31 +18,31 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Mapping rules:
- * 
+ *
  *   URI          => method name  => template filename:
- *   
+ *
  * . /foo         => foo()        => foo.tpl         (default section)
  * . /foo-bar     => fooBar()     => foo-bar.tpl     (default section)
  * . /foo/bar     => foo_bar()    => foo/bar.tpl     (foo section)
  * . /foo/foo-bar => foo_fooBar() => foo/foo-bar.tpl (foo section)
- * 
+ *
  * Smarty variable naming rules:
- * 
+ *
  * <method_name>_<variable_name>
  * Example: $s->assign('fooBar_foo'); => variable foo for method fooBar()
- * 
- * 
+ *
+ *
  * Special account for provider methods. These are not directly called
  * by the WebHandler, but rather by templates themselves. They provide
  * specific data objects that would otherwise have to be fetched on
  * all the mapped methods. These typically allow footer.inc.tpl and
  * header.inc.tpl to call it at this central point.
- * 
+ *
  */
 class TemplateManager
 {
@@ -55,14 +55,14 @@ class TemplateManager
     echo phpinfo();
     exit;
   }
-  
+
   static public function tests_showUser()
   {
     $user = User::getByUsername('matamouros');
     var_dump($user);
     exit;
   }
-  
+
   static public function tests_tasks()
   {
     $exec = new BuilderElement_Task_Exec();
@@ -71,7 +71,7 @@ class TemplateManager
     $exec->setDir('/tmp/apache');
     $exec->setOutputProperty('xpto');
     //echo $exec->toString('ant');
-    
+
     $delete = new BuilderElement_Task_Filesystem_Delete();
     $delete->setIncludeEmptyDirs(true);
     $delete->setFailOnError(true);
@@ -81,103 +81,103 @@ class TemplateManager
     $fileset->setInclude(array('extra/**/*.conf'));
     $delete->setFilesets(array($fileset));
     //echo $delete->toString('ant');
-    
+
     $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage('About to do an exec!');
-    
+    $echo->setMessage('${workDir}');
+
     $echo2 = new BuilderElement_Task_Echo();
     $echo2->setMessage('About to do an exec2!');
     $echo2->setFile('/tmp/test.log');
     $echo2->setAppend(true);
-    
+
     $mkdir = new BuilderElement_Task_Filesystem_Mkdir();
     //$mkdir->setDir('/tmp/tmp2/tmp3');
     $mkdir->setDir('/lixo');
-    
+
     $lint = new BuilderElement_Task_PhpLint();
     $lint->setFilesets(array($fileset));
-    
+
     $chmod = new BuilderElement_Task_Filesystem_Chmod();
     $chmod->setMode('644');
     $chmod->setFilesets(array($fileset));
-    
+
     $properties = new BuilderElement_Type_Properties();
     $properties->setText("workDir = /tmp/
 title = Cintient");
-    
+
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($exec, $lint, $chmod, $properties));
+    $target->setTasks(array($echo, $lint, $chmod, $properties));
     //echo $target->toString('php');
-    
+
     $target2 = new BuilderElement_Target();
     $target2->setName('tests2');
     //$target->setTasks(array($delete, $exec));
     $target2->setTasks(array($echo, $mkdir));
     //echo $target->toString('php');
-    
+
     $project = new BuilderElement_Project();
     $project->addTarget($target);
     $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);
     $project->setDefaultTarget($target->getName());
     $code = $project->toString('ant');
-    
+
     echo $code;
     //var_dump(BuilderConnector_Php::execute($code));
-    
+
     exit;
   }
-  
+
   static public function tests_pchart1()
   {
     /* @ 700x230 Boundaries writting drawing example. */
-    
+
     /* pChart library inclusions */
     include 'lib/pChart/class/pData.class';
     include 'lib/pChart/class/pDraw.class';
     include 'lib/pChart/class/pImage.class';
-    
+
     /* Create and populate the pData object */
-    $MyData = new pData();  
+    $MyData = new pData();
     $MyData->addPoints(array(2,7,5,18,VOID,12,10,15,8,5,6,9),"Project #1");
     $MyData->setAxisName(0,"# Builds");
     $MyData->addPoints(array("Jan","Feb","Mar","Apr","May","Jun","Jui","Aou","Sep","Oct","Nov","Dec"),"Labels");
     $MyData->setSerieDescription("Labels","Months");
     $MyData->setAbscissa("Labels");
-    
+
     /* Create the pChart object */
     $myPicture = new pImage(700,230,$MyData);
     $myPicture->drawGradientArea(0,0,700,230,DIRECTION_VERTICAL,array("StartR"=>100,"StartG"=>100,"StartB"=>100,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
     $myPicture->drawGradientArea(0,0,700,230,DIRECTION_HORIZONTAL,array("StartR"=>100,"StartG"=>100,"StartB"=>100,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>20));
     $myPicture->drawGradientArea(0,0,60,230,DIRECTION_HORIZONTAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
-    
+
     /* Do some cosmetics */
     $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
     $myPicture->drawLine(60,0,60,230,array("R"=>70,"G"=>70,"B"=>70));
     $myPicture->drawRectangle(0,0,699,229,array("R"=>0,"G"=>0,"B"=>0));
     $myPicture->setFontProperties(array("FontName"=>CINTIENT_INSTALL_DIR . "lib/pChart/fonts/Forgotte.ttf","FontSize"=>11));
     $myPicture->drawText(35,115,"Yearly builds",array("R"=>255,"G"=>255,"B"=>255,"FontSize"=>20,"Angle"=>90,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
-    
+
     /* Draw a spline chart */
     $myPicture->setGraphArea(100,30,680,190);
     $myPicture->drawFilledRectangle(100,30,680,190,array("R"=>255,"G"=>255,"B"=>255,"Alpha"=>20));
     $myPicture->setFontProperties(array("R"=>255,"G"=>255,"B"=>255,"FontName"=>CINTIENT_INSTALL_DIR . "lib/pChart/fonts/pf_arma_five.ttf","FontSize"=>6));
     $myPicture->drawScale(array("AxisR"=>255,"AxisG"=>255,"AxisB"=>255,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE));
     $myPicture->drawSplineChart();
-    
+
     /* Write the data bounds */
     $myPicture->writeBounds();
     $myPicture->setShadow(FALSE);
-    
-    /* Write the chart legend */ 
+
+    /* Write the chart legend */
     $myPicture->drawLegend(630,215,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
-    
+
     /* Render the picture (choose the best way) */
     $myPicture->autoOutput("pictures/example.writeBounds.png");
     exit;
   }
-  
+
   static public function tests_pchart2()
   {
 /*
@@ -280,7 +280,7 @@ EOT;
       $class->setFailures((string)$classXml->attributes()->failures);
       $class->setErrors((string)$classXml->attributes()->errors);
       $class->setTime((string)$classXml->attributes()->time);
-      
+
       $methods = array();
       foreach ($classXml->children() as $methodXml) {
         $method = new TestMethod();
@@ -289,8 +289,8 @@ EOT;
         $method->setAssertions((string)$methodXml->attributes()->assertions);
         $method->setFailures((string)$methodXml->attributes()->failures);
         $method->setErrors((string)$methodXml->attributes()->errors);
-        $method->setTime((string)$methodXml->attributes()->time);        
-        
+        $method->setTime((string)$methodXml->attributes()->time);
+
         $cases = array();
         foreach ($methodXml->children() as $caseXml) {
           $case = new TestCase();
@@ -305,10 +305,10 @@ EOT;
       $class->setTestMethods($methods);
       $classes[] = $class;
     }*/
-    
-    
-    
-    
+
+
+
+
     foreach ($xmls as $node) {
       $assertions = 0;  // total number of "test" points
       $successes = array(); // assertions - failures
@@ -323,7 +323,7 @@ EOT;
       $class->setFailures((string)$classXml->attributes()->failures);
       $class->setErrors((string)$classXml->attributes()->errors);
       $class->setTime((string)$classXml->attributes()->time);
-      
+
       $methods = array();
       $i = 0;
 
@@ -347,10 +347,10 @@ EOT;
         }
         $method->setTestCases($cases);
         */
-        
+
         $methods[] = $method;
         $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
-        
+
         $testMethods[] = $methodXml->attributes()->name;
         $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
         $successes[] = (float)$time - (float)$f;
@@ -363,13 +363,13 @@ EOT;
         $i++;
       }
       $chartHeight = 25 * $i + 60;
-      
+
       /* pChart library inclusions */
       include 'lib/pChart/class/pData.class';
       include 'lib/pChart/class/pDraw.class';
       include 'lib/pChart/class/pImage.class';
-    
-      $MyData = new pData();  
+
+      $MyData = new pData();
       $MyData->addPoints($successes, "Ok");
       $MyData->addPoints($failures, "Fail");
       $MyData->setPalette("Ok",array("R"=>124,"G"=>196,"B"=>0,"Alpha"=>100));
@@ -386,8 +386,8 @@ EOT;
       $myPicture = new pImage($chartWidth, $chartHeight, $MyData);
       $myPicture->Antialias = false;
       $myPicture->drawGradientArea(0,0,$chartWidth,$chartHeight,DIRECTION_VERTICAL,array("StartR"=>100,"StartG"=>100,"StartB"=>100,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
-      
-      /* Write the picture title */ 
+
+      /* Write the picture title */
       $myPicture->setFontProperties(array("FontName"=>CINTIENT_INSTALL_DIR . "lib/pChart/fonts/pf_arma_five.ttf","FontSize"=>6, "R"=>255,"G"=>255,"B"=>255));
       $myPicture->drawText(10,13,"Unit tests on " . $classXml->getName(),array("R"=>255,"G"=>255,"B"=>255));
 
@@ -415,40 +415,40 @@ EOT;
       ));
       $myPicture->drawLegend(15, $chartHeight-15,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
       $myPicture->setShadow(FALSE);
-      
+
       /* Write the chart legend */
       //$myPicture->drawLegend(510,205,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
-      
+
       /* Render the picture (choose the best way) */
       $myPicture->autoOutput("pictures/example.drawStackedBarChart.png");
-      
-      
-      
-      
-      
+
+
+
+
+
       $class->setTestMethods($methods);
       $classes[] = $class;
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     //
     // We're exactly at the test class (file) root level, with level 1 being
     // the unit test (method of the original class) and level 2 being
     // the various datasets used in the test (each a test case).
     //
-    
-    
-    
+
+
+
     /* @ 700x230 Stacked bar chart drawing example. */
 
-    
+
     exit;
   }
-  
+
   static public function tests_pchart3()
   {
     /* @ 700x230 Filled spline chart drawing example. */
@@ -457,7 +457,7 @@ EOT;
       include 'lib/pChart/class/pData.class';
       include 'lib/pChart/class/pDraw.class';
       include 'lib/pChart/class/pImage.class';
-    
+
     /* Create and populate the pData object */
     $MyData = new pData();
     $MyData->setAxisName(0,"Strength");
@@ -466,65 +466,65 @@ EOT;
      $MyData->addPoints(cos(deg2rad($i))*100,"Probe 1");
      $MyData->addPoints(cos(deg2rad($i+90))*60,"Probe 2");
     }
-    
+
     /* Create the pChart object */
     $myPicture = new pImage(847,304,$MyData);
     $myPicture->drawGradientArea(0,0,847,304,DIRECTION_VERTICAL,array("StartR"=>47,"StartG"=>47,"StartB"=>47,"EndR"=>17,"EndG"=>17,"EndB"=>17,"Alpha"=>100));
     $myPicture->drawGradientArea(0,250,847,304,DIRECTION_VERTICAL,array("StartR"=>47,"StartG"=>47,"StartB"=>47,"EndR"=>27,"EndG"=>27,"EndB"=>27,"Alpha"=>100));
     $myPicture->drawLine(0,249,847,249,array("R"=>0,"G"=>0,"B"=>0));
     $myPicture->drawLine(0,250,847,250,array("R"=>70,"G"=>70,"B"=>70));
-    
+
     /* Add a border to the picture */
     $myPicture->drawRectangle(0,0,846,303,array("R"=>204,"G"=>204,"B"=>204));
-    
-    /* Write the picture title */ 
+
+    /* Write the picture title */
     $myPicture->setFontProperties(array("FontName"=>CINTIENT_INSTALL_DIR . "lib/pChart/fonts/pf_arma_five.ttf","FontSize"=>6));
     $myPicture->drawText(423,14,"Cyclic magnetic field strength",array("R"=>255,"G"=>255,"B"=>255,"Align"=>TEXT_ALIGN_MIDDLEMIDDLE));
-    
+
     /* Define the chart area */
     $myPicture->setGraphArea(58,27,816,228);
-    
+
     /* Draw a rectangle */
     $myPicture->drawFilledRectangle(58,27,816,228,array("R"=>0,"G"=>0,"B"=>0,"Dash"=>TRUE,"DashR"=>0,"DashG"=>51,"DashB"=>51,"BorderR"=>0,"BorderG"=>0,"BorderB"=>0));
-    
-    /* Turn on shadow computing */ 
+
+    /* Turn on shadow computing */
     $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>20));
-    
+
     /* Draw the scale */
     $myPicture->setFontProperties(array("R"=>255,"G"=>255,"B"=>255));
     $ScaleSettings = array("XMargin"=>4,"DrawSubTicks"=>TRUE,"GridR"=>255,"GridG"=>255,"GridB"=>255,"AxisR"=>255,"AxisG"=>255,"AxisB"=>255,"GridAlpha"=>30,"CycleBackground"=>TRUE);
     $myPicture->drawScale($ScaleSettings);
-    
+
     /* Draw the spline chart */
     $myPicture->drawFilledSplineChart();
-    
+
     /* Write the chart boundaries */
     $BoundsSettings = array("MaxDisplayR"=>237,"MaxDisplayG"=>23,"MaxDisplayB"=>48,"MinDisplayR"=>23,"MinDisplayG"=>144,"MinDisplayB"=>237);
     $myPicture->writeBounds(BOUND_BOTH,$BoundsSettings);
-    
+
     /* Write the 0 line */
     $myPicture->drawThreshold(0,array("WriteCaption"=>TRUE));
-    
+
     /* Write the chart legend */
     $myPicture->setFontProperties(array("R"=>255,"G"=>255,"B"=>255));
     $myPicture->drawLegend(560,266,array("Style"=>LEGEND_NOBORDER));
-    
+
     /* Write the 1st data series statistics */
     $Settings = array("R"=>188,"G"=>224,"B"=>46,"Align"=>TEXT_ALIGN_BOTTOMLEFT);
     $myPicture->drawText(620,270,"Max : ".ceil($MyData->getMax("Probe 1")),$Settings);
     $myPicture->drawText(680,270,"Min : ".ceil($MyData->getMin("Probe 1")),$Settings);
     $myPicture->drawText(740,270,"Avg : ".ceil($MyData->getSerieAverage("Probe 1")),$Settings);
-    
+
     /* Write the 2nd data series statistics */
     $Settings = array("R"=>224,"G"=>100,"B"=>46,"Align"=>TEXT_ALIGN_BOTTOMLEFT);
     $myPicture->drawText(620,283,"Max : ".ceil($MyData->getMax("Probe 2")),$Settings);
     $myPicture->drawText(680,283,"Min : ".ceil($MyData->getMin("Probe 2")),$Settings);
     $myPicture->drawText(740,283,"Avg : ".ceil($MyData->getSerieAverage("Probe 2")),$Settings);
-    
+
     /* Render the picture (choose the best way) */
-    $myPicture->autoOutput("pictures/example.drawFilledSplineChart.png"); 
+    $myPicture->autoOutput("pictures/example.drawFilledSplineChart.png");
   }
-  
+
   static public function tests_system()
   {
     $s = new SystemSettings();
@@ -533,12 +533,12 @@ EOT;
     $s->setSetting('allowUserSignUp', true);
     exit;
   }
-  
-  
+
+
   /* +----------------------------------------------------------------+ *\
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
-  
+
   static public function asset()
   {
     if (!isset($_GET['f']) || empty($_GET['f'])) {
@@ -546,7 +546,7 @@ EOT;
       //TODO: Redirect and exit?
       exit;
     }
-    
+
     //
     // Avatar
     //
@@ -571,7 +571,7 @@ EOT;
       header('Last-Modified: '.date('r',filectime($filename)));
       header('Content-Length: '.filesize($filename));
       readfile($filename);
-      
+
     //
     // It's a project build asset!
     //
@@ -614,7 +614,7 @@ EOT;
     }
     exit;
   }
-  
+
   static public function authentication()
   {
     if (isset($GLOBALS['user']) && $GLOBALS['user'] instanceof User) {
@@ -622,7 +622,7 @@ EOT;
       exit;
     }
   }
-  
+
   /**
    * Shows a list of available projects to the current user, for selection. Any
    * project for which the user has at least read access level.
@@ -631,7 +631,7 @@ EOT;
   {
     $GLOBALS['smarty']->assign('dashboard_projectList', Project::getList($GLOBALS['user'], Access::READ));
   }
-  
+
   static public function install()
   {
     session_destroy();
@@ -691,20 +691,20 @@ EOT;
     header('Location: ' . UrlManager::getForDashboard());
     exit;
   }
-  
+
   static public function logout()
   {
     Auth::logout();
     header('Location: /');
     exit;
   }
-  
+
   static public function notFound()
   {}
- 
+
   static public function notAuthorized()
   {}
-  
+
   static public function project()
   {
     //
@@ -727,7 +727,7 @@ EOT;
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
     $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']));
   }
-  
+
   static public function project_edit()
   {
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
@@ -738,7 +738,7 @@ EOT;
       Redirector::redirectToUri(UrlManager::getForProjectView());
       exit;
     }
-    
+
     //
     // Edit form submission
     //
@@ -796,7 +796,7 @@ EOT;
         $GLOBALS['project'] = $project;
         $GLOBALS['project']->log("Project edited.");
       }
-      
+
       //
       // We will leave this control and carry on to the project view
       //
@@ -811,7 +811,7 @@ EOT;
       //
       return false;
     }
-    
+
     $formData = array();
     $formData['title'] = $GLOBALS['project']->getTitle();
     $formData['buildLabel'] = $GLOBALS['project']->getBuildLabel();
@@ -823,7 +823,7 @@ EOT;
     $GLOBALS['smarty']->assign('formData', $formData);
     $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
   }
-  
+
   static public function project_history()
   {
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
@@ -849,13 +849,13 @@ EOT;
     $GLOBALS['smarty']->assign('project_build', $build);
     $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
   }
-  
+
   static public function project_new()
   {
     //
     // New project form submission
     //
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {  
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       //
       // Check for mandatory attributes
       //
@@ -902,7 +902,7 @@ EOT;
           $GLOBALS['user']->getId(),
           Access::OWNER)
         );
-        
+
         if (!$project->init()) {
           SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
           //
@@ -921,7 +921,7 @@ EOT;
       $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
     }
   }
-  
+
   /**
    * Provider method for getting all builder elements nicely fit on an
    * array. Originally intended for the builders setup of project edit.
@@ -963,7 +963,7 @@ EOT;
     unset($it);
     $GLOBALS['smarty']->assign('providerAvailableBuilderElements_elements', $elements);
   }
-  
+
   /**
    * Provider method for installation stats to footer.inc.tpl. See this
    * file's header for more details on provider methods.
@@ -972,7 +972,7 @@ EOT;
   {
     $user = User::getById(1);
     $GLOBALS['smarty']->assign('providerInstallationStats_installDate', $user->getCreationDate());
-    
+
     //
     // SQL here... :-/ Actually, it'd be nice to cache this...
     //
@@ -983,7 +983,7 @@ EOT;
       $projectsCount = (int)$rs->getNum();
     }
     $GLOBALS['smarty']->assign('providerInstallationStats_projectsCount', $projectsCount);
-    
+
     $usersCount = 0;
     $sql = "SELECT COUNT(id) AS num FROM user";
     $rs = Database::query($sql);
@@ -991,7 +991,7 @@ EOT;
       $usersCount = (int)$rs->getNum();
     }
     $GLOBALS['smarty']->assign('providerInstallationStats_usersCount', $usersCount);
-    
+
     $buildsCount = 14;
     //
     // TODO: get an aggregated table that gets updated with the number of builds done
@@ -1005,7 +1005,7 @@ EOT;
     */
     $GLOBALS['smarty']->assign('providerInstallationStats_buildsCount', $buildsCount);
   }
-  
+
   static public function registration()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -1066,9 +1066,9 @@ EOT;
       }
     }
   }
-  
+
   static public function settings()
   {
-    
+
   }
 }
