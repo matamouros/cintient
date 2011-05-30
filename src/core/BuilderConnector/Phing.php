@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ *
  */
 class BuilderConnector_Phing
 {
@@ -62,7 +62,7 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Target(BuilderElement_Target $o)
   {
     $xml = new XmlBuilderElement();
@@ -101,7 +101,7 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
   {
     $xml = new XmlBuilderElement();
@@ -127,12 +127,12 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
   {
     return BuilderConnector_Ant::BuilderElement_Task_Filesystem_Chown($o);
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
     $xml = new XmlBuilderElement();
@@ -156,25 +156,12 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
   {
-    if (!$o->getMessage()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
-      return false;
-    }
-    $xml = new XmlBuilderElement();
-    $xml->startElement('echo');
-    if ($o->getFile()) {
-      $xml->writeAttribute('file', $o->getFile());
-      if ($o->getAppend() !== null) {
-        $xml->writeAttribute('append', ($o->getAppend()?'true':'false'));
-      }
-    }
-    $xml->endElement();
-    return $xml->flush();
+    return BuilderConnector_Ant::BuilderElement_Task_Echo($o);
   }
-  
+
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
   {
     if (!$o->getExecutable()) {
@@ -197,7 +184,7 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
   {
     if (!$o->getDir()) {
@@ -210,7 +197,7 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
   {
     $xml = new XmlBuilderElement();
@@ -231,7 +218,7 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o)
   {
     $xml = new XmlBuilderElement();
@@ -268,12 +255,12 @@ class BuilderConnector_Phing
     $xml->endElement();
     return $xml->flush();
   }
-  
+
   static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
   {
     return BuilderConnector_Ant::BuilderElement_Type_Properties($o);
   }
-  
+
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
     $xml = new XmlBuilderElement();
