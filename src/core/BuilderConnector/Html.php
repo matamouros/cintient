@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,18 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 require_once 'lib/lib.htmlgen.php';
 
 /**
- * 
+ *
  */
 class BuilderConnector_Html
 {
   /**
-   * 
+   *
    * Helper function for centralizing all Build Element's title HTML
    * @param Array $params
    */
@@ -50,7 +50,7 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Project(BuilderElement_Project $o)
   {
     h::set_indent_pattern('  ');
@@ -93,7 +93,7 @@ class BuilderConnector_Html
       //h::input(array('type' => 'submit', 'value' => 'Save all!', 'id' => 'submitButton'));
     //});
   }
-  
+
   static public function BuilderElement_Target(BuilderElement_Target $o)
   {
     //
@@ -107,9 +107,12 @@ class BuilderConnector_Html
       }
     }
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Chmod'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -144,9 +147,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Chown'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -181,9 +187,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Copy'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -222,9 +231,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Delete'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -257,9 +269,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Echo'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -285,9 +300,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Exec'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -323,9 +341,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Mkdir'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -337,9 +358,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -363,9 +387,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -416,9 +443,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, BuilderElement $parent = null)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::hr();
     if (empty($parent)) {
     }
@@ -450,7 +480,7 @@ class BuilderConnector_Html
         h::input($params);
       });
     });
-    
+
     // Default excludes, checkbox
     h::div(array('class' => 'label'), 'Default excludes?');
     h::div(array('class' => 'checkboxContainer'), function() use ($o) {
@@ -498,9 +528,12 @@ class BuilderConnector_Html
       h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
     });
   }
-  
+
   static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Properties'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
@@ -512,9 +545,12 @@ class BuilderConnector_Html
       });
     });
   }
-  
+
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
   {
+    if (!$o->isVisible()) {
+      return true;
+    }
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Property'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {

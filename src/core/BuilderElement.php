@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
@@ -26,12 +26,13 @@
  */
 class BuilderElement
 {
-  protected $_active;
-  protected $_deletable;      // Special system builder elements might not be deleted by the user.
-  protected $_editable;       // Special system builder elements might not be editable by the user.
+  protected $_active;         // Indicates if this builder element should be considered executable
+  protected $_deletable;      // Special system builder elements might not be deleted by the user. Not user setable.
+  protected $_editable;       // Special system builder elements might not be editable by the user. Not user setable.
   protected $_failOnError;
   protected $_internalId;
-  
+  protected $_visible;        // Special system builder elements might not be visible by the user. Not user setable.
+
   public function __construct()
   {
     $this->_active = true;
@@ -39,8 +40,9 @@ class BuilderElement
     $this->_editable = true;
     $this->_failOnError = true;
     $this->_internalId = Utility::generateRandomString() . uniqid();
+    $this->_visible = true;
   }
-  
+
   public function __call($name, $args)
   {
     if (strpos($name, 'get') === 0) {
@@ -57,7 +59,7 @@ class BuilderElement
     trigger_error("No valid method available for calling [METHOD={$name}]", E_USER_ERROR);
     exit;
   }
-  
+
   public function toString($connectorType)
   {
     $method = get_class($this);
@@ -70,7 +72,7 @@ class BuilderElement
     }*/
     return $class::$method($this);
   }
-  
+
   public function getElement($id)
   {
     if ($id == $this->_internalId) {
@@ -110,12 +112,12 @@ class BuilderElement
     }
     return $internalId;
   }
-  
+
   /**
    * I'm pretty sure I will one day look at this method and either cry or laugh...
    * Don't publicly call this with the second parameter set. It's for
    * internal purposes only... Oh my...
-   * 
+   *
    */
   public function getParent($id, &$parentElement = null)
   {
@@ -159,7 +161,7 @@ class BuilderElement
     }
     return false;
   }
-  
+
   /**
    * Deletes an element with a given ID from the current builder elements
    * hierarchical tree, wherever it may be. It actually implements a
@@ -191,7 +193,7 @@ class BuilderElement
       }
       return $ret;
     };
-    
+
     //
     // This foreach processes this element's attributes and delegates
     // work on whatever is found:
@@ -212,7 +214,7 @@ class BuilderElement
     }
     return $dest;
   }
-  
+
   public function sortElements(Array $orderedIds, Array &$elements = array())
   {
     $s = function (Array $unorderedElements, Array $orderedIds, Array &$orderedElements)
@@ -229,7 +231,7 @@ class BuilderElement
         }
       }
     };
-    
+
     $id = $orderedIds[0];
     if ($id == $this->_internalId) {
       return $this;

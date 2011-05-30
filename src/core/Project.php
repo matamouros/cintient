@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
@@ -70,7 +70,7 @@ class Project
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -86,7 +86,7 @@ class Project
     }
     return false;
   }
-  
+
   public function __construct()
   {
     $this->_buildLabel = '';
@@ -112,12 +112,12 @@ class Project
     //
     $this->_optionPackageOnSuccess = false;
   }
-  
+
   public function __destruct()
   {
     $this->_save();
   }
-  
+
   public function build($force = false)
   {
     $params = array();
@@ -126,7 +126,7 @@ class Project
     $params['local'] = $this->getScmLocalWorkingCopy();
     $params['username'] = $this->getScmUsername();
     $params['password'] = $this->getScmPassword();
-    
+
     if ($this->getStatus() == self::STATUS_ERROR && !$force) {
       $this->touchDateCheckedForChanges();
       SystemEvent::raise(SystemEvent::INFO, "Project is in error state, to build you need to force. [PROJECTID={$this->getId()}]", __METHOD__);
@@ -138,7 +138,7 @@ class Project
       $this->setStatus(self::STATUS_ERROR);
       return false;
     }
-    
+
     if ($this->getStatus() != self::STATUS_MODIFIED) {
       //
       // Checkout required?
@@ -173,11 +173,11 @@ class Project
         return false;
       }
     }
-    
+
     // We're now building
     $this->setStatus(self::STATUS_BUILDING);
     $this->_save(); // We want the building status to update imediatelly
-    
+
     // 3. trigger unit tests and all the rules specified in the rules engine
     if (!($this->_integrationBuilder instanceof BuilderElement_Project)) {
       SystemEvent::raise(SystemEvent::DEBUG, "No valid integration builder specified. [PROJECTID={$this->getId()}]", __METHOD__);
@@ -218,20 +218,20 @@ class Project
     }
     // Increment our agregated number of builds
     $this->setStatsNumBuilds($this->getStatsNumBuilds()+1);
-    
+
     // TODO: 5. generate release package?
     if ($this->getOptionPackageOnSuccess()) {
       $build->setStatus(ProjectBuild::STATUS_OK_WITH_PACKAGE);
     } else {
       $build->setStatus(ProjectBuild::STATUS_OK_WITHOUT_PACKAGE);
     }
-    
+
     // TODO: 6. tag the sources on the built revision
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     return true;
   }
-    
+
   public function delete()
   {
     if (!Database::beginTransaction()) {
@@ -266,7 +266,7 @@ class Project
     $this->updateSignature(); // No more saves for this project
     return true;
   }
-  
+
   private function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
@@ -274,7 +274,7 @@ class Project
     unset($arr['_signature']);
     return md5(serialize($arr));
   }
-  
+
   public function getDateCreation()
   {
     if (empty($this->_dateCreation)) {
@@ -282,7 +282,7 @@ class Project
     }
     return $this->_dateCreation;
   }
-  
+
   public function getDateCheckedForChanges()
   {
     if (empty($this->_dateCheckedForChanges)) {
@@ -290,17 +290,17 @@ class Project
     }
     return $this->_dateCheckedForChanges;
   }
-  
+
   public function getScmLocalWorkingCopy()
   {
     return $this->getWorkDir() . 'sources/';
   }
-  
+
   public function getReportsWorkingDir()
   {
     return $this->getWorkDir() . 'reports/';
   }
-  
+
   /**
    * Call this at the very creation of the project, for checking out the sources
    * and initialization stuff like that.
@@ -330,13 +330,14 @@ class Project
     $properties = new BuilderElement_Type_Properties();
     $properties->setDeletable(false);
     $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage("WHAT YOU SAY !!");
+    $echo->setMessage("hello, world");
     $propertySourcesDir = new BuilderElement_Type_Property();
     $propertySourcesDir->setName('sourcesDir');
     $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
     $propertySourcesDir->setFailOnError(false);
     $propertySourcesDir->setEditable(false);
     $propertySourcesDir->setDeletable(false);
+    $propertySourcesDir->setVisible(false);
     $target = new BuilderElement_Target();
     $target->setName('build');
     $target->addTask($properties);
@@ -377,7 +378,7 @@ class Project
     $this->setStatus(self::STATUS_UNBUILT);
     return true;
   }
-  
+
   static public function install()
   {
     $access = Access::READ;
@@ -419,7 +420,7 @@ EOT;
       return true;
     }
   }
-  
+
   private function _save($force=false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
@@ -481,7 +482,7 @@ EOT;
         return false;
       }
     }
-    
+
     $sql = 'DELETE FROM projectuser WHERE projectid=' . $this->getId();
     if (!Database::execute($sql)) {
       Database::rollbackTransaction();
@@ -508,7 +509,7 @@ EOT;
         return false;
       }
     }
-    
+
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project might not have been saved. [ID={$this->getId()}]", __METHOD__);
       return false;
@@ -519,12 +520,12 @@ EOT;
     $this->updateSignature();
     return true;
   }
-  
+
   public function addToUsers(array $pair)
   {
     $this->_users = array_merge($this->_users, array($pair));
   }
-  
+
   public function removeFromUsers(User $user)
   {
     $i = 0;
@@ -539,7 +540,7 @@ EOT;
     }
     return $removed;
   }
-  
+
   public function getAccessLevelFromUser(User $user)
   {
     foreach ($this->_users as $pair) {
@@ -549,7 +550,7 @@ EOT;
     }
     return false;
   }
-  
+
   public function setAccessLevelForUser(User $user, $access)
   {
     $i = 0;
@@ -562,7 +563,7 @@ EOT;
     }
     return false;
   }
-  
+
   public function loadUsers()
   {
     $ret = array();
@@ -574,10 +575,10 @@ EOT;
     }
     $this->setUsers($ret);
   }
-  
+
   /**
    * Logs an event to the project log.
-   * 
+   *
    * @param string $msg
    */
   public function log($msg)
@@ -586,22 +587,22 @@ EOT;
     $projectLog->setType(0);
     $projectLog->setMessage($msg);
   }
-  
+
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
   }
-  
+
   public function touchDateCheckedForChanges()
   {
     $this->_dateCheckedForChanges = date('Y-m-d H:i:s');
   }
-  
+
   /**
    * Checks if a given user has at least the specified $accessLevel.
-   * 
+   *
    * @param int $accessLevel
-   * 
+   *
    * @return bool
    */
   public function userHasAccessLevel(User $user, $accessLevel)
@@ -616,11 +617,11 @@ EOT;
     SystemEvent::raise(SystemEvent::DEBUG, "User " . ($hasAccessLevel?'has':"doesn't have") . " access. [USER={$user->getUsername()}] [ACCESS={$accessLevel}] [PROJECTACCESSLEVEL={$userPair[1]}]", __METHOD__);
     return $hasAccessLevel;
   }
-  
+
   static public function getById(User $user, $id, $access = Access::READ, array $options = array())
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;
-    
+
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $id = (int)$id;
@@ -639,11 +640,11 @@ EOT;
     }
     return $ret;
   }
-  
+
   static public function &getList(User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::ALPHA_ASC;
-    
+
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $sql = 'SELECT p.*'
@@ -671,7 +672,7 @@ EOT;
     }
     return $ret;
   }
-  
+
   static public function getCountTotalBuilds()
   {
     $ret = 0;
@@ -684,7 +685,7 @@ EOT;
     }
     return $ret;
   }
-  
+
   static public function getNextToBuild()
   {
     $ret = null;
@@ -698,9 +699,9 @@ EOT;
     }
     return $ret;
   }
-  
+
   /**
-   * 
+   *
    * @param unknown_type $rs
    */
   static private function _getObject($rs, $options = array())
@@ -738,20 +739,20 @@ EOT;
     // object safe. Credits to travis@travishegner.com on:
     // http://pt.php.net/manual/en/function.serialize.php#96504
     //
-    $unsafeSerializedIntegrationBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getIntegrationBuilder()); 
+    $unsafeSerializedIntegrationBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getIntegrationBuilder());
     if (($integrationBuilder = unserialize($unsafeSerializedIntegrationBuilder)) === false) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize integration builder for this project [PID={$ret->getId()}]");
       $integrationBuilder = new BuilderElement_Project();
     }
     $ret->setIntegrationBuilder($integrationBuilder);
-    
-    $unsafeSerializedDeploymentBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getDeploymentBuilder()); 
+
+    $unsafeSerializedDeploymentBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getDeploymentBuilder());
     if (($deploymentBuilder = unserialize($unsafeSerializedDeploymentBuilder)) === false) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize deployment builder for this project [PID={$ret->getId()}]");
       $deploymentBuilder = new BuilderElement_Project();
     }
     $ret->setDeploymentBuilder($deploymentBuilder);
-    
+
     if ($options['loadUsers']) {
       $ret->loadUsers();
     }
