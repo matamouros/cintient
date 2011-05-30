@@ -66,10 +66,10 @@ class TemplateManager
   static public function tests_tasks()
   {
     $exec = new BuilderElement_Task_Exec();
-    $exec->setExecutable('ls -la');
-    $exec->setArgs(array('extra/'));
-    $exec->setDir('/tmp/apache');
-    $exec->setOutputProperty('xpto');
+    $exec->setExecutable('ls');
+    $exec->setArgs(array('-la'));
+    $exec->setBaseDir('/tmp/');
+    //$exec->setOutputProperty('xpto');
     //echo $exec->toString('ant');
 
     $delete = new BuilderElement_Task_Filesystem_Delete();
@@ -83,7 +83,8 @@ class TemplateManager
     //echo $delete->toString('ant');
 
     $echo = new BuilderElement_Task_Echo();
-    $echo->setMessage('${workDir}');
+    $echo->setMessage('Ol‡');
+    $echo->setFile('${workDir}/ixo.txt');
 
     $echo2 = new BuilderElement_Task_Echo();
     $echo2->setMessage('About to do an exec2!');
@@ -92,22 +93,33 @@ class TemplateManager
 
     $mkdir = new BuilderElement_Task_Filesystem_Mkdir();
     //$mkdir->setDir('/tmp/tmp2/tmp3');
-    $mkdir->setDir('/lixo');
+    $mkdir->setDir('${dir}');
 
     $lint = new BuilderElement_Task_PhpLint();
     $lint->setFilesets(array($fileset));
 
     $chmod = new BuilderElement_Task_Filesystem_Chmod();
-    $chmod->setMode('644');
-    $chmod->setFilesets(array($fileset));
+    $chmod->setMode('${perms}');
+    $chmod->setFile('${file}');
+    //$chmod->setFilesets(array($fileset));
+
+    $chown = new BuilderElement_Task_Filesystem_Chown();
+    $chown->setFile('/tmp/lixo1.php');
+    $chown->setUser('www-data');
 
     $properties = new BuilderElement_Type_Properties();
     $properties->setText("workDir = /tmp/
-title = Cintient");
+title = Cintient
+executable = ls
+args = -la
+dir = /tmp/lixo_test2/
+file = /tmp/lixo1.php
+perms = 755
+");
 
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($echo, $lint, $chmod, $properties));
+    $target->setTasks(array($properties, $chown));
     //echo $target->toString('php');
 
     $target2 = new BuilderElement_Target();
@@ -121,7 +133,7 @@ title = Cintient");
     $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);
     $project->setDefaultTarget($target->getName());
-    $code = $project->toString('ant');
+    $code = $project->toString('cintient');
 
     echo $code;
     //var_dump(BuilderConnector_Php::execute($code));

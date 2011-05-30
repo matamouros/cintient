@@ -505,7 +505,7 @@ class BuilderConnector_Html
       BuilderConnector_Html::builderElementTitle($o, array('title' => 'Properties'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
         // Name, textfield
-        h::div(array('class' => 'label'), 'Name=value pairs <span class="fineprintLabel">(Comment lines with # character)</span>');
+        h::div(array('class' => 'label'), 'Key=value pairs <span class="fineprintLabel">(Lines started with ; are comments)</span>');
         h::div(array('class' => 'textareaContainer'), function() use ($o) {
           h::textarea(array('name' => 'text'), $o->getText());
         });

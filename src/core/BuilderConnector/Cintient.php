@@ -74,7 +74,7 @@ class BuilderConnector_Cintient
 ";
     if ($o->getBaseDir() !== null) {
       $php .= <<<EOT
-set_include_path(get_include_path() . PATH_SEPARATOR . {$o->getBaseDir()});
+set_include_path(get_include_path() . PATH_SEPARATOR . '{$o->getBaseDir()}');
 EOT;
     }
     if ($o->getDefaultTarget() !== null) {
@@ -208,26 +208,28 @@ EOT;
       return false;
     }
     $mode = $o->getMode();
-    if (empty($mode) || !preg_match('/^\d{3}$/', $mode)) {
+    if (empty($mode) || !preg_match('/^(?:\d{3}|\$\{\w*\})$/', $mode)) { // It must be a 3 digit decimal or a property
       SystemEvent::raise(SystemEvent::ERROR, 'No mode set for chmod.', __METHOD__);
       return false;
     }
-    $mode = '0' . $mode;
 
     $php .= "
 \$callback = function (\$entry) {
-  \$ret = @chmod(\$entry, {$o->getMode()});
+  \$getModeInt = expandStr('{$o->getMode()}');
+  \$getModeOctal = intval(\$getModeInt, 8); // Casts the decimal string representation into an octal (8 is for base 8 conversion)
+  \$ret = @chmod(\$entry, \$getModeOctal);
   if (!\$ret) {
-    output('chmod', \"Failed setting {$o->getMode()} on \$entry.\");
+    output('chmod', \"Failed setting \$getModeInt on \$entry.\");
   } else {
-    output('chmod', \"Ok setting {$o->getMode()} on \$entry.\");
-    //echo \"\\n  Ok setting {$o->getMode()} on \$entry.\";
+    output('chmod', \"Ok setting \$getModeInt on \$entry.\");
+    //echo \"\\n  Ok setting \$getModeInt on \$entry.\";
   }
   return \$ret;
 };";
     if ($o->getFile()) {
       $php .= "
-if (!\$callback('{$o->getFile()}') && {$o->getFailOnError()}) { // failonerror
+\$getFile = expandStr('{$o->getFile()}');
+if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
   return false;
 }
 ";
@@ -266,18 +268,20 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     $php .= "
 \$callback = function (\$entry) {
-  \$ret = @chown(\$entry, '{$o->getUser()}');
+  \$getUser = expandStr('{$o->getUser()}');
+  \$ret = @chown(\$entry, \$getUser);
   if (!\$ret) {
-    output('chown', \"Failed setting {$o->getUser()} on \$entry.\");
+    output('chown', \"Failed setting \$getUser on \$entry.\");
   } else {
-    output('chown', \"Ok setting {$o->getUser()} on \$entry.\");
-    //echo \"\\n  Ok setting {$o->getUser()} on \$entry.\";
+    output('chown', \"Ok setting \$getUser on \$entry.\");
+    //echo \"\\n  Ok setting \$getUser on \$entry.\";
   }
   return \$ret;
 };";
     if ($o->getFile()) {
       $php .= "
-if (!\$callback('{$o->getFile()}') && {$o->getFailOnError()}) { // failonerror
+\$getFile = expandStr('{$o->getFile()}');
+if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
   return false;
 }
 ";
@@ -381,6 +385,11 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
@@ -424,6 +433,11 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o, array &$context = array())
   {
     $php = '';
@@ -433,7 +447,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     $msg = addslashes($o->getMessage());
     $php .= "
-\$msg_{$o->getInternalId()} = expandStr('{$msg}');
+\$getMessage = expandStr('{$msg}');
 ";
     if ($o->getFile()) {
       $append = 'w'; // the same as append == false (default for Ant and Phing)
@@ -441,19 +455,25 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
         $append = 'a';
       }
       $php .= <<<EOT
-\$fp = fopen('{$o->getFile()}', '{$append}');
-\$GLOBALS['result']['ok'] = (fwrite(\$fp, \$msg_{$o->getInternalId()}) === false ?:true);
+\$getFile = expandStr('{$o->getFile()}');
+\$fp = fopen(\$getFile, '{$append}');
+\$GLOBALS['result']['ok'] = (fwrite(\$fp, \$getMessage) === false ?:true);
 fclose(\$fp);
 EOT;
     } else {
       $php .= <<<EOT
 \$GLOBALS['result']['ok'] = true;
-output('echo', \$msg_{$o->getInternalId()});
+output('echo', \$getMessage);
 EOT;
     }
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
   {
     $php = '';
@@ -461,18 +481,28 @@ EOT;
       SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
       return false;
     }
-    $dir = '';
+    $php .= "
+\$getBaseDir = '';
+";
     if ($o->getBaseDir()) {
-      $dir = "cd {$o->getBaseDir()}; ";
-    }
-    $args = '';
-    if ($o->getArgs()) {
-      $args = ' ' . implode(' ', $o->getArgs());
+      $php .= "
+\$getBaseDir = \"cd \" . expandStr('{$o->getBaseDir()}') . \"; \";
+";
     }
     $php .= "
+\$args = '';
+";
+    if ($o->getArgs()) {
+      $implodedArgs = implode(' ', $o->getArgs());
+      $php .= "
+\$getArgs = expandStr(' {$implodedArgs}');
+";
+    }
+    $php .= "
+\$getExecutable = expandStr('{$o->getExecutable()}');
 \$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-output('exec', 'Executing \"{$dir}{$o->getExecutable()}{$args}\".');
-\$ret = exec('{$dir}{$o->getExecutable()}{$args}', \$lines, \$retval);
+output('exec', \"Executing '\$getBaseDir\$getExecutable\$getArgs'.\");
+\$ret = exec(\"\$getBaseDir\$getExecutable\$getArgs\", \$lines, \$retval);
 foreach (\$lines as \$line) {
   output('exec', \$line);
 }
@@ -501,6 +531,11 @@ return true;
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
   {
     $php = '';
@@ -510,21 +545,27 @@ return true;
     }
     $php .= "
 \$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-if (!file_exists('{$o->getDir()}')) {
-  if (mkdir('{$o->getDir()}', " . DEFAULT_DIR_MASK . ", true) === false) {
+\$getDir = expandStr('{$o->getDir()}');
+if (!file_exists(\$getDir)) {
+  if (mkdir(\$getDir, " . DEFAULT_DIR_MASK . ", true) === false) {
     \$GLOBALS['result']['ok'] = false;
-    output('mkdir', 'Could not create \"{$o->getDir()}\".');
+    output('mkdir', 'Could not create ' . \$getDir . '.');
     return false;
   } else {
-    output('mkdir', 'Created \"{$o->getDir()}\".');
+    output('mkdir', 'Created ' . \$getDir . '.');
   }
 } else {
-  output('mkdir', '\"{$o->getDir()}\" already exists.');
+  output('mkdir', \$getDir . ' already exists.');
 }
 ";
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o, array &$context = array())
   {
     $php = '';
@@ -577,6 +618,11 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o, array &$context = array())
   {
     $php = '';
@@ -653,6 +699,9 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
   }
 
   /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
    * Loosely based on phing's SelectorUtils::matchPath.
    *
    * @param BuilderElement_Type_Fileset $o
@@ -673,21 +722,18 @@ if (!class_exists('FilesetFilterIterator', false)) {
     private \$_filesetId;
     private \$_type;
 
-    const FILE = 0;
-    const DIR  = 1;
-    const BOTH = 2;
-
-    public function __construct(\$o, \$filesetId, \$type = self::FILE)
+    public function __construct(\$o, \$filesetId, \$type = " . BuilderElement_Type_Fileset::FILE . ")
     {
       \$this->_filesetId = \$filesetId;
+      \$this->_type = \$type;
       parent::__construct(\$o);
     }
 
     public function accept()
     {
       // Check for type, first of all
-      if (\$this->_type == self::FILE && !is_file(\$this->current()) ||
-      		\$this->_type == self::DIR && !is_dir(\$this->current()))
+      if (\$this->_type == " . BuilderElement_Type_Fileset::FILE . " && !is_file(\$this->current()) ||
+      		\$this->_type == " . BuilderElement_Type_Fileset::DIR . " && !is_dir(\$this->current()))
       {
         return false;
       }
@@ -779,7 +825,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
 ";
     if ($o->getDir()) {
       $php .= "
-\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'] = '{$o->getDir()}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'] = expandStr('{$o->getDir()}');
 ";
     }
     if ($o->getDefaultExcludes() === false) {
@@ -791,7 +837,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
       $includes = $o->getInclude();
       foreach ($includes as $include) {
         $php .= "
-\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'][] = '{$include}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['include'][] = expandStr('{$include}');
 ";
       }
     }
@@ -799,14 +845,11 @@ if (!class_exists('FilesetFilterIterator', false)) {
       $excludes = $o->getExclude();
       foreach ($excludes as $exclude) {
         $php .= "
-\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['exclude'][] = '{$exclude}';
+\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['exclude'][] = expandStr('{$exclude}');
 ";
       }
     }
-    //
-    // Make sure RecursiveIteratorIterator::CHILD_FIRST is used, so that dirs
-    // are only processed after *all* their children are.
-    //
+
     $php .= "
 if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
   function fileset{$o->getId()}_{$context['id']}(\$callback)
@@ -826,8 +869,8 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
       /*}*/
     }
     try {
-      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt('{$o->getDir()}'), (!\$recursiveIt?:" . (!empty($context['iteratorMode'])?:"\$itIt::CHILD_FIRST") . "), (!\$recursiveIt?:\$itIt::CATCH_GET_CHILD)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
-        if (!\$callback(\$entry, '{$o->getDir()}')) {
+      foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt(\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir']), (!\$recursiveIt?:" . (!empty($context['iteratorMode'])?:"\$itIt::CHILD_FIRST") . "), (!\$recursiveIt?:\$itIt::CATCH_GET_CHILD)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
+        if (!\$callback(\$entry, \$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'])) {
           \$GLOBALS['result']['ok'] = false;
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';
           \$GLOBALS['result']['output'] = \$msg;
@@ -848,6 +891,11 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
   {
     $php = '';
@@ -858,12 +906,18 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     $properties = parse_ini_string($o->getText());
     foreach ($properties as $key => $value) {
       $php .= <<<EOT
-  \$GLOBALS['properties']['{$key}_{$context['id']}'] = '{$value}';
+\$key = expandStr('{$key}') . '_{$context['id']}';
+\$GLOBALS['properties'][\$key] = expandStr('{$value}');
 EOT;
     }
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
   {
     $php = '';
@@ -872,11 +926,17 @@ EOT;
       return false;
     }
     $php .= <<<EOT
-\$GLOBALS['properties']['{$o->getName()}_{$context['id']}'] = '{$o->getValue()}';
+\$key = expandStr('{$o->getName()}') . '_{$context['id']}';
+\$GLOBALS['properties'][\$key] = expandStr('{$o->getValue()}');
 EOT;
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function execute($code)
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Code: " . print_r($code, true), __METHOD__);
