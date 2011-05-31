@@ -202,6 +202,11 @@ EOT;
     return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Chown($o, $context);
   }
 
+  static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
+  {
+    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Copy($o, $context);
+  }
+
   static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Delete($o, $context);

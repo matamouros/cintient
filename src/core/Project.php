@@ -331,6 +331,13 @@ class Project
     $properties->setDeletable(false);
     $echo = new BuilderElement_Task_Echo();
     $echo->setMessage("hello, world");
+    $propertyProjectDir = new BuilderElement_Type_Property();
+    $propertyProjectDir->setName('projectDir');
+    $propertyProjectDir->setValue($this->getWorkDir());
+    $propertyProjectDir->setFailOnError(false);
+    $propertyProjectDir->setEditable(false);
+    $propertyProjectDir->setDeletable(false);
+    $propertyProjectDir->setVisible(false);
     $propertySourcesDir = new BuilderElement_Type_Property();
     $propertySourcesDir->setName('sourcesDir');
     $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
@@ -341,6 +348,7 @@ class Project
     $target = new BuilderElement_Target();
     $target->setName('build');
     $target->addTask($properties);
+    $target->addTask($propertyProjectDir);
     $target->addTask($propertySourcesDir);
     $target->addTask($echo);
     $this->_integrationBuilder->addTarget($target);

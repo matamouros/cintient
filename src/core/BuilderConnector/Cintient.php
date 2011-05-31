@@ -54,6 +54,7 @@ class BuilderConnector_Cintient
     $php = '';
     $context = array();
     $context['id'] = $o->getInternalId();
+    $context['properties'] = array(); // User properties might be needed at builder code generation time (see the copy task, for instance)
     if (empty($context['id'])) {
       SystemEvent::raise(SystemEvent::ERROR, 'A unique identifier for the project is required.', __METHOD__);
       return false;
@@ -97,19 +98,16 @@ function output(\$task, \$message)
 {
   \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$task}] {\$message}";
 }
-// Callback to be used inside expandStr() only needs to be defined once here
-function cbToExpandStr(\$matches)
-{
-  \$key = \$matches[1] . '_{$context['id']}';
-  if (isset(\$GLOBALS['properties'][\$key])) {
-    return \$GLOBALS['properties'][\$key];
-  } else {
-    return \$matches[1];
-  }
-}
 function expandStr(\$str)
 {
-  return preg_replace_callback('/\\$\{(\w*)\}/', 'cbToExpandStr', \$str);
+  return preg_replace_callback('/\\$\{(\w*)\}/', function(\$matches) {
+  	\$key = \$matches[1] . '_{$context['id']}';
+    if (isset(\$GLOBALS['properties'][\$key])) {
+      return \$GLOBALS['properties'][\$key];
+    } else {
+      return \$matches[1];
+    }
+  }, \$str);
 }
 EOT;
       }
@@ -302,75 +300,100 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     return $php;
   }
 
+  /**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
   static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
   {
     $php = '';
-    /*if (!$o->getFile() && !$o->getFilesets()) {
-      SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task copy.', __METHOD__);
+    if (!$o->getFile() && !$o->getFilesets()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);
       return false;
+    }
+    if ($filesets = $o->getFilesets()) {
+      if (!$filesets[0]->getDir() || !$filesets[0]->getInclude()) {
+        SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);
+        return false;
+      }
     }
     if (!$o->getToFile() && !$o->getToDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No destination set for task copy.', __METHOD__);
       return false;
     }
 
-    $dest = null;
     if ($o->getToFile()) {
-      $dest = $o->getToFile();;
       $php .= "
-\$path = pathinfo('{$o->getToFile()}');
-if (!file_exists(\$path['dirname']) && !@mkdir(\$path['dirname'], 0755, true)) {
-	output('copy', \"Failed creating dir \".\$path['dirname'].\".\");
-  return false;
-}";
+\$path = pathinfo(expandStr('{$o->getToFile()}'));
+\$baseToDir = \$path['dirname'];
+";
     } elseif ($o->getToDir()) {
-      $dest = $o->getToDir();
       $php .= "
-if (!file_exists('{$o->getToDir()}') && !@mkdir('{$o->getToDir()}', 0755, true)) {
-	output('copy', \"Failed creating dir {$o->getToDir()}.\");
-  return false;
-}";
+\$baseToDir = expandStr('{$o->getToDir()}');
+";
     }
 
     $php .= "
-\$callback = function (\$entry) {
-  if (is_file(\$entry)) {
-    \$ret = @copy(\$entry, '{$dest}'); // THE PROBLEM IS HERE, THE SECOND ARG SOMETIMES IS A DIR!! OUTPUT THE CODE AND RUN IT WITHOUT @ ON THE COPY CALL!
-  } elseif (is_dir(\$entry)) {
-  	if (!file_exists('{$dest}') && !@mkdir('{$dest}', 0755, true)) {
-  	  \$ret = false;
-  	}
-  } else {
-    \$ret = false;
-  }
-  if (!\$ret) {
-    output('copy', \"Failed copy of \$entry to {$dest}.\");
-  } else {
-    output('copy', \"Copied \$entry to {$dest}.\");
-    //echo \"\\n  Copied \$entry to {$dest}.\";
-  }
-  return \$ret;
-};
-";
+if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
+	output('copy', \"Failed creating dir \$baseToDir.\");
+  return false;
+}";
 
     //
     // Internally treat $o->getFile() as a fileset.
     //
     $filesets = array();
     if ($o->getFile()) {
-      $path = pathinfo($o->getFile());
+      $pathFrom = pathinfo(self::_expandStr($o->getFile(), $context));
       $fileset = new BuilderElement_Type_Fileset();
-      $fileset->addInclude($path['basename']);
-      $fileset->setDir($path['dirname']);
+      $fileset->addInclude($pathFrom['basename']);
+      $fileset->setDir($pathFrom['dirname']);
+      $fileset->setType(BuilderElement_Type_Fileset::BOTH); // Very important default!!!
       $filesets[] = $fileset;
+      $php .= "
+\$baseFromDir = '{$pathFrom['dirname']}';
+";
     } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
+      $filesets = $o->getFilesets();
+      $includes = $filesets[0]->getInclude();
       // Iterator mode for copy() must enforce parent dirs before their children,
       // so that we can mkdir the parent without first trying to copy in the children
       // on a non-existing dir.
-      $filesets = $o->getFilesets();
+      $pathFrom = pathinfo(self::_expandStr($filesets[0]->getDir(), $context));
+      $filesets[0]->setDir(self::_expandStr($filesets[0]->getDir(), $context));
+      $filesets[0]->setInclude(explode(' ', self::_expandStr(implode(' ', $filesets[0]->getInclude()), $context)));
+      $filesets[0]->setExclude(explode(' ', self::_expandStr(implode(' ', $filesets[0]->getExclude()), $context)));
+      $php .= "
+\$baseFromDir = '{$pathFrom['dirname']}';
+";
     }
 
-    $context['iteratorMode'] = RecursiveIteratorIterator::SELF_FIRST;
+    $php .= "
+\$callback = function (\$entry) use (\$baseToDir, \$baseFromDir) {
+  \$dest = \$baseToDir . substr(\$entry, strlen(\$baseFromDir));
+  if (is_file(\$entry)) {
+    \$ret = @copy(\$entry, \$dest);
+  } elseif (is_dir(\$entry)) {
+  	if (!file_exists(\$dest) && !@mkdir(\$dest, 0755, true)) {
+  	  \$ret = false;
+  	} else {
+  	  \$ret = true;
+    }
+  } else {
+    \$ret = false;
+  }
+  if (!\$ret) {
+    output('copy', \"Failed copy of \$entry to \$dest.\");
+  } else {
+    output('copy', \"Copied \$entry to \$dest.\");
+    //echo \"\\n  Copied \$entry to \$dest.\";
+  }
+  return \$ret;
+};
+";
+
+    $context['iteratorMode'] = RecursiveIteratorIterator::SELF_FIRST; // Make sure dirs come before their children, in order to be created first
     foreach ($filesets as $fileset) {
       $php .= "
 " . self::BuilderElement_Type_Fileset($fileset, $context) . "
@@ -381,7 +404,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
   }
 }
 ";
-    }*/
+    }
     return $php;
   }
 
@@ -905,6 +928,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     }
     $properties = parse_ini_string($o->getText());
     foreach ($properties as $key => $value) {
+      $context['properties'][self::_expandStr($key, $context)] = self::_expandStr($value, $context);
       $php .= <<<EOT
 \$key = expandStr('{$key}') . '_{$context['id']}';
 \$GLOBALS['properties'][\$key] = expandStr('{$value}');
@@ -925,6 +949,7 @@ EOT;
       SystemEvent::raise(SystemEvent::ERROR, 'Name and value not set for type property.', __METHOD__);
       return false;
     }
+    $context['properties'][self::_expandStr($o->getName(), $context)] = self::_expandStr($o->getValue(), $context);
     $php .= <<<EOT
 \$key = expandStr('{$o->getName()}') . '_{$context['id']}';
 \$GLOBALS['properties'][\$key] = expandStr('{$o->getValue()}');
@@ -951,5 +976,21 @@ EOT;
       return false;
     }
     return true;
+  }
+
+  static private function _expandStr($str, Array &$context = array())
+  {
+    return preg_replace_callback('/\$\{(\w*)\}/', function($matches) use (&$context) {
+      if (isset($context['properties'][$matches[1]])) {
+
+        SystemEvent::raise(SystemEvent::DEBUG, "Expanded ". $context['properties'][$matches[1]], __METHOD__);
+
+        return $context['properties'][$matches[1]];
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Didn't expand ". $matches[1], __METHOD__);
+
+        return $matches[1];
+      }
+    }, $str);
   }
 }

@@ -107,19 +107,31 @@ class TemplateManager
     $chown->setFile('/tmp/lixo1.php');
     $chown->setUser('www-data');
 
+    $copy = new BuilderElement_Task_Filesystem_Copy();
+    $copy->setFile('/tmp/src/config/cintient.conf.php');
+    $copy->setToDir('${toDir}');
+    /*$fileset = new BuilderElement_Type_Fileset();
+    $fileset->setDir('${dir}');
+    $fileset->setInclude(array('${include}'));
+
+    $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+    $copy->setFilesets(array($fileset));
+		*/
     $properties = new BuilderElement_Type_Properties();
     $properties->setText("workDir = /tmp/
 title = Cintient
 executable = ls
 args = -la
-dir = /tmp/lixo_test2/
+dir = /tmp/src/
 file = /tmp/lixo1.php
 perms = 755
+include = **/*
+toDir = /tmp/src2/
 ");
 
     $target = new BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($properties, $chown));
+    $target->setTasks(array($properties, $copy));
     //echo $target->toString('php');
 
     $target2 = new BuilderElement_Target();
