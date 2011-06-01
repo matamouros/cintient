@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,23 +18,23 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ *
  */
 class BuilderElement_Task_Echo extends BuilderElement
 {
-  protected $_message; 
+  protected $_message;
   protected $_file;            // If present, message will be written to this file
   protected $_append;          // The directory in which the command should be executed in
-  
+
   public function __construct()
   {
     parent::__construct();
     $this->_message = null;
     $this->_file = null;
-    $this->_append = null;
+    $this->_append = true;
   }
 }

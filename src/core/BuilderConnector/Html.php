@@ -491,9 +491,10 @@ class BuilderConnector_Html
       h::input($params);
     });
     // Dir, textfield
-    h::div(array('class' => 'label'), 'Base dir <span class="fineprintLabel">(relative to project sources. Empty is at root)</span>');
+    h::div(array('class' => 'label'), 'Base dir');
     h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
+      //h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
+      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
     });
     $includesLine = '';
     if ($o->getInclude()) {

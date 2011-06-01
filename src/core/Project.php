@@ -327,8 +327,6 @@ class Project
     //
     // Setup the minimal integration builder setup
     //
-    $properties = new BuilderElement_Type_Properties();
-    $properties->setDeletable(false);
     $echo = new BuilderElement_Task_Echo();
     $echo->setMessage("hello, world");
     $propertyProjectDir = new BuilderElement_Type_Property();
@@ -347,7 +345,6 @@ class Project
     $propertySourcesDir->setVisible(false);
     $target = new BuilderElement_Target();
     $target->setName('build');
-    $target->addTask($properties);
     $target->addTask($propertyProjectDir);
     $target->addTask($propertySourcesDir);
     $target->addTask($echo);

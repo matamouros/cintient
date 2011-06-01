@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ *
  */
 class BuilderElement_Target extends BuilderElement
 {
@@ -30,7 +30,7 @@ class BuilderElement_Target extends BuilderElement
   protected $_name;
   protected $_properties;
   protected $_tasks;
-  
+
   public function __construct()
   {
     parent::__construct();
@@ -38,9 +38,14 @@ class BuilderElement_Target extends BuilderElement
     $this->_properties = array();
     $this->_tasks = array();
   }
-  
+
   public function addTask($o)
   {
     $this->_tasks[] = $o;
+  }
+
+  public function addProperty($o)
+  {
+    $this->_properties[] = $o;
   }
 }

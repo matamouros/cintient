@@ -83,9 +83,10 @@ EOT;
 \$GLOBALS['targets'] = array();
 \$GLOBALS['targetDefault'] = '{$o->getDefaultTarget()}_{$context['id']}';
 \$GLOBALS['result'] = array();
-\$GLOBALS['result']['ok'] = false;
+\$GLOBALS['result']['ok'] = true;
 \$GLOBALS['result']['output'] = '';
 \$GLOBALS['result']['stacktrace'] = array();
+\$GLOBALS['result']['task'] = null;
 EOT;
       //
       // The following because the internal cron emulation process runs
@@ -94,9 +95,9 @@ EOT;
       //
       if (!function_exists('output')) {
         $php .= <<<EOT
-function output(\$task, \$message)
+function output(\$message)
 {
-  \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$task}] {\$message}";
+  \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$GLOBALS['result']['task']}] {\$message}";
 }
 function expandStr(\$str)
 {
@@ -105,6 +106,7 @@ function expandStr(\$str)
     if (isset(\$GLOBALS['properties'][\$key])) {
       return \$GLOBALS['properties'][\$key];
     } else {
+      output("Couldn't expand user variable {\$matches[0]}, no such property was found. Assumed value '{\$matches[1]}'.");
       return \$matches[1];
     }
   }, \$str);
@@ -126,14 +128,17 @@ EOT;
     }
     $php .= <<<EOT
 foreach (\$GLOBALS['targets'] as \$target) {
-  output('target', "Executing target \"\$target\"...");
+  \$GLOBALS['result']['task'] = 'target';
+  output("Executing target \"\$target\"...");
   if (\$target() === false) {
+    \$GLOBALS['result']['task'] = 'target';
     \$error = error_get_last();
     \$GLOBALS['result']['output'] = \$error['message'] . ', on line ' . \$error['line'] . '.';
-    output('target', "Target \"\$target\" failed.");
+    output("Target \"\$target\" failed.");
     return false;
   } else {
-    output('target', "Target \"\$target\" executed.");
+    \$GLOBALS['result']['task'] = 'target';
+    output("Target \"\$target\" executed.");
   }
 }
 EOT;
@@ -181,7 +186,16 @@ EOT;
   {$taskOutput}
 EOT;
         }
-      }
+      } else {
+        //
+        // TODO: Unfortunately will never get triggered while we have
+        // properties mixed in with tasks (to simplify sorting and editing
+        // in general)
+        //
+      $php .= <<<EOT
+output("No tasks available to run.");
+EOT;
+    }
       $php .= <<<EOT
 }
 EOT;
@@ -212,15 +226,15 @@ EOT;
     }
 
     $php .= "
+\$GLOBALS['result']['task'] = 'chmod';
 \$callback = function (\$entry) {
   \$getModeInt = expandStr('{$o->getMode()}');
   \$getModeOctal = intval(\$getModeInt, 8); // Casts the decimal string representation into an octal (8 is for base 8 conversion)
   \$ret = @chmod(\$entry, \$getModeOctal);
   if (!\$ret) {
-    output('chmod', \"Failed setting \$getModeInt on \$entry.\");
+    output(\"Failed setting \$getModeInt on \$entry.\");
   } else {
-    output('chmod', \"Ok setting \$getModeInt on \$entry.\");
-    //echo \"\\n  Ok setting \$getModeInt on \$entry.\";
+    output(\"Ok setting \$getModeInt on \$entry.\");
   }
   return \$ret;
 };";
@@ -228,7 +242,10 @@ EOT;
       $php .= "
 \$getFile = expandStr('{$o->getFile()}');
 if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
+  \$GLOBALS['result']['ok'] = false;
   return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
     } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
@@ -236,11 +253,11 @@ if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
       foreach ($filesets as $fileset) {
         $php .= "
 " . self::BuilderElement_Type_Fileset($fileset, $context) . "
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+  return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
       }
@@ -265,14 +282,14 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       return false;
     }
     $php .= "
+\$GLOBALS['result']['task'] = 'chown';
 \$callback = function (\$entry) {
   \$getUser = expandStr('{$o->getUser()}');
   \$ret = @chown(\$entry, \$getUser);
   if (!\$ret) {
-    output('chown', \"Failed setting \$getUser on \$entry.\");
+    output(\"Failed setting \$getUser on \$entry.\");
   } else {
-    output('chown', \"Ok setting \$getUser on \$entry.\");
-    //echo \"\\n  Ok setting \$getUser on \$entry.\";
+    output(\"Ok setting \$getUser on \$entry.\");
   }
   return \$ret;
 };";
@@ -280,7 +297,10 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       $php .= "
 \$getFile = expandStr('{$o->getFile()}');
 if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
+	\$GLOBALS['result']['ok'] = false;
   return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
     } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
@@ -288,11 +308,11 @@ if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
       foreach ($filesets as $fileset) {
         $php .= "
 " . self::BuilderElement_Type_Fileset($fileset, $context) . "
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+  return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
       }
@@ -312,21 +332,22 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);
       return false;
     }
-    if ($filesets = $o->getFilesets()) {
-      if (!$filesets[0]->getDir() || !$filesets[0]->getInclude()) {
-        SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);
-        return false;
-      }
-    }
+
     if (!$o->getToFile() && !$o->getToDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No destination set for task copy.', __METHOD__);
       return false;
     }
 
+    $php .= "
+\$GLOBALS['result']['task'] = 'copy';
+\$baseToFilename = '';
+";
+
     if ($o->getToFile()) {
       $php .= "
 \$path = pathinfo(expandStr('{$o->getToFile()}'));
 \$baseToDir = \$path['dirname'];
+\$baseToFilename = '/' . \$path['basename']; // pathinfo's dirname *always* returns the dirname without the trailing slash.
 ";
     } elseif ($o->getToDir()) {
       $php .= "
@@ -334,10 +355,26 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
 ";
     }
 
+    //
+    // TODO: Potential bug here. If the following generated mkdir does
+    // indeed fail and failOnError == true, the execution will continue
+    // because we are not returning true... A return true here would
+    // halt the generated script execution (that's what return false does
+    // in case of error...)
+    //
+    // Wrapping this whole element into a generated auto-executing closure
+    // a la Javascript would be awesome, because that way we could just
+    // force a return and not risk shutting down the whole builder script
+    //
     $php .= "
 if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
-	output('copy', \"Failed creating dir \$baseToDir.\");
-  return false;
+  output(\"Failed creating dir \$baseToDir.\");
+	if ({$o->getFailOnError()}) {
+    \$GLOBALS['result']['ok'] = false;
+    return false;
+  } else {
+	  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  }
 }";
 
     //
@@ -345,33 +382,57 @@ if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
     //
     $filesets = array();
     if ($o->getFile()) {
-      $pathFrom = pathinfo(self::_expandStr($o->getFile(), $context));
+      $getFile = self::_expandStr($o->getFile(), $context);
+      $pathFrom = pathinfo($getFile);
       $fileset = new BuilderElement_Type_Fileset();
-      $fileset->addInclude($pathFrom['basename']);
-      $fileset->setDir($pathFrom['dirname']);
-      $fileset->setType(BuilderElement_Type_Fileset::BOTH); // Very important default!!!
-      $filesets[] = $fileset;
-      $php .= "
+      if (!file_exists($getFile)) {
+        $php .= "
+output(\"No such file or directory {$getFile}.\");
+if ({$o->getFailOnError()}) { // failonerror
+  \$GLOBALS['result']['ok'] = false;
+  return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+}
+";
+      } elseif (is_file($getFile)) {
+        $fileset->addInclude($pathFrom['basename']);
+        $fileset->setDir($pathFrom['dirname']);
+        $fileset->setType(BuilderElement_Type_Fileset::FILE);
+        $php .= "
 \$baseFromDir = '{$pathFrom['dirname']}';
 ";
+      } else { // It's a directory
+        $fileset->addInclude('**/*');
+        $fileset->setDir($getFile);
+        $fileset->setType(BuilderElement_Type_Fileset::BOTH); // Very important default!!!
+$php .= "
+\$baseFromDir = '{$getFile}';
+";
+      }
+      $filesets[] = $fileset;
     } elseif ($o->getFilesets()) { // If file exists, it takes precedence over filesets
-      $filesets = $o->getFilesets();
-      $includes = $filesets[0]->getInclude();
+      $realFilesets = $o->getFilesets(); // Not to be overwritten
+      if (!$realFilesets[0]->getDir() || !$realFilesets[0]->getInclude()) {
+        SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);
+        return false;
+      }
       // Iterator mode for copy() must enforce parent dirs before their children,
       // so that we can mkdir the parent without first trying to copy in the children
       // on a non-existing dir.
-      $pathFrom = pathinfo(self::_expandStr($filesets[0]->getDir(), $context));
-      $filesets[0]->setDir(self::_expandStr($filesets[0]->getDir(), $context));
-      $filesets[0]->setInclude(explode(' ', self::_expandStr(implode(' ', $filesets[0]->getInclude()), $context)));
-      $filesets[0]->setExclude(explode(' ', self::_expandStr(implode(' ', $filesets[0]->getExclude()), $context)));
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->setDir(self::_expandStr($realFilesets[0]->getDir(), $context));
+      $fileset->setInclude(explode(' ', self::_expandStr(implode(' ', $realFilesets[0]->getInclude()), $context)));
+      $fileset->setExclude(explode(' ', self::_expandStr(implode(' ', $realFilesets[0]->getExclude()), $context)));
+      $filesets[] = $fileset;
       $php .= "
-\$baseFromDir = '{$pathFrom['dirname']}';
+\$baseFromDir = '{$fileset->getDir()}';
 ";
     }
 
     $php .= "
-\$callback = function (\$entry) use (\$baseToDir, \$baseFromDir) {
-  \$dest = \$baseToDir . substr(\$entry, strlen(\$baseFromDir));
+\$callback = function (\$entry) use (\$baseToDir, \$baseFromDir, \$baseToFilename) {
+  \$dest = \$baseToDir . (!empty(\$baseToFilename)?\$baseToFilename:substr(\$entry, strlen(\$baseFromDir)));
   if (is_file(\$entry)) {
     \$ret = @copy(\$entry, \$dest);
   } elseif (is_dir(\$entry)) {
@@ -384,10 +445,9 @@ if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
     \$ret = false;
   }
   if (!\$ret) {
-    output('copy', \"Failed copy of \$entry to \$dest.\");
+    output(\"Failed copy of \$entry to \$dest.\");
   } else {
-    output('copy', \"Copied \$entry to \$dest.\");
-    //echo \"\\n  Copied \$entry to \$dest.\";
+    output(\"Copied \$entry to \$dest.\");
   }
   return \$ret;
 };
@@ -397,11 +457,11 @@ if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
     foreach ($filesets as $fileset) {
       $php .= "
 " . self::BuilderElement_Type_Fileset($fileset, $context) . "
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+  return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
     }
@@ -420,6 +480,9 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task delete.', __METHOD__);
       return false;
     }
+    $php .= "
+\$GLOBALS['result']['task'] = 'delete';
+";
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
@@ -434,21 +497,21 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
 \$callback = function (\$entry) {
   \$ret = true;
   if (is_file(\$entry) || ({$o->getIncludeEmptyDirs()} && is_dir(\$entry))) { // includeemptydirs
-    //\$ret = unlink(\$entry);
-    echo \"\\n  Removing \$entry.\";
+    // TODO: activate the unlink() and unleash hell with extreme prejudice
+    //\$ret = @unlink(\$entry);
   }
   if (!\$ret) {
-    output('delete', 'Failed deleting \$entry.');
+    output(\"Failed deleting \$entry.\");
   } else {
-    output('delete', 'Deleted \$entry.');
+    output(\"Deleted \$entry.\");
   }
   return \$ret;
 };
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+  return false;
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
 }
 ";
       }
@@ -468,6 +531,9 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
       return false;
     }
+    $php .= "
+\$GLOBALS['result']['task'] = 'echo';
+";
     $msg = addslashes($o->getMessage());
     $php .= "
 \$getMessage = expandStr('{$msg}');
@@ -479,14 +545,33 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
       }
       $php .= <<<EOT
 \$getFile = expandStr('{$o->getFile()}');
-\$fp = fopen(\$getFile, '{$append}');
-\$GLOBALS['result']['ok'] = (fwrite(\$fp, \$getMessage) === false ?:true);
+if (!(\$fp = @fopen(\$getFile, '{$append}'))) {
+  output("Couldn't open file \$getFile for output.");
+  if ({$o->getFailOnError()}) {
+    \$GLOBALS['result']['ok'] = false;
+    return false;
+  } else {
+    \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  }
+}
+\$res = (fwrite(\$fp, \$getMessage) === false ?:true);
 fclose(\$fp);
+if (!\$res) {
+  output("Couldn't write message to file.");
+  if ({$o->getFailOnError()}) {
+    \$GLOBALS['result']['ok'] = false;
+    return false;
+  } else {
+    \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  }
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+}
 EOT;
     } else {
       $php .= <<<EOT
-\$GLOBALS['result']['ok'] = true;
-output('echo', \$getMessage);
+\$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+output(\$getMessage);
 EOT;
     }
     return $php;
@@ -505,6 +590,7 @@ EOT;
       return false;
     }
     $php .= "
+\$GLOBALS['result']['task'] = 'exec';
 \$getBaseDir = '';
 ";
     if ($o->getBaseDir()) {
@@ -516,30 +602,36 @@ EOT;
 \$args = '';
 ";
     if ($o->getArgs()) {
-      $implodedArgs = implode(' ', $o->getArgs());
       $php .= "
-\$getArgs = expandStr(' {$implodedArgs}');
+\$getArgs = expandStr(' {$o->getArgs()}');
 ";
     }
     $php .= "
 \$getExecutable = expandStr('{$o->getExecutable()}');
-\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-output('exec', \"Executing '\$getBaseDir\$getExecutable\$getArgs'.\");
+\$GLOBALS['result']['task'] = 'exec';
+output(\"Executing '\$getBaseDir\$getExecutable\$getArgs'.\");
 \$ret = exec(\"\$getBaseDir\$getExecutable\$getArgs\", \$lines, \$retval);
 foreach (\$lines as \$line) {
-  output('exec', \$line);
+  output(\$line);
 }
 ";
     if ($o->getOutputProperty()) {
       $php .= "
-\$GLOBALS['properties']['{$o->getOutputProperty()}'] = \$ret;
+\$GLOBALS['properties']['{$o->getOutputProperty()}_{$context['id']}'] = \$ret;
 ";
     }
     $php .= "
 if (\$retval > 0) {
-  output('exec', 'Failed.');
+  output('Failed.');
+  if ({$o->getFailOnError()}) {
+    \$GLOBALS['result']['ok'] = false;
+    return false;
+  } else {
+    \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  }
 } else {
-  output('exec', 'Success.');
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  output('Success.');
 }
 ";
     //TODO: bullet proof this for boolean falses (they're not showing up)
@@ -567,18 +659,20 @@ return true;
       return false;
     }
     $php .= "
-\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
+\$GLOBALS['result']['task'] = 'mkdir';
 \$getDir = expandStr('{$o->getDir()}');
 if (!file_exists(\$getDir)) {
-  if (mkdir(\$getDir, " . DEFAULT_DIR_MASK . ", true) === false) {
+  if (mkdir(\$getDir, " . DEFAULT_DIR_MASK . ", true) === false && {$o->getFailOnError()}) {
     \$GLOBALS['result']['ok'] = false;
-    output('mkdir', 'Could not create ' . \$getDir . '.');
+    output('Could not create ' . \$getDir . '.');
     return false;
   } else {
-    output('mkdir', 'Created ' . \$getDir . '.');
+    \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+    output('Created ' . \$getDir . '.');
   }
 } else {
-  output('mkdir', \$getDir . ' already exists.');
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  output(\$getDir . ' already exists.');
 }
 ";
     return $php;
@@ -597,8 +691,8 @@ if (!file_exists(\$getDir)) {
       return false;
     }
     $php .= "
-\$GLOBALS['result']['task'] = '" . __FUNCTION__ . "';
-output('phplint', 'Starting...');
+\$GLOBALS['result']['task'] = 'phplint';
+output('Starting...');
 ";
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
@@ -612,28 +706,27 @@ output('phplint', 'Starting...');
         //
         $php .= "
 \$callback = function (\$entry) {
+  \$ret = true;
   if (is_file(\$entry)) {
-    \$ret = null;
     \$output = array();
     exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
     if (\$ret > 0) {
-      \$GLOBALS['result']['ok'] = false;
-      output('phplint', 'Errors parsing ' . \$entry . '.');
-      return false;
+      output('Errors parsing ' . \$entry . '.');
+      \$ret = false;
     } else {
-      \$GLOBALS['result']['ok'] = true;
-      output('phplint', 'No syntax errors detected in ' . \$entry . '.');
+      output('No syntax errors detected in ' . \$entry . '.');
+      \$ret = true;
     }
   }
-  return true;
+  return \$ret;
 };
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
-  output('phplint', 'Failed.');
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
+  output('Failed.');
+  \$GLOBALS['result']['ok'] = false;
+  return false;
 } else {
-  output('phplint', 'Done.');
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  output('Done.');
 }
 ";
       }
@@ -655,7 +748,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
     }
     $php .= "
 \$GLOBALS['result']['task'] = 'phpunit';
-output('phpunit', 'Starting unit tests...');
+output('Starting unit tests...');
 ";
     $logJunitXmlFile = '';
     if ($o->getLogJunitXmlFile()) {
@@ -665,7 +758,7 @@ output('phpunit', 'Starting unit tests...');
     if ($o->getCodeCoverageXmlFile()) {
       if (!extension_loaded('xdebug')) {
         $php .= "
-output('phpunit', 'Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
 ";
       } else {
         $codeCoverageXmlFile = ' --coverage-clover ' . $o->getCodeCoverageXmlFile();
@@ -675,7 +768,7 @@ output('phpunit', 'Code coverage only possible with the Xdebug extension loaded.
     if ($o->getCodeCoverageHtmlFile()) {
       if (!extension_loaded('xdebug')) {
         $php .= "
-output('phpunit', 'Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
 ";
       } else {
         $codeCoverageHtmlFile = ' --coverage-html ' . $o->getCodeCoverageHtmlFile();
@@ -693,27 +786,26 @@ output('phpunit', 'Code coverage only possible with the Xdebug extension loaded.
         //
         $php .= "
 \$callback = function (\$entry) {
+  \$ret = true;
   if (is_file(\$entry)) {
-    \$ret = null;
     \$output = array();
     exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$output, \$ret);
-    output('phpunit', \$entry . ': ' . array_pop(\$output));
+    output(\$entry . ': ' . array_pop(\$output));
     if (\$ret > 0) {
-      \$GLOBALS['result']['ok'] = false;
-      return false;
+      \$ret = false;
     } else {
-      \$GLOBALS['result']['ok'] = true;
+      \$ret = true;
     }
   }
-  return true;
+  return \$ret;
 };
-if (!fileset{$fileset->getId()}_{$context['id']}(\$callback)) {
-  output('phpunit', 'Tests failed.');
-  if ({$o->getFailOnError()}) { // failonerror
-    return false;
-  }
+if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
+  output('Tests failed.');
+  \$GLOBALS['result']['ok'] = false;
+  return false;
 } else {
-  output('phpunit', 'All tests ok.');
+	\$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  output('All tests ok.');
 }
 ";
       }
@@ -894,17 +986,17 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     try {
       foreach (new FilesetFilterIterator(new \$itIt(new \$dirIt(\$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir']), (!\$recursiveIt?:" . (!empty($context['iteratorMode'])?:"\$itIt::CHILD_FIRST") . "), (!\$recursiveIt?:\$itIt::CATCH_GET_CHILD)), '{$o->getId()}_{$context['id']}', {$o->getType()}) as \$entry) {
         if (!\$callback(\$entry, \$GLOBALS['filesets']['{$o->getId()}_{$context['id']}']['dir'])) {
-          \$GLOBALS['result']['ok'] = false;
+          //\$GLOBALS['result']['ok'] = false; // This should be relegated to the caller task
           \$msg = 'Callback applied to fileset returned false [CALLBACK=\$callback] [FILESET={$o->getId()}_{$context['id']}]';
           \$GLOBALS['result']['output'] = \$msg;
-          //output(__METHOD__, \$msg);
+          //output(\$msg);
           return false;
         }
       }
     } catch (UnexpectedValueException \$e) { // Typical permission denied
-      \$GLOBALS['result']['ok'] = false;
+      //\$GLOBALS['result']['ok'] = false; // This should be relegated to the caller task
       \$GLOBALS['result']['output'] = \$e->getMessage();
-      output(__METHOD__, \$e->getMessage());
+      output(\$e->getMessage());
       return false;
     }
     return true;
@@ -930,8 +1022,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
     foreach ($properties as $key => $value) {
       $context['properties'][self::_expandStr($key, $context)] = self::_expandStr($value, $context);
       $php .= <<<EOT
-\$key = expandStr('{$key}') . '_{$context['id']}';
-\$GLOBALS['properties'][\$key] = expandStr('{$value}');
+\$GLOBALS['properties'][expandStr('{$key}') . '_{$context['id']}'] = expandStr('{$value}');
 EOT;
     }
     return $php;
@@ -951,8 +1042,8 @@ EOT;
     }
     $context['properties'][self::_expandStr($o->getName(), $context)] = self::_expandStr($o->getValue(), $context);
     $php .= <<<EOT
-\$key = expandStr('{$o->getName()}') . '_{$context['id']}';
-\$GLOBALS['properties'][\$key] = expandStr('{$o->getValue()}');
+\$GLOBALS['properties'][expandStr('{$o->getName()}') . '_{$context['id']}'] = expandStr('{$o->getValue()}');
+\$GLOBALS['result']['ok'] = (\$GLOBALS['result']['ok'] & true);
 EOT;
     return $php;
   }
@@ -966,7 +1057,7 @@ EOT;
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Code: " . print_r($code, true), __METHOD__);
     eval ($code);
-    if ($GLOBALS['result']['ok'] !== true) {
+    if ($GLOBALS['result']['ok'] != true) {
       if (!empty($GLOBALS['result']['task'])) {
         SystemEvent::raise(SystemEvent::INFO, "Failed on specific task. [TASK={$GLOBALS['result']['task']}] [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
         SystemEvent::raise(SystemEvent::DEBUG, "Stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
@@ -982,13 +1073,9 @@ EOT;
   {
     return preg_replace_callback('/\$\{(\w*)\}/', function($matches) use (&$context) {
       if (isset($context['properties'][$matches[1]])) {
-
-        SystemEvent::raise(SystemEvent::DEBUG, "Expanded ". $context['properties'][$matches[1]], __METHOD__);
-
         return $context['properties'][$matches[1]];
       } else {
-        SystemEvent::raise(SystemEvent::DEBUG, "Didn't expand ". $matches[1], __METHOD__);
-
+        SystemEvent::raise(SystemEvent::INFO, "Couldn't expand user variable {\$matches[0]}, no such property was found. Assumed value '{\$matches[1]}'.", __METHOD__);
         return $matches[1];
       }
     }, $str);

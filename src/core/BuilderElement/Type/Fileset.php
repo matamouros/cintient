@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
@@ -36,11 +36,11 @@ class BuilderElement_Type_Fileset extends BuilderElement
   protected $_include;
   protected $_exclude;
   protected $_type;            // Either FILE, DIR or BOTH (defaults to both)
-  
+
   const FILE = 0;
   const DIR  = 1;
   const BOTH = 2;
-  
+
   public function __construct()
   {
     parent::__construct();
@@ -52,12 +52,12 @@ class BuilderElement_Type_Fileset extends BuilderElement
     $this->_exclude = array();
     $this->_type = self::getDefaultType();
   }
-  
+
   static public function getDefaultType()
   {
     return self::FILE;
   }
-  
+
   public function getId()
   {
     if (empty($this->_id)) {
@@ -65,15 +65,15 @@ class BuilderElement_Type_Fileset extends BuilderElement
     }
     return $this->_id;
   }
-  
+
   /**
    * All '/' and '\' characters are replaced by DIRECTORY_SEPARATOR, so the
    * separator used need not match DIRECTORY_SEPARATOR. Correctly treats a new
    * include rule. Adds "**" if the include is a dir, so as to process all it's
    * children.
-   * 
+   *
    * Loosely based on phing's DirectoryScanner::setExcludes.
-   * 
+   *
    * @param string $exclude
    */
   public function addExclude($exclude)
@@ -86,15 +86,15 @@ class BuilderElement_Type_Fileset extends BuilderElement
     }
     $this->_exclude[] = $pattern;
   }
-  
+
   /**
    * All '/' and '\' characters are replaced by <code>DIRECTORY_SEPARATOR</code>, so the
    * separator used need not match <code>DIRECTORY_SEPARATOR</code>. Correctly treats a new
    * include rule. Adds "**" if the include is a dir, so as to process all it's
    * children.
-   * 
+   *
    * Loosely based on phing's DirectoryScanner::setIncludes.
-   * 
+   *
    * @param string $include
    */
   public function addInclude($include)
@@ -107,7 +107,7 @@ class BuilderElement_Type_Fileset extends BuilderElement
     }
     $this->_include[] = $pattern;
   }
-  
+
   /**
    * Whenever empty, we default to all.
    * TODO: This is probably not the best way to implement it
@@ -119,16 +119,16 @@ class BuilderElement_Type_Fileset extends BuilderElement
     }
     return $this->_include;
   }
-  
+
   /**
    * Setter. Makes sure <code>$dir</code> always ends in a valid
    * <code>DIRECTORY_SEPARATOR</code> token.
-   * 
+   *
    * @param string $dir
    */
   public function setDir($dir)
   {
-    if (strpos($dir, DIRECTORY_SEPARATOR, (strlen($dir)-1)) === false) {
+    if (!empty($dir) && strpos($dir, DIRECTORY_SEPARATOR, (strlen($dir)-1)) === false) {
       $dir .= DIRECTORY_SEPARATOR;
     }
     $this->_dir = $dir;

@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ *
  */
 class BuilderElement_Task_Filesystem_Copy extends BuilderElement
 {
@@ -31,7 +31,7 @@ class BuilderElement_Task_Filesystem_Copy extends BuilderElement
   protected $_toDir;
   protected $_toFile;
   protected $_filesets;
-  
+
   public function __construct()
   {
     parent::__construct();
@@ -40,5 +40,19 @@ class BuilderElement_Task_Filesystem_Copy extends BuilderElement
     $this->_toFile = null;
     $this->_toDir = null;
     $this->_filesets = array();
+  }
+
+	/**
+   * Setter. Makes sure <code>$toDir</code> always ends in a valid
+   * <code>DIRECTORY_SEPARATOR</code> token.
+   *
+   * @param string $dir
+   */
+  public function setToDir($dir)
+  {
+    if (!empty($dir) && strpos($dir, DIRECTORY_SEPARATOR, (strlen($dir)-1)) === false) {
+      $dir .= DIRECTORY_SEPARATOR;
+    }
+    $this->_toDir = $dir;
   }
 }

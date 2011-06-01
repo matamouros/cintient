@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,24 +18,24 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * All AJAX requests are session based, i.e., no GET parameters should be passed
  * for the current user and project.
- * 
+ *
  * Mapping rules:
- * 
+ *
  * URL => method name => template filename:
  * . /foo         => foo()        => foo.tpl         (default section)
  * . /foo-bar     => fooBar()     => foo-bar.tpl     (default section)
  * . /foo/bar     => foo_bar()    => foo/bar.tpl     (foo section)
  * . /foo/foo-bar => foo_fooBar() => foo/foo-bar.tpl (foo section)
- * 
+ *
  */
 class AjaxManager
-{  
+{
   /* +----------------------------------------------------------------+ *\
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
@@ -48,7 +48,7 @@ class AjaxManager
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     //
     // Check server-side upload limits
     //
@@ -61,7 +61,7 @@ class AjaxManager
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     //
     // Checking content length
     //
@@ -77,14 +77,14 @@ class AjaxManager
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
-    }    
+    }
     if ($size > CINTIENT_AVATAR_MAX_SIZE) {
       $msg = 'Avatar file is too large.';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     //
     // File handling.
     //
@@ -94,21 +94,21 @@ class AjaxManager
     $realSize = stream_copy_to_stream($input, $output);
     fclose($input);
     fclose($output);
-    
+
     if ($realSize != $size){
       $msg = "Problems with the uploaded avatar file size. [CONTENT_LENGTH={$size}] [FILE_SIZE={$realSize}]";
       SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     if (!file_exists($temp)) {
       $msg = "Uploaded avatar file couldn't be saved to temporary dir. [TEMP_FILE={$temp}]";
       SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     $fileStats = getimagesize($temp);
     if ($fileStats[2] != IMAGETYPE_JPEG && $fileStats[2] != IMAGETYPE_PNG) {
       unlink($temp);
@@ -131,7 +131,7 @@ class AjaxManager
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
       exit;
     }
-    
+
     //
     // Save. If the user has a previous local avatar, extract it and
     // remove it from the filesystem.
@@ -174,11 +174,11 @@ class AjaxManager
     echo json_encode(array('success' => true, 'url' => UrlManager::getForAsset($filename, array('avatar' => 1))));
     exit;
   }
-  
+
   static public function project_accessLevel()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    
+
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -188,7 +188,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
@@ -197,7 +197,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     if (!isset($_GET['change']) ||
         !($params = explode('_', $_GET['change'])) ||
         count($params) != 2 ||
@@ -209,7 +209,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     $user = User::getByUsername($params[0]);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$params[0]}]", __METHOD__);
@@ -219,7 +219,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     if ($GLOBALS['project']->setAccessLevelForUser($user, $params[1])) {
       echo json_encode(array(
         'success' => true,
@@ -234,11 +234,11 @@ class AjaxManager
 
     exit;
   }
-  
+
   static public function project_addUser()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    
+
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -248,7 +248,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
@@ -257,7 +257,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     $user = User::getByUsername($_GET['username']);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
@@ -267,7 +267,7 @@ class AjaxManager
       ));
       exit;
     }
-    
+
     $GLOBALS['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
     $accessLevels = Access::getList();
     $html = <<<EOT
@@ -308,7 +308,7 @@ EOT;
     $html .= "
               </div>
             </li>";
-    
+
     echo json_encode(array(
       'success' => true,
       'html' => $html,
@@ -316,7 +316,7 @@ EOT;
 
     exit;
   }
-  
+
   static public function project_build()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -357,9 +357,9 @@ EOT;
     }
     exit;
   }
-  
+
 	/**
-   * 
+   *
    */
   static public function project_integrationBuilderAddElement()
   {
@@ -394,32 +394,34 @@ EOT;
       ));
       exit;
     }
-    
+
     $element = new $class();
-    
+
     //
     // Setup PhpLint tasks to check all PHP files under the sources dir
     //
     if ($_REQUEST['task'] == 'PhpLint') {
       $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setDir($GLOBALS['project']->getScmLocalWorkingCopy());
+      $fileset->setType(BuilderElement_Type_Fileset::FILE);
+      $fileset->setDir('${sourcesDir}');
       $fileset->addInclude('**/*.php');
       $element->setFilesets(array($fileset));
     }
-    
+
     //
     // Setup PhpUnit tasks with default values
     //
     elseif ($_REQUEST['task'] == 'PhpUnit') {
       $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setDir($GLOBALS['project']->getScmLocalWorkingCopy() . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR);
+      $fileset->setType(BuilderElement_Type_Fileset::FILE);
+      $fileset->setDir('${sourcesDir}' . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR);
       $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
       $element->setFilesets(array($fileset));
       $element->setLogJunitXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'log-junit.xml');
       $element->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.xml');
       $element->setCodeCoverageHtmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.html');
     }
-    
+
     //
     // Setup Delete with default values
     //
@@ -430,36 +432,45 @@ EOT;
       $fileset->setDefaultExcludes(false);
       $element->setFilesets(array($fileset));
     }
-    
+
+    //
+    // Copy needs BuilderElement_Type_Fileset::BOTH as default
+    //
+    elseif ($_REQUEST['task'] == 'Copy') {
+      $fileset = new BuilderElement_Type_Fileset();
+      $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+      $fileset->setDefaultExcludes(false);
+      $element->setFilesets(array($fileset));
+    }
+
     //
     // Setup tasks with empty filesets
     //
     elseif ($_REQUEST['task'] == 'Chmod' ||
-            $_REQUEST['task'] == 'Chown' ||
-            $_REQUEST['task'] == 'Copy'
+            $_REQUEST['task'] == 'Chown'
     ) {
       $fileset = new BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }
-    
+
     $targets = $GLOBALS['project']->getIntegrationBuilder()->getTargets();
     $target = $targets[0];
     $target->addTask($element);
-    
+
     $GLOBALS['project']->log("Integration builder changed, element added.");
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
 
     echo $element->toString('Html');
     exit;
   }
-  
+
 	/**
-   * 
+   *
    */
   static public function project_integrationBuilderDeleteElement()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    
+
     if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
         empty($_REQUEST['internalId'])) {
       $msg = 'Invalid request';
@@ -489,27 +500,27 @@ EOT;
       ));
       exit;
     }
-    
+
     $newBuilder = $GLOBALS['project']->getIntegrationBuilder()->deleteElement($_REQUEST['internalId']);
     $GLOBALS['project']->setIntegrationBuilder($newBuilder);
     $GLOBALS['project']->log("Integration builder changed, element removed.");
-    
+
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
     echo json_encode(array(
       'success' => true,
     ));
     exit;
   }
-  
+
 	/**
    * Saves one builder element at a time on project edit.
    */
   static public function project_integrationBuilderSaveElement()
   {
     /*
-    
+
     matamouros 2011.05.18:
-    
+
     In order to simpflify a great deal of things, I've opted for the following:
     . filesets in HTML are abstracted as seamlessly part of the respective
       tasks where they are used. In truth, filesets should be completely
@@ -517,12 +528,12 @@ EOT;
       (perhaps on a select dropdown).
     . The above means that, for now, only one fileset is allowed for
       each task that uses it.
-    
+
     Alas, this simplification accounts for slightly bloatier code in
     this method, namely because we now have to special case the processing
     of seamless embedded filesets and make sure that backstage they are
     still properly updating the corresponding BuilderElement_Fileset object.
-    
+
     */
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
     SystemEvent::raise(SystemEvent::DEBUG, print_r($_REQUEST, true), __METHOD__);
@@ -546,7 +557,7 @@ EOT;
       ));
       exit;
     }
-    
+
     $o = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']['value']);
     if (!($o instanceof BuilderElement)) {
       $msg = 'Unknown task specified';
@@ -557,7 +568,7 @@ EOT;
       ));
       exit;
     }
-    
+
     if (!$o->isEditable()) {
       $msg = 'Builder element not editable';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -582,18 +593,16 @@ EOT;
       //
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
            $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
-           $attributeName == 'type' )/* &&
+           $attributeName == 'type' ) &&
           ($o instanceof BuilderElement_Task_PhpUnit ||
            $o instanceof BuilderElement_Task_PhpLint ||
            $o instanceof BuilderElement_Task_Filesystem_Chmod ||
            $o instanceof BuilderElement_Task_Filesystem_Delete
-          )*/
+          )
       ) {
         $filesets = $o->getFilesets(); // Only one is expected, for now
         if ($attributeName == 'include' || $attributeName == 'exclude') {
           $value = array($value);
-        } elseif ($attributeName == 'dir') { // On the Html connector this value is cleaned for better user readability. Put it back on now.
-          $value = $GLOBALS['project']->getScmLocalWorkingCopy() . $value;
         } elseif ($attributeName == 'type' &&
                   $value != BuilderElement_Type_Fileset::BOTH &&
                   $value != BuilderElement_Type_Fileset::FILE &&
@@ -606,16 +615,16 @@ EOT;
         $o->$method($value);
       }
     }
-    
+
     $GLOBALS['project']->log("Integration builder changed.");
-    
+
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element properly edited.", __METHOD__);
     echo json_encode(array(
       'success' => true,
     ));
     exit;
   }
-  
+
   static public function project_integrationBuilderSortElements()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -651,20 +660,20 @@ EOT;
     //
     $parent = $GLOBALS['project']->getIntegrationBuilder()->getParent($_REQUEST['sortedElements'][0]);
     $parent->setTasks($parent->sortElements($_REQUEST['sortedElements']));
-    
+
     $GLOBALS['project']->log("Integration builder changed, reordered tasks.");
-    
+
     SystemEvent::raise(SystemEvent::DEBUG, "Project tasks reordered.", __METHOD__);
     echo json_encode(array(
       'success' => true,
     ));
     exit;
   }
-  
+
   static public function project_removeUser()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    
+
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
         !isset($_GET['username'])) {
       $msg = 'Invalid request';
@@ -675,7 +684,7 @@ EOT;
       ));
       exit;
     }
-    
+
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(array(
@@ -684,7 +693,7 @@ EOT;
       ));
       exit;
     }
-    
+
     $user = User::getByUsername($_GET['username']);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
@@ -694,7 +703,7 @@ EOT;
       ));
       exit;
     }
-    
+
     //
     // Don't remove owners
     //
@@ -713,14 +722,14 @@ EOT;
     ));
     exit;
   }
-  
+
   /**
    * Searches for a list of users, given a specified term.
    */
   static public function search_user()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called. [USERTERM={$_GET['userTerm']}]", __METHOD__);
-    
+
     //
     // This should be a costly operation for the user waiting.
     //
@@ -736,7 +745,7 @@ EOT;
       ));
       exit;
     }
-    
+
     $usersToJson = array();
     $users = User::getListByIncompleteTerm($_GET['userTerm']);
     for ($i = 0; $i < count($users); $i++) {
@@ -744,12 +753,12 @@ EOT;
       $usersToJson[$i]['username'] = $users[$i]->getUsername();
       $usersToJson[$i]['avatar'] = $users[$i]->getAvatarUrl();
     }
-    
+
     echo json_encode(array(
       'success' => true,
       'result' => $usersToJson,
     ));
-    
+
     exit;
   }
 }
