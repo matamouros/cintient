@@ -22,7 +22,7 @@
  */
 
 /**
- *
+ * @package Builder
  */
 class BuilderElement_Task_Echo extends BuilderElement
 {

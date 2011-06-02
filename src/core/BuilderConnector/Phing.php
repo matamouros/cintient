@@ -22,7 +22,7 @@
  */
 
 /**
- *
+ * @package Builder
  */
 class BuilderConnector_Phing
 {

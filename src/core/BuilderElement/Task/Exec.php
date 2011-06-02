@@ -30,6 +30,8 @@
  * $exec->setDir('/tmp/');
  * $exec->setOutputProperty('fooBar');
  * echo $exec->toString('ant');
+ *
+ * @package Builder
  */
 class BuilderElement_Task_Exec extends BuilderElement
 {

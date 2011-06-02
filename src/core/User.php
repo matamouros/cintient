@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package User
  */
 class User
 {
@@ -36,15 +36,15 @@ class User
   private $_notificationEmails; // Email addresses for notification purposes
   private $_signature;
   private $_username;
-  
+
   private $_projectId;          // The active project ID
   private $_projectAccess;      // The active project access level
-  
+
   /**
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -60,7 +60,7 @@ class User
     }
     return false;
   }
-  
+
   public function __construct()
   {
     $this->_avatar = null;
@@ -74,12 +74,12 @@ class User
     $this->_signature = null;
     $this->_username = '';
   }
-  
+
   public function __destruct()
   {
     $this->_save();
   }
-  
+
   private function _save($force=false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
@@ -117,7 +117,7 @@ class User
     $this->updateSignature();
     return true;
   }
-  
+
   /**
    * Call this at the very creation of the object, whenever not loading it from
    * the database.
@@ -126,25 +126,25 @@ class User
   {
     return $this->_save();
   }
-  
+
   /**
    * Use this instead of getCos() directly, in order to be more future
    * proof. It's possible that the User's CoS will someday be an array,
    * so using this should keep you safe.
-   * 
+   *
    * @param UserCos $cos
    */
   public function hasCos($cos)
   {
     return ($this->getCos() == $cos);
   }
-  
+
   public function getAccess()
   {
     if ($this->getCos()) {
     }
   }
-  
+
   public function getAvatarUrl()
   {
     if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {
@@ -157,17 +157,17 @@ class User
       return '/imgs/anon_avatar_50.png';
     }
   }
-  
+
   public function setAvatarLocal($filename)
   {
     $this->_avatar = 'local:' . $filename;
   }
-  
+
   public function setAvatarGravatar($id)
   {
     $this->_avatar = 'gravatar:' . $id;
   }
-  
+
   private function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
@@ -196,12 +196,12 @@ class User
     #endif
     return true;
   }
-  
+
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
   }
-  
+
   static public function getById($id)
   {
     $ret = null;
@@ -212,7 +212,7 @@ class User
     }
     return $ret;
   }
-  
+
   static public function getByUsername($username)
   {
     $ret = null;
@@ -223,7 +223,7 @@ class User
     }
     return $ret;
   }
-  
+
   static public function getListByIncompleteTerm($term)
   {
     $ret = array();
@@ -236,7 +236,7 @@ class User
     }
     return $ret;
   }
-  
+
   static public function install()
   {
     $sql = <<<EOT
@@ -259,9 +259,9 @@ EOT;
     SystemEvent::raise(SystemEvent::INFO, "Creating User related tables.", __METHOD__);
     return Database::execute($sql);
   }
-  
+
   /**
-   * 
+   *
    * @param unknown_type $rs
    */
   static private function _getObject($rs)

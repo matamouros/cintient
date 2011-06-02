@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Project
  */
 class ProjectBuild
 {
@@ -44,7 +44,7 @@ class ProjectBuild
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -60,7 +60,7 @@ class ProjectBuild
     }
     return false;
   }
-  
+
   public function __construct(Project $project)
   {
     $this->_project = $project;
@@ -73,12 +73,12 @@ class ProjectBuild
     $this->_signature = null;
     $this->_scmRevision = null;
   }
-  
+
   public function __destruct()
   {
     $this->_save();
   }
-  
+
   public function createReportFromJunit()
   {
     $junitReportFile = $this->getReportsDir() . CINTIENT_JUNIT_REPORT_FILENAME;
@@ -136,7 +136,7 @@ class ProjectBuild
         $method->setErrors((string)$methodXml->attributes()->errors);
         $method->setTime((string)$methodXml->attributes()->time);
         $methods[] = $method;
-        
+
         $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
         $methodsNames[] = $methodXml->attributes()->name;
         $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
@@ -146,13 +146,13 @@ class ProjectBuild
 
       $chartWidth = CHART_JUNIT_DEFAULT_WIDTH;
       $chartHeight = 25 * count($methodsNames) + 60;
-      
+
       /* pChart library inclusions */
       include 'lib/pChart/class/pData.class';
       include 'lib/pChart/class/pDraw.class';
       include 'lib/pChart/class/pImage.class';
-    
-      $MyData = new pData();  
+
+      $MyData = new pData();
       $MyData->addPoints($successes, 'Ok');
       $MyData->addPoints($failures, 'Failed');
       $MyData->setPalette('Ok', array(
@@ -174,7 +174,7 @@ class ProjectBuild
       /* Create the pChart object */
       $myPicture = new pImage($chartWidth, $chartHeight, $MyData);
       $myPicture->Antialias = false;
-//$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>20)); 
+//$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>20));
       $myPicture->drawGradientArea(
         0,
         0,
@@ -218,7 +218,7 @@ class ProjectBuild
         //'Surrounding' => -100,
         //'Alpha' => 100,
       ));
-      /* Write the picture title */ 
+      /* Write the picture title */
       $myPicture->setFontProperties(array(
         //'FontName' => CINTIENT_INSTALL_DIR . 'lib/pChart/fonts/MiniSet2.ttf',
         'FontName' => CINTIENT_INSTALL_DIR . 'lib/pChart/fonts/pf_arma_five.ttf',
@@ -264,8 +264,8 @@ class ProjectBuild
         'InnerTickWidth' => 2,
         'CycleBackground' => true,
       ));
-      
-//$myPicture->drawThreshold(0,array("WriteCaption"=>false)); 
+
+//$myPicture->drawThreshold(0,array("WriteCaption"=>false));
 
 
       $myPicture->drawStackedBarChart(array(
@@ -275,13 +275,13 @@ class ProjectBuild
         //'BorderG' => 255,
         //'BorderB' => 255,
       ));
-      
+
       /* Write the chart legend */
       $myPicture->drawLegend(15, $chartHeight-15, array(
         'Style' => LEGEND_NOBORDER,
         'Mode' => LEGEND_HORIZONTAL
       ));
-      
+
       /* Render the picture to file */
       $chartFile = "{$this->getReportsDir()}{$class->getChartFilename()}";
       $myPicture->render($chartFile);
@@ -289,13 +289,13 @@ class ProjectBuild
         SystemEvent::raise(SystemEvent::ERROR, "Chart file was not saved. [PID={$this->getProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
         return false;
       }
-      
+
       $class->setTestMethods($methods);
       $classes[] = $class;
       return $classes;
     }
   }
-  
+
   public function delete()
   {
     $sql = "DROP TABLE projectbuild{$this->getProject()->getId()}";
@@ -305,7 +305,7 @@ class ProjectBuild
     }
     return true;
   }
-  
+
   private function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
@@ -315,12 +315,12 @@ class ProjectBuild
     unset($arr['_project']);
     return md5(serialize($arr));
   }
-  
+
   public function getReportsDir()
   {
     return $this->getProject()->getReportsWorkingDir() . $this->getId() . '/';
   }
-  
+
   public function init()
   {
     //
@@ -350,7 +350,7 @@ class ProjectBuild
     //}
     return true;
   }
-  
+
   private function _save($force=false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
@@ -385,7 +385,7 @@ class ProjectBuild
         return false;
       }
     }
-    
+
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getProject()->getId()}]", __METHOD__);
       return false;
@@ -396,14 +396,14 @@ class ProjectBuild
     $this->updateSignature();
     return true;
   }
-  
+
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
   }
-  
+
   static public function getById($buildId, Project $project, User $user, $access = Access::READ, array $options = array())
-  { 
+  {
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $buildId = (int)$buildId;
@@ -421,7 +421,7 @@ class ProjectBuild
     }
     return $ret;
   }
-  
+
   static public function getLatest(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     $ret = false;
@@ -441,13 +441,13 @@ class ProjectBuild
     }
     return $ret;
   }
-  
+
   static public function getList(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
     isset($options['pageStart'])?:$options['pageStart']=0;
     isset($options['pageLength'])?:$options['pageLength']=CINTIENT_BUILDS_PAGE_LENGTH;
-    
+
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $sql = 'SELECT pb.*'
@@ -476,7 +476,7 @@ class ProjectBuild
     }
     return $ret;
   }
-  
+
   static private function _getObject(Resultset $rs, Project $project)
   {
     $ret = new ProjectBuild($project);
@@ -487,11 +487,11 @@ class ProjectBuild
     $ret->setOutput($rs->getOutput());
     $ret->setStatus($rs->getStatus());
     $ret->setScmRevision($rs->getScmRevision());
-    
+
     $ret->updateSignature();
     return $ret;
   }
-  
+
   static public function install($projectId)
   {
     $sql = <<<EOT
@@ -511,7 +511,7 @@ EOT;
     }
     return true;
   }
-  
+
   static public function uninstall($projectId)
   {
     $sql = "DROP TABLE projectbuild{$projectId}";

@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * A class for handling access level.
+ *
+ * @package Authorization
  */
 class Access
 {
@@ -31,7 +33,7 @@ class Access
   const BUILD = 3; //3
   const WRITE = 7; //7
   const OWNER = 15; //15
-  
+
   static $_description = array(
     self::NONE => "No access at all",
     self::READ => "No access to settings or possibility of changing anything",
@@ -39,12 +41,12 @@ class Access
     self::WRITE => "Can access and change all settings except deleting the project",
     self::OWNER => "Root level access",
   );
-  
+
   //
   // Utility consts - SERIOUSLY take care if the above consts are ever altered!
   //
   const DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT = self::BUILD;  // READ & BUILD
-  
+
   static public function getDescription($access)
   {
     if (isset(self::$_description[$access])) {
@@ -52,7 +54,7 @@ class Access
     }
     return false;
   }
-  
+
   static public function toStr($access)
   {
     $str = '';
@@ -78,7 +80,7 @@ class Access
     }
     return $str;
   }
-  
+
   static public function getList()
   {
     return array(
@@ -87,6 +89,6 @@ class Access
       self::BUILD => self::toStr(self::BUILD),
       self::WRITE => self::toStr(self::WRITE),
       self::OWNER => self::toStr(self::OWNER),
-    ); 
+    );
   }
 }

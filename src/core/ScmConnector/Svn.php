@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,12 +18,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ *
  * Config file section: [svn]
+ *
+ * @package Scm
  */
 class ScmConnector_Svn implements ScmConnectorInterface
 {
@@ -38,7 +40,7 @@ class ScmConnector_Svn implements ScmConnectorInterface
     }
     return true;
   }
-  
+
   static public function isModified(array $args)
   {
     //
@@ -78,7 +80,7 @@ class ScmConnector_Svn implements ScmConnectorInterface
     $rev = (int)$matches[1];
     return true;
   }
-  
+
   static public function tag(array $args)
   {}
 }

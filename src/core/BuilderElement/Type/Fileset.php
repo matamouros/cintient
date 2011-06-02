@@ -27,6 +27,8 @@
  * alone emulate an Ant Fileset and a Dirset. On the other hand Phing
  * only supports Fileset (although I don't quite know if it embeds Dirset
  * functionality)
+ *
+ * @package Builder
  */
 class BuilderElement_Type_Fileset extends BuilderElement
 {

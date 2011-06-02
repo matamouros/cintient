@@ -24,7 +24,7 @@
 require_once 'lib/lib.htmlgen.php';
 
 /**
- *
+ * @package Builder
  */
 class BuilderConnector_Html
 {

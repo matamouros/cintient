@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Helper class for dealing with Junit test suites (at the file level)
+ *
+ * @package Utility
  */
 class TestClass
 {
@@ -35,12 +37,12 @@ class TestClass
   private $_time;
   private $_testMethods;
   private $_chartFilename;
-  
+
   /**
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */

@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,20 +18,20 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Usage:
- * 
- * 
+ *
+ * @package Builder
  */
 class BuilderElement_Task_Filesystem_Chown extends BuilderElement
 {
   protected $_file;            // A string containing a single file or dir to act upon
   protected $_user;            // The user or user and group (separated by a dot)
   protected $_filesets;        // An array of fileset types
-  
+
   public function __construct()
   {
     parent::__construct();

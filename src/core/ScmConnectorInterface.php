@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,25 +18,27 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * The $args array used throughout this interface should have the following
  * placeholders:
- * 
+ *
  * . remote   => the remote repository
  * . local    => the local working copy to act upon
  * . username => the authorized username to interact with the repository
  * . password => the password of the authorized username
+ *
+ * @package Scm
  */
 interface ScmConnectorInterface
 {
   static public function checkout(array $args);
-  
+
   static public function isModified(array $args);
 
   static public function update(array $args, &$rev);
-  
+
   static public function tag(array $args);
 }

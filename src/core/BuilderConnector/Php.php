@@ -49,6 +49,8 @@
  *  $GLOBALS['targets'][]              0-index based array with all the targets in their actual execution order
  *  $GLOBALS['targetsDefault']         Holds the name of the default target to execute
  *  $GLOBALS['targetsDeps'][<ID>][]    Holds the names of the target's dependency targets
+ *
+ * @package Builder
  */
 class BuilderConnector_Php
 {

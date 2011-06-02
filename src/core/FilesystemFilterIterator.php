@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,9 +18,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
+/**
+ *
+ * @author pfonseca
+ * @package Utility
+ */
 class FilesystemFilterIterator extends FilterIterator
 {
   /**
@@ -56,19 +61,19 @@ class FilesystemFilterIterator extends FilterIterator
     '**/.bzr/**',
     '**/.bzrignore',
   );
-  
+
   private $_dir;
-  
+
   private $_exclude;
-  
+
   private $_include;
-  
-  
+
+
 	/**
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -84,7 +89,7 @@ class FilesystemFilterIterator extends FilterIterator
     }
     return false;
   }
-  
+
   public function __construct(Iterator $it, $dir, Array $include = array(), Array $exclude = array())
   {
     parent::__construct($it);
@@ -92,7 +97,7 @@ class FilesystemFilterIterator extends FilterIterator
     $this->_include = $include;
     $this->_exclude = $exclude;
   }
-  
+
   public function accept()
   {
     // if it is default excluded promptly return false
@@ -115,7 +120,7 @@ class FilesystemFilterIterator extends FilterIterator
     }
     return false;
   }
-  
+
   private function _isMatch($pattern)
   {
     $current = $this->current();

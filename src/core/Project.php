@@ -26,6 +26,8 @@
  * done automatically, i.e., there's no need to call save() from an outside
  * scope. Usage is simple: new objects created from scratch, don't forget to
  * call init(); objects created from the database, no need to do anything.
+ *
+ * @package Project
  */
 class Project
 {

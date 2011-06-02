@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,18 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Authentication
  */
 class Auth implements AuthInterface
 {
   /**
    * On success populates $GLOBALS['user'] with the authenticated user.
-   * 
-   * @return bool 
+   *
+   * @return bool
    */
   static public function authenticate()
   {
@@ -57,7 +57,7 @@ class Auth implements AuthInterface
     SystemEvent::raise(SystemEvent::DEBUG, "User authenticated. [USR={$user->getUsername()}]", __METHOD__);
     return true;
   }
-  
+
   static public function logout()
   {
     $username = $GLOBALS['user']->getUsername();

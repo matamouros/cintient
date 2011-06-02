@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Project
  */
 class ProjectLog
 {
@@ -38,7 +38,7 @@ class ProjectLog
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -54,7 +54,7 @@ class ProjectLog
     }
     return false;
   }
-  
+
   public function __construct($projectId)
   {
     $this->_projectId = $projectId;
@@ -65,12 +65,12 @@ class ProjectLog
     $this->_username = '';
     $this->_signature = null;
   }
-  
+
   public function __destruct()
   {
     $this->_save();
   }
-  
+
   public function delete()
   {
     $sql = "DROP TABLE projectlog{$this->getProjectId()}";
@@ -80,7 +80,7 @@ class ProjectLog
     }
     return true;
   }
-  
+
   private function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
@@ -88,7 +88,7 @@ class ProjectLog
     unset($arr['_signature']);
     return md5(serialize($arr));
   }
-  
+
   private function _save($force=false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
@@ -112,7 +112,7 @@ class ProjectLog
       return false;
     }
     $this->setId($id);
-    
+
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project log might not have been saved. [PID={$this->getProjectId()}]", __METHOD__);
       return false;
@@ -123,18 +123,18 @@ class ProjectLog
     $this->updateSignature();
     return true;
   }
-  
+
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
   }
-  
+
   static public function getListByProject($project, $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
     isset($options['pageStart'])?:$options['pageStart']=0;
     isset($options['pageLength'])?:$options['pageLength']=CINTIENT_BUILDS_PAGE_LENGTH;
-    
+
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
     $sql = 'SELECT pl.*'
@@ -163,7 +163,7 @@ class ProjectLog
     }
     return $ret;
   }
-  
+
   static private function _getObject(Resultset $rs, $projectId)
   {
     $ret = new ProjectLog($projectId);
@@ -172,11 +172,11 @@ class ProjectLog
     $ret->setType($rs->getType());
     $ret->setMessage($rs->getMessage());
     $ret->setUsername($rs->getUsername());
-    
+
     $ret->updateSignature();
     return $ret;
   }
-  
+
   static public function install($projectId)
   {
     $sql = <<<EOT
@@ -194,7 +194,7 @@ EOT;
     }
     return true;
   }
-  
+
   static public function uninstall($projectId)
   {
     $sql = "DROP TABLE projectlog{$projectId}";

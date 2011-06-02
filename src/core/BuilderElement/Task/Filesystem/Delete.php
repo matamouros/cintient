@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,17 +18,17 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Builder
  */
 class BuilderElement_Task_Filesystem_Delete extends BuilderElement
 {
   protected $_includeEmptyDirs;
   protected $_filesets;          // An array of fileset types
-  
+
   public function __construct()
   {
     parent::__construct();

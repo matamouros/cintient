@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,16 +18,16 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Builder
  */
 class XmlBuilderElement
 {
   private $_xml;
-  
+
   public function __construct()
   {
     $this->_xml = new XMLWriter();
@@ -36,13 +36,13 @@ class XmlBuilderElement
     $this->_xml->setIndent(true);
     $this->_xml->setIndentString('  ');
   }
-  
+
   public function __destruct()
   {
     $this->_xml = null;
     unset($this->_xml);
   }
-  
+
   public function __call($name, $args)
   {
     if (method_exists($this->_xml, $name)) {
@@ -61,7 +61,7 @@ class XmlBuilderElement
       exit;
     }
   }
-  
+
   public function flush()
   {
     $this->_xml->endDocument();

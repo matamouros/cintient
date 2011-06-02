@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,13 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
+/**
+ *
+ * @author pfonseca
+ * @package System
+ */
 class Process
 {
   private $_cmd;
-   
+
   function __construct($cmd)
   {
     if (empty($cmd)) {
@@ -32,7 +37,7 @@ class Process
     }
     $this->_cmd = $cmd;
   }
-  
+
   public function isRunning()
   {
     if (PHP_OS == 'Windows') {
@@ -52,7 +57,7 @@ class Process
     }
     return false;
   }
-  
+
   public function runAsync()
   {
     //

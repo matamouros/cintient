@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Reference
  */
 class UrlManager
 {
@@ -30,93 +30,93 @@ class UrlManager
   {
     return CINTIENT_BASE_URL . '/ajax/avatar-upload/';
   }
-  
+
   static public function getForAjaxProjectIntegrationBuilderAddElement()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-add-element/';
   }
-  
+
   static public function getForAjaxProjectIntegrationBuilderDeleteElement()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-delete-element/';
   }
-  
+
   static public function getForAjaxProjectIntegrationBuilderSaveElement()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-save-element/';
   }
-  
+
   static public function getForAjaxProjectIntegrationBuilderSortElements()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-sort-elements/';
   }
-  
+
   static public function getForAjaxProjectAccessLevelChange()
   {
     return CINTIENT_BASE_URL . '/ajax/project/access-level/';
   }
-  
+
   static public function getForAjaxProjectAddUser()
   {
     return CINTIENT_BASE_URL . '/ajax/project/add-user/';
   }
-  
+
   static public function getForAjaxProjectBuild()
   {
     return CINTIENT_BASE_URL . '/ajax/project/build/';
   }
-  
+
   static public function getForAjaxProjectRemoveUser()
   {
     return CINTIENT_BASE_URL . '/ajax/project/remove-user/';
   }
-  
+
   static public function getForAjaxSearchUser()
   {
     return CINTIENT_BASE_URL . '/ajax/search/user/';
   }
-  
+
   static public function getForAsset($filename, $params = array())
   {
     $params['f'] = $filename;
     return CINTIENT_BASE_URL . "/asset/?" .  http_build_query($params);
   }
-  
+
   static public function getForAuthentication()
   {
     return CINTIENT_BASE_URL . '/authentication/';
   }
-  
+
   static public function getForDashboard()
   {
     return CINTIENT_BASE_URL . '/dashboard/';
   }
-  
+
   static public function getForProjectBuildHistory()
   {
-    return CINTIENT_BASE_URL . '/project/history/';   
+    return CINTIENT_BASE_URL . '/project/history/';
   }
-  
+
   static public function getForProjectBuildView(Project $project, ProjectBuild $build)
   {
     return CINTIENT_BASE_URL . "/project/history/?pid={$project->getId()}&bid={$build->getId()}";
   }
-  
+
   static public function getForProjectEdit()
   {
     return CINTIENT_BASE_URL . '/project/edit/';
   }
-  
+
   static public function getForProjectEditUsers()
   {
     return CINTIENT_BASE_URL . '/project/edit/?users';
   }
-  
+
   static public function getForProjectNew()
   {
     return CINTIENT_BASE_URL . '/project/new/';
   }
-  
+
   static public function getForProjectView(Project $project = null)
   {
     $param = '';
@@ -125,7 +125,7 @@ class UrlManager
     }
     return CINTIENT_BASE_URL . "/project/" . $param;
   }
-  
+
   static public function getForRegistration()
   {
     return CINTIENT_BASE_URL . "/registration/";

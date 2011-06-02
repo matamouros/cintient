@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,23 +18,25 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Because of the way we use __call and $this->_changed, this class shouldn't
  * have null values for class variables populated from the database.
- * 
+ *
  * One special case with this class is that all data persistence handling is
  * done automatically, i.e., there's no need to call save() from an outside
  * scope. Usage is simple: new objects created from scratch, don't forget to
  * call init(); objects created from the database, no need to do anything.
+ *
+ * @package System
  */
 class SystemSettings implements ArrayAccess
-{ 
+{
   private $_settings;
   private $_signature; // Internal flag to control whether a save to database is required
-  
+
   const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
   const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
 
@@ -42,7 +44,7 @@ class SystemSettings implements ArrayAccess
    * Magic method implementation for calling vanilla getters and setters. This
    * is rigged to work only with private/protected non-static class variables
    * whose nomenclature follows the Zend Coding Standard.
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -61,7 +63,7 @@ class SystemSettings implements ArrayAccess
     }
     return false;
   }
-  
+
   public function __construct()
   {
     $this->_signature = null;
@@ -73,12 +75,12 @@ class SystemSettings implements ArrayAccess
       self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
     );
   }
-  
+
   public function __destruct()
   {
     $this->_save();
   }
-  
+
   public function offsetSet($offset, $value)
   {
     if (is_null($offset)) {
@@ -87,7 +89,7 @@ class SystemSettings implements ArrayAccess
       $this->_settings[$offset] = $value;
     }
   }
-  
+
   public function offsetExists($offset)
   {
     return isset($this->_settings[$offset]);
@@ -97,24 +99,24 @@ class SystemSettings implements ArrayAccess
   {
     unset($this->_settings[$offset]);
   }
-  
+
   public function offsetGet($offset)
   {
     return isset($this->_settings[$offset]) ? $this->_settings[$offset] : null;
   }
-  
+
   private function _save($force = false)
   {
     if ($this->_getCurrentSignature() == $this->_signature && !$force) {
       SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
       return false;
     }
-    
+
     if (!$stmt = Database::stmtPrepare("REPLACE INTO systemsettings (key, value) VALUES (?,?)")) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems trying to save system settings.", __METHOD__);
       return false;
     }
-    
+
     foreach ($this->_settings as $key => $value) {
       Database::stmtBind($stmt, array($key, $value));
       if (!Database::stmtExecute($stmt)) {
@@ -129,7 +131,7 @@ class SystemSettings implements ArrayAccess
     $this->updateSignature();
     return true;
   }
-  
+
   static public function get()
   {
     $ret = false;
@@ -139,9 +141,9 @@ class SystemSettings implements ArrayAccess
     }
     return $ret;
   }
-  
+
   /**
-   * 
+   *
    * @param Resultset $rs
    */
   static private function _getObject(Resultset $rs)
@@ -153,7 +155,7 @@ class SystemSettings implements ArrayAccess
     $ret->updateSignature();
     return $ret;
   }
-  
+
   static public function install()
   {
     $sql = <<<EOT
@@ -172,17 +174,17 @@ EOT;
       return true;
     }
   }
-  
+
   public function setSetting($key, $value)
   {
     $this->_settings[$key] = $value;
   }
-  
+
   public function updateSignature()
   {
     $this->setSignature($this->_getCurrentSignature());
   }
-  
+
   private function _getCurrentSignature()
   {
     $arr = get_object_vars($this);

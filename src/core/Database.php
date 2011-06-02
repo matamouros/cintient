@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,16 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Database class.
+ *
+ * @package Database
  */
 class Database
 {
   static private $_transacting;
-  
+
   /**
    * Instantiates a single class instance
    */
@@ -50,10 +52,10 @@ class Database
   }
 
   /**
-   * 
+   *
    * @param string $query The SQL to execute
    * @param array $values Optional values array for parameter binding
-   * 
+   *
    * @return bool True or False.
    */
   static public function execute($query, $values=null)
@@ -84,7 +86,7 @@ class Database
     #endif
     return true;
   }
-  
+
   /**
    * Specifically tailored for insertions, thus not needing to return a result
    * set. It is possible to use binding parameters to the sql query passed as an
@@ -95,10 +97,10 @@ class Database
    * protection against SQL injections), and use the statementPrepare() and
    * statementExecute() methods for the real prepared statements you may want to
    * use.
-   * 
+   *
    * @param string $query The SQL to execute
    * @param array $values Optional values array for parameter binding
-   * 
+   *
    * @return The id of the inserted record or False. NOTE: If the table doesn't
    * have auto-numbering on, the id string "0" is returned! Be sure to check
    * this using the === operator.
@@ -125,10 +127,10 @@ class Database
    * against SQL injections), and use the statementPrepare() and
    * statementExecute() methods for the real prepared statements you may want to
    * use.
-   * 
+   *
    * @param string $query The SQL to execute
    * @param array $values Optional values array for parameter binding
-   * 
+   *
    * @return bool|Object False or the result set of the query performed
    */
   static public function query($query, $values = null)
@@ -162,7 +164,7 @@ class Database
     #endif
     return $rs;
   }
-  
+
   static public function stmtPrepare($query)
   {
     $db = self::_singleton();
@@ -193,7 +195,7 @@ class Database
     $stmt = $db->prepare($query);
     return $stmt;
   }
-  
+
   static public function stmtBind(SQLite3Stmt &$stmt, array $values)
   {
     SystemEvent::raise(SystemEvent::DEBUG, 'Binding.', __METHOD__);
@@ -214,13 +216,13 @@ class Database
       }
     }
   }
-  
+
   static public function stmtExecute(SQLite3Stmt &$stmt)
   {
     SystemEvent::raise(SystemEvent::DEBUG, 'Executing.', __METHOD__);
     return $stmt->execute();
   }
-  
+
   static public function beginTransaction()
   {
     $db = self::_singleton();
@@ -241,7 +243,7 @@ class Database
       return true;
     }
   }
-  
+
   static public function endTransaction()
   {
     $db = self::_singleton();
@@ -262,7 +264,7 @@ class Database
       return true;
     }
   }
-  
+
   static public function rollbackTransaction()
   {
     $db = self::_singleton();
@@ -283,7 +285,7 @@ class Database
       return true;
     }
   }
-  
+
   static private function _prepareAndBindValues(&$query, &$values)
   {
     $db = self::_singleton();

@@ -22,7 +22,7 @@
  */
 
 /**
- *
+ * @package Builder
  */
 class BuilderElement_Task_Filesystem_Copy extends BuilderElement
 {

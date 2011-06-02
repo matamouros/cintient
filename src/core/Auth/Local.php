@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Authentication
  */
 class Auth_Local implements AuthInterface
 {
@@ -33,7 +33,7 @@ class Auth_Local implements AuthInterface
       return null;
     }
     $sql = 'SELECT u.id FROM user u, userauth ua'
-         . ' WHERE u.username=?'         
+         . ' WHERE u.username=?'
          . ' AND ua.password=?'
          . ' AND u.id=ua.userid';
     $values = array($_POST['username'], hash('sha256', PASSWORD_SALT . $_POST['password']));

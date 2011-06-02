@@ -1,15 +1,35 @@
 <?php
-
+/*
+ *
+ *  Cintient, Continuous Integration made simple.
+ *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *
+ *  This file is part of Cintient.
+ *
+ *  Cintient is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Cintient is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 /**
- * 
+ * @package Utility
  */
 class Utility
 {
   /**
    * Transforms a textual php.ini representation of size (kilobytes,
    * megabytes, gigabytes) into bytes.
-   * 
+   *
    * @param string $str
    */
   static public function phpIniSizeToBytes($str)
@@ -19,11 +39,11 @@ class Utility
     switch($last) {
       case 'g': $val *= 1024;
       case 'm': $val *= 1024;
-      case 'k': $val *= 1024;        
+      case 'k': $val *= 1024;
     }
     return $val;
   }
-  
+
   static public function bytesToHumanReadable($size)
   {
     if ($size < 1024.0) {
@@ -39,7 +59,7 @@ class Utility
     }
     return $size;
   }
-  
+
   /**
    * This provides $universe^$size, e.g., 61^4 = 13,845,841
    */

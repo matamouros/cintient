@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,14 +18,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Scm
  */
 class ScmConnector
-{ 
+{
   static public function delete(array $params = array())
   {
     if (isset($params['local']) && !empty($params['local'])) {
@@ -40,7 +40,7 @@ class ScmConnector
     #endif
     return $ret;
   }
-  
+
   static public function checkout(array $params = array())
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
@@ -65,7 +65,7 @@ class ScmConnector
       return true;
     }
   }
-  
+
   static public function isModified(array $params = array())
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
@@ -79,7 +79,7 @@ class ScmConnector
       return true;
     }
   }
-  
+
   static public function update(array $params = array(), &$rev)
   {
     isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
@@ -92,12 +92,12 @@ class ScmConnector
       return true;
     }
   }
-  
+
   static public function tag() {}
-  
+
   /**
    * Gets available connectors installed in the ScmConnector dir.
-   * 
+   *
    * @return array An alphabetically sorted array with the available connectors.
    */
   static public function &getAvailableConnectors()

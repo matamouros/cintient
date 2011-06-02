@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,23 +18,23 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Database
  */
 class Resultset
 {
   private $_rs;
   private $_currentRow;
-  
+
   public function __construct($rs)
   {
     $this->_rs = $rs;
     $this->_currentRow = false;
   }
-  
+
   public function __destruct()
   {
     if (isset($this->_rs) && $this->_rs instanceof SQLite3Result) {
@@ -43,7 +43,7 @@ class Resultset
   }
 
   /**
-   * 
+   *
    * @param $name
    * @param $args
    */
@@ -55,7 +55,7 @@ class Resultset
     }
     return false;
   }
-  
+
   public function close()
   {
     $this->_rs->finalize();
@@ -63,7 +63,7 @@ class Resultset
     unset($this->_rs);
     return true;
   }
-  
+
   public function nextRow()
   {
     if (($this->_rs instanceof SQLite3Result) &&

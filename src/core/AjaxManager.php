@@ -33,6 +33,7 @@
  * . /foo/bar     => foo_bar()    => foo/bar.tpl     (foo section)
  * . /foo/foo-bar => foo_fooBar() => foo/foo-bar.tpl (foo section)
  *
+ * @package View
  */
 class AjaxManager
 {

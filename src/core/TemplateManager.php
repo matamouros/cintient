@@ -43,6 +43,7 @@
  * all the mapped methods. These typically allow footer.inc.tpl and
  * header.inc.tpl to call it at this central point.
  *
+ * @package View
  */
 class TemplateManager
 {

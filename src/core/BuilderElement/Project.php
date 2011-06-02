@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- * 
+ * @package Builder
  */
 class BuilderElement_Project extends BuilderElement
 {
@@ -31,7 +31,7 @@ class BuilderElement_Project extends BuilderElement
   protected $_name;
   protected $_properties; // An array with references to Property objects
   protected $_targets;    // An array with references to all target objects
-  
+
   public function __construct()
   {
     parent::__construct();
@@ -41,17 +41,17 @@ class BuilderElement_Project extends BuilderElement
     $this->_properties = array();
     $this->_targets = array();
   }
-  
+
   public function addProperty(BuilderElement_Type_Property $o)
   {
     $this->_properties[] = $o;
   }
-  
+
   public function addTarget(BuilderElement_Target $o)
   {
     $this->_targets[] = $o;
   }
-  
+
   public function isEmpty()
   {
     return empty($this->_targets);

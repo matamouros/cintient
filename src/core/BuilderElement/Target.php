@@ -22,7 +22,7 @@
  */
 
 /**
- *
+ * @package Builder
  */
 class BuilderElement_Target extends BuilderElement
 {

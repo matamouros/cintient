@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,13 +18,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
  * Usage:
- * 
- * 
+ *
+ * @package Builder
  */
 class BuilderElement_Task_PhpUnit extends BuilderElement
 {
@@ -35,7 +35,7 @@ class BuilderElement_Task_PhpUnit extends BuilderElement
   protected $_failOnSkipped;
   protected $_filesets;            // An array of fileset types
   protected $_logJunitXmlFile;
-  
+
   public function __construct()
   {
     parent::__construct();
