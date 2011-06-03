@@ -629,6 +629,7 @@ EOT;
         $ext['swf']  = 'application/x-shockwave-flash';
         $ext['css']  = 'text/css';
         $ext['xml']  = 'text/xml';
+        $ext['svg']  = 'image/svg+xml';
         if (isset($ext[$extension])) {
           header('Content-type: '.$ext[$extension]);
         }
@@ -870,6 +871,17 @@ EOT;
     } else {
       $build = ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
+    //
+    // PHP_Depend stuff
+    //
+    if (file_exists($build->getReportsDir() . $build->getJdependChartFilename())) {
+      $GLOBALS['smarty']->assign('project_jdependChartFilename', $build->getJdependChartFilename());
+    }
+    if (file_exists($build->getReportsDir() . $build->getOverviewPyramidFilename())) {
+      $GLOBALS['smarty']->assign('project_overviewPyramidFilename', $build->getOverviewPyramidFilename());
+    }
+
+    // Last assignments
     $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
     $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));

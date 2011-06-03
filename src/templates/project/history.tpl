@@ -1,25 +1,25 @@
 {*
     Cintient, Continuous Integration made simple.
     Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
-    
+
     This file is part of Cintient.
-    
+
     Cintient is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     Cintient is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
 {if !empty($project_buildList)}
-  {$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a> | <a href=\"#\" class=\"junitReport\">unit</a></span>"}
+  {$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a> | <a href=\"#\" class=\"junitReport\">unit</a> | <a href=\"#\" class=\"quality\">quality</a></span>"}
 {/if}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Build history"
@@ -40,14 +40,14 @@ $(document).ready(function() {
     window.location.replace($(this).find("option:selected").attr('value'));
   });
 });
-//]]> 
+//]]>
 </script>
       <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
         <option value="{UrlManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
       </select>
-{/if}  
+{/if}
     </div>
 {if !empty($project_buildList)}
 <script type="text/javascript">
@@ -74,7 +74,7 @@ $(document).ready(function() {
       });
 		  // Show the current pane
   	  resultPane.fadeIn(300);
-  	  
+
   	  activeResultPane = resultPane;
 		}
   }
@@ -87,7 +87,7 @@ $(document).ready(function() {
 	// Promptly show the default pane
 	showBuildResultPane($('#projectViewContainer #junitReport'));
 });
-//]]> 
+//]]>
 </script>
     <div id="projectViewContainer">
       <div id="rawOutput" class="buildResultPane">{$project_build->getOutput()|nl2br}</div>
@@ -99,6 +99,17 @@ $(document).ready(function() {
 {/foreach}
 {else}
 Due to a build error, the unit tests chart could not be generated. Please check the raw output of the build for problems, such as a PHP Fatal error.
+{/if}
+      </div>
+      <div id="quality" class="buildResultPane">
+{if !isset($project_jdependChartFilename) && !isset($project_overviewPyramidFilename)}
+No quality metrics were collected in this build. If you haven't enabled
+this yet, please add a PHP_Depend task to this project's integration
+builder, and configure it properly. If you already have this task enabled,
+please check the raw output of this build for problems, such as a PHP Fatal error.
+{else}
+        <div id="jdependChart"><embed type="image/svg+xml" src="{UrlManager::getForAsset($project_overviewPyramidFilename, ['bid' => $project_build->getId()])}" width="392" height="270" /></div>
+        <div id="overviewChart"><embed type="image/svg+xml" src="{UrlManager::getForAsset($project_jdependChartFilename, ['bid' => $project_build->getId()])}" width="392" height="270" /></div>
 {/if}
     </div>
 {/if}

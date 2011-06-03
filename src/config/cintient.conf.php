@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 error_reporting(-1);
@@ -92,6 +92,18 @@ define('CINTIENT_BUILDS_PAGE_LENGTH', 20);
 define('CHART_JUNIT_DEFAULT_WIDTH', 790);
 
 set_include_path(CINTIENT_INSTALL_DIR);
+
+
+//
+// PHP_Depend
+//
+// TODO: check host system and call the .bat version as appropriate.
+define('CINTIENT_PHPDEPEND_BINARY', CINTIENT_PHP_BINARY . ' ' . CINTIENT_INSTALL_DIR . 'lib/PHP_Depend/bin/pdepend.php');
+define('CINTIENT_PHPDEPEND_JDEPEND_CHART_FILENAME', 'jdepend.svg');
+define('CINTIENT_PHPDEPEND_OVERVIEW_PYRAMID_FILENAME', 'pyramid.svg');
+define('CINTIENT_PHPDEPEND_SUMMARY_FILENAME', 'summary.xml');
+
+
 
 // Register our autoloader
 function autoloadCintient($classname)

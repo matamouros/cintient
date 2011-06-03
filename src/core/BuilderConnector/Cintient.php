@@ -680,6 +680,64 @@ if (!file_exists(\$getDir)) {
     return $php;
   }
 
+	/**
+   *
+   * !! BuilderConnector_Php has a direct dependency on this !!
+   *
+   */
+  static public function BuilderElement_Task_PhpDepend(BuilderElement_Task_PhpDepend $o, array &$context = array())
+  {
+    $php = '';
+    if (!$o->getIncludeDirs()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No include dirs set for task PhpDepend.', __METHOD__);
+      return false;
+    }
+    $php .= "
+\$GLOBALS['result']['task'] = 'phpdepend';
+";
+    $jdependChartFile = '';
+    if ($o->getJdependChartFile()) {
+      $jdependChartFile = ' --jdepend-chart=' . $o->getJdependChartFile();
+    }
+    $overviewPyramidFile = '';
+    if ($o->getOverviewPyramidFile()) {
+      $overviewPyramidFile = ' --overview-pyramid=' . $o->getOverviewPyramidFile();
+    }
+    $summaryFile = '';
+    if ($o->getSummaryFile()) {
+      $summaryFile = ' --summary-xml=' . $o->getSummaryFile();
+    }
+    $excludeDirs = '';
+    if ($o->getExcludeDirs()) {
+      $excludeDirs = ' --ignore=' . str_replace(' ', ',', trim($o->getExcludeDirs()));
+    }
+    $excludePackages = '';
+    if ($o->getExcludePackages()) {
+      $excludePackages = ' --exclude= ' . str_replace(' ', ',', trim($o->getExcludePackages()));
+    }
+    $includeDirs = str_replace(' ', ',', trim($o->getIncludeDirs()));  // Cintient's space separated to PHP_Depend's comma separated
+
+    $php .= "
+\$output = array();
+\$args = expandStr('{$jdependChartFile}{$overviewPyramidFile}{$summaryFile}{$excludeDirs}{$excludePackages} {$includeDirs}');
+exec(\"" . CINTIENT_PHPDEPEND_BINARY . "\$args\", \$output, \$ret);
+foreach (\$output as \$line) {
+  output(\$line);
+}
+if (\$ret > 0) {
+  output('PHP_Depend analysis failed.');
+  \$GLOBALS['result']['ok'] = false;
+  if ({$o->getFailOnError()}) {
+    return false;
+  }
+} else {
+  output('PHP_Depend analysis successful.');
+	\$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+}
+";
+    return $php;
+  }
+
   /**
    *
    * !! BuilderConnector_Php has a direct dependency on this !!
@@ -792,7 +850,9 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
   if (is_file(\$entry)) {
     \$output = array();
     exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$output, \$ret);
-    output(\$entry . ': ' . array_pop(\$output));
+    foreach (\$output as \$line) {
+      output(\$line);
+    }
     if (\$ret > 0) {
       \$ret = false;
     } else {

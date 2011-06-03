@@ -359,6 +359,42 @@ class BuilderConnector_Html
     });
   }
 
+  static public function BuilderElement_Task_PhpDepend(BuilderElement_Task_PhpDepend $o)
+  {
+    if (!$o->isVisible()) {
+      return true;
+    }
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      BuilderConnector_Html::builderElementTitle($o, array('title' => 'PhpDepend'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Include Dirs, textfield
+        h::div(array('class' => 'label'), 'Include dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'includeDirs', 'value' => $o->getIncludeDirs()));
+        });
+        // Exclude Dirs, textfield
+        h::div(array('class' => 'label'), 'Exclude dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludeDirs', 'value' => $o->getExcludeDirs()));
+        });
+        // Exclude packages, textfield
+        h::div(array('class' => 'label'), 'Exclude packages <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludePackages', 'value' => $o->getExcludePackages()));
+        });
+      });
+    });
+  }
+
   static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
   {
     if (!$o->isVisible()) {
