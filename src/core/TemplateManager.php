@@ -613,7 +613,7 @@ EOT;
         //TODO: Redirect and exit?
         exit;
       }
-      $filename = $build->getReportsDir() . $_GET['f'];
+      $filename = $build->getBuildDir() . $_GET['f'];
       if (!file_exists($filename)) {
         SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
         //TODO: Redirect and exit?
@@ -872,12 +872,12 @@ EOT;
       $build = ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
     //
-    // PHP_Depend stuff
+    // PHP_Depend stuff (Find a way to only call this in the presence of PHP_Depend active task
     //
-    if (file_exists($build->getReportsDir() . $build->getJdependChartFilename())) {
+    if ($build->getJdependChartFilename() !== false && file_exists($build->getBuildDir() . $build->getJdependChartFilename())) {
       $GLOBALS['smarty']->assign('project_jdependChartFilename', $build->getJdependChartFilename());
     }
-    if (file_exists($build->getReportsDir() . $build->getOverviewPyramidFilename())) {
+    if ($build->getOverviewPyramidFilename() !== false && file_exists($build->getBuildDir() . $build->getOverviewPyramidFilename())) {
       $GLOBALS['smarty']->assign('project_overviewPyramidFilename', $build->getOverviewPyramidFilename());
     }
 

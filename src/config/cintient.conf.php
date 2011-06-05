@@ -71,6 +71,8 @@ define('CINTIENT_SERVER_NAME', 'cintient');
 
 define('CINTIENT_DATABASE_FILE', CINTIENT_WORK_DIR . 'cintient.sqlite');
 
+define('CINTIENT_DATABASE_SCHEMA_VERSION', '1111');
+
 //
 // The following is a workaround on the fact that the translation of this
 // serialized object to the database gets all broken, due to the fact of PHP

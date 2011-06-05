@@ -29,37 +29,37 @@
  *
  * @package Project
  */
-class Project
+class Project extends CintientObjectAbstract
 {
-  private $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
-  private $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
-  private $_dateCreation;
-  private $_description;
-  private $_id;
-  private $_releaseMajor;            // The current release major number
-  private $_releaseMinor;            // The current release minor number
-  private $_releaseCounter;          // the *last* number assigned to a successful created release package. Should be incremental
-  private $_scmCheckChangesTimeout;  // In minutes.
-  private $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
-  private $_scmPassword;
-  private $_scmRemoteRepository;
-  private $_scmUsername;
-  private $_signature;               // Internal flag to control whether a save to database is required
-  private $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
-  private $_status;
-  private $_title;
-  private $_users;                   // An array of users and corresponding permissions, taken from projectuser table
-  private $_visits;                  // Counter of accesses, for hotness
-  private $_workDir;                 // The working dir of the project (sources, generated reports, etc)
+  protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
+  protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
+  protected $_dateCreation;
+  protected $_description;
+  protected $_id;
+  protected $_releaseMajor;            // The current release major number
+  protected $_releaseMinor;            // The current release minor number
+  protected $_releaseCounter;          // the *last* number assigned to a successful created release package. Should be incremental
+  protected $_scmCheckChangesTimeout;  // In minutes.
+  protected $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
+  protected $_scmPassword;
+  protected $_scmRemoteRepository;
+  protected $_scmUsername;
+  protected $_signature;               // Internal flag to control whether a save to database is required
+  protected $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
+  protected $_status;
+  protected $_title;
+  protected $_users;                   // An array of users and corresponding permissions, taken from projectuser table
+  protected $_visits;                  // Counter of accesses, for hotness
+  protected $_workDir;                 // The working dir of the project (sources, generated reports, etc)
   //
   // Builders
   //
-  private $_integrationBuilder;    // The builder used for continuous integration builds and package creation (serialized)
-  private $_deploymentBuilder;     // The builder available inside a package, for deployment (serialized)
+  protected $_integrationBuilder;    // The builder used for continuous integration builds and package creation (serialized)
+  protected $_deploymentBuilder;     // The builder available inside a package, for deployment (serialized)
   //
   // Options
   //
-  private $_optionPackageOnSuccess;  // Generate a release package on every successful build?
+  protected $_optionPackageOnSuccess;  // Generate a release package on every successful build?
 
   const STATUS_UNINITIALIZED = 0;
   const STATUS_ERROR = 1;
@@ -68,29 +68,9 @@ class Project
   const STATUS_MODIFIED = 4;
   const STATUS_UNBUILT = 5;
 
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    }
-    return false;
-  }
-
   public function __construct()
   {
+    parent::__construct();
     $this->_buildLabel = '';
     $this->_description = '';
     $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
@@ -117,7 +97,7 @@ class Project
 
   public function __destruct()
   {
-    $this->_save();
+    parent::__destruct();
   }
 
   public function build($force = false)
@@ -265,32 +245,8 @@ class Project
     }
     SystemEvent::raise(SystemEvent::DEBUG, "Project deleted. [ID={$this->getId()}]");
     $this->setId(null);
-    $this->updateSignature(); // No more saves for this project
+    $this->resetSignature(); // No more saves for this project
     return true;
-  }
-
-  private function _getCurrentSignature()
-  {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    return md5(serialize($arr));
-  }
-
-  public function getDateCreation()
-  {
-    if (empty($this->_dateCreation)) {
-      $this->_dateCreation = date('Y-m-d H:i:s');
-    }
-    return $this->_dateCreation;
-  }
-
-  public function getDateCheckedForChanges()
-  {
-    if (empty($this->_dateCheckedForChanges)) {
-      $this->_dateCheckedForChanges = date('Y-m-d H:i:s');
-    }
-    return $this->_dateCheckedForChanges;
   }
 
   public function getScmLocalWorkingCopy()
@@ -363,7 +319,7 @@ class Project
       $this->delete();
       return false;
     }
-    if (!ProjectBuild::install($this->getId())) {
+    if (!ProjectBuild::install($this)) {
       $this->delete();
       return false;
     }
@@ -428,11 +384,13 @@ EOT;
     }
   }
 
-  private function _save($force=false)
+  protected function _save($force = false)
   {
-    if ($this->_getCurrentSignature() == $this->_signature && !$force) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Project save called, but no saving is required.", __METHOD__);
-      return false;
+  if (!$this->hasChanged()) {
+      if (!$force) {
+        return false;
+      }
+      SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
     if (!Database::beginTransaction()) {
       return false;
@@ -524,7 +482,7 @@ EOT;
     #if DEBUG
     SystemEvent::raise(SystemEvent::DEBUG, "Saved project. [PID={$this->getId()}] [TITLE={$this->getTitle()}]", __METHOD__);
     #endif
-    $this->updateSignature();
+    $this->resetSignature();
     return true;
   }
 
@@ -593,11 +551,6 @@ EOT;
     $projectLog = new ProjectLog($this->getId());
     $projectLog->setType(0);
     $projectLog->setMessage($msg);
-  }
-
-  public function updateSignature()
-  {
-    $this->setSignature($this->_getCurrentSignature());
   }
 
   public function touchDateCheckedForChanges()
@@ -711,7 +664,7 @@ EOT;
    *
    * @param unknown_type $rs
    */
-  static private function _getObject($rs, $options = array())
+  static private function _getObject(Resultset $rs, Array $options = array())
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;
     $ret = new Project();
@@ -763,7 +716,7 @@ EOT;
     if ($options['loadUsers']) {
       $ret->loadUsers();
     }
-    $ret->updateSignature();
+    $ret->resetSignature();
     return $ret;
   }
 }
