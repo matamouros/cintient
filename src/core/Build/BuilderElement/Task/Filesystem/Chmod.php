@@ -26,7 +26,7 @@
  *
  * @package Builder
  */
-class BuilderElement_Task_Filesystem_Chmod extends BuilderElement
+class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
 {
   protected $_file;            // A string containing a single file or dir to act upon
   protected $_mode;            // A string representation of the new permissions (octal, i.e. with a leading 0)

@@ -22,9 +22,21 @@
  */
 
 /**
- * @package Builder
+ * Project builder element. This is the top level builder element, under
+ * which all others reside. The project element will always be responsible
+ * for calling it's children's toString() methods.
+ *
+ * @package     Build
+ * @subpackage  BuilderElement
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-class BuilderElement_Project extends BuilderElement
+class Build_BuilderElement_Project extends Build_BuilderElement
 {
   protected $_baseDir;
   protected $_defaultTarget;
@@ -42,12 +54,12 @@ class BuilderElement_Project extends BuilderElement
     $this->_targets = array();
   }
 
-  public function addProperty(BuilderElement_Type_Property $o)
+  public function addProperty(Build_BuilderElement_Type_Property $o)
   {
     $this->_properties[] = $o;
   }
 
-  public function addTarget(BuilderElement_Target $o)
+  public function addTarget(Build_BuilderElement_Target $o)
   {
     $this->_targets[] = $o;
   }

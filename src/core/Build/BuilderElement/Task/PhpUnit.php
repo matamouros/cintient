@@ -22,19 +22,29 @@
  */
 
 /**
+ * Usage:
+ *
  * @package Builder
  */
-class BuilderElement_Task_Echo extends BuilderElement
+class Build_BuilderElement_Task_PhpUnit extends Build_BuilderElement
 {
-  protected $_message;
-  protected $_file;            // If present, message will be written to this file
-  protected $_append;          // The directory in which the command should be executed in
+  protected $_codeCoverageXmlFile;
+  protected $_codeCoverageHtmlDir;
+  protected $_failOnFailure;       // PHPUnit distinguishes failures from errors
+  protected $_failOnIncomplete;
+  protected $_failOnSkipped;
+  protected $_filesets;            // An array of fileset types
+  protected $_logJunitXmlFile;
 
   public function __construct()
   {
     parent::__construct();
-    $this->_message = null;
-    $this->_file = null;
-    $this->_append = true;
+    $this->_codeCoverageXmlFile = null;
+    $this->_codeCoverageHtmlDir = null;
+    $this->_failOnFailure = true;
+    $this->_failOnIncomplete = true;
+    $this->_failOnSkipped = false;
+    $this->_filesets = null;
+    $this->_logJunitXmlFile = null;
   }
 }

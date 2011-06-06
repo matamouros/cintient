@@ -22,21 +22,17 @@
  */
 
 /**
- * Usage:
- *
  * @package Builder
  */
-class BuilderElement_Task_Filesystem_Chown extends BuilderElement
+class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
 {
-  protected $_file;            // A string containing a single file or dir to act upon
-  protected $_user;            // The user or user and group (separated by a dot)
-  protected $_filesets;        // An array of fileset types
+  protected $_includeEmptyDirs;
+  protected $_filesets;          // An array of fileset types
 
   public function __construct()
   {
     parent::__construct();
-    $this->_file = null;
-    $this->_user = null;
+    $this->_includeEmptyDirs = false;
     $this->_filesets = null;
   }
 }

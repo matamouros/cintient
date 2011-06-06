@@ -24,7 +24,7 @@
 /**
  * Usage:
  *
- * $exec = new BuilderElement_Task_Exec();
+ * $exec = new Build_BuilderElement_Task_Exec();
  * $exec->setExecutable('php');
  * $exec->setArgs('runMe.php arg1 arg2');
  * $exec->setDir('/tmp/');
@@ -33,7 +33,7 @@
  *
  * @package Builder
  */
-class BuilderElement_Task_Exec extends BuilderElement
+class Build_BuilderElement_Task_Exec extends Build_BuilderElement
 {
   protected $_executable;
   protected $_args;            // The arguments to the executable command, if any, a space separated string

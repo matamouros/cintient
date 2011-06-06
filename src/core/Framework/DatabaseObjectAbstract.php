@@ -33,7 +33,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-abstract class DatabaseObjectAbstract extends Framework_BaseObject
+abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
 {
   private $_signature;    // Internal flag to control whether a save to database is required
 

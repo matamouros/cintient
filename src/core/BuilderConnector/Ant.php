@@ -26,7 +26,7 @@
  */
 class BuilderConnector_Ant
 {
-  static public function BuilderElement_Project(BuilderElement_Project $o)
+  static public function Build_BuilderElement_Project(Build_BuilderElement_Project $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('project');
@@ -50,20 +50,20 @@ class BuilderConnector_Ant
     if ($o->getProperties()) {
       $properties = $o->getProperties();
       foreach ($properties as $property) {
-        $xml->writeRaw(self::BuilderElement_Type_Property($property));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Property($property));
       }
     }
     if ($o->getTargets()) {
       $targets = $o->getTargets();
       foreach ($targets as $target) {
-        $xml->writeRaw(self::BuilderElement_Target($target));
+        $xml->writeRaw(self::Build_BuilderElement_Target($target));
       }
     }
     $xml->endElement();
     return $xml->flush();
   }
 
-  static public function BuilderElement_Target(BuilderElement_Target $o)
+  static public function Build_BuilderElement_Target(Build_BuilderElement_Target $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('target');
@@ -77,7 +77,7 @@ class BuilderConnector_Ant
     if ($o->getProperties()) {
       $properties = $o->getProperties();
       foreach ($properties as $property) {
-        $xml->writeRaw(self::BuilderElement_Type_Property($property));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Property($property));
       }
     }
     if ($o->getDependencies()) {
@@ -102,7 +102,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o)
+  static public function Build_BuilderElement_Task_Filesystem_Chmod(Build_BuilderElement_Task_Filesystem_Chmod $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('chmod');
@@ -121,7 +121,7 @@ class BuilderConnector_Ant
     } elseif ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Fileset($fileset));
       }
     }
     $xml->endElement();
@@ -133,7 +133,7 @@ class BuilderConnector_Ant
    * !! BuilderConnector_Phing has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o)
+  static public function Build_BuilderElement_Task_Filesystem_Chown(Build_BuilderElement_Task_Filesystem_Chown $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('chown');
@@ -151,14 +151,14 @@ class BuilderConnector_Ant
     } elseif ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Fileset($fileset));
       }
     }
     $xml->endElement();
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o)
+  static public function Build_BuilderElement_Task_Filesystem_Delete(Build_BuilderElement_Task_Filesystem_Delete $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('delete');
@@ -175,14 +175,14 @@ class BuilderConnector_Ant
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Fileset($fileset));
       }
     }
     $xml->endElement();
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o)
+  static public function Build_BuilderElement_Task_Echo(Build_BuilderElement_Task_Echo $o)
   {
     if (!$o->getMessage()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
@@ -202,7 +202,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o)
+  static public function Build_BuilderElement_Task_Exec(Build_BuilderElement_Task_Exec $o)
   {
     if (!$o->getExecutable()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
@@ -232,7 +232,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o)
+  static public function Build_BuilderElement_Task_Filesystem_Mkdir(Build_BuilderElement_Task_Filesystem_Mkdir $o)
   {
     if (!$o->getDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
@@ -245,7 +245,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
 
-  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o)
+  static public function Build_BuilderElement_Task_PhpLint(Build_BuilderElement_Task_PhpLint $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('apply');
@@ -263,14 +263,14 @@ class BuilderConnector_Ant
     if ($o->getFilesets()) {
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
-        $xml->writeRaw(self::BuilderElement_Type_Fileset($fileset));
+        $xml->writeRaw(self::Build_BuilderElement_Type_Fileset($fileset));
       }
     }
     $xml->endElement();
     return $xml->flush();
   }
 
-  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o)
+  static public function Build_BuilderElement_Type_Fileset(Build_BuilderElement_Type_Fileset $o)
   {
     $xml = new XmlBuilderElement();
 
@@ -316,7 +316,7 @@ class BuilderConnector_Ant
    * !! BuilderConnector_Phing has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o)
+  static public function Build_BuilderElement_Type_Properties(Build_BuilderElement_Type_Properties $o)
   {
     if (!$o->getText()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);
@@ -333,7 +333,7 @@ class BuilderConnector_Ant
     return $xml->flush();
   }
 
-  static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o)
+  static public function Build_BuilderElement_Type_Property(Build_BuilderElement_Type_Property $o)
   {
     $xml = new XmlBuilderElement();
     $xml->startElement('property');

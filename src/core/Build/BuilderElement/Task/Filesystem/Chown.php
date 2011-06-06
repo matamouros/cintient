@@ -22,30 +22,21 @@
  */
 
 /**
+ * Usage:
+ *
  * @package Builder
  */
-class BuilderElement_Target extends BuilderElement
+class Build_BuilderElement_Task_Filesystem_Chown extends Build_BuilderElement
 {
-  protected $_dependencies; // An array of target names that this target depends on
-  protected $_name;
-  protected $_properties;
-  protected $_tasks;
+  protected $_file;            // A string containing a single file or dir to act upon
+  protected $_user;            // The user or user and group (separated by a dot)
+  protected $_filesets;        // An array of fileset types
 
   public function __construct()
   {
     parent::__construct();
-    $this->_dependencies = array();
-    $this->_properties = array();
-    $this->_tasks = array();
-  }
-
-  public function addTask($o)
-  {
-    $this->_tasks[] = $o;
-  }
-
-  public function addProperty($o)
-  {
-    $this->_properties[] = $o;
+    $this->_file = null;
+    $this->_user = null;
+    $this->_filesets = null;
   }
 }

@@ -24,15 +24,28 @@
 /**
  * @package Builder
  */
-class BuilderElement_Task_Filesystem_Delete extends BuilderElement
+class Build_BuilderElement_Target extends Build_BuilderElement
 {
-  protected $_includeEmptyDirs;
-  protected $_filesets;          // An array of fileset types
+  protected $_dependencies; // An array of target names that this target depends on
+  protected $_name;
+  protected $_properties;
+  protected $_tasks;
 
   public function __construct()
   {
     parent::__construct();
-    $this->_includeEmptyDirs = false;
-    $this->_filesets = null;
+    $this->_dependencies = array();
+    $this->_properties = array();
+    $this->_tasks = array();
+  }
+
+  public function addTask($o)
+  {
+    $this->_tasks[] = $o;
+  }
+
+  public function addProperty($o)
+  {
+    $this->_properties[] = $o;
   }
 }

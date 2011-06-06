@@ -24,13 +24,15 @@
 /**
  * @package Builder
  */
-class BuilderElement_Task_PhpLint extends BuilderElement
+class Build_BuilderElement_Type_Property extends Build_BuilderElement
 {
-  protected $_filesets;          // An array of fileset types
+  protected $_name;
+  protected $_value;
 
   public function __construct()
   {
     parent::__construct();
-    $this->_filesets = array();
+    $this->_name = null;
+    $this->_value = null;
   }
 }

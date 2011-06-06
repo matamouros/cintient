@@ -24,7 +24,7 @@
 /**
  * @package Builder
  */
-class BuilderElement extends Framework_BaseObject
+class Build_BuilderElement extends Framework_BaseObject
 {
   protected $_active;         // Indicates if this builder element should be considered executable
   protected $_deletable;      // Special system builder elements might not be deleted by the user. Not user setable.

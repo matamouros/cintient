@@ -29,7 +29,7 @@
  *
  * @package Project
  */
-class Project extends DatabaseObjectAbstract
+class Project extends Framework_DatabaseObjectAbstract
 {
   protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
   protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
@@ -87,8 +87,8 @@ class Project extends DatabaseObjectAbstract
     //
     // Builders
     //
-    $this->_integrationBuilder = new BuilderElement_Project();
-    $this->_deploymentBuilder = new BuilderElement_Project();
+    $this->_integrationBuilder = new Build_BuilderElement_Project();
+    $this->_deploymentBuilder = new Build_BuilderElement_Project();
     //
     // Options
     //
@@ -266,23 +266,23 @@ class Project extends DatabaseObjectAbstract
     //
     // Setup the minimal integration builder setup
     //
-    $echo = new BuilderElement_Task_Echo();
+    $echo = new Build_BuilderElement_Task_Echo();
     $echo->setMessage("hello, world");
-    $propertyProjectDir = new BuilderElement_Type_Property();
+    $propertyProjectDir = new Build_BuilderElement_Type_Property();
     $propertyProjectDir->setName('projectDir');
     $propertyProjectDir->setValue($this->getWorkDir());
     $propertyProjectDir->setFailOnError(false);
     $propertyProjectDir->setEditable(false);
     $propertyProjectDir->setDeletable(false);
     $propertyProjectDir->setVisible(false);
-    $propertySourcesDir = new BuilderElement_Type_Property();
+    $propertySourcesDir = new Build_BuilderElement_Type_Property();
     $propertySourcesDir->setName('sourcesDir');
     $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
     $propertySourcesDir->setFailOnError(false);
     $propertySourcesDir->setEditable(false);
     $propertySourcesDir->setDeletable(false);
     $propertySourcesDir->setVisible(false);
-    $target = new BuilderElement_Target();
+    $target = new Build_BuilderElement_Target();
     $target->setName('build');
     $target->addTask($propertyProjectDir);
     $target->addTask($propertySourcesDir);
@@ -683,14 +683,14 @@ EOT;
     $unsafeSerializedIntegrationBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getIntegrationBuilder());
     if (($integrationBuilder = unserialize($unsafeSerializedIntegrationBuilder)) === false) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize integration builder for this project [PID={$ret->getId()}]");
-      $integrationBuilder = new BuilderElement_Project();
+      $integrationBuilder = new Build_BuilderElement_Project();
     }
     $ret->setIntegrationBuilder($integrationBuilder);
 
     $unsafeSerializedDeploymentBuilder = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getDeploymentBuilder());
     if (($deploymentBuilder = unserialize($unsafeSerializedDeploymentBuilder)) === false) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't unserialize deployment builder for this project [PID={$ret->getId()}]");
-      $deploymentBuilder = new BuilderElement_Project();
+      $deploymentBuilder = new Build_BuilderElement_Project();
     }
     $ret->setDeploymentBuilder($deploymentBuilder);
 

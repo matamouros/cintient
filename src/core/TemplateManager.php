@@ -66,59 +66,59 @@ class TemplateManager
 
   static public function tests_tasks()
   {
-    $exec = new BuilderElement_Task_Exec();
+    $exec = new Build_BuilderElement_Task_Exec();
     $exec->setExecutable('ls');
     $exec->setArgs(array('-la'));
     $exec->setBaseDir('/tmp/');
     //$exec->setOutputProperty('xpto');
     //echo $exec->toString('ant');
 
-    $delete = new BuilderElement_Task_Filesystem_Delete();
+    $delete = new Build_BuilderElement_Task_Filesystem_Delete();
     $delete->setIncludeEmptyDirs(true);
     $delete->setFailOnError(true);
-    $fileset = new BuilderElement_Type_Fileset();
+    $fileset = new Build_BuilderElement_Type_Fileset();
     $fileset->setDir('/tmp/apache');
     //$fileset->setDefaultExcludes(false);
     $fileset->setInclude(array('extra/**/*.conf'));
     $delete->setFilesets(array($fileset));
     //echo $delete->toString('ant');
 
-    $echo = new BuilderElement_Task_Echo();
+    $echo = new Build_BuilderElement_Task_Echo();
     $echo->setMessage('Ol‡');
     $echo->setFile('${workDir}/ixo.txt');
 
-    $echo2 = new BuilderElement_Task_Echo();
+    $echo2 = new Build_BuilderElement_Task_Echo();
     $echo2->setMessage('About to do an exec2!');
     $echo2->setFile('/tmp/test.log');
     $echo2->setAppend(true);
 
-    $mkdir = new BuilderElement_Task_Filesystem_Mkdir();
+    $mkdir = new Build_BuilderElement_Task_Filesystem_Mkdir();
     //$mkdir->setDir('/tmp/tmp2/tmp3');
     $mkdir->setDir('${dir}');
 
-    $lint = new BuilderElement_Task_PhpLint();
+    $lint = new Build_BuilderElement_Task_PhpLint();
     $lint->setFilesets(array($fileset));
 
-    $chmod = new BuilderElement_Task_Filesystem_Chmod();
+    $chmod = new Build_BuilderElement_Task_Filesystem_Chmod();
     $chmod->setMode('${perms}');
     $chmod->setFile('${file}');
     //$chmod->setFilesets(array($fileset));
 
-    $chown = new BuilderElement_Task_Filesystem_Chown();
+    $chown = new Build_BuilderElement_Task_Filesystem_Chown();
     $chown->setFile('/tmp/lixo1.php');
     $chown->setUser('www-data');
 
-    $copy = new BuilderElement_Task_Filesystem_Copy();
+    $copy = new Build_BuilderElement_Task_Filesystem_Copy();
     $copy->setFile('/tmp/src/config/cintient.conf.php');
     $copy->setToDir('${toDir}');
-    /*$fileset = new BuilderElement_Type_Fileset();
+    /*$fileset = new Build_BuilderElement_Type_Fileset();
     $fileset->setDir('${dir}');
     $fileset->setInclude(array('${include}'));
 
-    $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+    $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
     $copy->setFilesets(array($fileset));
 		*/
-    $properties = new BuilderElement_Type_Properties();
+    $properties = new Build_BuilderElement_Type_Properties();
     $properties->setText("workDir = /tmp/
 title = Cintient
 executable = ls
@@ -130,18 +130,18 @@ include = **/*
 toDir = /tmp/src2/
 ");
 
-    $target = new BuilderElement_Target();
+    $target = new Build_BuilderElement_Target();
     $target->setName('tests');
     $target->setTasks(array($properties, $copy));
     //echo $target->toString('php');
 
-    $target2 = new BuilderElement_Target();
+    $target2 = new Build_BuilderElement_Target();
     $target2->setName('tests2');
     //$target->setTasks(array($delete, $exec));
     $target2->setTasks(array($echo, $mkdir));
     //echo $target->toString('php');
 
-    $project = new BuilderElement_Project();
+    $project = new Build_BuilderElement_Project();
     $project->addTarget($target);
     $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);

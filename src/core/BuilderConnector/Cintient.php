@@ -49,9 +49,9 @@ class BuilderConnector_Cintient
    * . targets
    * . defaultTarget
    *
-   * @param BuilderElement_Project $o
+   * @param Build_BuilderElement_Project $o
    */
-  static public function BuilderElement_Project(BuilderElement_Project $o)
+  static public function Build_BuilderElement_Project(Build_BuilderElement_Project $o)
   {
     $php = '';
     $context = array();
@@ -119,13 +119,13 @@ EOT;
     $properties = $o->getProperties();
     if ($o->getProperties()) {
       foreach ($properties as $property) {
-        $php .= self::BuilderElement_Type_Property($property, $context);
+        $php .= self::Build_BuilderElement_Type_Property($property, $context);
       }
     }
     $targets = $o->getTargets();
     if ($o->getTargets()) {
       foreach ($targets as $target) {
-        $php .= self::BuilderElement_Target($target, $context);
+        $php .= self::Build_BuilderElement_Target($target, $context);
       }
     }
     $php .= <<<EOT
@@ -147,7 +147,7 @@ EOT;
     return $php;
   }
 
-  static public function BuilderElement_Target(BuilderElement_Target $o, array &$context = array())
+  static public function Build_BuilderElement_Target(Build_BuilderElement_Target $o, array &$context = array())
   {
     $php = '';
     if (!$o->getName()) {
@@ -165,7 +165,7 @@ EOT;
       if ($o->getProperties()) {
         $properties = $o->getProperties();
         foreach ($properties as $property) {
-          $php .= self::BuilderElement_Type_Property($property, $context);
+          $php .= self::Build_BuilderElement_Type_Property($property, $context);
         }
       }
       if ($o->getDependencies()) {
@@ -214,7 +214,7 @@ EOT;
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Chmod(Build_BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFile() && !$o->getFilesets()) {
@@ -254,7 +254,7 @@ if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
   return false;
@@ -272,7 +272,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Chown(Build_BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFile() && !$o->getFilesets()) {
@@ -309,7 +309,7 @@ if (!\$callback(\$getFile) && {$o->getFailOnError()}) { // failonerror
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
   return false;
@@ -327,7 +327,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Copy(Build_BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFile() && !$o->getFilesets()) {
@@ -386,7 +386,7 @@ if (!file_exists(\$baseToDir) && !@mkdir(\$baseToDir, 0755, true)) {
     if ($o->getFile()) {
       $getFile = self::_expandStr($o->getFile(), $context);
       $pathFrom = pathinfo($getFile);
-      $fileset = new BuilderElement_Type_Fileset();
+      $fileset = new Build_BuilderElement_Type_Fileset();
       if (!file_exists($getFile)) {
         $php .= "
 output(\"No such file or directory {$getFile}.\");
@@ -400,14 +400,14 @@ if ({$o->getFailOnError()}) { // failonerror
       } elseif (is_file($getFile)) {
         $fileset->addInclude($pathFrom['basename']);
         $fileset->setDir($pathFrom['dirname']);
-        $fileset->setType(BuilderElement_Type_Fileset::FILE);
+        $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
         $php .= "
 \$baseFromDir = '{$pathFrom['dirname']}';
 ";
       } else { // It's a directory
         $fileset->addInclude('**/*');
         $fileset->setDir($getFile);
-        $fileset->setType(BuilderElement_Type_Fileset::BOTH); // Very important default!!!
+        $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH); // Very important default!!!
 $php .= "
 \$baseFromDir = '{$getFile}';
 ";
@@ -422,7 +422,7 @@ $php .= "
       // Iterator mode for copy() must enforce parent dirs before their children,
       // so that we can mkdir the parent without first trying to copy in the children
       // on a non-existing dir.
-      $fileset = new BuilderElement_Type_Fileset();
+      $fileset = new Build_BuilderElement_Type_Fileset();
       $fileset->setDir(self::_expandStr($realFilesets[0]->getDir(), $context));
       $fileset->setInclude(explode(' ', self::_expandStr(implode(' ', $realFilesets[0]->getInclude()), $context)));
       $fileset->setExclude(explode(' ', self::_expandStr(implode(' ', $realFilesets[0]->getExclude()), $context)));
@@ -458,7 +458,7 @@ $php .= "
     $context['iteratorMode'] = RecursiveIteratorIterator::SELF_FIRST; // Make sure dirs come before their children, in order to be created first
     foreach ($filesets as $fileset) {
       $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnError()}) {
   \$GLOBALS['result']['ok'] = false;
   return false;
@@ -475,7 +475,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Delete(Build_BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -489,7 +489,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 ";
         //
         // In the following callback we assume that the fileset returns a
@@ -526,7 +526,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Echo(Build_BuilderElement_Task_Echo $o, array &$context = array())
   {
     $php = '';
     if (!$o->getMessage()) {
@@ -584,7 +584,7 @@ EOT;
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Exec(Build_BuilderElement_Task_Exec $o, array &$context = array())
   {
     $php = '';
     if (!$o->getExecutable()) {
@@ -653,7 +653,7 @@ return true;
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Mkdir(Build_BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
   {
     $php = '';
     if (!$o->getDir()) {
@@ -685,7 +685,7 @@ if (!file_exists(\$getDir)) {
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_PhpDepend(BuilderElement_Task_PhpDepend $o, array &$context = array())
+  static public function Build_BuilderElement_Task_PhpDepend(Build_BuilderElement_Task_PhpDepend $o, array &$context = array())
   {
     $php = '';
     if (!$o->getIncludeDirs()) {
@@ -743,7 +743,7 @@ if (\$ret > 0) {
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o, array &$context = array())
+  static public function Build_BuilderElement_Task_PhpLint(Build_BuilderElement_Task_PhpLint $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -758,7 +758,7 @@ output('Starting...');
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 ";
         //
         // In the following callback we assume that the fileset returns a
@@ -799,7 +799,7 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o, array &$context = array())
+  static public function Build_BuilderElement_Task_PhpUnit(Build_BuilderElement_Task_PhpUnit $o, array &$context = array())
   {
     $php = '';
     if (!$o->getFilesets()) {
@@ -838,7 +838,7 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
       $filesets = $o->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
-" . self::BuilderElement_Type_Fileset($fileset, $context) . "
+" . self::Build_BuilderElement_Type_Fileset($fileset, $context) . "
 ";
         //
         // In the following callback we assume that the fileset returns a
@@ -881,9 +881,9 @@ if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$o->getFailOnEr
    *
    * Loosely based on phing's SelectorUtils::matchPath.
    *
-   * @param BuilderElement_Type_Fileset $o
+   * @param Build_BuilderElement_Type_Fileset $o
    */
-  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Fileset(Build_BuilderElement_Type_Fileset $o, array &$context = array())
   {
     $php = '';
     //
@@ -899,7 +899,7 @@ if (!class_exists('FilesetFilterIterator', false)) {
     private \$_filesetId;
     private \$_type;
 
-    public function __construct(\$o, \$filesetId, \$type = " . BuilderElement_Type_Fileset::FILE . ")
+    public function __construct(\$o, \$filesetId, \$type = " . Build_BuilderElement_Type_Fileset::FILE . ")
     {
       \$this->_filesetId = \$filesetId;
       \$this->_type = \$type;
@@ -909,8 +909,8 @@ if (!class_exists('FilesetFilterIterator', false)) {
     public function accept()
     {
       // Check for type, first of all
-      if (\$this->_type == " . BuilderElement_Type_Fileset::FILE . " && !is_file(\$this->current()) ||
-      		\$this->_type == " . BuilderElement_Type_Fileset::DIR . " && !is_dir(\$this->current()))
+      if (\$this->_type == " . Build_BuilderElement_Type_Fileset::FILE . " && !is_file(\$this->current()) ||
+      		\$this->_type == " . Build_BuilderElement_Type_Fileset::DIR . " && !is_dir(\$this->current()))
       {
         return false;
       }
@@ -1073,7 +1073,7 @@ if (!function_exists('fileset{$o->getId()}_{$context['id']}')) {
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Properties(Build_BuilderElement_Type_Properties $o, array &$context = array())
   {
     $php = '';
     if (!$o->getText()) {
@@ -1095,7 +1095,7 @@ EOT;
    * !! BuilderConnector_Php has a direct dependency on this !!
    *
    */
-  static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Property(Build_BuilderElement_Type_Property $o, array &$context = array())
   {
     $php = '';
     if (!$o->getName() || !$o->getValue()) {

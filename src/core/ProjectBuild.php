@@ -24,7 +24,7 @@
 /**
  * @package Project
  */
-class ProjectBuild extends DatabaseObjectAbstract
+class ProjectBuild extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
   protected $_date;         // the build's date
@@ -193,7 +193,7 @@ class ProjectBuild extends DatabaseObjectAbstract
     // A few more sanity checks
     //
     $integrationBuilder = $project->getIntegrationBuilder();
-    if (!($integrationBuilder instanceof BuilderElement_Project)) {
+    if (!($integrationBuilder instanceof Build_BuilderElement_Project)) {
       SystemEvent::raise(SystemEvent::DEBUG, "No valid integration builder specified. [PROJECTID={$this->getProjectId()}]", __METHOD__);
       return false;
     }

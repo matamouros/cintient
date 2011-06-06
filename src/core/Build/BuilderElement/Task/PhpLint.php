@@ -24,35 +24,13 @@
 /**
  * @package Builder
  */
-class BuilderElement_Task_Filesystem_Copy extends BuilderElement
+class Build_BuilderElement_Task_PhpLint extends Build_BuilderElement
 {
-  protected $_file;       // A *file* to copy. If more complexity is required, use the fileset
-  protected $_overwrite;  // Overwrite destination, even if it is newer
-  protected $_toDir;
-  protected $_toFile;
-  protected $_filesets;
+  protected $_filesets;          // An array of fileset types
 
   public function __construct()
   {
     parent::__construct();
-    $this->_file = null;
-    $this->_overwrite = false;
-    $this->_toFile = null;
-    $this->_toDir = null;
     $this->_filesets = array();
-  }
-
-	/**
-   * Setter. Makes sure <code>$toDir</code> always ends in a valid
-   * <code>DIRECTORY_SEPARATOR</code> token.
-   *
-   * @param string $dir
-   */
-  public function setToDir($dir)
-  {
-    if (!empty($dir) && strpos($dir, DIRECTORY_SEPARATOR, (strlen($dir)-1)) === false) {
-      $dir .= DIRECTORY_SEPARATOR;
-    }
-    $this->_toDir = $dir;
   }
 }

@@ -24,13 +24,13 @@
 /**
  * @package Builder
  */
-class BuilderElement_Task_Filesystem_Mkdir extends BuilderElement
+class Build_BuilderElement_Type_Properties extends Build_BuilderElement
 {
-  protected $_dir;
+  protected $_text;
 
   public function __construct()
   {
     parent::__construct();
-    $this->_dir = null;
+    $this->_text = null;
   }
 }

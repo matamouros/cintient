@@ -60,9 +60,9 @@ class BuilderConnector_Php
    * . targets
    * . defaultTarget
    *
-   * @param BuilderElement_Project $o
+   * @param Build_BuilderElement_Project $o
    */
-  static public function BuilderElement_Project(BuilderElement_Project $o)
+  static public function Build_BuilderElement_Project(Build_BuilderElement_Project $o)
   {
     $php = '';
     $context = array();
@@ -116,13 +116,13 @@ EOT;
     $properties = $o->getProperties();
     if ($o->getProperties()) {
       foreach ($properties as $property) {
-        $php .= self::BuilderElement_Type_Property($property, $context);
+        $php .= self::Build_BuilderElement_Type_Property($property, $context);
       }
     }
     $targets = $o->getTargets();
     if ($o->getTargets()) {
       foreach ($targets as $target) {
-        $php .= self::BuilderElement_Target($target, $context);
+        $php .= self::Build_BuilderElement_Target($target, $context);
       }
     }
     $php .= <<<EOT
@@ -141,7 +141,7 @@ EOT;
     return $php;
   }
 
-  static public function BuilderElement_Target(BuilderElement_Target $o, array &$context = array())
+  static public function Build_BuilderElement_Target(Build_BuilderElement_Target $o, array &$context = array())
   {
     $php = '';
     if (!$o->getName()) {
@@ -159,7 +159,7 @@ EOT;
       if ($o->getProperties()) {
         $properties = $o->getProperties();
         foreach ($properties as $property) {
-          $php .= self::BuilderElement_Type_Property($property, $context);
+          $php .= self::Build_BuilderElement_Type_Property($property, $context);
         }
       }
       if ($o->getDependencies()) {
@@ -194,69 +194,69 @@ EOT;
     return $php;
   }
 
-  static public function BuilderElement_Task_Filesystem_Chmod(BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Chmod(Build_BuilderElement_Task_Filesystem_Chmod $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Chmod($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Filesystem_Chmod($o, $context);
   }
 
-  static public function BuilderElement_Task_Filesystem_Chown(BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Chown(Build_BuilderElement_Task_Filesystem_Chown $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Chown($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Filesystem_Chown($o, $context);
   }
 
-  static public function BuilderElement_Task_Filesystem_Copy(BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Copy(Build_BuilderElement_Task_Filesystem_Copy $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Copy($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Filesystem_Copy($o, $context);
   }
 
-  static public function BuilderElement_Task_Filesystem_Delete(BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Delete(Build_BuilderElement_Task_Filesystem_Delete $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Delete($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Filesystem_Delete($o, $context);
   }
 
-  static public function BuilderElement_Task_Echo(BuilderElement_Task_Echo $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Echo(Build_BuilderElement_Task_Echo $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Echo($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Echo($o, $context);
   }
 
-  static public function BuilderElement_Task_Exec(BuilderElement_Task_Exec $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Exec(Build_BuilderElement_Task_Exec $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Exec($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Exec($o, $context);
   }
 
-  static public function BuilderElement_Task_Filesystem_Mkdir(BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
+  static public function Build_BuilderElement_Task_Filesystem_Mkdir(Build_BuilderElement_Task_Filesystem_Mkdir $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_Filesystem_Mkdir($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_Filesystem_Mkdir($o, $context);
   }
 
-  static public function BuilderElement_Task_PhpLint(BuilderElement_Task_PhpLint $o, array &$context = array())
+  static public function Build_BuilderElement_Task_PhpLint(Build_BuilderElement_Task_PhpLint $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_PhpLint($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_PhpLint($o, $context);
   }
 
-  static public function BuilderElement_Task_PhpUnit(BuilderElement_Task_PhpUnit $o, array &$context = array())
+  static public function Build_BuilderElement_Task_PhpUnit(Build_BuilderElement_Task_PhpUnit $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Task_PhpUnit($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Task_PhpUnit($o, $context);
   }
 
   /**
    * Loosely based on phing's SelectorUtils::matchPath.
    *
-   * @param BuilderElement_Type_Fileset $o
+   * @param Build_BuilderElement_Type_Fileset $o
    */
-  static public function BuilderElement_Type_Fileset(BuilderElement_Type_Fileset $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Fileset(Build_BuilderElement_Type_Fileset $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Type_Fileset($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Type_Fileset($o, $context);
   }
 
-  static public function BuilderElement_Type_Properties(BuilderElement_Type_Properties $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Properties(Build_BuilderElement_Type_Properties $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Type_Properties($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Type_Properties($o, $context);
   }
 
-  static public function BuilderElement_Type_Property(BuilderElement_Type_Property $o, array &$context = array())
+  static public function Build_BuilderElement_Type_Property(Build_BuilderElement_Type_Property $o, array &$context = array())
   {
-    return BuilderConnector_Cintient::BuilderElement_Type_Property($o, $context);
+    return BuilderConnector_Cintient::Build_BuilderElement_Type_Property($o, $context);
   }
 
   static public function execute($code)

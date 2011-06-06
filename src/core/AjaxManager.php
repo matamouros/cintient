@@ -385,7 +385,7 @@ EOT;
       ));
       exit;
     }
-    $class = 'BuilderElement' . $_REQUEST['parent'] . '_' . $_REQUEST['task'];
+    $class = 'Build_BuilderElement' . $_REQUEST['parent'] . '_' . $_REQUEST['task'];
     if (!class_exists($class)) {
       $msg = 'Unexisting builder element';
       SystemEvent::raise(SystemEvent::INFO, $msg . " [ELEMENT={$class}]", __METHOD__);
@@ -402,8 +402,8 @@ EOT;
     // Setup PhpLint tasks to check all PHP files under the sources dir
     //
     if ($_REQUEST['task'] == 'PhpLint') {
-      $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setType(BuilderElement_Type_Fileset::FILE);
+      $fileset = new Build_BuilderElement_Type_Fileset();
+      $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
       $fileset->setDir('${sourcesDir}');
       $fileset->addInclude('**/*.php');
       $element->setFilesets(array($fileset));
@@ -413,8 +413,8 @@ EOT;
     // Setup PhpUnit tasks with default values
     //
     elseif ($_REQUEST['task'] == 'PhpUnit') {
-      $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setType(BuilderElement_Type_Fileset::FILE);
+      $fileset = new Build_BuilderElement_Type_Fileset();
+      $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
       $fileset->setDir('${sourcesDir}'/* . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR*/);
       $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
       $element->setFilesets(array($fileset));
@@ -440,18 +440,18 @@ EOT;
     //
     elseif ($_REQUEST['task'] == 'Delete') {
       $element->setIncludeEmptyDirs(true);
-      $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+      $fileset = new Build_BuilderElement_Type_Fileset();
+      $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
       $fileset->setDefaultExcludes(false);
       $element->setFilesets(array($fileset));
     }
 
     //
-    // Copy needs BuilderElement_Type_Fileset::BOTH as default
+    // Copy needs Build_BuilderElement_Type_Fileset::BOTH as default
     //
     elseif ($_REQUEST['task'] == 'Copy') {
-      $fileset = new BuilderElement_Type_Fileset();
-      $fileset->setType(BuilderElement_Type_Fileset::BOTH);
+      $fileset = new Build_BuilderElement_Type_Fileset();
+      $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
       $fileset->setDefaultExcludes(false);
       $element->setFilesets(array($fileset));
     }
@@ -462,7 +462,7 @@ EOT;
     elseif ($_REQUEST['task'] == 'Chmod' ||
             $_REQUEST['task'] == 'Chown'
     ) {
-      $fileset = new BuilderElement_Type_Fileset();
+      $fileset = new Build_BuilderElement_Type_Fileset();
       $element->setFilesets(array($fileset));
     }
 
@@ -545,7 +545,7 @@ EOT;
     Alas, this simplification accounts for slightly bloatier code in
     this method, namely because we now have to special case the processing
     of seamless embedded filesets and make sure that backstage they are
-    still properly updating the corresponding BuilderElement_Fileset object.
+    still properly updating the corresponding Build_BuilderElement_Fileset object.
 
     */
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -572,7 +572,7 @@ EOT;
     }
 
     $o = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']['value']);
-    if (!($o instanceof BuilderElement)) {
+    if (!($o instanceof Build_BuilderElement)) {
       $msg = 'Unknown task specified';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -607,21 +607,21 @@ EOT;
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
            $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
            $attributeName == 'type' ) &&
-          ($o instanceof BuilderElement_Task_PhpUnit ||
-           $o instanceof BuilderElement_Task_PhpLint ||
-           $o instanceof BuilderElement_Task_Filesystem_Chmod ||
-           $o instanceof BuilderElement_Task_Filesystem_Delete
+          ($o instanceof Build_BuilderElement_Task_PhpUnit ||
+           $o instanceof Build_BuilderElement_Task_PhpLint ||
+           $o instanceof Build_BuilderElement_Task_Filesystem_Chmod ||
+           $o instanceof Build_BuilderElement_Task_Filesystem_Delete
           )
       ) {
         $filesets = $o->getFilesets(); // Only one is expected, for now
         if ($attributeName == 'include' || $attributeName == 'exclude') {
           $value = array($value);
         } elseif ($attributeName == 'type' &&
-                  $value != BuilderElement_Type_Fileset::BOTH &&
-                  $value != BuilderElement_Type_Fileset::FILE &&
-                  $value != BuilderElement_Type_Fileset::DIR  )
+                  $value != Build_BuilderElement_Type_Fileset::BOTH &&
+                  $value != Build_BuilderElement_Type_Fileset::FILE &&
+                  $value != Build_BuilderElement_Type_Fileset::DIR  )
         {
-          $value = BuilderElement_Type_Fileset::getDefaultType();
+          $value = Build_BuilderElement_Type_Fileset::getDefaultType();
         }
         $filesets[0]->$method($value);
       } else {

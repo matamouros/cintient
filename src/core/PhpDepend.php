@@ -37,7 +37,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class PhpDepend extends DatabaseObjectAbstract
+class PhpDepend extends Framework_DatabaseObjectAbstract
 {
   protected $_ptrProjectBuild; // Redundant but necessary for save()
   protected $_buildId;         // The project build ID serves as this instance's ID
