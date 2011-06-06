@@ -22,44 +22,20 @@
  */
 
 /**
- * @package Cintient
+ * Base class with database specific functionality, namely auto-save.
+ *
+ * @package     Framework
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-abstract class CintientObjectAbstract
+abstract class DatabaseObjectAbstract extends Framework_BaseObject
 {
   private $_signature;    // Internal flag to control whether a save to database is required
-
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    } elseif (strpos($name, 'is') === 0) {
-      $var = '_' . lcfirst(substr($name, 2));
-      return (bool)$this->$var;
-    } elseif (strpos($name, 'getDate') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      if (empty($this->$var)) {
-        $this->$vat = date('Y-m-d H:i:s');
-      }
-      return $this->$var;
-    } else {
-      trigger_error("No valid method available for calling", E_USER_ERROR);
-      exit;
-    }
-    return false;
-  }
 
   public function __construct()
   {

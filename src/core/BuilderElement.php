@@ -24,7 +24,7 @@
 /**
  * @package Builder
  */
-class BuilderElement
+class BuilderElement extends Framework_BaseObject
 {
   protected $_active;         // Indicates if this builder element should be considered executable
   protected $_deletable;      // Special system builder elements might not be deleted by the user. Not user setable.
@@ -41,23 +41,6 @@ class BuilderElement
     $this->_failOnError = true;
     $this->_internalId = Utility::generateRandomString() . uniqid();
     $this->_visible = true;
-  }
-
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    } elseif (strpos($name, 'is') === 0) {
-      $var = '_' . lcfirst(substr($name, 2));
-      return (bool)$this->$var;
-    }
-    trigger_error("No valid method available for calling [METHOD={$name}]", E_USER_ERROR);
-    exit;
   }
 
   public function toString($connectorType)

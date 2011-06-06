@@ -29,7 +29,7 @@
  *
  * @package Project
  */
-class Project extends CintientObjectAbstract
+class Project extends DatabaseObjectAbstract
 {
   protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
   protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)

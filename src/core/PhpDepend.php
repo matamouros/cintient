@@ -22,14 +22,22 @@
  */
 
 /**
- * @package   Project
- * @author    Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
- * @copyright 2010-2011, Pedro Mata-Mouros Fonseca. All rights reserved.
- * @license   http://www.gnu.org/licenses/ GNU General Public License v3 or later.
- * @version   Release: @package_version@
- * @link      http://code.google.com/p/cintient/
+ * PhpDepend is a helper class for dealing with PHP_Depend third party
+ * library. It specifically integrates with ProjectBuild, abstracts all
+ * interactions with PHP_Depend and maintains a record of all high-level
+ * collected metrics.
+ *
+ * @package     Build
+ * @subpackage  Php
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-class PhpDepend extends CintientObjectAbstract
+class PhpDepend extends DatabaseObjectAbstract
 {
   protected $_ptrProjectBuild; // Redundant but necessary for save()
   protected $_buildId;         // The project build ID serves as this instance's ID

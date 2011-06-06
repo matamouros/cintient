@@ -24,7 +24,7 @@
 /**
  * @package Project
  */
-class ProjectBuild extends CintientObjectAbstract
+class ProjectBuild extends DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
   protected $_date;         // the build's date
