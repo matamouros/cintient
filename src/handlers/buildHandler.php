@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,11 +18,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 
-$buildProcess = new Process(CINTIENT_PHP_BINARY . ' ' . CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
+$buildProcess = new Framework_Process(CINTIENT_PHP_BINARY . ' ' . CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
 if (!$buildProcess->isRunning()) {
   if (!$buildProcess->runAsync()) {
     SystemEvent::raise(SystemEvent::ERROR, "Problems starting up build worker.", 'buildHandler');

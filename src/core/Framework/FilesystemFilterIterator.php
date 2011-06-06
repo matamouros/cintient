@@ -22,11 +22,18 @@
  */
 
 /**
+ * Helper class for handling filesystem iteration with a set of filters.
  *
- * @author pfonseca
- * @package Utility
+ * @package     Framework
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-class FilesystemFilterIterator extends FilterIterator
+class Framework_FilesystemFilterIterator extends FilterIterator
 {
   /**
    * An array of default exclusions to not consider on accept()

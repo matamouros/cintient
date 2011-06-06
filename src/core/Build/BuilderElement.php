@@ -61,7 +61,7 @@ class Build_BuilderElement extends Framework_BaseObject
       if (isset($context['properties'][$matches[1]])) {
         return $context['properties'][$matches[1]];
       } else {
-        SystemEvent::raise(SystemEvent::INFO, "Couldn't expand user variable {\$matches[0]}, no such property was found. Assumed value '{\$matches[1]}'.", __METHOD__);
+        SystemEvent::raise(SystemEvent::INFO, "Couldn't expand user variable {$matches[0]}, no such property was found. Assumed value '{$matches[1]}'.", __METHOD__);
         return $matches[1];
       }
     }, $str);
