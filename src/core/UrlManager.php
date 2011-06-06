@@ -97,7 +97,7 @@ class UrlManager
     return CINTIENT_BASE_URL . '/project/history/';
   }
 
-  static public function getForProjectBuildView(Project $project, ProjectBuild $build)
+  static public function getForProjectBuildView(Project $project, Project_Build $build)
   {
     return CINTIENT_BASE_URL . "/project/history/?pid={$project->getId()}&bid={$build->getId()}";
   }

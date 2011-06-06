@@ -24,14 +24,14 @@
     <div id="projectListContainer" class="container">
       <ul>
 {foreach $dashboard_projectList as $project}
-{$dashboard_latestBuild=ProjectBuild::getLatest($project, $globals_user)}
+{$dashboard_latestBuild=Project_Build::getLatest($project, $globals_user)}
       <li class="projectDraggableContainer container">
         <a href="{UrlManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
         <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
-          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: build {$dashboard_latestBuild->getId()}, r{$dashboard_latestBuild->getScmRevision()}, {if $dashboard_latestBuild->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$dashboard_latestBuild->getDate()|date_format}.{else}This project hasn't been built yet.{/if}</div>
+          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: build {$dashboard_latestBuild->getId()}, r{$dashboard_latestBuild->getScmRevision()}, {if $dashboard_latestBuild->getStatus()!=Project_Build::STATUS_FAIL}built{else}failed{/if} on {$dashboard_latestBuild->getDate()|date_format}.{else}This project hasn't been built yet.{/if}</div>
           {if !empty($dashboard_latestBuild)}<div class="projectStats">Current version: {$dashboard_latestBuild->getLabel()}</div>{/if}
           {*<div class="projectStats">Production version: 1.0.9</div>*}
         </div>

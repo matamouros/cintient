@@ -22,9 +22,19 @@
  */
 
 /**
- * @package Project
+ * This class will handle all build related stuff. Every single build,
+ * be it successful or not, will correspond to an instance of this class.
+ *
+ * @package     Project
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-class ProjectBuild extends Framework_DatabaseObjectAbstract
+class Project_Build extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
   protected $_date;         // the build's date
@@ -375,7 +385,7 @@ class ProjectBuild extends Framework_DatabaseObjectAbstract
 
   static private function _getObject(Resultset $rs, Project $project)
   {
-    $ret = new ProjectBuild($project);
+    $ret = new Project_Build($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
     $ret->setLabel($rs->getLabel());

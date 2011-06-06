@@ -607,8 +607,8 @@ EOT;
         exit;
       }
       $build = null;
-      $build = ProjectBuild::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
-      if (!($build instanceof ProjectBuild)) {
+      $build = Project_Build::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
+      if (!($build instanceof Project_Build)) {
         SystemEvent::raise(SystemEvent::INFO, "Could not access the specified project build. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}]", __METHOD__);
         //TODO: Redirect and exit?
         exit;
@@ -751,7 +751,7 @@ EOT;
       exit;
     }
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
-    $GLOBALS['smarty']->assign('project_latestBuild', ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']));
+    $GLOBALS['smarty']->assign('project_latestBuild', Project_Build::getLatest($GLOBALS['project'], $GLOBALS['user']));
   }
 
   static public function project_edit()
@@ -867,9 +867,9 @@ EOT;
     //
     $build = null; // It's possible that no build was triggered yet.
     if (isset($_GET['bid']) && !empty($_GET['bid'])) {
-      $build = ProjectBuild::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
+      $build = Project_Build::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
     } else {
-      $build = ProjectBuild::getLatest($GLOBALS['project'], $GLOBALS['user']);
+      $build = Project_Build::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
     //
     // PHP_Depend stuff (Find a way to only call this in the presence of PHP_Depend active task
@@ -882,9 +882,9 @@ EOT;
     }
 
     // Last assignments
-    $GLOBALS['smarty']->assign('project_buildList', ProjectBuild::getList($GLOBALS['project'], $GLOBALS['user']));
+    $GLOBALS['smarty']->assign('project_buildList', Project_Build::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
-    $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof ProjectBuild?$build->createReportFromJunit():null));
+    $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof Project_Build?$build->createReportFromJunit():null));
   }
 
   static public function project_new()

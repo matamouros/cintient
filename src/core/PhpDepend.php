@@ -23,7 +23,7 @@
 
 /**
  * PhpDepend is a helper class for dealing with PHP_Depend third party
- * library. It specifically integrates with ProjectBuild, abstracts all
+ * library. It specifically integrates with Project_Build, abstracts all
  * interactions with PHP_Depend and maintains a record of all high-level
  * collected metrics.
  *
@@ -65,7 +65,7 @@ class PhpDepend extends Framework_DatabaseObjectAbstract
   protected $_nop;
   protected $_roots;
 
-  public function __construct(ProjectBuild $build)
+  public function __construct(Project_Build $build)
   {
     parent::__construct();
     $this->_ptrProjectBuild = $build;
@@ -102,7 +102,7 @@ class PhpDepend extends Framework_DatabaseObjectAbstract
 
   /**
    * A slightly different version of the base _getCurrentSignature() is
-   * needed, i.e., pointer to ProjectBuild is not to be considered.
+   * needed, i.e., pointer to Project_Build is not to be considered.
    */
   private function _getCurrentSignature()
   {
@@ -269,7 +269,7 @@ class PhpDepend extends Framework_DatabaseObjectAbstract
     return true;
   }
 
-  static private function _getObject(Resultset $rs, ProjectBuild $build)
+  static private function _getObject(Resultset $rs, Project_Build $build)
   {
     $ret = new PhpDepend($build);
 
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS phpdepend{$project->getId()} (
     return true;
   }
 
-  static public function getById(ProjectBuild $build, User $user, $access = Access::READ, array $options = array())
+  static public function getById(Project_Build $build, User $user, $access = Access::READ, array $options = array())
   {
     $ret = false;
     $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.

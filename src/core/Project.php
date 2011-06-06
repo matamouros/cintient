@@ -45,7 +45,7 @@ class Project extends Framework_DatabaseObjectAbstract
   protected $_scmRemoteRepository;
   protected $_scmUsername;
   protected $_signature;               // Internal flag to control whether a save to database is required
-  protected $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing ProjectBuild table)
+  protected $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing Project_Build table)
   protected $_status;
   protected $_title;
   protected $_users;                   // An array of users and corresponding permissions, taken from projectuser table
@@ -163,7 +163,7 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     // Scm stuff done, setup a new build for the project
     //
-    $build = new ProjectBuild($this);
+    $build = new Project_Build($this);
     $build->setScmRevision($rev);
     if (!$build->init()) {
       $this->setStatus(self::STATUS_ERROR);
@@ -204,12 +204,12 @@ class Project extends Framework_DatabaseObjectAbstract
     if (!ScmConnector::delete(array('local' => $this->getScmLocalWorkingCopy()))) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project sources. [ID={$this->getId()}] [DIR={$this->getScmLocalWorkingCopy()}]", __METHOD__);
     }
-    if (!ProjectBuild::delete($this->getId())) {
+    if (!Project_Build::uninstall($this)) {
       Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project build table. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!ProjectLog::delete($this->getId())) {
+    if (!Project_Log::uninstall($this)) {
       Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [ID={$this->getId()}]", __METHOD__);
       return false;
@@ -296,11 +296,11 @@ class Project extends Framework_DatabaseObjectAbstract
     if (!$this->_save()) {
       return false;
     }
-    if (!ProjectLog::install($this->getId())) {
+    if (!Project_Log::install($this->getId())) {
       $this->delete();
       return false;
     }
-    if (!ProjectBuild::install($this)) {
+    if (!Project_Build::install($this)) {
       $this->delete();
       return false;
     }
@@ -529,7 +529,7 @@ EOT;
    */
   public function log($msg)
   {
-    $projectLog = new ProjectLog($this->getId());
+    $projectLog = new Project_Log($this);
     $projectLog->setType(0);
     $projectLog->setMessage($msg);
   }

@@ -44,7 +44,7 @@ $(document).ready(function() {
 </script>
       <select class="dropdown" id="buildsListDropdown">
 {foreach from=$project_buildList item=build}
-        <option value="{UrlManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=ProjectBuild::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
+        <option value="{UrlManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} {if $build->getStatus()!=Project_Build::STATUS_FAIL}built{else}failed{/if} on {$build->getDate()|date_format}
 {/foreach}
       </select>
 {/if}

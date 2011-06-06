@@ -22,83 +22,58 @@
  */
 
 /**
- * @package Project
+ * This class handles all information logging for a project.
+ *
+ * @package     Project
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
-class ProjectLog
+class Project_Log extends Framework_DatabaseObjectAbstract
 {
-  private $_id;           // the build's incremental ID
-  private $_date;         // the build's date
-  private $_type;         // the label on the build, also used to name the release package file
-  private $_message;      // a user generated description text (prior or after the build triggered).
-  private $_username;     // The username that triggered the log entry
-  private $_projectId;    // goes into the table name - it's not an attribute
-  private $_signature;    // Internal flag to control whether a save to database is required
+  protected $_id;           // the build's incremental ID
+  protected $_date;         // the build's date
+  protected $_type;         // the label on the build, also used to name the release package file
+  protected $_message;      // a user generated description text (prior or after the build triggered).
+  protected $_username;     // The username that triggered the log entry
 
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    }
-    return false;
-  }
+  protected $_ptrProject;
 
-  public function __construct($projectId)
+  public function __construct(Project $project)
   {
-    $this->_projectId = $projectId;
+    parent::__construct();
+    $this->_ptrProject = $project;
     $this->_id = null;
     $this->_date = null;
     $this->_type = '';
     $this->_message = '';
     $this->_username = '';
-    $this->_signature = null;
   }
 
   public function __destruct()
   {
-    $this->_save();
+    parent::__destruct();
   }
 
-  public function delete()
+  public function init() {}
+
+  protected function _save($force = false)
   {
-    $sql = "DROP TABLE projectlog{$this->getProjectId()}";
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [TABLE={$this->getProjectId()}]", __METHOD__);
-      return false;
+    if (!$this->hasChanged()) {
+      if (!$force) {
+        return false;
+      }
+      SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
-    return true;
-  }
 
-  private function _getCurrentSignature()
-  {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    return md5(serialize($arr));
-  }
-
-  private function _save($force=false)
-  {
-    if ($this->_getCurrentSignature() == $this->_signature && !$force) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
-      return false;
-    }
     if (!Database::beginTransaction()) {
       return false;
     }
-    $sql = 'INSERT INTO projectlog' . $this->getProjectId()
+    $sql = 'INSERT INTO projectlog' . $this->getPtrProject()->getId()
          . ' (type, message, username)'
          . ' VALUES (?,?,?)';
     $val = array(
@@ -114,22 +89,17 @@ class ProjectLog
     $this->setId($id);
 
     if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project log might not have been saved. [PID={$this->getProjectId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project log might not have been saved. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
       return false;
     }
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Saved project log. [PID={$this->getProjectId()}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Saved project log. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
     #endif
-    $this->updateSignature();
+    $this->resetSignature();
     return true;
   }
 
-  public function updateSignature()
-  {
-    $this->setSignature($this->_getCurrentSignature());
-  }
-
-  static public function getListByProject($project, $user, $access = Access::READ, array $options = array())
+  static public function getListByProject(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
     isset($options['pageStart'])?:$options['pageStart']=0;
@@ -164,23 +134,22 @@ class ProjectLog
     return $ret;
   }
 
-  static private function _getObject(Resultset $rs, $projectId)
+  static private function _getObject(Resultset $rs, Project $project)
   {
-    $ret = new ProjectLog($projectId);
+    $ret = new Project_Log($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
     $ret->setType($rs->getType());
     $ret->setMessage($rs->getMessage());
     $ret->setUsername($rs->getUsername());
-
-    $ret->updateSignature();
+    $ret->resetSignature();
     return $ret;
   }
 
-  static public function install($projectId)
+  static public function install(Project $project)
   {
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectlog{$projectId} (
+CREATE TABLE IF NOT EXISTS projectlog{$project->getId()} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   type TINYINT DEFAULT 0,
@@ -189,17 +158,17 @@ CREATE TABLE IF NOT EXISTS projectlog{$projectId} (
 );
 EOT;
     if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$projectId}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
       return false;
     }
     return true;
   }
 
-  static public function uninstall($projectId)
+  static public function uninstall(Project $project)
   {
-    $sql = "DROP TABLE projectlog{$projectId}";
+    $sql = "DROP TABLE projectlog{$project->getId()}";
     if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [TABLE={$projectId}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [TABLE={$project->getId()}]", __METHOD__);
       return false;
     }
     return true;
