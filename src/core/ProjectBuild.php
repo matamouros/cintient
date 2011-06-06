@@ -180,20 +180,55 @@ class ProjectBuild extends CintientObjectAbstract
 
   public function init()
   {
-    // Get the ID
+    //
+    // Get the ID, first and foremost
+    //
     if (!$this->_save(true)) {
       return false;
     }
+
+    $project = $this->getPtrProject(); // Easier
+
+    //
+    // A few more sanity checks
+    //
+    $integrationBuilder = $project->getIntegrationBuilder();
+    if (!($integrationBuilder instanceof BuilderElement_Project)) {
+      SystemEvent::raise(SystemEvent::DEBUG, "No valid integration builder specified. [PROJECTID={$this->getProjectId()}]", __METHOD__);
+      return false;
+    }
+    if ($integrationBuilder->isEmpty()) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getProjectId()}]", __METHOD__);
+      return false;
+    }
+
+    //
+    // Export and execute the builder's source code
+    //
+    $phpBuilder = $integrationBuilder->toString('cintient');
+    SystemEvent::raise(SystemEvent::DEBUG, "Integration builder source code:" . PHP_EOL . print_r($phpBuilder, true), __METHOD__);
+    eval ($phpBuilder); // A whole set of global vars should be set after return
+    $this->setOutput(implode(PHP_EOL, $GLOBALS['result']['stacktrace']));
+    if ($GLOBALS['result']['ok'] != true) {
+      if (!empty($GLOBALS['result']['task'])) {
+        SystemEvent::raise(SystemEvent::INFO, "Failed executing task {$GLOBALS['result']['task']}. [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::INFO, "Failed for unknown reasons. [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
+      }
+      SystemEvent::raise(SystemEvent::DEBUG, "Stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
+      return false;
+    }
+
     // Create this build's report dir, backing up an existing one
     if (is_dir($this->getBuildDir())) {
       $backupOldBuildDir = $this->getBuildDir() . '_old_' . uniqid() . '/';
       if (!@rename($this->getBuildDir(), $backupOldBuildDir)) {
-        SystemEvent::raise(SystemEvent::ERROR, "Couldn't create backup of existing build dir found. [PID={$this->getPtrProject()->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::ERROR, "Couldn't create backup of existing build dir found. [PID={$project->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
         return false;
       }
     }
     if (!@mkdir($this->getBuildDir(), DEFAULT_DIR_MASK, true)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't create build dir. [PID={$this->getPtrProject()->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't create build dir. [PID={$project->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
       return false;
     }
     //
@@ -201,8 +236,8 @@ class ProjectBuild extends CintientObjectAbstract
     // TODO: only if unit tests were comissioned!!!!
     //
     //if (UNIT_TESTES_WERE_DONE) {
-      if (!@copy($this->getPtrProject()->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$this->getPtrProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
+      if (!@copy($project->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$project->getId()}] [BUILD={$this->getId()}]", __METHOD__);
       }
     //}
 

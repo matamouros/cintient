@@ -158,60 +158,41 @@ class Project extends CintientObjectAbstract
 
     // We're now building
     $this->setStatus(self::STATUS_BUILDING);
-    $this->_save(); // We want the building status to update imediatelly
+    $this->_save(true); // We want the building status to update imediatelly
 
-    // 3. trigger unit tests and all the rules specified in the rules engine
-    if (!($this->_integrationBuilder instanceof BuilderElement_Project)) {
-      SystemEvent::raise(SystemEvent::DEBUG, "No valid integration builder specified. [PROJECTID={$this->getId()}]", __METHOD__);
-      return false;
-    }
-    if ($this->_integrationBuilder->isEmpty()) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getId()}]", __METHOD__);
-      return false;
-    }
-    if (empty($this->_buildLabel)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Empty build label, could not complete project build. [PROJECTID={$this->getId()}]", __METHOD__);
-      $this->setStatus(self::STATUS_MODIFIED);
-      return false;
-    }
-    $php = $this->_integrationBuilder->toString('Cintient');
-    $buildOk = BuilderConnector_Cintient::execute($php);
+    //
+    // Scm stuff done, setup a new build for the project
+    //
     $build = new ProjectBuild($this);
     $build->setScmRevision($rev);
-    $build->setOutput(implode("\n", $GLOBALS['result']['stacktrace']));
-    if (!$buildOk) {
+    if (!$build->init()) {
       $this->setStatus(self::STATUS_ERROR);
-      $build->setStatus(ProjectBuild::STATUS_FAIL);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
       return false;
     }
-    //
-    // Success. Increment the build counter to prepare it for next version
-    //
-    $this->setReleaseCounter(((int)$this->getReleaseCounter()+1));
-    $build->setLabel($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
+
     $this->setStatus(self::STATUS_OK);
-    //
-    // Setup build specific report dir
-    //
-    if (!$build->init()) {
-      $this->setStatus(self::STATUS_ERROR);
-      return false;
-    }
-    // Increment our agregated number of builds
-    $this->setStatsNumBuilds($this->getStatsNumBuilds()+1);
-
-    // TODO: 5. generate release package?
-    if ($this->getOptionPackageOnSuccess()) {
-      $build->setStatus(ProjectBuild::STATUS_OK_WITH_PACKAGE);
-    } else {
-      $build->setStatus(ProjectBuild::STATUS_OK_WITHOUT_PACKAGE);
-    }
-
-    // TODO: 6. tag the sources on the built revision
+    $this->incrementStatsNumBuilds();
+    $this->incrementReleaseCounter();
+    $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     return true;
+  }
+
+  public function incrementReleaseCounter()
+  {
+    $this->_releaseCounter++;
+  }
+
+  public function incrementStatsNumBuilds()
+  {
+    $this->_statsNumBuilds++;
+  }
+
+  public function getCurrentReleaseLabel()
+  {
+    return ($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
   }
 
   public function delete()
