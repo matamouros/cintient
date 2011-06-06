@@ -22,7 +22,19 @@
  */
 
 /**
- * @package Builder
+ * The property element is responsible for setting up a local (if defined
+ * within a target) or global (if defined at the project level) variable
+ * for easy reference in the builder script's scope.
+ *
+ * @package     Build
+ * @subpackage  Type
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
 class Build_BuilderElement_Type_Property extends Build_BuilderElement
 {
@@ -34,5 +46,63 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
     parent::__construct();
     $this->_name = null;
     $this->_value = null;
+  }
+
+  public function toAnt()
+  {
+    $xml = new XmlBuilderElement();
+    $xml->startElement('property');
+    if (!$this->getName() || !$this->getValue()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Name and value not set for type property.', __METHOD__);
+      return false;
+    }
+    $xml->writeAttribute('name', $this->getName());
+    $xml->writeAttribute('value', $this->getValue());
+    $xml->endElement();
+    return $xml->flush();
+  }
+
+  public function toHtml()
+  {
+    parent::toHtml();
+    if (!$this->isVisible()) {
+      return true;
+    }
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Property'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Name, textfield
+        h::div(array('class' => 'label'), 'Name');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'name', 'value' => $o->getName()));
+        });
+        // Value, textfield
+        h::div(array('class' => 'label'), 'Value');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'value', 'value' => $o->getValue()));
+        });
+      });
+    });
+  }
+
+  public function toPhing()
+  {
+    return $this->toAnt();
+  }
+
+  public function toPhp(Array &$context = array())
+  {
+    $php = '';
+    if (!$this->getName() || !$this->getValue()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Name and value not set for type property.', __METHOD__);
+      return false;
+    }
+    $context['properties'][self::_expandStr($this->getName(), $context)] = self::_expandStr($this->getValue(), $context);
+    $php .= <<<EOT
+\$GLOBALS['properties'][expandStr('{$this->getName()}') . '_{$context['id']}'] = expandStr('{$this->getValue()}');
+\$GLOBALS['result']['ok'] = (\$GLOBALS['result']['ok'] & true);
+EOT;
+    return $php;
   }
 }

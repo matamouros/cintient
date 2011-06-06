@@ -473,7 +473,7 @@ EOT;
     $GLOBALS['project']->log("Integration builder changed, element added.");
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
 
-    echo $element->toString('Html');
+    echo $element->toHtml();
     exit;
   }
 

@@ -205,7 +205,7 @@ class ProjectBuild extends Framework_DatabaseObjectAbstract
     //
     // Export and execute the builder's source code
     //
-    $phpBuilder = $integrationBuilder->toString('cintient');
+    $phpBuilder = $integrationBuilder->toPhp();
     SystemEvent::raise(SystemEvent::DEBUG, "Integration builder source code:" . PHP_EOL . print_r($phpBuilder, true), __METHOD__);
     eval ($phpBuilder); // A whole set of global vars should be set after return
     $this->setOutput(implode(PHP_EOL, $GLOBALS['result']['stacktrace']));

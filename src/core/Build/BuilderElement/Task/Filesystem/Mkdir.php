@@ -22,7 +22,18 @@
  */
 
 /**
- * @package Builder
+ * Mkdir task is responsible for creating and properly setting up new
+ * directories.
+ *
+ * @package     Build
+ * @subpackage  Filesystem
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
 class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
 {
@@ -32,5 +43,69 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
   {
     parent::__construct();
     $this->_dir = null;
+  }
+
+  public function toAnt()
+  {
+    if (!$this->getDir()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
+      return false;
+    }
+    $xml = new XmlBuilderElement();
+    $xml->startElement('mkdir');
+    $xml->writeAttribute('dir', $this->getDir());
+    $xml->endElement();
+    return $xml->flush();
+  }
+
+  public function toHtml()
+  {
+    parent::toHtml();
+    if (!$this->isVisible()) {
+      return true;
+    }
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Mkdir'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Dir, textfield
+        h::div(array('class' => 'label'), 'Dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
+        });
+      });
+    });
+  }
+
+  public function toPhing()
+  {
+    return $this->toAnt();
+  }
+
+  public function toPhp(Array &$context = array())
+  {
+    $php = '';
+    if (!$this->getDir()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
+      return false;
+    }
+    $php .= "
+\$GLOBALS['result']['task'] = 'mkdir';
+\$getDir = expandStr('{$this->getDir()}');
+if (!file_exists(\$getDir)) {
+  if (mkdir(\$getDir, " . DEFAULT_DIR_MASK . ", true) === false && {$this->getFailOnError()}) {
+    \$GLOBALS['result']['ok'] = false;
+    output('Could not create ' . \$getDir . '.');
+    return false;
+  } else {
+    \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+    output('Created ' . \$getDir . '.');
+  }
+} else {
+  \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+  output(\$getDir . ' already exists.');
+}
+";
+    return $php;
   }
 }

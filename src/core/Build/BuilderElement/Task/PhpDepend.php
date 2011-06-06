@@ -23,9 +23,12 @@
 
 /**
  *
- * PHP_Depend task builder element, for invoking PHP_Depend and generating
- * an Overview Pyramid and diagram of analyzed packages. Output from the
- * pdepend.php script invocation:
+ * PHP_Depend special task builder element, responsible for invoking
+ * PHP_Depend and generating an Overview Pyramid and diagram of analyzed
+ * packages. It generates specific interface changes, as all other special
+ * tasks.
+ *
+ * Output from the pdepend.php script invocation:
  *
  *  Usage: pdepend [options] [logger] <dir[,dir[,...]]>
  *
@@ -58,8 +61,15 @@
  *    --version                 Print the current version.
  *    -d key[=value]            Sets a php.ini value.
  *
- *
- * @package Builder
+ * @package     Build
+ * @subpackage  Task
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
 class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
 {
@@ -80,5 +90,96 @@ class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
     $this->_jdependChartFile = null;
     $this->_overviewPyramidFile = null;
     $this->_summaryFile = null;
+  }
+
+  public function toHtml()
+  {
+    parent::toHtml();
+    if (!$this->isVisible()) {
+      return true;
+    }
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $this->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'PhpDepend'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Fail on error?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+          if ($o->getFailOnError()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Include Dirs, textfield
+        h::div(array('class' => 'label'), 'Include dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'includeDirs', 'value' => $o->getIncludeDirs()));
+        });
+        // Exclude Dirs, textfield
+        h::div(array('class' => 'label'), 'Exclude dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludeDirs', 'value' => $o->getExcludeDirs()));
+        });
+        // Exclude packages, textfield
+        h::div(array('class' => 'label'), 'Exclude packages <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludePackages', 'value' => $o->getExcludePackages()));
+        });
+      });
+    });
+  }
+
+  public function toPhp(Array &$context = array())
+  {
+    $php = '';
+    if (!$this->getIncludeDirs()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No include dirs set for task PhpDepend.', __METHOD__);
+      return false;
+    }
+    $php .= "
+\$GLOBALS['result']['task'] = 'phpdepend';
+";
+    $jdependChartFile = '';
+    if ($this->getJdependChartFile()) {
+      $jdependChartFile = ' --jdepend-chart=' . $this->getJdependChartFile();
+    }
+    $thisverviewPyramidFile = '';
+    if ($this->getOverviewPyramidFile()) {
+      $thisverviewPyramidFile = ' --overview-pyramid=' . $this->getOverviewPyramidFile();
+    }
+    $summaryFile = '';
+    if ($this->getSummaryFile()) {
+      $summaryFile = ' --summary-xml=' . $this->getSummaryFile();
+    }
+    $excludeDirs = '';
+    if ($this->getExcludeDirs()) {
+      $excludeDirs = ' --ignore=' . str_replace(' ', ',', trim($this->getExcludeDirs()));
+    }
+    $excludePackages = '';
+    if ($this->getExcludePackages()) {
+      $excludePackages = ' --exclude= ' . str_replace(' ', ',', trim($this->getExcludePackages()));
+    }
+    $includeDirs = str_replace(' ', ',', trim($this->getIncludeDirs()));  // Cintient's space separated to PHP_Depend's comma separated
+
+    $php .= "
+\$thisutput = array();
+\$args = expandStr('{$jdependChartFile}{$thisverviewPyramidFile}{$summaryFile}{$excludeDirs}{$excludePackages} {$includeDirs}');
+exec(\"" . CINTIENT_PHPDEPEND_BINARY . "\$args\", \$thisutput, \$ret);
+foreach (\$thisutput as \$line) {
+  output(\$line);
+}
+if (\$ret > 0) {
+  output('PHP_Depend analysis failed.');
+  \$GLOBALS['result']['ok'] = false;
+  if ({$this->getFailOnError()}) {
+    return false;
+  }
+} else {
+  output('PHP_Depend analysis successful.');
+	\$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;
+}
+";
+    return $php;
   }
 }

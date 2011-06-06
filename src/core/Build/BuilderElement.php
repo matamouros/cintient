@@ -22,7 +22,19 @@
  */
 
 /**
- * @package Builder
+ * Builder element base class from which all builder elements must
+ * derive. It features commodity methods for easily accessing specific
+ * nodes. It also automagically handles exporting deriving elements to
+ * a specific connector.
+ *
+ * @package     Build
+ * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
+ * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
+ * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
+ * @version     $LastChangedRevision$
+ * @link        $HeadURL$
+ * Changed by   $LastChangedBy$
+ * Changed on   $LastChangedDate$
  */
 class Build_BuilderElement extends Framework_BaseObject
 {
@@ -43,17 +55,40 @@ class Build_BuilderElement extends Framework_BaseObject
     $this->_visible = true;
   }
 
-  public function toString($connectorType)
+  static protected function _expandStr($str, Array &$context = array())
   {
-    $method = get_class($this);
-    $class = 'BuilderConnector_' . ucfirst($connectorType);
-    //TODO: The following check is not working... wtf?!
-    /*
-    if (!class_exists($class) || method_exists($class, $method)) {
-      trigger_error("Wrong connector type passed or wrong element being invoked. [CONNECTOR={$connectorType}] [ELEMENT={$method}]", E_USER_ERROR);
-      return false;
-    }*/
-    return $class::$method($this);
+    return preg_replace_callback('/\$\{(\w*)\}/', function($matches) use (&$context) {
+      if (isset($context['properties'][$matches[1]])) {
+        return $context['properties'][$matches[1]];
+      } else {
+        SystemEvent::raise(SystemEvent::INFO, "Couldn't expand user variable {\$matches[0]}, no such property was found. Assumed value '{\$matches[1]}'.", __METHOD__);
+        return $matches[1];
+      }
+    }, $str);
+  }
+
+	/**
+   * Helper function for centralizing all Builder Element's title HTML
+   *
+   * @param Array $params
+   */
+  public function getHtmlTitle(Array $params = array())
+  {
+    $o = $this;
+    h::div(array('class' => 'builderElementTitle'), function() use ($o, $params) {
+      h::p(array('class' => 'title'), $params['title']);
+      h::ul(array('class' => 'options'), function() use ($o) {
+        if ($o->isEditable()) {
+          h::li(function() {h::a('save', '#', array('class' => 'submit'));});
+        }
+        if ($o->isEditable() && $o->isDeletable()) {
+          h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
+        }
+        if ($o->isDeletable()) {
+          h::li(function() {h::a('x', '#', array('class' => 'delete'));});
+        }
+      });
+    });
   }
 
   public function getElement($id)
@@ -255,5 +290,15 @@ class Build_BuilderElement extends Framework_BaseObject
       }
     }
     return $elements;
+  }
+
+  /**
+   * Abstract the external lib call, so that we only have to require it
+   * here. It will still get called from each builder element, but the
+   * actual require code is only written once here.
+   */
+  public function toHtml()
+  {
+    require_once 'lib/lib.htmlgen.php';
   }
 }

@@ -965,7 +965,7 @@ EOT;
    */
   static public function providerAvailableBuilderElements()
   {
-    $dir = CINTIENT_INSTALL_DIR . 'src/core/BuilderElement/';
+    $dir = CINTIENT_INSTALL_DIR . 'src/core/Build/BuilderElement/';
     $elements = array();
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
     //
