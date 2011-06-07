@@ -180,9 +180,9 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
 \$callback = function (\$entry) {
   \$ret = true;
   if (is_file(\$entry)) {
-    \$thisutput = array();
-    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$thisutput, \$ret);
-    foreach (\$thisutput as \$line) {
+    \$output = array();
+    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$output, \$ret);
+    foreach (\$output as \$line) {
       output(\$line);
     }
     if (\$ret > 0) {

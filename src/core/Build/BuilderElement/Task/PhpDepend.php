@@ -178,10 +178,10 @@ class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
     $includeDirs = str_replace(' ', ',', trim($this->getIncludeDirs()));  // Cintient's space separated to PHP_Depend's comma separated
 
     $php .= "
-\$thisutput = array();
+\$output = array();
 \$args = expandStr('{$jdependChartFile}{$thisverviewPyramidFile}{$summaryFile}{$excludeDirs}{$excludePackages} {$includeDirs}');
-exec(\"" . CINTIENT_PHPDEPEND_BINARY . "\$args\", \$thisutput, \$ret);
-foreach (\$thisutput as \$line) {
+exec(\"" . CINTIENT_PHPDEPEND_BINARY . "\$args\", \$output, \$ret);
+foreach (\$output as \$line) {
   output(\$line);
 }
 if (\$ret > 0) {

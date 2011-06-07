@@ -156,16 +156,16 @@ output('Starting...');
         // directory only *after* all it's content.
         //
         $php .= "
-\$callback = function (\$entry) {
+\$callback = function (\$entry, \$baseDir) {
   \$ret = true;
   if (is_file(\$entry)) {
-    \$thisutput = array();
-    exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$thisutput, \$ret);
+    \$output = array();
+    exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
     if (\$ret > 0) {
-      output('Errors parsing ' . \$entry . '.');
+      output('Errors parsing ' . substr(\$entry, strlen(\$baseDir)) . '.');
       \$ret = false;
     } else {
-      output('No syntax errors detected in ' . \$entry . '.');
+      output('No syntax errors detected in ' . substr(\$entry, strlen(\$baseDir)) . '.');
       \$ret = true;
     }
   }
