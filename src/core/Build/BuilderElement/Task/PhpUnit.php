@@ -55,6 +55,7 @@ class Build_BuilderElement_Task_PhpUnit extends Build_BuilderElement
     $this->_failOnSkipped = false;
     $this->_filesets = null;
     $this->_logJunitXmlFile = null;
+    $this->_specialTask = 'Build_SpecialTask_PhpUnit';
   }
 
   /**

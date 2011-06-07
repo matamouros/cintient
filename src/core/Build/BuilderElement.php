@@ -43,6 +43,7 @@ class Build_BuilderElement extends Framework_BaseObject
   protected $_editable;       // Special system builder elements might not be editable by the user. Not user setable.
   protected $_failOnError;
   protected $_internalId;
+  protected $_specialTask;    // This element is a special task and this is a reference to the special task class.
   protected $_visible;        // Special system builder elements might not be visible by the user. Not user setable.
 
   public function __construct()
@@ -52,6 +53,7 @@ class Build_BuilderElement extends Framework_BaseObject
     $this->_editable = true;
     $this->_failOnError = true;
     $this->_internalId = Utility::generateRandomString() . uniqid();
+    $this->_specialTask = false;
     $this->_visible = true;
   }
 

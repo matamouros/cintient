@@ -397,10 +397,7 @@ EOT;
     }
 
     $element = $class::create();
-    $targets = $GLOBALS['project']->getIntegrationBuilder()->getTargets();
-    $target = $targets[0];
-    $target->addTask($element);
-
+    $GLOBALS['project']->addToIntegrationBuilder($element);
     $GLOBALS['project']->log("Integration builder changed, element added.");
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
 

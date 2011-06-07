@@ -44,7 +44,7 @@ class Project extends Framework_DatabaseObjectAbstract
   protected $_scmPassword;
   protected $_scmRemoteRepository;
   protected $_scmUsername;
-  protected $_signature;               // Internal flag to control whether a save to database is required
+  protected $_specialTasks;            // Array with the current class names of the integration builder elements that are special tasks
   protected $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing Project_Build table)
   protected $_status;
   protected $_title;
@@ -78,7 +78,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->_scmRemoteRepository = '';
     $this->_scmUsername = '';
     $this->_scmPassword = '';
-    $this->_signature = null;
+    $this->_specialTasks = array();
     $this->_statsNumBuilds = 0;
     $this->_status = self::STATUS_UNINITIALIZED;
     $this->_title = '';
@@ -98,6 +98,39 @@ class Project extends Framework_DatabaseObjectAbstract
   public function __destruct()
   {
     parent::__destruct();
+  }
+
+  /**
+   * Receives a builder element and adds it to the project's integration
+   * builder. It optionally receives an ID of the element to add to as a
+   * child. It defaults to adding to the first target found in the project,
+   * if no element ID is specified. This method also checks if the element
+   * is a special task, and registers it accordingly in the project.
+   *
+   * @param Build_BuilderElement $element
+   * @param string $id
+   */
+  public function addToIntegrationBuilder(Build_BuilderElement $element, $id = null)
+  {
+    //
+    // TODO: implement "add to id" logic later
+    //
+    if (empty($id)) {
+      $targets = $this->getIntegrationBuilder()->getTargets();
+      $target = $targets[0];
+      $target->addTask($element);
+    }
+    //
+    // If it's a special task, register it with the project
+    //
+    if ($element instanceof Build_SpecialTaskInterface) {
+      $this->registerSpecialTask(get_class($element));
+    }
+  }
+
+  public function registerSpecialTask($taskName)
+  {
+    $this->_specialTasks[] = $taskName;
   }
 
   public function build($force = false)
@@ -284,11 +317,15 @@ class Project extends Framework_DatabaseObjectAbstract
     $propertySourcesDir->setVisible(false);
     $target = new Build_BuilderElement_Target();
     $target->setName('build');
-    $target->addTask($propertyProjectDir);
-    $target->addTask($propertySourcesDir);
-    $target->addTask($echo);
+    // Following is commented out so that all tasks are added through the new addToIntegrationBuilder()
+    //$target->addTask($propertyProjectDir);
+    //$target->addTask($propertySourcesDir);
+    //$target->addTask($echo);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
+    $this->addToIntegrationBuilder($propertyProjectDir);
+    $this->addToIntegrationBuilder($propertySourcesDir);
+    $this->addToIntegrationBuilder($echo);
     //$this->_integrationBuilder->setBaseDir($this->getWorkDir());
     //
     // Save the project and take care of all database dependencies.
@@ -296,7 +333,7 @@ class Project extends Framework_DatabaseObjectAbstract
     if (!$this->_save()) {
       return false;
     }
-    if (!Project_Log::install($this->getId())) {
+    if (!Project_Log::install($this)) {
       $this->delete();
       return false;
     }
@@ -329,25 +366,26 @@ class Project extends Framework_DatabaseObjectAbstract
     $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  buildlabel TEXT,
-  datecreation DATETIME DEFAULT CURRENT_TIMESTAMP,
-  datecheckedforchanges DATETIME DEFAULT CURRENT_TIMESTAMP,
-  deploymentbuilder TEXT,
+  buildlabel TEXT NOT NULL DEFAULT '',
+  datecreation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  datecheckedforchanges DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deploymentbuilder TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
-  integrationbuilder TEXT,
-  releasemajor MEDIUMINT UNSIGNED DEFAULT 0,
-  releaseminor MEDIUMINT UNSIGNED DEFAULT 0,
-  releasecounter INT UNSIGNED DEFAULT 0,
-  scmcheckchangestimeout MEDIUMINT UNSIGNED DEFAULT 30,
-  scmconnectortype VARCHAR(20) DEFAULT '',
-  scmpassword VARCHAR(255) DEFAULT '',
-  scmremoterepository VARCHAR(255) DEFAULT '',
-  scmusername VARCHAR(255) DEFAULT '',
-  statsnumbuilds INTEGER UNSIGNED DEFAULT 0,
-  status TINYINT UNSIGNED DEFAULT 0,
-  title VARCHAR(255) DEFAULT '',
-  visits INTEGER UNSIGNED DEFAULT 0,
-  workdir VARCHAR(255) DEFAULT ''
+  integrationbuilder TEXT NOT NULL DEFAULT '',
+  releasemajor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
+  releaseminor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
+  releasecounter INT UNSIGNED NOT NULL DEFAULT 0,
+  scmcheckchangestimeout MEDIUMINT UNSIGNED NOT NULL DEFAULT 30,
+  scmconnectortype VARCHAR(20) NOT NULL DEFAULT '',
+  scmpassword VARCHAR(255) NOT NULL DEFAULT '',
+  scmremoterepository VARCHAR(255) NOT NULL DEFAULT '',
+  scmusername VARCHAR(255) NOT NULL DEFAULT '',
+  specialtasks TEXT NOT NULL DEFAULT '',
+  statsnumbuilds INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  status TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  title VARCHAR(255) NOT NULL DEFAULT '',
+  visits INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  workdir VARCHAR(255) NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS projectuser(
   projectid INTEGER UNSIGNED NOT NULL,
@@ -393,8 +431,12 @@ EOT;
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
          . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
-         . ' datecheckedforchanges)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' datecheckedforchanges, specialtasks)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $specialTasks = @serialize($this->getSpecialTasks());
+    if ($specialTasks === false) {
+      $specialTasks = serialize(array());
+    }
     $val = array(
       $this->getId(),
       $this->getDateCreation(),
@@ -413,6 +455,7 @@ EOT;
       $this->getScmConnectorType(),
       $this->getScmCheckChangesTimeout(),
       $this->getDateCheckedForChanges(),
+      $specialTasks,
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -663,6 +706,11 @@ EOT;
     $ret->setReleaseMajor($rs->getReleaseMajor());
     $ret->setReleaseMinor($rs->getReleaseMinor());
     $ret->setReleaseCounter($rs->getReleaseCounter());
+    $specialTasks = @unserialize($rs->getSpecialTasks());
+    if ($specialTasks === false) {
+      $specialTasks = array();
+    }
+    $ret->setSpecialTasks($specialTasks);
     $ret->setStatsNumBuilds($rs->getStatsNumBuilds());
     $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());

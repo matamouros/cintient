@@ -90,6 +90,7 @@ class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
     $this->_jdependChartFile = null;
     $this->_overviewPyramidFile = null;
     $this->_summaryFile = null;
+    $this->_specialTask = 'Build_SpecialTask_PhpDepend';
   }
 
   /**

@@ -42,8 +42,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   protected $_description;  // a user generated description text (prior or after the build triggered).
   protected $_output;       // the integration builder's output collected
   protected $_status;       // indicates: failure | no_release | release
-  protected $_signature;    // Internal flag to control whether a save to database is required
   protected $_scmRevision;  // The corresponding SCM revision on the remote repository
+  protected $_specialTasks; // Array with the build's class names of the integration builder elements that are special tasks
 
   protected $_ptrPhpDepend;
   protected $_ptrProject;
@@ -60,8 +60,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->_label = '';
     $this->_description = '';
     $this->_output = '';
+    $this->_specialTasks = $project->getSpecialTasks();
     $this->_status = self::STATUS_FAIL;
-    $this->_signature = null;
     $this->_scmRevision = null;
 
     $this->_ptrProject = $project;
@@ -197,7 +197,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
-    $project = $this->getPtrProject(); // Easier
+    $project = $this->getPtrProject(); // Easier handling
 
     //
     // A few more sanity checks
@@ -210,6 +210,24 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if ($integrationBuilder->isEmpty()) {
       SystemEvent::raise(SystemEvent::DEBUG, "Empty integration builder. [PROJECTID={$this->getProjectId()}]", __METHOD__);
       return false;
+    }
+
+    //
+    // Check for special tasks and run pre build actions
+    //
+    $specialTasks = $this->getSpecialTasks();
+    $result = true;
+    if (!empty($specialTasks)) {
+      foreach ($specialTasks as $task) {
+        if (!class_exists($task)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          return false;
+        }
+        if (!$task::preBuild()) {
+          SystemEvent::raise(SystemEvent::ERROR, "Special task's pre build execution aborted. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          return false;
+        }
+      }
     }
 
     //
@@ -229,7 +247,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
-    // Create this build's report dir, backing up an existing one
+    //
+    // Create this build's report dir, backing up an existing one, just in case
+    //
     if (is_dir($this->getBuildDir())) {
       $backupOldBuildDir = $this->getBuildDir() . '_old_' . uniqid() . '/';
       if (!@rename($this->getBuildDir(), $backupOldBuildDir)) {
@@ -241,6 +261,25 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't create build dir. [PID={$project->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
       return false;
     }
+
+    //
+    // Run post build actions
+    //
+    reset($specialTasks);
+    $result = true;
+    if (!empty($specialTasks)) {
+      foreach ($specialTasks as $task) {
+        if (!class_exists($task)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          continue;
+        }
+        $result = $result & $task::postBuild();
+      }
+    }
+    if (!$result) { // Don't abort, since this is just the post build actions, not the build itself.
+      SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+    }
+/*
     //
     // Backup the original junit report file
     // TODO: only if unit tests were comissioned!!!!
@@ -255,7 +294,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     //TODO: It's really necessary to only call this if PHP_Depend task is configured for the project.
     $this->_ptrPhpDepend = new PhpDepend($this);
     $this->_ptrPhpDepend->init();
-
+*/
     return true;
   }
 
@@ -272,13 +311,18 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, status, scmrevision)'
-         . ' VALUES (?,?,?,?,?,?)';
+         . ' (id, label, description, output, specialtasks, status, scmrevision)'
+         . ' VALUES (?,?,?,?,?,?,?)';
+    $specialTasks = @serialize($this->getSpecialTasks());
+    if ($specialTasks === false) {
+      $specialTasks = serialize(array());
+    }
     $val = array(
       $this->getId(),
       $this->getLabel(),
       $this->getDescription(),
       $this->getOutput(),
+      $specialTasks,
       $this->getStatus(),
       $this->getScmRevision(),
     );
@@ -391,6 +435,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret->setLabel($rs->getLabel());
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
+    $specialTasks = @unserialize($rs->getSpecialTasks());
+    if ($specialTasks === false) {
+      $specialTasks = array();
+    }
+    $ret->setSpecialTasks($specialTasks);
     $ret->setStatus($rs->getStatus());
     $ret->setScmRevision($rs->getScmRevision());
     //
@@ -407,12 +456,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
-  status TINYINT UNSIGNED DEFAULT 0,
-  scmrevision INTEGER UNSIGNED DEFAULT 0
+  specialtasks TEXT NOT NULL DEFAULT '',
+  status TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  scmrevision INTEGER UNSIGNED NOT NULL DEFAULT 0
 );
 EOT;
     if (!Database::execute($sql)) {
