@@ -48,6 +48,17 @@ class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
     $this->_filesets = null;
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    $fileset = new Build_BuilderElement_Type_Fileset();
+    $o->setFilesets(array($fileset));
+    return $o;
+  }
+
   public function toAnt()
   {
     $xml = new XmlBuilderElement();

@@ -52,6 +52,19 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
     $this->_filesets = array();
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    $fileset = new Build_BuilderElement_Type_Fileset();
+    $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
+    $fileset->setDefaultExcludes(false);
+    $o->setFilesets(array($fileset));
+    return $o;
+  }
+
 	/**
    * Setter. Makes sure <code>$toDir</code> always ends in a valid
    * <code>DIRECTORY_SEPARATOR</code> token.

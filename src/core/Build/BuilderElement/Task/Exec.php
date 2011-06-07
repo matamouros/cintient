@@ -62,6 +62,14 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
   }
 
 	/**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
+	/**
    * Setter. Makes sure <code>$dir</code> always ends in a valid
    * <code>DIRECTORY_SEPARATOR</code> token.
    *

@@ -396,76 +396,7 @@ EOT;
       exit;
     }
 
-    $element = new $class();
-
-    //
-    // Setup PhpLint tasks to check all PHP files under the sources dir
-    //
-    if ($_REQUEST['task'] == 'PhpLint') {
-      $fileset = new Build_BuilderElement_Type_Fileset();
-      $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
-      $fileset->setDir('${sourcesDir}');
-      $fileset->addInclude('**/*.php');
-      $element->setFilesets(array($fileset));
-    }
-
-    //
-    // Setup PhpUnit tasks with default values
-    //
-    elseif ($_REQUEST['task'] == 'PhpUnit') {
-      $fileset = new Build_BuilderElement_Type_Fileset();
-      $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
-      $fileset->setDir('${sourcesDir}'/* . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR*/);
-      $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
-      $element->setFilesets(array($fileset));
-      $element->setLogJunitXmlFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME);
-      $element->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.xml');
-      $element->setCodeCoverageHtmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.html');
-    }
-
-    //
-    // Setup PhpDepend tasks with default values
-    //
-    elseif ($_REQUEST['task'] == 'PhpDepend') {
-      // Let the user specify the include dirs, so that we don't end up
-      // PhpDepend processing the whole project (and possibly 3rd party
-      // libs) by default
-      $element->setJdependChartFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_JDEPEND_CHART_FILENAME);
-      $element->setOverviewPyramidFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_OVERVIEW_PYRAMID_FILENAME);
-      $element->setSummaryFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_SUMMARY_FILENAME);
-    }
-
-    //
-    // Setup Delete with default values
-    //
-    elseif ($_REQUEST['task'] == 'Delete') {
-      $element->setIncludeEmptyDirs(true);
-      $fileset = new Build_BuilderElement_Type_Fileset();
-      $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
-      $fileset->setDefaultExcludes(false);
-      $element->setFilesets(array($fileset));
-    }
-
-    //
-    // Copy needs Build_BuilderElement_Type_Fileset::BOTH as default
-    //
-    elseif ($_REQUEST['task'] == 'Copy') {
-      $fileset = new Build_BuilderElement_Type_Fileset();
-      $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
-      $fileset->setDefaultExcludes(false);
-      $element->setFilesets(array($fileset));
-    }
-
-    //
-    // Setup tasks with empty filesets
-    //
-    elseif ($_REQUEST['task'] == 'Chmod' ||
-            $_REQUEST['task'] == 'Chown'
-    ) {
-      $fileset = new Build_BuilderElement_Type_Fileset();
-      $element->setFilesets(array($fileset));
-    }
-
+    $element = $class::create();
     $targets = $GLOBALS['project']->getIntegrationBuilder()->getTargets();
     $target = $targets[0];
     $target->addTask($element);
@@ -661,7 +592,6 @@ EOT;
       ));
       exit;
     }
-
     //
     // It works like this: in here we get an array of ordered IDs. We assume
     // those IDs are all at the same level. We get the first ID and go get

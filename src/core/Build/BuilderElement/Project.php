@@ -53,6 +53,14 @@ class Build_BuilderElement_Project extends Build_BuilderElement
     $this->_targets = array();
   }
 
+	/**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
   public function addProperty(Build_BuilderElement_Type_Property $o)
   {
     $this->_properties[] = $o;

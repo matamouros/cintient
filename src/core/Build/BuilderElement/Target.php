@@ -50,6 +50,14 @@ class Build_BuilderElement_Target extends Build_BuilderElement
     $this->_tasks = array();
   }
 
+	/**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
   public function addTask($o)
   {
     $this->_tasks[] = $o;

@@ -47,6 +47,20 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
     $this->_filesets = null;
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    $o->setIncludeEmptyDirs(true);
+    $fileset = new Build_BuilderElement_Type_Fileset();
+    $fileset->setType(Build_BuilderElement_Type_Fileset::BOTH);
+    $fileset->setDefaultExcludes(false);
+    $o->setFilesets(array($fileset));
+    return $o;
+  }
+
   public function toAnt()
   {
     $xml = new XmlBuilderElement();

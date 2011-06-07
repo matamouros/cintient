@@ -57,6 +57,23 @@ class Build_BuilderElement_Task_PhpUnit extends Build_BuilderElement
     $this->_logJunitXmlFile = null;
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    $fileset = new Build_BuilderElement_Type_Fileset();
+    $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
+    $fileset->setDir('${sourcesDir}'/* . CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR*/);
+    $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
+    $o->setFilesets(array($fileset));
+    $o->setLogJunitXmlFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME);
+    $o->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.xml');
+    $o->setCodeCoverageHtmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.html');
+    return $o;
+  }
+
   public function toHtml()
   {
     parent::toHtml();

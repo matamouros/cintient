@@ -63,6 +63,14 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     $this->_type = self::getDefaultType();
   }
 
+	/**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
   static public function getDefaultType()
   {
     return self::FILE;

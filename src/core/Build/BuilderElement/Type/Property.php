@@ -48,6 +48,14 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
     $this->_value = null;
   }
 
+	/**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
   public function toAnt()
   {
     $xml = new XmlBuilderElement();

@@ -45,6 +45,14 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
     $this->_dir = null;
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    return new self();
+  }
+
   public function toAnt()
   {
     if (!$this->getDir()) {

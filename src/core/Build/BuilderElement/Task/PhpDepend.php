@@ -92,6 +92,21 @@ class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
     $this->_summaryFile = null;
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    // Let the user specify the include dirs, so that we don't end up
+    // PhpDepend processing the whole project (and possibly 3rd party
+    // libs) by default
+    $o->setJdependChartFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_JDEPEND_CHART_FILENAME);
+    $o->setOverviewPyramidFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_OVERVIEW_PYRAMID_FILENAME);
+    $o->setSummaryFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_SUMMARY_FILENAME);
+    return $o;
+  }
+
   public function toHtml()
   {
     parent::toHtml();

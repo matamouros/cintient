@@ -44,6 +44,20 @@ class Build_BuilderElement_Task_PhpLint extends Build_BuilderElement
     $this->_filesets = array();
   }
 
+  /**
+   * Creates a new instance of this builder element, with default values.
+   */
+  static public function create()
+  {
+    $o = new self();
+    $fileset = new Build_BuilderElement_Type_Fileset();
+    $fileset->setType(Build_BuilderElement_Type_Fileset::FILE);
+    $fileset->setDir('${sourcesDir}');
+    $fileset->addInclude('**/*.php');
+    $o->setFilesets(array($fileset));
+    return $o;
+  }
+
   public function toAnt()
   {
     $xml = new XmlBuilderElement();
