@@ -186,6 +186,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if (!$result) { // Don't abort, since this is just the post build actions, not the build itself.
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
+    $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
     return true;
   }
 
