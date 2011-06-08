@@ -1,19 +1,19 @@
 {*
     Cintient, Continuous Integration made simple.
     Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
-    
+
     This file is part of Cintient.
-    
+
     Cintient is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     Cintient is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
@@ -58,9 +58,9 @@
   <div id="menu" class="containerTopLevel">
     <nav id="mainMenu">
       <ul>
-        <li id="historyBack">{if isset($backLink)}<a href="{UrlManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
+        <li id="historyBack">{if !empty($backLink)}<a href="{UrlManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
         <li id="sectionName">{$subSectionTitle}</li>
-        {if isset($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
+        {if !empty($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
       </ul>
     </nav>
 <script type="text/javascript">
@@ -69,7 +69,7 @@ $('#logo').hide();
 $(document).ready(function() {
   $('#logo').show(200);
 });
-// ]]> 
+// ]]>
 </script>
 {elseif $globals_subSection == 'registration'}
     <div id="userHeader" class="container">
@@ -93,7 +93,7 @@ $('#logo').hide();
 $(document).ready(function() {
   $('#logo').show(200);
 });
-// ]]> 
+// ]]>
 </script>
 {else}
     <div id="splashHeader" class="container">
@@ -112,7 +112,7 @@ $(document).ready(function() {
 	$('#splashHeader h1').fadeIn(300);
   $('#splashHeader img').fadeIn(300);
 });
-// ]]> 
+// ]]>
 </script>
 {/if}
   </div>

@@ -45,7 +45,6 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   protected $_scmRevision;  // The corresponding SCM revision on the remote repository
   protected $_specialTasks; // Array with the build's class names of the integration builder elements that are special tasks
 
-  protected $_ptrPhpDepend;
   protected $_ptrProject;
 
   const STATUS_FAIL = 0;
@@ -65,86 +64,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->_scmRevision = null;
 
     $this->_ptrProject = $project;
-    $this->_ptrPhpDepend = null;
   }
 
   public function __destruct()
   {
     parent::__destruct();
-  }
-
-  public function createReportFromJunit()
-  {
-    $junitReportFile = $this->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME;
-    if (!is_file($junitReportFile)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getPtrProject()->getId()}] [BUILD={$this->getId()}] [FILE={$junitReportFile}]", __METHOD__);
-      return false;
-    }
-    try {
-      $xml = new SimpleXMLElement($junitReportFile, 0, true);
-    } catch (Exception $e) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems processing Junit XML file. [PID={$this->getPtrProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
-      return false;
-    }
-    $xmls = $xml->children();
-    foreach ($xmls as $node) {
-      $imageFilename = '';
-      $successes = array(); // assertions - failures
-      $failures = array();
-      $methodsNames = array();
-      $classes = array();
-      $methods = array();
-      $classXml = call_user_func(function ($node) { // Access file testsuites directly (last level before testcases).
-        if (isset($node->attributes()->file)) {
-          return $node;
-        } else {
-          return f($node->children());
-        }
-      }, $node);
-      $class = new TestClass();
-      $class->setName($classXml->attributes()->name);
-      $class->setFile((string)$classXml->attributes()->file);
-      $class->setTests((string)$classXml->attributes()->tests);
-      $class->setAssertions((string)$classXml->attributes()->assertions);
-      $class->setFailures((string)$classXml->attributes()->failures);
-      $class->setErrors((string)$classXml->attributes()->errors);
-      $class->setTime((string)$classXml->attributes()->time);
-      $class->setChartFilename(md5($this->getPtrProject()->getId() . $this->getId() . $class->getFile()) . '.png');
-      //
-      // After call_user_func above we're exactly at the test class (file) root level,
-      // with level 1 being the unit test (method of the original class)
-      // and level 2 being the various datasets used in the test (each a
-      // test case).
-      //
-      foreach ($classXml->children() as $methodXml) {
-        $method = new TestMethod();
-        $method->setName($methodXml->getName());
-        $method->setTests((string)$methodXml->attributes()->tests);
-        $method->setAssertions((string)$methodXml->attributes()->assertions);
-        $method->setFailures((string)$methodXml->attributes()->failures);
-        $method->setErrors((string)$methodXml->attributes()->errors);
-        $method->setTime((string)$methodXml->attributes()->time);
-        $methods[] = $method;
-
-        $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
-        $methodsNames[] = $methodXml->attributes()->name;
-        $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
-        $successes[] = (float)$time - (float)$f;
-        $failures[] = $f;
-      }
-
-      $chartFile = "{$this->getBuildDir()}{$class->getChartFilename()}";
-      if (!is_file($chartFile)) {
-        if (!Chart::unitTests($chartFile, $methodsNames, $successes, $failures)) {
-          SystemEvent::raise(SystemEvent::ERROR, "Chart file for unit tests was not saved. [PID={$this->getPtrProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
-        } else {
-          SystemEvent::raise(SystemEvent::INFO, "Generated chart file for unit tests. [PID={$this->getPtrProject()->getId()}] [BUILD={$this->getId()}]", __METHOD__);
-        }
-      }
-      $class->setTestMethods($methods);
-      $classes[] = $class;
-      return $classes;
-    }
   }
 
   /**
@@ -157,30 +81,12 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     unset($arr['_signature']);
     $arr['_ptrProject'] = null;
     unset($arr['_ptrProject']);
-    $arr['_ptrPhpDepend'] = null;
-    unset($arr['_ptrPhpDepend']);
     return md5(serialize($arr));
   }
 
   public function getBuildDir()
   {
     return $this->getPtrProject()->getReportsWorkingDir() . $this->getId() . '/';
-  }
-
-  public function getJdependChartFilename()
-  {
-    if (!$this->getPtrPhpDepend() instanceof PhpDepend) {
-      return false;
-    }
-    return $this->getPtrPhpDepend()->getJdependChartFilename();
-  }
-
-  public function getOverviewPyramidFilename()
-  {
-    if (!$this->getPtrPhpDepend() instanceof PhpDepend) {
-      return false;
-    }
-    return $this->getPtrPhpDepend()->getOverviewPyramidFilename();
   }
 
   public function getProjectId()
@@ -216,14 +122,14 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     // Check for special tasks and run pre build actions
     //
     $specialTasks = $this->getSpecialTasks();
-    $result = true;
     if (!empty($specialTasks)) {
       foreach ($specialTasks as $task) {
         if (!class_exists($task)) {
-          SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
           return false;
         }
-        if (!$task::preBuild()) {
+        $o = new $task($this);
+        if (!$o->preBuild()) {
           SystemEvent::raise(SystemEvent::ERROR, "Special task's pre build execution aborted. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
           return false;
         }
@@ -273,28 +179,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
           SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
           continue;
         }
-        $result = $result & $task::postBuild();
+        $o = new $task($this);
+        $result = $result & $o->postBuild();
       }
     }
     if (!$result) { // Don't abort, since this is just the post build actions, not the build itself.
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
-/*
-    //
-    // Backup the original junit report file
-    // TODO: only if unit tests were comissioned!!!!
-    //
-    //if (UNIT_TESTES_WERE_DONE) {
-      if (!@copy($project->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$project->getId()}] [BUILD={$this->getId()}]", __METHOD__);
-      }
-    //}
-
-    // PHP_Depend related code
-    //TODO: It's really necessary to only call this if PHP_Depend task is configured for the project.
-    $this->_ptrPhpDepend = new PhpDepend($this);
-    $this->_ptrPhpDepend->init();
-*/
     return true;
   }
 
@@ -445,7 +336,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     //
     // Get all extras related to this build
     //
-    $ret->setPtrPhpDepend(PhpDepend::getById($ret, $GLOBALS['user'], Access::READ));
+    //$ret->setPtrPhpDepend(PhpDepend::getById($ret, $GLOBALS['user'], Access::READ));
 
     $ret->resetSignature();
     return $ret;
@@ -472,7 +363,7 @@ EOT;
     //
     // Install PhpDepend schema
     //
-    return PhpDepend::install($project);
+    return Build_SpecialTask_PhpDepend::install($project);
   }
 
   static public function uninstall(Project $project)

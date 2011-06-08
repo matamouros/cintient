@@ -38,7 +38,13 @@
  */
 interface Build_SpecialTaskInterface
 {
-  static public function preBuild();
+  public function __construct(Project_Build $build);
 
-  static public function postBuild();
+  public function preBuild();
+
+  public function postBuild();
+
+  public function getViewData();
+
+  static public function getById(Project_Build $build, User $user, $access = Access::READ, array $options = array());
 }

@@ -123,14 +123,47 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     // If it's a special task, register it with the project
     //
-    if ($element instanceof Build_SpecialTaskInterface) {
-      $this->registerSpecialTask(get_class($element));
+    if ($element->isSpecialTask()) {
+      $this->registerSpecialTask($element->getSpecialTask());
+    }
+  }
+
+	/**
+   * Receives a builder element and removes it from the project's integration
+   * builder. It does it's best to find the matching [deeply] nested element
+   * and removes it. It also checks if the removed element is a special task,
+   * and unregisters it accordingly from the project.
+   *
+   * @param Build_BuilderElement $element
+   * @param string $id
+   */
+  public function removeFromIntegrationBuilder(Build_BuilderElement $element)
+  {
+    $newBuilder = $this->getIntegrationBuilder()->deleteElement($element->getInternalId());
+    $this->setIntegrationBuilder($newBuilder);
+    $this->log("Integration builder changed, element removed.");
+    //
+    // If it's a special task, unregister it with the project
+    //
+    if ($element->isSpecialTask()) {
+      $this->unregisterSpecialTask($element->getSpecialTask());
     }
   }
 
   public function registerSpecialTask($taskName)
   {
     $this->_specialTasks[] = $taskName;
+  }
+
+  public function unregisterSpecialTask($taskName)
+  {
+    if (($key = array_search($taskName, $this->_specialTasks)) !== false) {
+      $this->_specialTasks[$key] = null;
+      unset($this->_specialTasks[$key]);
+      // Little trick to reindex the array keys to avoid a hole in the key
+      // sequence after removing
+      $this->_specialTasks = array_slice($this->_specialTasks, 0);
+    }
   }
 
   public function build($force = false)

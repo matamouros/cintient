@@ -871,20 +871,38 @@ EOT;
     } else {
       $build = Project_Build::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
-    //
-    // PHP_Depend stuff (Find a way to only call this in the presence of PHP_Depend active task
-    //
-    if ($build->getJdependChartFilename() !== false && file_exists($build->getBuildDir() . $build->getJdependChartFilename())) {
-      $GLOBALS['smarty']->assign('project_jdependChartFilename', $build->getJdependChartFilename());
-    }
-    if ($build->getOverviewPyramidFilename() !== false && file_exists($build->getBuildDir() . $build->getOverviewPyramidFilename())) {
-      $GLOBALS['smarty']->assign('project_overviewPyramidFilename', $build->getOverviewPyramidFilename());
+
+    if ($build instanceof Project_Build) {
+      //
+      // Special tasks. This is post build, so we're fetching an existing special task (never creating it)
+      //
+      $specialTasks = $build->getSpecialTasks();
+      $GLOBALS['smarty']->assign('project_specialTasks', $specialTasks);
+      if (!empty($specialTasks)) {
+        foreach ($specialTasks as $task) {
+          if (!class_exists($task)) {
+            SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task. [PID={$GLOBALS['project']->getId()}] [BUILD={$build->getId()}] [TASK={$task}]", __METHOD__);
+            continue;
+          }
+          $o = $task::getById($build, $GLOBALS['user'], Access::READ);
+          //$GLOBALS['smarty']->assign($task, $o); // Register for s
+          if (!($o instanceof Build_SpecialTaskInterface)) {
+            SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task ID. [PID={$GLOBALS['project']->getId()}] [BUILD={$build->getId()}] [TASK={$task}] [TASKID={$build->getId()}]", __METHOD__);
+            continue;
+          }
+          $viewData = $o->getViewData();
+          foreach($viewData as $key => $value) {
+            $GLOBALS['smarty']->assign($key, $value);
+          }
+          $o = null;
+          unset($o);
+        }
+      }
     }
 
     // Last assignments
     $GLOBALS['smarty']->assign('project_buildList', Project_Build::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
-    $GLOBALS['smarty']->assign('project_buildJunit', ($build instanceof Project_Build?$build->createReportFromJunit():null));
   }
 
   static public function project_new()

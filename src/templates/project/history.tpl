@@ -18,9 +18,18 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{if !empty($project_buildList)}
-  {$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a> | <a href=\"#\" class=\"junitReport\">unit</a> | <a href=\"#\" class=\"quality\">quality</a></span>"}
-{/if}
+{* These two captures insure initialization, so that $smarty.capture  *}
+{* array always exists for these vars, even in case no special tasks  *}
+{* were defined for the current build.                                *}
+{capture name="specialTaskLink"}{/capture}
+{capture name="specialTaskPane"}{/capture}
+{$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a>"}
+{foreach $project_specialTasks as $task}
+  {include file="includes/specialTask/$task.inc.tpl"}
+  {$specialTaskLink=$smarty.capture.specialTaskLink}
+  {$menuLinks="$menuLinks | $specialTaskLink"}
+{/foreach}
+{$menuLinks="$menuLinks</span>"}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Build history"
   menuLinks=$menuLinks
@@ -85,32 +94,16 @@ $(document).ready(function() {
     });
   });
 	// Promptly show the default pane
-	showBuildResultPane($('#projectViewContainer #junitReport'));
+	showBuildResultPane($('#projectViewContainer #rawOutput'));
 });
 //]]>
 </script>
     <div id="projectViewContainer">
       <div id="rawOutput" class="buildResultPane">{$project_build->getOutput()|nl2br}</div>
-      <div id="junitReport" class="buildResultPane">
-{if !empty($project_buildJunit)}
-{foreach from=$project_buildJunit item=classTest}
-        <div class="classTest">{$classTest->getName()}</div>
-        <div class="chart"><img width="{$smarty.const.CHART_JUNIT_DEFAULT_WIDTH}" src="{UrlManager::getForAsset($classTest->getChartFilename(), ['bid' => $project_build->getId()])}"></div>
+{var_dump($smarty.capture.specialTaskPane)}
+{foreach $smarty.capture.specialTaskPane as $taskPane}
+{$taskPane}
 {/foreach}
-{else}
-Due to a build error, the unit tests chart could not be generated. Please check the raw output of the build for problems, such as a PHP Fatal error.
-{/if}
-      </div>
-      <div id="quality" class="buildResultPane">
-{if !isset($project_jdependChartFilename) && !isset($project_overviewPyramidFilename)}
-No quality metrics were collected in this build. If you haven't enabled
-this yet, please add a PHP_Depend task to this project's integration
-builder, and configure it properly. If you already have this task enabled,
-please check the raw output of this build for problems, such as a PHP Fatal error.
-{else}
-        <div id="jdependChart"><embed type="image/svg+xml" src="{UrlManager::getForAsset($project_overviewPyramidFilename, ['bid' => $project_build->getId()])}" width="392" height="270" /></div>
-        <div id="overviewChart"><embed type="image/svg+xml" src="{UrlManager::getForAsset($project_jdependChartFilename, ['bid' => $project_build->getId()])}" width="392" height="270" /></div>
-{/if}
     </div>
 {/if}
 {include file='includes/footer.inc.tpl'}
