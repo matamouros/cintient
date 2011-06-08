@@ -533,8 +533,8 @@ EOT;
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
            $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
            $attributeName == 'type' ) &&
-          ($o instanceof Build_BuilderElement_Task_PhpUnit ||
-           $o instanceof Build_BuilderElement_Task_PhpLint ||
+          ($o instanceof Build_BuilderElement_Task_Php_PhpUnit ||
+           $o instanceof Build_BuilderElement_Task_Php_PhpLint ||
            $o instanceof Build_BuilderElement_Task_Filesystem_Chmod ||
            $o instanceof Build_BuilderElement_Task_Filesystem_Delete
           )

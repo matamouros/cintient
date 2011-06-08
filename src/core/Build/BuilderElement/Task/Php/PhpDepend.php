@@ -71,7 +71,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class Build_BuilderElement_Task_PhpDepend extends Build_BuilderElement
+class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
 {
   protected $_includeDirs;     // A comma with no spaces separated string with all the dirs to process.
                                // PHP_Depend 0.10.5 has a problem with ~ started dirs

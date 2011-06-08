@@ -34,7 +34,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class Build_BuilderElement_Task_PhpLint extends Build_BuilderElement
+class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
 {
   protected $_filesets;          // An array of fileset types
 

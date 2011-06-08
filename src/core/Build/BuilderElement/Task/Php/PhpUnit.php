@@ -35,7 +35,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class Build_BuilderElement_Task_PhpUnit extends Build_BuilderElement
+class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
 {
   protected $_codeCoverageXmlFile;
   protected $_codeCoverageHtmlDir;

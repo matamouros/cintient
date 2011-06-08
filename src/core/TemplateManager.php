@@ -96,7 +96,7 @@ class TemplateManager
     //$mkdir->setDir('/tmp/tmp2/tmp3');
     $mkdir->setDir('${dir}');
 
-    $lint = new Build_BuilderElement_Task_PhpLint();
+    $lint = new Build_BuilderElement_Task_Php_PhpLint();
     $lint->setFilesets(array($fileset));
 
     $chmod = new Build_BuilderElement_Task_Filesystem_Chmod();
