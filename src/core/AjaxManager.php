@@ -431,8 +431,8 @@ EOT;
       ));
       exit;
     }
-    $builderElement = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']);
-    if (!$builderElement->isDeletable()) {
+    $element = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']);
+    if (!$element->isDeletable()) {
       $msg = 'Builder element not deletable';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(array(
@@ -442,9 +442,7 @@ EOT;
       exit;
     }
 
-    $newBuilder = $GLOBALS['project']->getIntegrationBuilder()->deleteElement($_REQUEST['internalId']);
-    $GLOBALS['project']->setIntegrationBuilder($newBuilder);
-    $GLOBALS['project']->log("Integration builder changed, element removed.");
+    $GLOBALS['project']->removeFromIntegrationBuilder($element);
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
     echo json_encode(array(

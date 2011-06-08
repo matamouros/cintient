@@ -23,10 +23,14 @@
 {* were defined for the current build.                                *}
 {capture name="specialTaskLink"}{/capture}
 {capture name="specialTaskPane"}{/capture}
+{$specialTaskPanes=array()}
 {$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a>"}
 {foreach $project_specialTasks as $task}
   {include file="includes/specialTask/$task.inc.tpl"}
   {$specialTaskLink=$smarty.capture.specialTaskLink}
+  {* We should be using capture append for specialTaskPane, but apparently *}
+  {* it always only holds the last value... Come back to this later.       *}
+  {$specialTaskPanes[]=$smarty.capture.specialTaskPane}
   {$menuLinks="$menuLinks | $specialTaskLink"}
 {/foreach}
 {$menuLinks="$menuLinks</span>"}
@@ -100,8 +104,7 @@ $(document).ready(function() {
 </script>
     <div id="projectViewContainer">
       <div id="rawOutput" class="buildResultPane">{$project_build->getOutput()|nl2br}</div>
-{var_dump($smarty.capture.specialTaskPane)}
-{foreach $smarty.capture.specialTaskPane as $taskPane}
+{foreach $specialTaskPanes as $taskPane}
 {$taskPane}
 {/foreach}
     </div>
