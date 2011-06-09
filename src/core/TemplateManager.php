@@ -111,6 +111,13 @@ class TemplateManager
     $copy = new Build_BuilderElement_Task_Filesystem_Copy();
     $copy->setFile('/tmp/src/config/cintient.conf.php');
     $copy->setToDir('${toDir}');
+
+    $perl = new Build_BuilderElement_Task_Perl_PerlSyntax();
+    $fs2 = new Build_BuilderElement_Type_Fileset();
+    $fs2->setDir('/tmp/');
+    $fs2->setInclude(array('**/*pl'));
+    $perl->setFilesets(array($fs2));
+
     /*$fileset = new Build_BuilderElement_Type_Fileset();
     $fileset->setDir('${dir}');
     $fileset->setInclude(array('${include}'));
@@ -132,7 +139,7 @@ toDir = /tmp/src2/
 
     $target = new Build_BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($properties, $copy));
+    $target->setTasks(array($perl));
     //echo $target->toString('php');
 
     $target2 = new Build_BuilderElement_Target();
@@ -146,7 +153,7 @@ toDir = /tmp/src2/
     $project->setBaseDir('/tmp/');
     //$project->addTarget($target2);
     $project->setDefaultTarget($target->getName());
-    $code = $project->toString('cintient');
+    $code = $project->toPhp();
 
     echo $code;
     //var_dump(BuilderConnector_Php::execute($code));
