@@ -105,6 +105,13 @@ define('CINTIENT_PHPDEPEND_JDEPEND_CHART_FILENAME', 'jdepend.svg');
 define('CINTIENT_PHPDEPEND_OVERVIEW_PYRAMID_FILENAME', 'pyramid.svg');
 define('CINTIENT_PHPDEPEND_SUMMARY_FILENAME', 'summary.xml');
 
+//
+// PHP_CodeSniffer
+//
+define('CINTIENT_PHPCODESNIFFER_INCLUDE_FILE', CINTIENT_INSTALL_DIR . 'lib/PEAR/PHP/CodeSniffer/CodeSniffer.php');
+define('CINTIENT_PHPCODESNIFFER_REPORT_XML_FILE', 'phpcsReportXml.xml');
+define('CINTIENT_PHPCODESNIFFER_REPORT_FULL_FILE', 'phpcsReportFull.txt');
+
 
 
 // Register our autoloader

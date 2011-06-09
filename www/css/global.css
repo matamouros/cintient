@@ -1195,9 +1195,9 @@ article#project #statusContainer .status
   margin-top: 15px;
 }
 
-#projectViewContainer #rawOutput
+.rawText
 {
-  font-size: .68em;
+  font-size: 8pt;
   font-family: "Anonymous Pro", "Andale Mono";
   font-weight: normal;
   white-space: nowrap;

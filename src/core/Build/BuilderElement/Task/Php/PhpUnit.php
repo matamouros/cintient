@@ -75,6 +75,9 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
     return $o;
   }
 
+  // TODO
+  public function toAnt() {}
+
   public function toHtml()
   {
     parent::toHtml();
@@ -131,6 +134,9 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
       });
     });
   }
+
+  // TODO
+  public function toPhing() {}
 
   public function toPhp(Array &$context = array())
   {
