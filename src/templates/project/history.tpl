@@ -103,7 +103,7 @@ $(document).ready(function() {
 //]]>
 </script>
     <div id="projectViewContainer">
-      <div id="rawOutput" class="buildResultPane rawText">{$project_build->getOutput()|nl2br}</div>
+      <div id="rawOutput" class="buildResultPane rawText">{$project_build->getOutput()|raw2html}</div>
 {foreach $specialTaskPanes as $taskPane}
 {$taskPane}
 {/foreach}

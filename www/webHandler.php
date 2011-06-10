@@ -82,6 +82,7 @@ $GLOBALS['smarty']->setCompileCheck(SMARTY_COMPILE_CHECK);
 $GLOBALS['smarty']->setTemplateDir(SMARTY_TEMPLATE_DIR);
 $GLOBALS['smarty']->setCompileDir(SMARTY_COMPILE_DIR);
 $GLOBALS['smarty']->error_reporting = error_reporting();
+Framework_SmartyPlugin::init($GLOBALS['smarty']);
 
 
 
