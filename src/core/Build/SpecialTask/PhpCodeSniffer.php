@@ -78,10 +78,11 @@ class Build_SpecialTask_PhpCodeSniffer extends Framework_DatabaseObjectAbstract 
     // each time on getViewData()
     $fd = fopen($reportFullFile, 'r');
     $originalFile = fread($fd, filesize($reportFullFile));
-    $treatedFile = str_replace($this->getPtrProjectBuild()->getPtrProject()->getScmLocalWorkingCopy(), '', $originalFile);
-    $treatedFile = str_replace(' ', '&nbsp;', $treatedFile);
-    $treatedFile = nl2br($treatedFile);
     fclose($fd);
+    // Pretty dummy replacement of the path before the sources dir, trying
+    // to hide as much as possible from the user (readibility purposes)
+    $treatedFile = str_replace($this->getPtrProjectBuild()->getPtrProject()->getScmLocalWorkingCopy(), '', $originalFile);
+    $treatedFile = Framework_SmartyPlugin::raw2html($treatedFile);
     file_put_contents($reportFullFile, $treatedFile);
 
     //
