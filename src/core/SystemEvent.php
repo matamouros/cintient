@@ -21,7 +21,7 @@
  *
  */
 
-require 'lib/Log-1.12.3/Log.php';
+require 'lib/PEAR/Log.php';
 
 /**
  * @package System
