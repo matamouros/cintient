@@ -1,6 +1,6 @@
-#!/usr/bin/env php
 <?php
-/* PHPUnit
+/**
+ * PHPUnit
  *
  * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
@@ -33,26 +33,63 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @package    PHPUnit
+ * @subpackage Framework_Constraint
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link       http://www.phpunit.de/
+ * @since      File available since Release 3.0.0
  */
 
-//
-// Cintient requirement
-//
-require dirname(__FILE__) . '/../../../src/config/phpunit.conf.php';
+/**
+ * Constraint that asserts that the value it is evaluated for is less than
+ * a given value.
+ *
+ * @package    PHPUnit
+ * @subpackage Framework_Constraint
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @version    Release: 3.5.14
+ * @link       http://www.phpunit.de/
+ * @since      Class available since Release 3.0.0
+ */
+class PHPUnit_Framework_Constraint_LessThan extends PHPUnit_Framework_Constraint
+{
+    /**
+     * @var numeric
+     */
+    protected $value;
 
-require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
+    /**
+     * @param numeric $value
+     */
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 
-if (extension_loaded('xdebug')) {
-    xdebug_disable();
+    /**
+     * Evaluates the constraint for parameter $other. Returns TRUE if the
+     * constraint is met, FALSE otherwise.
+     *
+     * @param mixed $other Value or object to evaluate.
+     * @return bool
+     */
+    public function evaluate($other)
+    {
+        return $this->value > $other;
+    }
+
+    /**
+     * Returns a string representation of the constraint.
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        return 'is less than ' . PHPUnit_Util_Type::toString($this->value);
+    }
 }
-
-if (strpos('@php_bin@', '@php_bin') === 0) {
-    set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
-}
-
-require_once 'PHPUnit/Autoload.php';
-
-define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-
-PHPUnit_TextUI_Command::main();

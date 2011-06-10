@@ -1,6 +1,6 @@
-#!/usr/bin/env php
 <?php
-/* PHPUnit
+/**
+ * PHPUnit
  *
  * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
@@ -33,26 +33,57 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @package    PHPUnit
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link       http://www.phpunit.de/
+ * @since      File available since Release 3.5.0
  */
 
-//
-// Cintient requirement
-//
-require dirname(__FILE__) . '/../../../src/config/phpunit.conf.php';
-
+require_once 'PHPUnit/Util/Filesystem.php';
 require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
 
-if (extension_loaded('xdebug')) {
-    xdebug_disable();
+if (!function_exists('phpunit_autoload')) {
+    function phpunit_autoload($class)
+    {
+        if (strpos($class, 'PHPUnit_') === 0) {
+            $file = str_replace('_', '/', $class) . '.php';
+            $file = PHPUnit_Util_Filesystem::fileExistsInIncludePath($file);
+
+            if ($file) {
+                require_once $file;
+            }
+        }
+    }
+
+    spl_autoload_register('phpunit_autoload');
+
+    $dir    = dirname(__FILE__);
+    $filter = PHP_CodeCoverage_Filter::getInstance();
+
+    $filter->addDirectoryToBlacklist(
+      $dir . '/Extensions', '.php', '', 'PHPUNIT', FALSE
+    );
+
+    $filter->addDirectoryToBlacklist(
+      $dir . '/Framework', '.php', '', 'PHPUNIT', FALSE
+    );
+
+    $filter->addDirectoryToBlacklist(
+      $dir . '/Runner', '.php', '', 'PHPUNIT', FALSE
+    );
+
+    $filter->addDirectoryToBlacklist(
+      $dir . '/TextUI', '.php', '', 'PHPUNIT', FALSE
+    );
+
+    $filter->addDirectoryToBlacklist(
+      $dir . '/Util', '.php', '', 'PHPUNIT', FALSE
+    );
+
+    $filter->addFileToBlacklist(__FILE__, 'PHPUNIT', FALSE);
+
+    unset($dir, $filter);
 }
-
-if (strpos('@php_bin@', '@php_bin') === 0) {
-    set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
-}
-
-require_once 'PHPUnit/Autoload.php';
-
-define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-
-PHPUnit_TextUI_Command::main();

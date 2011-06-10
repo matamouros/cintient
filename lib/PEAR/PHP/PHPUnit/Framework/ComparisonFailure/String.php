@@ -1,6 +1,6 @@
-#!/usr/bin/env php
 <?php
-/* PHPUnit
+/**
+ * PHPUnit
  *
  * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
@@ -33,26 +33,50 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @package    PHPUnit
+ * @subpackage Framework_ComparisonFailure
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link       http://www.phpunit.de/
+ * @since      File available since Release 3.0.0
  */
 
-//
-// Cintient requirement
-//
-require dirname(__FILE__) . '/../../../src/config/phpunit.conf.php';
+/**
+ * Thrown when an assertion for string equality failed.
+ *
+ * @package    PHPUnit
+ * @subpackage Framework_ComparisonFailure
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @version    Release: 3.5.14
+ * @link       http://www.phpunit.de/
+ * @since      Class available since Release 3.0.0
+ */
+class PHPUnit_Framework_ComparisonFailure_String extends PHPUnit_Framework_ComparisonFailure
+{
+    /**
+     * Returns a string describing the difference between
+     * the expected and the actual string value.
+     */
+    public function toString()
+    {
+        $expected = (string)$this->expected;
+        $actual   = (string)$this->actual;
+        $diff     = PHPUnit_Util_Diff::diff($expected, $actual);
 
-require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
+        if ($diff === FALSE) {
+            $diff = '';
+        }
 
-if (extension_loaded('xdebug')) {
-    xdebug_disable();
+        if (!empty($this->message)) {
+            $buffer = $this->message . "\n";
+        } else {
+            $buffer = '';
+        }
+
+        return trim($buffer . $diff);
+    }
 }
-
-if (strpos('@php_bin@', '@php_bin') === 0) {
-    set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
-}
-
-require_once 'PHPUnit/Autoload.php';
-
-define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-
-PHPUnit_TextUI_Command::main();

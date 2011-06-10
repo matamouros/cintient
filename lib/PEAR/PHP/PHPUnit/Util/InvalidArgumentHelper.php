@@ -1,6 +1,6 @@
-#!/usr/bin/env php
 <?php
-/* PHPUnit
+/**
+ * PHPUnit
  *
  * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
@@ -33,26 +33,48 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @package    PHPUnit
+ * @subpackage Util
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link       http://www.phpunit.de/
+ * @since      File available since Release 3.4.0
  */
 
-//
-// Cintient requirement
-//
-require dirname(__FILE__) . '/../../../src/config/phpunit.conf.php';
+/**
+ * Factory for InvalidArgumentException objects.
+ *
+ * @package    PHPUnit
+ * @subpackage Util
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @version    Release: 3.5.14
+ * @link       http://www.phpunit.de/
+ * @since      Class available since Release 3.4.0
+ */
+class PHPUnit_Util_InvalidArgumentHelper
+{
+    /**
+     * @param integer $argument
+     * @param string  $type
+     * @param mixed   $value
+     */
+    public static function factory($argument, $type, $value = NULL)
+    {
+        $stack = debug_backtrace(FALSE);
 
-require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
-
-if (extension_loaded('xdebug')) {
-    xdebug_disable();
+        return new InvalidArgumentException(
+          sprintf(
+            'Argument #%d%sof %s::%s() must be a %s',
+            $argument,
+            $value !== NULL ? ' (' . $value . ')' : ' ',
+            $stack[1]['class'],
+            $stack[1]['function'],
+            $type
+          )
+        );
+    }
 }
-
-if (strpos('@php_bin@', '@php_bin') === 0) {
-    set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
-}
-
-require_once 'PHPUnit/Autoload.php';
-
-define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-
-PHPUnit_TextUI_Command::main();
