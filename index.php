@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,18 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 /**
- *  
+ *
  *  This is Cintient's installation script. The only way to make it past
  *  installation is to delete this, which should be done automatically at
  *  the end of this very script, if every pre-requisite is satisfied.
- *  
+ *
  *  @author Pedro Eugenio <voxmachina@gmail.com>
  *  @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
- *  
+ *
  */
 
 //
@@ -43,7 +43,7 @@ if (!preg_match('/(.+\/www)\/?$/', $_SERVER['DOCUMENT_ROOT'], $matches) ||
   $uriPrefix = 'www/';
 }
 $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $uriPrefix;
-if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query 
+if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query
   $baseUrl = substr($baseUrl, 0, $pos);
 }
 
@@ -74,9 +74,9 @@ if (false) {
 exit;
 }
 
-// [optional] 
+// [optional]
 // Give this key to user in order to check the veracity of installation file
-// User can check the file using: 'shasum boot.xml' 
+// User can check the file using: 'shasum boot.xml'
 // $key = hash_file('sha1', 'boot.xml');
 
 //
@@ -99,7 +99,7 @@ if (isset($_POST) && count($_POST) > 0) {
       $content .= "define('".$cKey."', '".$value."');\n";
     }
   }
-  
+
   // test xml install file one more time
   $fpThis = fopen(__FILE__, "r");
   fseek($fpThis, __COMPILER_HALT_OFFSET__);
@@ -108,20 +108,20 @@ if (isset($_POST) && count($_POST) > 0) {
   if (!$configVars instanceOf SimpleXMLElement) {
     die("ERROR: Could not load installation file!");
   }
-  
+
   // add xml config vars
   foreach ($configVars->config->var as $configVar) {
     $configVarName        = $configVar['name'];
     eval("\$configVarValue=".(string)$configVar.";");
     $content .= "define('{$configVarName}', {$configVarValue});\n";
   }
-  
+
   // add autoloader
   $content .= (string)$configVars->autoload;
   $fp = fopen($configFileLocation, 'w');
   fwrite($fp, "<?php\n".$content);
   fclose($fp);
-  
+
   //
   // save htaccess file
   //
@@ -134,14 +134,14 @@ if (isset($_POST) && count($_POST) > 0) {
     fwrite($fp, "php_value include_path " . $installDir);
     fclose($fp);
   }
-  
+
   // try to fix permissions
   // TODO: warn the user about this
   //       permissions on .htaccess and config file
   //       should have the right ones after installation
   chmod('.htaccess',         0755);
   chmod($configFileLocation, 0755);
-  
+
   // install user admin info
   eval($content); /* now we can use config settings */
   $userName     = "";
@@ -157,17 +157,17 @@ if (isset($_POST) && count($_POST) > 0) {
         case 'EMAIL'           : $userEmail = $value; break;
         case 'USERNAME'        : $userUsername = $value; break;
         case 'PASSWORD'        : $userPassword = $value; break;
-        case 'PASSWORD_REPEAT' : $passwordTest = $value; break; 
+        case 'PASSWORD_REPEAT' : $passwordTest = $value; break;
         default: break;
       }
     }
   }
-  
+
   // TODO: add a 'nicer' message here
   if ($userPassword !== $passwordTest) {
     die('Please double check your password again!');
   }
-  
+
   // install admin user
   // TODO: run all Classes 'install' method dynamically here
   User::install();    /* create user table */
@@ -180,7 +180,7 @@ if (isset($_POST) && count($_POST) > 0) {
   $user->setCos(UserCos::ROOT);
   $user->init();
   $user->setPassword($userPassword);
-  
+
   header('Location: ' . UrlManager::getForDashboard());
   exit;
 }
@@ -294,12 +294,12 @@ $(document).ready(function() {
     1000
   );
 });
-// ]]> 
+// ]]>
 </script>
 <?php
 }
 ?>
-  
+
   <div id="header" class="containerTopLevel">
     <div id="userHeader" class="container">
       <header>
@@ -337,7 +337,7 @@ echo $settings->step[$stepNumber-1]["description"];
 // <![CDATA[
 $('#logo').hide();
 $('#mainMenu').hide();
-// ]]> 
+// ]]>
 </script>
   </div>
   <div class="containerTopLevel">
@@ -359,7 +359,7 @@ $('#mainMenu').hide();
 <?php if (isset($element['fineprint']) && !empty($element['fineprint'])) { ?>
         <div class="fineprintLabel"><?php echo $element['fineprint']; ?></div>
 <?php } ?>
-<?php 
+<?php
       if ($hasInputs) {
         foreach ($element->inputs as $input) {
           eval("\$out=".(string)$input->input);
@@ -370,7 +370,7 @@ $('#mainMenu').hide();
       foreach ($element->methods->method as $method) {
         eval("\$retAll=\$retAll && ".(string)$method);
       }
-      
+
       if ($retAll) : ?>
       <?php eval("\$msg=".(string)$element->messages->success); ?>
         <div class="success"><?php echo $msg; ?></div>
@@ -515,7 +515,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" style="width: 450px;" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="' . $baseUrl .'" style="width: 450px;" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -530,7 +530,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[@fclose($fp);]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-LOG_FILE" id="CONFIG_VAR-LOG_FILE" value="/var/log/cintient.log" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["Ready.";]]></success>
@@ -545,7 +545,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[@rmdir('/var/run/cintient/.install');]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="CONFIG_VAR-CINTIENT_WORK_DIR" id="CONFIG_VAR-CINTIENT_WORK_DIR" value="/var/run/cintient/" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["Ready.";]]></success>
@@ -568,7 +568,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
       </items>
     </item>
   </step>
-  <!-- /PERMISSIONS -->  
+  <!-- /PERMISSIONS -->
   <!-- ADMIN SETTINGS -->
   <step number="3" description="Administration account">
     <item title="Admin settings">
@@ -579,7 +579,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="text" class="mandatory" name="DATABASE_VAR-NAME" id="DATABASE_VAR-NAME" value="" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -593,7 +593,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 406px;"><input class="textfield" style="width: 400px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 406px;"><input class="textfield" style="width: 400px;" type="email" class="mandatory" name="DATABASE_VAR-EMAIL" id="DATABASE_VAR-EMAIL" value="" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -607,7 +607,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 256px;"><input class="textfield" style="width: 250px;" type="text" class="mandatory" name="DATABASE_VAR-USERNAME" id="DATABASE_VAR-USERNAME" value="" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -621,7 +621,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD" id="DATABASE_VAR-PASSWORD" value="" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -635,7 +635,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
             <method><![CDATA[true;]]></method>
           </methods>
           <inputs>
-            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" /></div>';]]></input> 
+            <input><![CDATA['<div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" class="mandatory" name="DATABASE_VAR-PASSWORD_REPEAT" id="DATABASE_VAR-PASSWORD_REPEAT" value="" /></div>';]]></input>
           </inputs>
           <messages>
             <success><![CDATA["";]]></success>
@@ -646,7 +646,7 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
       </items>
     </item>
   </step>
-  <!-- /DATABASE --> 
+  <!-- /DATABASE -->
   <!-- CONFIG FILE VARS -->
   <config>
     <var name="CINTIENT_CONFIG_FILE"><![CDATA[CINTIENT_INSTALL_DIR . " . 'src/config/cintient.conf.php'"]]></var>
@@ -662,7 +662,6 @@ __halt_compiler();<?xml version="1.0" encoding="utf-8"?>
     <var name="CINTIENT_DATABASE_FILE"><![CDATA[CINTIENT_WORK_DIR . " . 'cintient.sqlite'"]]></var>
     <var name="CINTIENT_NULL_BYTE_TOKEN">"'=='"</var>
     <var name="CINTIENT_PHP_BINARY">"'php'"</var>
-    <var name="CINTIENT_PHPUNIT_BINARY"><![CDATA[CINTIENT_INSTALL_DIR . " . 'lib/PEAR/bin/phpunit'"]]></var>
     <var name="CINTIENT_BUILDS_PAGE_LENGTH">"12"</var>
   </config>
   <!-- /CONFIG FILE VARS -->

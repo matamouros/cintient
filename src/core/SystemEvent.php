@@ -29,7 +29,7 @@ require 'lib/PEAR/Log.php';
 class SystemEvent extends Log
 {
   /**
-   * These consts are cleverly rigged to directly map to the existing PEAR::Log
+   * These consts are rigged to directly map to the existing PEAR::Log
    * event raising methods.
    */
   const DEBUG     = 'debug';
@@ -54,7 +54,7 @@ class SystemEvent extends Log
                         'timeFormat' => '[%Y-%m-%d %H:%M:%S]',
                         'lineFormat' => '%1$s [%3$s] %4$s',
                  );
-      $instance = parent::singleton('file', LOG_FILE, 'project-ci', $options, PEAR_LOG_DEBUG);
+      $instance = parent::singleton('file', LOG_FILE, 'cintient', $options, PEAR_LOG_DEBUG);
     }
     return $instance;
   }

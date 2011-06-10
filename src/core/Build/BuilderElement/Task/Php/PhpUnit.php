@@ -149,49 +149,40 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
 \$GLOBALS['result']['task'] = 'phpunit';
 output('Starting unit tests...');
 ";
-    $logJunitXmlFile = '';
+    // PHPUnit's internals always preemptively array_shift(), supposedly
+    // the executable script's complete filename
+    $php .= "
+\$args = array('dummyfirstentry');";
+    // Omit --no-globals-backup to see all kinds of weird shit happen,
+    // like for instance a project's OK status not being saved after a
+    // successful build. Don't know if this will ever be required by
+    // anyone doing unit tests, but really hope not. With the current
+    // Cintient implementation, we'd be in trouble if backup was on.
+    $php .= "
+\$args[] = '--no-globals-backup';
+";
     if ($this->getLogJunitXmlFile()) {
-      $logJunitXmlFile = ' --log-junit ' . $this->getLogJunitXmlFile();
-    }
-    $codeCoverageXmlFile = '';
-    if ($this->getCodeCoverageXmlFile()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+      $php .= "
+\$args[] = '--log-junit';
+\$args[] = '{$this->getLogJunitXmlFile()}';
 ";
-      } else {
-        $codeCoverageXmlFile = ' --coverage-clover ' . $this->getCodeCoverageXmlFile();
-      }
-    }
-    $codeCoverageHtmlFile = '';
-    if ($this->getCodeCoverageHtmlFile()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
-";
-      } else {
-        $codeCoverageHtmlFile = ' --coverage-html ' . $this->getCodeCoverageHtmlFile();
-      }
     }
     if ($this->getFilesets()) {
       $filesets = $this->getFilesets();
       foreach ($filesets as $fileset) {
         $php .= "
 " . $fileset->toPhp($context) . "
-";
-        //
-        // In the following callback we assume that the fileset returns a
-        // directory only *after* all it's content.
-        //
-        $php .= "
-\$callback = function (\$entry) {
+require_once 'PHPUnit/Autoload.php';
+define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
+\$callback = function (\$entry) use (\$args) {
   \$ret = true;
   if (is_file(\$entry)) {
-    \$output = array();
-    exec(\"" . CINTIENT_PHPUNIT_BINARY . "{$logJunitXmlFile}{$codeCoverageXmlFile}{$codeCoverageHtmlFile} \$entry\", \$output, \$ret);
-    foreach (\$output as \$line) {
-      output(\$line);
-    }
+    \$_SERVER['argv'] = \$args;
+    \$_SERVER['argv'][] = \"\$entry\"; // \$entry is a SlpFileInfo, force it __toString()
+    ob_start();
+    \$ret = PHPUnit_TextUI_Command::main(false);
+    output(ob_get_contents());
+    ob_end_clean();
     if (\$ret > 0) {
       \$ret = false;
     } else {
@@ -201,7 +192,7 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
   return \$ret;
 };
 if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$this->getFailOnError()}) {
-  output('Tests failed.');
+  output('Unit testing failed.');
   \$GLOBALS['result']['ok'] = false;
   return false;
 } else {

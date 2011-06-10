@@ -244,6 +244,7 @@ class Build_BuilderElement_Project extends Build_BuilderElement
     $php .= "
 //error_reporting(0);
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/');
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/');
 ";
     if ($this->getBaseDir() !== null) {
       $php .= "

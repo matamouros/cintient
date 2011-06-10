@@ -87,8 +87,6 @@ define('CINTIENT_NULL_BYTE_TOKEN', '==');
 
 define('CINTIENT_PHP_BINARY', 'php');
 
-define('CINTIENT_PHPUNIT_BINARY', CINTIENT_INSTALL_DIR . 'lib/PEAR/bin/phpunit');
-
 define('CINTIENT_BUILDS_PAGE_LENGTH', 20);
 
 define('CHART_JUNIT_DEFAULT_WIDTH', 790);
