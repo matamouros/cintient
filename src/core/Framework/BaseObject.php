@@ -66,6 +66,5 @@ class Framework_BaseObject
       trigger_error("No valid method available for calling", E_USER_ERROR);
       exit;
     }
-    return false;
   }
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,17 +18,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 require 'DatabaseTest.php';
- 
+
 class AllTests
 {
   public static function suite()
   {
     $suite = new PHPUnit_Framework_TestSuite('PHPUnit');
     $suite->addTestSuite('DatabaseTest');
+    $suite->addTestSuite('FrameworkBaseObjectTest');
     return $suite;
   }
 }
