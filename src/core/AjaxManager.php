@@ -55,7 +55,7 @@ class AjaxManager
     //
     $postSize = Utility::phpIniSizeToBytes(ini_get('post_max_size'));
     $uploadSize = Utility::phpIniSizeToBytes(ini_get('upload_max_filesize'));
-    if ($postSize < CINTIENT_AVATAR_MAX_SIZE || $uploadSize < CINTIENT_AVATAR_MAX_SIZE){
+    if ($postSize < CINTIENT_AVATAR_MAX_SIZE || $uploadSize < CINTIENT_AVATAR_MAX_SIZE) {
       $size = max(1, CINTIENT_AVATAR_MAX_SIZE / 1024 / 1024) . 'M';
       $msg = "Avatar max file size too big. Increase post_max_size and upload_max_filesize to $size";
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -66,7 +66,7 @@ class AjaxManager
     //
     // Checking content length
     //
-    if (!isset($_SERVER["CONTENT_LENGTH"])){
+    if (!isset($_SERVER["CONTENT_LENGTH"])) {
       $msg = "No support for fetching CONTENT_LENGTH from server.";
       SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
@@ -96,7 +96,7 @@ class AjaxManager
     fclose($input);
     fclose($output);
 
-    if ($realSize != $size){
+    if ($realSize != $size) {
       $msg = "Problems with the uploaded avatar file size. [CONTENT_LENGTH={$size}] [FILE_SIZE={$realSize}]";
       SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
       echo htmlspecialchars(json_encode(array('error' => $msg)), ENT_NOQUOTES);
@@ -183,19 +183,23 @@ class AjaxManager
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not authorized',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not authorized',
+        )
+      );
       exit;
     }
 
@@ -204,35 +208,42 @@ class AjaxManager
         count($params) != 2 ||
         Access::getDescription($params[1]) === false) {
       SystemEvent::raise(SystemEvent::INFO, "Invalid request parameters. " . (isset($_GET['change'])?"[PARAMS={$_GET['change']}]":""), __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Invalid request',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Invalid request',
+        )
+      );
       exit;
     }
 
     $user = User::getByUsername($params[0]);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$params[0]}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not found',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not found',
+        )
+      );
       exit;
     }
 
     if ($GLOBALS['project']->setAccessLevelForUser($user, $params[1])) {
-      echo json_encode(array(
-        'success' => true,
-      ));
+      echo json_encode(
+        array(
+        	'success' => true,
+        )
+      );
     } else {
       SystemEvent::raise(SystemEvent::INFO, "Could not update access level for user. [USERNAME={$user->getUsername()}] [ACCESSLEVEL={$params[1]}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Could not update access level for user',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Could not update access level for user',
+        )
+      );
     }
-
     exit;
   }
 
@@ -243,29 +254,35 @@ class AjaxManager
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not authorized',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not authorized',
+        )
+      );
       exit;
     }
 
     $user = User::getByUsername($_GET['username']);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not found',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not found',
+        )
+      );
       exit;
     }
 
@@ -310,10 +327,12 @@ EOT;
               </div>
             </li>";
 
-    echo json_encode(array(
-      'success' => true,
-      'html' => $html,
-    ));
+    echo json_encode(
+      array(
+        'success' => true,
+        'html' => $html,
+      )
+    );
 
     exit;
   }
@@ -325,36 +344,44 @@ EOT;
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::BUILD) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-        'projectStatus' => $GLOBALS['project']->getStatus(),
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+          'projectStatus' => $GLOBALS['project']->getStatus(),
+        )
+      );
       exit;
     }
 
     $GLOBALS['project']->log("A building was triggered.");
     if (!$GLOBALS['project']->build(true)) {
       $GLOBALS['project']->log("Building failed.");
-      echo json_encode(array(
-        'success' => true,
-        'projectStatus' => $GLOBALS['project']->getStatus(),
-      ));
+      echo json_encode(
+        array(
+          'success' => true,
+          'projectStatus' => $GLOBALS['project']->getStatus(),
+        )
+      );
     } else {
       $GLOBALS['project']->log("Building successful.");
-      echo json_encode(array(
-        'success' => true,
-        'projectStatus' => $GLOBALS['project']->getStatus(),
-      ));
+      echo json_encode(
+        array(
+          'success' => true,
+          'projectStatus' => $GLOBALS['project']->getStatus(),
+        )
+      );
     }
     exit;
   }
@@ -370,29 +397,35 @@ EOT;
         empty($_REQUEST['task']) || empty($_REQUEST['parent'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     $class = 'Build_BuilderElement' . $_REQUEST['parent'] . '_' . $_REQUEST['task'];
     if (!class_exists($class)) {
       $msg = 'Unexisting builder element';
       SystemEvent::raise(SystemEvent::INFO, $msg . " [ELEMENT={$class}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
@@ -416,38 +449,46 @@ EOT;
         empty($_REQUEST['internalId'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     $element = $GLOBALS['project']->getIntegrationBuilder()->getElement($_REQUEST['internalId']);
     if (!$element->isDeletable()) {
       $msg = 'Builder element not deletable';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
     $GLOBALS['project']->removeFromIntegrationBuilder($element);
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
-    echo json_encode(array(
-      'success' => true,
-    ));
+    echo json_encode(
+      array(
+      	'success' => true,
+      )
+    );
     exit;
   }
 
@@ -481,19 +522,23 @@ EOT;
         empty($_REQUEST['internalId'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
@@ -501,20 +546,24 @@ EOT;
     if (!($o instanceof Build_BuilderElement)) {
       $msg = 'Unknown task specified';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
     if (!$o->isEditable()) {
       $msg = 'Builder element not editable';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
@@ -558,9 +607,11 @@ EOT;
     $GLOBALS['project']->log("Integration builder changed.");
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element properly edited.", __METHOD__);
-    echo json_encode(array(
-      'success' => true,
-    ));
+    echo json_encode(
+      array(
+      	'success' => true,
+      )
+    );
     exit;
   }
 
@@ -572,19 +623,23 @@ EOT;
         empty($_REQUEST['sortedElements'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
     //
@@ -602,9 +657,11 @@ EOT;
     $GLOBALS['project']->log("Integration builder changed, reordered tasks.");
 
     SystemEvent::raise(SystemEvent::DEBUG, "Project tasks reordered.", __METHOD__);
-    echo json_encode(array(
-      'success' => true,
-    ));
+    echo json_encode(
+      array(
+      	'success' => true,
+      )
+    );
     exit;
   }
 
@@ -616,29 +673,35 @@ EOT;
         !isset($_GET['username'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => $msg,
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
       exit;
     }
 
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not authorized',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not authorized',
+        )
+      );
       exit;
     }
 
     $user = User::getByUsername($_GET['username']);
     if (!($user instanceof User)) {
       SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not found',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not found',
+        )
+      );
       exit;
     }
 
@@ -647,17 +710,21 @@ EOT;
     //
     if ($GLOBALS['project']->userHasAccessLevel($user, Access::OWNER)) {
       SystemEvent::raise(SystemEvent::INFO, "Only owners can remove themselves. [USER={$user->getUsername()}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-        'error' => 'Not authorized',
-      ));
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Not authorized',
+        )
+      );
       exit;
     }
 
-    echo json_encode(array(
-      'success' => $GLOBALS['project']->removeFromUsers($user),
-      'username' => $user->getUsername(),
-    ));
+    echo json_encode(
+      array(
+        'success' => $GLOBALS['project']->removeFromUsers($user),
+        'username' => $user->getUsername(),
+      )
+    );
     exit;
   }
 
@@ -678,9 +745,11 @@ EOT;
     //
     if (strlen($_GET['userTerm']) < 2) {
       SystemEvent::raise(SystemEvent::DEBUG, "Not triggering query for less than 2 chars. [USERTERM={$_GET['userTerm']}]", __METHOD__);
-      echo json_encode(array(
-        'success' => false,
-      ));
+      echo json_encode(
+        array(
+        	'success' => false,
+        )
+      );
       exit;
     }
 
@@ -692,11 +761,12 @@ EOT;
       $usersToJson[$i]['avatar'] = $users[$i]->getAvatarUrl();
     }
 
-    echo json_encode(array(
-      'success' => true,
-      'result' => $usersToJson,
-    ));
-
+    echo json_encode(
+      array(
+        'success' => true,
+        'result' => $usersToJson,
+      )
+    );
     exit;
   }
 }
