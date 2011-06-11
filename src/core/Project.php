@@ -438,7 +438,7 @@ EOT;
 
   protected function _save($force = false)
   {
-  if (!$this->hasChanged()) {
+    if (!$this->hasChanged()) {
       if (!$force) {
         return false;
       }

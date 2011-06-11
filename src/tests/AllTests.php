@@ -22,6 +22,7 @@
  */
 
 require 'DatabaseTest.php';
+require 'FrameworkBaseObjectTest.php';
 
 class AllTests
 {
