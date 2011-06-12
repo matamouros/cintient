@@ -22,10 +22,8 @@
  */
 
 /**
- * PhpDepend is a helper class for dealing with PHP_Depend third party
- * library. It specifically integrates with Project_Build, abstracts all
- * interactions with PHP_Depend and maintains a record of all high-level
- * collected metrics.
+ * PhpUnit deals with unit tests tasks and chart generation from the
+ * Junit XML report results.
  *
  * @package     Build
  * @subpackage  SpecialTask
@@ -52,7 +50,6 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
     $this->_date = null;
     $this->_version = '';
   }
-
 
   public function __destruct()
   {
@@ -205,154 +202,30 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
 
   protected function _save($force = false)
   {
-    /*
-    if (!$this->hasChanged()) {
-      if (!$force) {
-        return false;
-      }
-      SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
-    }
-
-    if (!Database::beginTransaction()) {
-      return false;
-    }
-    $sql = 'REPLACE INTO phpdepend' . $this->getProjectId()
-         . ' (buildid, date, version, ahh, andc, calls, ccn, ccn2, cloc,'
-         . ' clsa, clsc, eloc, fanout, leafs, lloc, loc, maxdit, ncloc,'
-         . ' noc, nof, noi, nom, nop, roots)'
-         . ' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-    $val = array(
-      $this->getBuildId(),
-      $this->getDate(),
-      $this->getVersion(),
-      $this->getAhh(),
-      $this->getAndc(),
-      $this->getCalls(),
-      $this->getCcn(),
-      $this->getCcn2(),
-      $this->getCloc(),
-      $this->getClsa(),
-      $this->getClsc(),
-      $this->getEloc(),
-      $this->getFanout(),
-      $this->getLeafs(),
-      $this->getLloc(),
-      $this->getLoc(),
-      $this->getMaxDit(),
-      $this->getNcloc(),
-      $this->getNoc(),
-      $this->getNof(),
-      $this->getNoi(),
-      $this->getNom(),
-      $this->getNop(),
-      $this->getRoots(),
-    );
-
-    if (!Database::execute($sql, $val)) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
-      return false;
-    }
-
-    if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The object might not have been saved.", __METHOD__);
-      return false;
-    }
-
-    #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Saved.", __METHOD__);
-    #endif
-
-    $this->resetSignature();
     return true;
-    */
   }
-
 
   static private function _getObject(Resultset $rs, Project_Build $build)
   {
     $ret = new self($build);
-
     $ret->setDate($rs->getDate());
     $ret->setVersion($rs->getVersion());
-
     $ret->resetSignature();
     return $ret;
   }
 
-
   static public function install(Project $project)
   {
-    /*
-    $sql = "
-CREATE TABLE IF NOT EXISTS phpdepend{$project->getId()} (
-  buildid INTEGER PRIMARY KEY,
-  date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  version TEXT NOT NULL DEFAULT '" . CINTIENT_DATABASE_SCHEMA_VERSION . "',
-  ahh REAL UNSIGNED NOT NULL DEFAULT 0.0,
-  andc REAL UNSIGNED NOT NULL DEFAULT 0.0,
-  calls INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  ccn INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  ccn2 INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  cloc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  clsa INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  clsc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  eloc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  fanout INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  leafs INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  lloc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  loc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  maxdit INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  ncloc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  noc INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  nof INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  noi INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  nom INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  nop INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  roots INTEGER UNSIGNED NOT NULL DEFAULT 0
-);
-";
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
-      return false;
-    }
     return true;
-    */
   }
-
 
   static public function uninstall(Project $project)
   {
-    /*
-    $sql = "DROP TABLE phpdepend{$project->getId()}";
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete table. [TABLE={$project->getId()}]", __METHOD__);
-      return false;
-    }
     return true;
-    */
   }
-
 
   static public function getById(Project_Build $build, User $user, $access = Access::READ, array $options = array())
   {
     return new self($build);
-    /*
-    $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $sql = 'SELECT pd.*'
-         . ' FROM phpdepend' . $build->getProjectId() . ' pd, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' AND pd.buildid=?';
-    $val = array($build->getProjectId(), $user->getId(), $access, $build->getId());
-    if ($rs = Database::query($sql, $val)) {
-      if ($rs->nextRow()) {
-        $ret = self::_getObject($rs, $build);
-      }
-    }
-    return $ret;
-    */
   }
 }
