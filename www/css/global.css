@@ -1224,6 +1224,11 @@ article#project #statusContainer .status
   -moz-box-shadow: #111 2px 2px 10px;
 }
 
+#projectViewContainer #junitReport .chart:not(:last-of-type)
+{
+  margin-bottom: 30px;
+}
+
 #projectViewContainer .buildResultPane
 {
   display: none;

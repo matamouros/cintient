@@ -72,37 +72,46 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
       SystemEvent::raise(SystemEvent::ERROR, "Problems processing Junit XML file. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
       return false;
     }
-    $xmls = $xml->children();
-    foreach ($xmls as $node) {
+    // Apparently using call_user_func(__FUNCTION__) inside a closure,
+    // doesn't work... Anyway I'm just going for a closure here, to
+    // avoid the whole function definition crap here, inside a method.
+    //
+    // This closure takes a SimpleXMLElement loaded with the Junit report
+    // and searches for the first element with a file attribute. That
+    // level is the Class Test level, and what we want here is to iterate
+    // over all class tests.
+    $f = function ($node) use (&$parent, &$f)
+    {
+      if (isset($node->attributes()->file)) {
+        return $parent->children();
+      } else {
+        $parent = $node;
+        return $f($node->children());
+      }
+    };
+    $parent = $xml;
+    $classTestsXml = $f($xml->children());
+    $classes = array();
+    foreach ($classTestsXml as $node) {
       $imageFilename = '';
       $successes = array(); // assertions - failures
       $failures = array();
       $methodsNames = array();
-      $classes = array();
       $methods = array();
-      $classXml = call_user_func(function ($node) { // Access file testsuites directly (last level before testcases).
-        if (isset($node->attributes()->file)) {
-          return $node;
-        } else {
-          return f($node->children());
-        }
-      }, $node);
       $class = new TestClass();
-      $class->setName($classXml->attributes()->name);
-      $class->setFile((string)$classXml->attributes()->file);
-      $class->setTests((string)$classXml->attributes()->tests);
-      $class->setAssertions((string)$classXml->attributes()->assertions);
-      $class->setFailures((string)$classXml->attributes()->failures);
-      $class->setErrors((string)$classXml->attributes()->errors);
-      $class->setTime((string)$classXml->attributes()->time);
+      $class->setName($node->attributes()->name);
+      $class->setFile((string)$node->attributes()->file);
+      $class->setTests((string)$node->attributes()->tests);
+      $class->setAssertions((string)$node->attributes()->assertions);
+      $class->setFailures((string)$node->attributes()->failures);
+      $class->setErrors((string)$node->attributes()->errors);
+      $class->setTime((string)$node->attributes()->time);
       $class->setChartFilename(md5($this->getProjectId() . $this->getProjectBuildId() . $class->getFile()) . '.png');
-      //
-      // After call_user_func above we're exactly at the test class (file) root level,
+      // Right here we're exactly at the test class (file) root level,
       // with level 1 being the unit test (method of the original class)
       // and level 2 being the various datasets used in the test (each a
       // test case).
-      //
-      foreach ($classXml->children() as $methodXml) {
+      foreach ($node->children() as $methodXml) {
         $method = new TestMethod();
         $method->setName($methodXml->getName());
         $method->setTests((string)$methodXml->attributes()->tests);
@@ -129,8 +138,8 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
       }
       $class->setTestMethods($methods);
       $classes[] = $class;
-      return $classes;
     }
+    return $classes;
   }
 
   public function preBuild()
