@@ -48,9 +48,6 @@ class Framework_HostOs
     static $instance;
     if (!($instance instanceof Framework_Os)) {
       $instance = new Framework_Os();
-      SystemEvent::raise(SystemEvent::ALERT, 'New object created', __METHOD__);
-    } else {
-      SystemEvent::raise(SystemEvent::ALERT, 'No object created', __METHOD__);
     }
     return $instance;
   }
