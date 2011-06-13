@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 
@@ -42,6 +42,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 require 'src/config/cintient.conf.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
+SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 
 #if DEBUG
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_URL']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "AjaxHandler");

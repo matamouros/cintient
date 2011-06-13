@@ -23,6 +23,20 @@
 
 error_reporting(-1);
 
+/**
+ * Log severity is in accordance with the consts defined in SystemEvent
+ */
+define('CINTIENT_LOG_SEVERITY_DEBUG',     2048);
+define('CINTIENT_LOG_SEVERITY_INFO',      1024);
+define('CINTIENT_LOG_SEVERITY_NOTICE',    512);
+define('CINTIENT_LOG_SEVERITY_WARNING',   256);
+define('CINTIENT_LOG_SEVERITY_ERROR',     128);
+define('CINTIENT_LOG_SEVERITY_CRITICAL',  64);
+define('CINTIENT_LOG_SEVERITY_ALERT',     32);
+define('CINTIENT_LOG_SEVERITY_EMERGENCY', 16);
+
+define('CINTIENT_LOG_SEVERITY', CINTIENT_LOG_SEVERITY_INFO);
+
 define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR', 'src/tests/');
 define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH', '*Test.php');
 

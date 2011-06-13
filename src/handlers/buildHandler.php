@@ -21,17 +21,17 @@
  *
  */
 
+// TODO: centralize the initalization stuff that is common to web, ajax
+// and builder handlers. (this builder could be called by a crontab)
 
-$buildProcess = new Framework_Process(CINTIENT_PHP_BINARY . ' ' . CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
+$buildProcess = new Framework_Process(CINTIENT_PHP_BINARY);
+$buildProcess->addArg(CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
 if (!$buildProcess->isRunning()) {
-  if (!$buildProcess->runAsync()) {
+  if (!$buildProcess->run(true)) {
     SystemEvent::raise(SystemEvent::ERROR, "Problems starting up build worker.", 'buildHandler');
+  } else {
+    SystemEvent::raise(SystemEvent::INFO, "Build worker left running in the background.", 'buildHandler');
   }
-  #if DEBUG
-  else {
-    SystemEvent::raise(SystemEvent::DEBUG, "Build worker left running in the background.", 'buildHandler');
-  }
-  #endif
 }
 #if DEBUG
 else {

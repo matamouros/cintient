@@ -32,14 +32,27 @@ class SystemEvent extends Log
    * These consts are rigged to directly map to the existing PEAR::Log
    * event raising methods.
    */
-  const DEBUG     = 'debug';
-  const INFO      = 'info';
-  const NOTICE    = 'notice';
-  const WARNING   = 'warning';
-  const ERROR     = 'err';
-  const CRITICAL  = 'crit';
-  const ALERT     = 'alert';
-  const EMERGENCY = 'emerg';
+  const DEBUG     = 2048;
+  const INFO      = 1024;
+  const NOTICE    = 512;
+  const WARNING   = 256;
+  const ERROR     = 128;
+  const CRITICAL  = 64;
+  const ALERT     = 32;
+  const EMERGENCY = 16;
+
+  static $map = array(
+    self::DEBUG     => 'debug',
+    self::INFO      => 'info',
+    self::NOTICE    => 'notice',
+    self::WARNING   => 'warning',
+    self::ERROR     => 'err',
+    self::CRITICAL  => 'crit',
+    self::ALERT     => 'alert',
+    self::EMERGENCY => 'emerg',
+  );
+
+  static $severityLevel = self::DEBUG;
 
   /**
    *
@@ -59,6 +72,11 @@ class SystemEvent extends Log
     return $instance;
   }
 
+  static public function setSeverityLevel($severityLevel = self::DEBUG)
+  {
+    self::$severityLevel = (int)$severityLevel;
+  }
+
   static private function _getBacktraceInfo()
   {
     $bt = debug_backtrace();
@@ -73,7 +91,11 @@ class SystemEvent extends Log
    */
   public static function raise($severity, $msg, $location = null)
   {
+    if (self::$severityLevel < $severity) {
+      return false;
+    }
     $instance = self::_singleton();
+    /*
     if ($severity == self::EMERGENCY) {
       //
       // TODO: an email is probably pretty much appropriate...
@@ -86,8 +108,9 @@ class SystemEvent extends Log
     } elseif ($severity == self::INFO) {
     } elseif ($severity == self::DEBUG) {
     } else {
-      $severity = self::INFO;
-    }
-    $instance->$severity((empty($location)?'':$location.': ') . $msg . self::_getBacktraceInfo());
+      //$severity = self::INFO;
+    }*/
+    $method = self::$map[$severity];
+    $instance->$method((empty($location)?'':$location.': ') . $msg . self::_getBacktraceInfo());
   }
 }
