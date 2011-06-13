@@ -38,7 +38,7 @@ class Framework_Process
 {
   private $_cmd;
 
-  function __construct($cmd)
+  public function __construct($cmd)
   {
     if (empty($cmd)) {
       return false;
@@ -48,7 +48,7 @@ class Framework_Process
 
   public function isRunning()
   {
-    if (PHP_OS == 'Windows') {
+    if (Framework_HostOs::isWindows()) {
       //(@pclose(popen("start /B ". $this->_cmd, "r"));
     } else {
       $output = array();
@@ -72,7 +72,7 @@ class Framework_Process
     // Execute the cron (background run)
     // @see http://pt.php.net/manual/en/function.exec.php#86329
     //
-    if (PHP_OS == 'Windows') {
+    if (Framework_HostOs::isWindows()) {
       @pclose(popen("start /B ". $this->_cmd, "r"));
     } else {
       @exec($this->_cmd . ' > /dev/null 2>&1 &');
