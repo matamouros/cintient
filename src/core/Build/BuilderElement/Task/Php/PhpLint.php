@@ -147,15 +147,7 @@ output('Starting...');
 ";
     if ($this->getFilesets()) {
       $filesets = $this->getFilesets();
-      foreach ($filesets as $fileset) {
-        $php .= "
-" . $fileset->toPhp($context) . "
-";
-        //
-        // In the following callback we assume that the fileset returns a
-        // directory only *after* all it's content.
-        //
-        $php .= "
+      $php .= "
 \$callback = function (\$entry, \$baseDir) {
   \$ret = true;
   if (is_file(\$entry)) {
@@ -171,6 +163,12 @@ output('Starting...');
   }
   return \$ret;
 };
+";
+      foreach ($filesets as $fileset) {
+        $php .= "
+" . $fileset->toPhp($context) . "
+";
+        $php .= "
 if (!fileset{$fileset->getId()}_{$context['id']}(\$callback) && {$this->getFailOnError()}) {
   output('Failed.');
   \$GLOBALS['result']['ok'] = false;
