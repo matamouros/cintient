@@ -161,36 +161,52 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
     }
     $php .= "
 \$GLOBALS['result']['task'] = 'phpdepend';
+\$_SERVER['argv'] = array('dummyfirstentry');
 ";
-    $jdependChartFile = '';
     if ($this->getJdependChartFile()) {
-      $jdependChartFile = ' --jdepend-chart=' . $this->getJdependChartFile();
+      $php .= "
+\$_SERVER['argv'][] = expandStr('--jdepend-chart={$this->getJdependChartFile()}');
+";
     }
-    $thisverviewPyramidFile = '';
     if ($this->getOverviewPyramidFile()) {
-      $thisverviewPyramidFile = ' --overview-pyramid=' . $this->getOverviewPyramidFile();
+      $php .= "
+\$_SERVER['argv'][] = expandStr('--overview-pyramid={$this->getOverviewPyramidFile()}');
+";
     }
-    $summaryFile = '';
     if ($this->getSummaryFile()) {
-      $summaryFile = ' --summary-xml=' . $this->getSummaryFile();
+      $php .= "
+\$_SERVER['argv'][] = expandStr('--summary-xml={$this->getSummaryFile()}');
+";
     }
-    $excludeDirs = '';
     if ($this->getExcludeDirs()) {
-      $excludeDirs = ' --ignore=' . str_replace(' ', ',', trim($this->getExcludeDirs()));
+      $php .= "
+\$_SERVER['argv'][] = expandStr('--ignore=" . str_replace(' ', ',', trim($this->getExcludeDirs())) . "');
+";
     }
-    $excludePackages = '';
     if ($this->getExcludePackages()) {
-      $excludePackages = ' --exclude= ' . str_replace(' ', ',', trim($this->getExcludePackages()));
+      $php .= "
+\$_SERVER['argv'][] = expandStr('--exclude=" . str_replace(' ', ',', trim($this->getExcludePackages())) . "');
+";
     }
-    $includeDirs = str_replace(' ', ',', trim($this->getIncludeDirs()));  // Cintient's space separated to PHP_Depend's comma separated
+    // Cintient's space separated to PHP_Depend's comma separated
+    $php .= "
+\$_SERVER['argv'][] = expandStr('" . str_replace(' ', ',', trim($this->getIncludeDirs())) . "');
+";
 
     $php .= "
-\$output = array();
-\$args = expandStr('{$jdependChartFile}{$thisverviewPyramidFile}{$summaryFile}{$excludeDirs}{$excludePackages} {$includeDirs}');
-exec(\"" . CINTIENT_PHPDEPEND_BINARY . "\$args\", \$output, \$ret);
-foreach (\$output as \$line) {
-  output(\$line);
-}
+// To avoid the 'PHP Notice:  Undefined index: argc' that happens when
+// manually triggering a build
+\$_SERVER['argc'] = count(\$_SERVER['argv']);
+require_once 'PHP/Depend/Autoload.php';
+\$autoload = new PHP_Depend_Autoload();
+\$autoload->register();
+PHP_Depend_Util_Log::setSeverity(0);
+ob_start();
+\$ret = PHP_Depend_TextUI_Command::main();
+output(ob_get_contents());
+ob_end_clean();
+unset(\$_SERVER['argv']);
+unset(\$_SERVER['argc']);
 if (\$ret > 0) {
   output('PHP_Depend analysis failed.');
   \$GLOBALS['result']['ok'] = false;
