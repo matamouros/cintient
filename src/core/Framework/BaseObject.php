@@ -59,7 +59,7 @@ class Framework_BaseObject
     } elseif (strpos($name, 'getDate') === 0) {
       $var = '_' . lcfirst(substr($name, 3));
       if (empty($this->$var)) {
-        $this->$vat = date('Y-m-d H:i:s');
+        $this->$var = date('Y-m-d H:i:s');
       }
       return $this->$var;
     } else {
