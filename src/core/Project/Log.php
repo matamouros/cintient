@@ -59,6 +59,19 @@ class Project_Log extends Framework_DatabaseObjectAbstract
     parent::__destruct();
   }
 
+	/**
+   * Overriding the base class method, to get rid of the ptr attributes
+   */
+  protected function _getCurrentSignature()
+  {
+    $arr = get_object_vars($this);
+    $arr['_signature'] = null;
+    unset($arr['_signature']);
+    $arr['_ptrProject'] = null;
+    unset($arr['_ptrProject']);
+    return md5(serialize($arr));
+  }
+
   public function init() {}
 
   protected function _save($force = false)

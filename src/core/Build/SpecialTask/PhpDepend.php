@@ -175,7 +175,7 @@ class Build_SpecialTask_PhpDepend extends Framework_DatabaseObjectAbstract imple
    * A slightly different version of the base _getCurrentSignature() is
    * needed, i.e., pointer to Project_Build is not to be considered.
    */
-  private function _getCurrentSignature()
+  protected function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
     $arr['_signature'] = null;

@@ -35,7 +35,7 @@
  */
 abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
 {
-  private $_signature;    // Internal flag to control whether a save to database is required
+  protected $_signature;    // Internal flag to control whether a save to database is required
 
   public function __construct()
   {
@@ -47,7 +47,7 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
     $this->_save();
   }
 
-  private function _getCurrentSignature()
+  protected function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
     $arr['_signature'] = null;

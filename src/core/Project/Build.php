@@ -74,7 +74,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   /**
    * Overriding the base class method, to get rid of the ptr attributes
    */
-  private function _getCurrentSignature()
+  protected function _getCurrentSignature()
   {
     $arr = get_object_vars($this);
     $arr['_signature'] = null;
