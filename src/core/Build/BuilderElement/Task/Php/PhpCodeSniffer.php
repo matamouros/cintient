@@ -162,6 +162,9 @@ ob_start();
 \$numErrors = \$phpcs->process(\$values);
 output(ob_get_contents());
 ob_end_clean();
+// Try to clean up as much as we can
+\$phpcs = null;
+unset(\$phpcs);
 if (\$numErrors === 0) {
   output(\"No code violations found. All code respects the '{\$values['standard']}' standard.\");
   \$GLOBALS['result']['ok'] = \$GLOBALS['result']['ok'] & true;

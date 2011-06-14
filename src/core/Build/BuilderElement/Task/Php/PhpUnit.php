@@ -177,8 +177,9 @@ define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
 \$callback = function (\$entry) use (\$args) {
   \$ret = true;
   if (is_file(\$entry)) {
-    \$_SERVER['argv'] = \$args;
+    \$_SERVER['argv'] = \$args; // This resets \$_SERVER['argv'] so that \$entry comes up next
     \$_SERVER['argv'][] = \"\$entry\"; // \$entry is a SlpFileInfo, force it __toString()
+    \$_SERVER['argc'] = count(\$_SERVER['argv']); // For consistency sake
     ob_start();
     \$ret = PHPUnit_TextUI_Command::main(false);
     output(ob_get_contents());
@@ -188,6 +189,8 @@ define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
     } else {
       \$ret = true;
     }
+    unset(\$_SERVER['argv']);
+    unset(\$_SERVER['argc']);
   }
   return \$ret;
 };

@@ -54,10 +54,7 @@ require 'lib/Smarty-3.0rc4/Smarty.class.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
-
-#if DEBUG
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_URL']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", __METHOD__);
-#endif
 
 //
 // Volatile stuff

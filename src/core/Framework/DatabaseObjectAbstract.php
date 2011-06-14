@@ -58,7 +58,6 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
   public function hasChanged()
   {
     if ($this->_getCurrentSignature() == $this->_signature) {
-      SystemEvent::raise(SystemEvent::DEBUG, "No changes detected.", __METHOD__);
       return false;
     }
     return true;
