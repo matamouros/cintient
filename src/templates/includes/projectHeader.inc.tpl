@@ -23,7 +23,7 @@
       <div id="statusContainer"><div class="triggerBuild status projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
       <div class="title">{$project->getTitle()}</div>
       <div id="projectStatus_{$project->getId()}" class="details">
-        {if !empty($project_latestBuild)}Latest: build {$project_latestBuild->getId()}, r{$project_latestBuild->getScmRevision()}, {if $project_latestBuild->getStatus()!=Project_Build::STATUS_FAIL}built{else}failed{/if} on {$project_latestBuild->getDate()|date_format}.{else}{if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}Click <a href="#" class="triggerBuild">here</a> to trigger the first build for this project.{/if}{/if}
+        {if !empty($project_latestBuild)}Latest: build {$project_latestBuild->getId()}, r{$project_latestBuild->getScmRevision()}, {if $project_latestBuild->getStatus()!=Project_Build::STATUS_FAIL}built{else}failed{/if} on {$project_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}.{else}{if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}Click <a href="#" class="triggerBuild">here</a> to trigger the first build for this project.{/if}{/if}
       </div>
     </article>
 {if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}
