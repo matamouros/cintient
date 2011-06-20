@@ -167,6 +167,32 @@ output('Starting unit tests...');
 \$args[] = '{$this->getLogJunitXmlFile()}';
 ";
     }
+    if ($this->getCodeCoverageXmlFile()) {
+      if (!extension_loaded('xdebug')) {
+        $php .= "
+output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+";
+      } else {
+        $php .= "
+\$args[] = '--coverage-clover';
+\$args[] = '{$this->getCodeCoverageXmlFile()}';
+";
+      }
+    }
+
+    if ($this->getCodeCoverageHtmlFile()) {
+      if (!extension_loaded('xdebug')) {
+        $php .= "
+output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+";
+      } else {
+        $php .= "
+\$args[] = '--coverage-html';
+\$args[] = '{$this->getCodeCoverageHtmlFile()}';
+";
+      }
+    }
+
     if ($this->getFilesets()) {
       $filesets = $this->getFilesets();
       foreach ($filesets as $fileset) {
