@@ -21,6 +21,8 @@
  *
  */
 
+require_once dirname(__FILE__) . '/../config/cintient.conf.php';
+
 class FrameworkBaseObjectTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()

@@ -242,16 +242,24 @@ class Build_BuilderElement_Project extends Build_BuilderElement
     // TODO: uncomment this in production
     //
     $php .= "
+<?php
 //error_reporting(0);
 // Allow as much memory as possible by default
 ini_set('memory_limit', -1);
 ini_set('max_execution_time', 0);
+ini_set('display_errors', 'stderr');
 // Define the CLI specific stream constants, that are not availble in
 // the web server versions. PHP_Depend for instance relies on the STDERR
 // one; don't know if any other also.
-define('STDIN', @fopen('php://stdin', 'r'));
-define('STDOUT', @fopen('php://stdout', 'w'));
-define('STDERR', @fopen('php://stderr', 'w'));
+if (!defined('STDIN')) {
+	define('STDIN', @fopen('php://stdin', 'r'));
+}
+if (!defined('STDOUT')) {
+	define('STDOUT', @fopen('php://stdout', 'w'));
+}
+if (!defined('STDERR')) {
+	define('STDERR', @fopen('php://stderr', 'w'));
+}
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/');
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/');
 ";
@@ -323,6 +331,11 @@ foreach (\$GLOBALS['targets'] as \$target) {
     output("Target \"\$target\" executed.");
   }
 }
+// Output globals result vars
+foreach (\$GLOBALS['result'] as \$key => \$value) {
+  fwrite(STDOUT, "\$key=".serialize(\$value)."\\n");
+}
+fclose(STDOUT);
 EOT;
     return $php;
   }

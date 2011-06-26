@@ -38,24 +38,40 @@
  * Handles all command line executions, taking into account the host
  * system.
  */
-class Framework_Process
+class Framework_Process extends Framework_BaseObject
 {
-  private $_executable;
-  private $_args;
+  protected $_executable;
+  protected $_args;
+  protected $_stdin;
+  protected $_stdout;
+  protected $_stderr;
+  protected $_stdoutCallbacks;
+  protected $_stderrCallbacks;
 
-  const SILENT = 0;
-  const STDOUT = 1; // just stdout
-  const STDERR = 3; // stdout + stderr
-
-  public function __construct($filename, Array $args = array())
+  public function __construct($exec = CINTIENT_PHP_BINARY, Array $args = array())
   {
-    $this->setExecutable($filename);
+    $this->setExecutable($exec);
     $this->setArgs($args);
+    $this->_stdin = null;
+    $this->_stdout = null;
+    $this->_stderr = null;
+    $this->_stdoutCallbacks = array();
+    $this->_stderrCallbacks = array();
   }
 
   public function addArg($key, $value = null)
   {
     $this->_args[] = array($key, $this->_quoteArgument($value));
+  }
+
+  public function appendToStderr($txt)
+  {
+    $this->_stderr .= $txt;
+  }
+
+  public function appendToStdout($txt)
+  {
+    $this->_stdout .= $txt;
   }
 
   public function getArgs()
@@ -69,14 +85,9 @@ class Framework_Process
     return $args;
   }
 
-  public function getCommand()
+  public function getCmd()
   {
     return $this->getExecutable() . ($this->getArgs()?' ' . $this->getArgs():'');
-  }
-
-  public function getExecutable()
-  {
-    return $this->_executable;
   }
 
   public function setArgs(Array $args = array())
@@ -119,32 +130,118 @@ class Framework_Process
     return false;
   }
 
+  public function registerStdoutCallback($callback)
+  {
+    //$this->_stdoutCallbacks[$]
+  }
+
   /**
    * Executes a provided executable and given arguments.
-   * @see http://pt.php.net/manual/en/function.exec.php#86329
+   * @see http://www.php.net/manual/en/function.proc-open.php#95207
    *
    * @todo This is very likely broken in a number of cases, Windows,
    * with/without background running, error supression, etc.
    *
-   * @param bool $runInBackground Leave the command running in the
-   * background and continue execution
+   * @param bool $inBg Leave the command running in the background and
+   * continue execution
+   * @param Array $pipes
+   * @param callback $cb
    * @param integer $output Output supression: completely silent execution,
    * just stdout or full output (stdout and stderr)
    *
    * @return Array An array with the lastline of output, the full output,
    * and the return code from the execution of the command
    */
-  public function run($runInBackground = false, $output = self::SILENT)
+  public function run($inBg = false)
+  {
+    // Get windows run-in-background out of the way
+    if (Framework_HostOs::isWindows() && $inBg) {
+      return (bool)(@pclose(@popen("start /B ". $this->getCmd(), "r")) !== -1);
+    }
+
+    $descriptorSpec = array(
+      0 => array("pipe", "r"), # STDIN
+      1 => array("pipe", "w"), # STDOUT
+      2 => array("pipe", "a"), # STDERR (see http://www.php.net/manual/en/function.proc-open.php#97012)
+    );
+    $cmd = $this->getCmd() . ($inBg?' &':'');
+    SystemEvent::raise(SystemEvent::INFO, "Executing '{$cmd}'", __METHOD__);
+    $ptr = proc_open($cmd, $descriptorSpec, $pipes, null);
+    if (!is_resource($ptr)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems executing external process. [CMD={$cmd}]", __METHOD__);
+      return false;
+    }
+    if ($inBg) {
+      // Apparently pipes don't need closing...
+      return true;
+    }
+
+    if (!empty($this->_stdin)) {
+      // TODO: chunks at a time, not the whole damn thing at once!
+      fwrite($pipes[0], $this->_stdin);
+      fclose($pipes[0]);
+    }
+
+    while (($buffer = fgets($pipes[1], 1024)) != null ||
+           ($errbuf = fgets($pipes[2], 1024)) != null)
+    {
+      if (!isset($flag)) {
+        $pstatus = proc_get_status($ptr);
+        $first_exitcode = $pstatus["exitcode"];
+        $flag = true;
+      }
+      if (strlen($buffer)) {
+        $this->appendToStdout($buffer);
+        //TODO: call registered callbacks
+      } elseif (strlen($errbuf)) {
+        //TODO: call registered callbacks
+        $this->appendToStderr($errbuf);
+      }
+      $buffer = 0;
+      $errbuf = 0;
+    }
+
+    foreach ($pipes as $pipe) {
+      @fclose($pipe);
+    }
+
+    // Get the expected *exit* code to return the value
+    $pstatus = proc_get_status($ptr);
+    if (!strlen($pstatus["exitcode"]) || $pstatus["running"]) {
+      // we can trust the retval of proc_close()
+      if ($pstatus["running"]) {
+        proc_terminate($ptr);
+      }
+      $ret = proc_close($ptr);
+    } else {
+      if ((($first_exitcode + 256) % 256) == 255 &&
+          (($pstatus["exitcode"] + 256) % 256) != 255) {
+        $ret = $pstatus["exitcode"];
+      } elseif (!strlen($first_exitcode)) {
+        $ret = $pstatus["exitcode"];
+      } elseif ((($first_exitcode + 256) % 256) != 255) {
+        $ret = $first_exitcode;
+      } else {
+        $ret = 0; // we "deduce" an EXIT_SUCCESS ;)
+      }
+      proc_close($ptr);
+    }
+
+    return ($ret + 256) % 256;
+  }
+
+  /**
+   * Run an external command asynchronously, i.e., don't wait for it to
+   * finish.
+   */
+  public function runInBackground($output = self::STDOUT)
   {
     if (Framework_HostOs::isWindows()) {
-      @pclose(@popen("start /B ". $this->getCommand(), "r"));
+      @pclose(@popen("start /B ". $this->getCmd(), "r"));
     } else {
       $outputSupression = '';
       switch ($output) {
-        // Just output stdout
-        case self::STDOUT:
-          $outputSupression = ' 2>/dev/null';
-          break;
+
         // Full stderr and stdout output
         // TODO: This will probably cause PHP to hang in case of running
         // in the background. In the exec() manual section, they state
@@ -156,14 +253,18 @@ class Framework_Process
           break;
         // Fully silent
         case self::SILENT:
-        default:
       	  $outputSupression = ' > /dev/null 2>&1';
+          break;
+        // Just output stdout
+        case self::STDOUT:
+        default:
+          $outputSupression = ' 2>/dev/null';
           break;
       }
       $fullOuput = array();
       $ret = 1;
       $lastline = null;
-      $command = $this->getCommand() . $outputSupression . ($runInBackground?' &':'');
+      $command = $this->getCmd() . $outputSupression . ' &';
       SystemEvent::raise(SystemEvent::INFO, "Executing '$command'", __METHOD__);
       $lastline = @exec($command, $fullOutput, $ret);
       return array($lastline, $fullOutput, $ret);

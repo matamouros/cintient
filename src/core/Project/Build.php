@@ -84,6 +84,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     return md5(serialize($arr));
   }
 
+  public function addToOutput($output)
+  {
+    $this->_output .= $output;
+  }
+
   public function getBuildDir()
   {
     return $this->getPtrProject()->getReportsWorkingDir() . $this->getId() . '/';
@@ -139,17 +144,45 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     //
     // Export and execute the builder's source code
     //
-    $phpBuilder = $integrationBuilder->toPhp();
-    SystemEvent::raise(SystemEvent::DEBUG, "Integration builder source code:" . PHP_EOL . print_r($phpBuilder, true), __METHOD__);
-    eval ($phpBuilder); // A whole set of global vars should be set after return
-    $this->setOutput(implode(PHP_EOL, $GLOBALS['result']['stacktrace']));
+    $builderCode = $integrationBuilder->toPhp();
+    SystemEvent::raise(SystemEvent::DEBUG, "Integration builder source code:" . PHP_EOL . print_r($builderCode, true), __METHOD__);
+    // Execute as an external process in order to have a clean sandboxed
+    // environment. eval($builderCode) is no more.
+    $builderProcess = new Framework_Process();
+    $builderProcess->setStdin($builderCode);
+    $builderProcess->run();
+    //
+    // Import back into Cintient space the external builder's output
+    // TODO: we should probably have this somewhere better than
+    // $GLOBALS['result']...
+    //
+    // Also check BuilderElement_Project for the expected
+    // $GLOBALS['result'] vars...
+    //
+    $output = explode(PHP_EOL, $builderProcess->getStdout());
+    $GLOBALS['result'] = array();
+    foreach ($output as $line) {
+      $neck = strpos($line, '=');
+      $key = substr($line, 0, $neck);
+      $value = substr($line, $neck+1);
+      $GLOBALS['result'][$key] = $value;
+    }
+    if (empty($GLOBALS['result']['ok'])) {
+      $GLOBALS['result']['ok'] = false;
+    }
+    if (!empty($GLOBALS['result']['stacktrace'])) {
+      $this->addToOutput(implode(PHP_EOL, $GLOBALS['result']['stacktrace']));
+    }
+    if (!$builderProcess->emptyStderr()) {
+      $this->addToOutput($builderProcess->getStderr());
+    }
     if ($GLOBALS['result']['ok'] != true) {
       if (!empty($GLOBALS['result']['task'])) {
-        SystemEvent::raise(SystemEvent::INFO, "Failed executing task {$GLOBALS['result']['task']}. [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::INFO, "Failed executing task {$GLOBALS['result']['task']}.", __METHOD__);
       } else {
-        SystemEvent::raise(SystemEvent::INFO, "Failed for unknown reasons. [OUTPUT={$GLOBALS['result']['output']}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::INFO, "Failed for unknown reasons.", __METHOD__);
       }
-      SystemEvent::raise(SystemEvent::DEBUG, "Stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Possible stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
       return false;
     }
 

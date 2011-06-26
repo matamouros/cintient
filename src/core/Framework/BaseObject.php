@@ -62,6 +62,9 @@ class Framework_BaseObject
         $this->$var = date('Y-m-d H:i:s');
       }
       return $this->$var;
+    } elseif (strpos($name, 'empty') === 0) {
+      $var = '_' . lcfirst(substr($name, 5));
+      return empty($this->$var);
     } else {
       trigger_error("No valid method available for calling", E_USER_ERROR);
       exit;

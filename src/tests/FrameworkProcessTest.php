@@ -22,18 +22,20 @@
  */
 
 require_once dirname(__FILE__) . '/../config/cintient.conf.php';
-require 'DatabaseTest.php';
-require 'FrameworkBaseObjectTest.php';
-require 'FrameworkProcessTest.php';
 
-class AllTests
+class FrameworkProcessTest extends PHPUnit_Framework_TestCase
 {
-  public static function suite()
+  public function setUp()
   {
-    $suite = new PHPUnit_Framework_TestSuite('PHPUnit');
-    $suite->addTestSuite('DatabaseTest');
-    $suite->addTestSuite('FrameworkBaseObjectTest');
-    $suite->addTestSuite('FrameworkProcessTest');
-    return $suite;
+    $this->sharedFixture = new Framework_Process();
+  }
+
+  public function testRunStdout()
+  {
+    $msg = 'Hello world' . PHP_EOL;
+    $code = '<?php echo "' . $msg . '";';
+    $this->sharedFixture->setStdin($code);
+    $this->sharedFixture->run();
+    $this->assertSame($this->sharedFixture->getStdout(), $msg, 'Stdout not valid!');
   }
 }
