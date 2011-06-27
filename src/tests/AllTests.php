@@ -21,7 +21,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../config/cintient.conf.php';
+require_once dirname(__FILE__) . '/../config/phpunit.conf.php';
 require 'DatabaseTest.php';
 require 'FrameworkBaseObjectTest.php';
 require 'FrameworkProcessTest.php';

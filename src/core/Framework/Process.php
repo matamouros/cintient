@@ -162,7 +162,7 @@ class Framework_Process extends Framework_BaseObject
     $descriptorSpec = array(
       0 => array("pipe", "r"), # STDIN
       1 => array("pipe", "w"), # STDOUT
-      2 => array("pipe", "a"), # STDERR (see http://www.php.net/manual/en/function.proc-open.php#97012)
+      2 => array("pipe", "w"), # STDERR
     );
     $cmd = $this->getCmd() . ($inBg?' &':'');
     SystemEvent::raise(SystemEvent::INFO, "Executing '{$cmd}'", __METHOD__);

@@ -260,8 +260,8 @@ if (!defined('STDOUT')) {
 if (!defined('STDERR')) {
 	define('STDERR', @fopen('php://stderr', 'w'));
 }
-set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/');
-set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/');
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR');
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/PHP');
 ";
     if ($this->getBaseDir() !== null) {
       $php .= "
