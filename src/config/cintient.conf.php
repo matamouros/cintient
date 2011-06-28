@@ -97,7 +97,9 @@ define('CINTIENT_DATABASE_SCHEMA_VERSION', '1111');
 // object safe. Credits to travis@travishegner.com on:
 // http://pt.php.net/manual/en/function.serialize.php#96504
 //
-define('CINTIENT_NULL_BYTE_TOKEN', '==');
+define('CINTIENT_NULL_BYTE_TOKEN', '=0=');
+
+define('CINTIENT_NEWLINE_TOKEN', '=n=');
 
 define('CINTIENT_PHP_BINARY', 'php');
 
@@ -105,7 +107,8 @@ define('CINTIENT_BUILDS_PAGE_LENGTH', 20);
 
 define('CHART_JUNIT_DEFAULT_WIDTH', 790);
 
-set_include_path(CINTIENT_INSTALL_DIR);
+// Set the include path
+set_include_path(get_include_path() . PATH_SEPARATOR . CINTIENT_INSTALL_DIR);
 
 
 //

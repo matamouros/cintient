@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
  *  Cintient, Continuous Integration made simple.
  *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
  *
@@ -18,13 +18,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 require_once dirname(__FILE__) . '/cintient.conf.php';
 
 //
-// Specific include_path just to satisfy PHPUnit
+// Specific include_path just to satisfy our PHPUnit tests
 //
 set_include_path( get_include_path() . PATH_SEPARATOR
                 . CINTIENT_INSTALL_DIR . 'lib/PEAR/' . PATH_SEPARATOR

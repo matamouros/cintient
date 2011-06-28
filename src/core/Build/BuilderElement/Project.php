@@ -260,8 +260,10 @@ if (!defined('STDOUT')) {
 if (!defined('STDERR')) {
 	define('STDERR', @fopen('php://stderr', 'w'));
 }
-set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR');
-set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/PHP');
+stream_set_blocking(STDERR, false); // Don't let stderr block, it's only a 16KB buffer
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/');
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/');
+set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/PHP/');
 ";
     if ($this->getBaseDir() !== null) {
       $php .= "
@@ -275,7 +277,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '{$this->getBaseDir()}');
 \$GLOBALS['result'] = array();
 \$GLOBALS['result']['ok'] = true;
 \$GLOBALS['result']['output'] = '';
-\$GLOBALS['result']['stacktrace'] = array();
+\$GLOBALS['result']['stacktrace'] = '';
 \$GLOBALS['result']['task'] = null;
 EOT;
       //
@@ -287,7 +289,7 @@ EOT;
         $php .= <<<EOT
 function output(\$message)
 {
-  \$GLOBALS['result']['stacktrace'][] = "[" . date('H:i:s') . "] [{\$GLOBALS['result']['task']}] {\$message}";
+  \$GLOBALS['result']['stacktrace'] .= "[" . date('H:i:s') . "] [{\$GLOBALS['result']['task']}] {\$message}\n";
 }
 function expandStr(\$str)
 {
@@ -316,27 +318,30 @@ EOT;
         $php .= $target->toPhp($context);
       }
     }
-    $php .= <<<EOT
+    $php .= "
 foreach (\$GLOBALS['targets'] as \$target) {
   \$GLOBALS['result']['task'] = 'target';
-  output("Executing target \"\$target\"...");
+  output(\"Executing target \$target...\");
   if (\$target() === false) {
     \$GLOBALS['result']['task'] = 'target';
     \$error = error_get_last();
     \$GLOBALS['result']['output'] = \$error['message'] . ', on line ' . \$error['line'] . '.';
-    output("Target \"\$target\" failed.");
+    output(\"Target \$target failed.\");
     return false;
   } else {
     \$GLOBALS['result']['task'] = 'target';
-    output("Target \"\$target\" executed.");
+    output(\"Target \$target executed.\");
   }
 }
 // Output globals result vars
 foreach (\$GLOBALS['result'] as \$key => \$value) {
-  fwrite(STDOUT, "\$key=".serialize(\$value)."\\n");
+  \$value = str_replace(PHP_EOL, '" . CINTIENT_NEWLINE_TOKEN . "', \$value);
+  fwrite(STDOUT, \"\$key=\$value\\n\");
 }
-fclose(STDOUT);
-EOT;
+@fclose(STDOUT);
+@fclose(STDERR);
+exit;
+";
     return $php;
   }
 }

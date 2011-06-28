@@ -200,7 +200,7 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
 require_once 'PHP/Depend/Autoload.php';
 \$autoload = new PHP_Depend_Autoload();
 \$autoload->register();
-PHP_Depend_Util_Log::setSeverity(0);
+PHP_Depend_Util_Log::setSeverity(-1); // to set PHP_Depend debug to false
 ob_start();
 \$ret = PHP_Depend_TextUI_Command::main();
 output(ob_get_contents());

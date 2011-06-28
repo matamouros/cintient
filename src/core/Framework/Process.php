@@ -156,6 +156,7 @@ class Framework_Process extends Framework_BaseObject
   {
     // Get windows run-in-background out of the way
     if (Framework_HostOs::isWindows() && $inBg) {
+      SystemEvent::raise(SystemEvent::INFO, "Executing '{$this->getCmd()}'", __METHOD__);
       return (bool)(@pclose(@popen("start /B ". $this->getCmd(), "r")) !== -1);
     }
 
@@ -164,6 +165,7 @@ class Framework_Process extends Framework_BaseObject
       1 => array("pipe", "w"), # STDOUT
       2 => array("pipe", "w"), # STDERR
     );
+
     $cmd = $this->getCmd() . ($inBg?' &':'');
     SystemEvent::raise(SystemEvent::INFO, "Executing '{$cmd}'", __METHOD__);
     $ptr = proc_open($cmd, $descriptorSpec, $pipes, null);
@@ -172,10 +174,10 @@ class Framework_Process extends Framework_BaseObject
       return false;
     }
     if ($inBg) {
-      // Apparently pipes don't need closing...
-      return true;
+      return true; // Apparently no pipes need closing...
     }
 
+    // Feed stdin to the child process
     if (!empty($this->_stdin)) {
       // TODO: chunks at a time, not the whole damn thing at once!
       fwrite($pipes[0], $this->_stdin);
@@ -194,16 +196,15 @@ class Framework_Process extends Framework_BaseObject
         $this->appendToStdout($buffer);
         //TODO: call registered callbacks
       } elseif (strlen($errbuf)) {
-        //TODO: call registered callbacks
         $this->appendToStderr($errbuf);
+        //TODO: call registered callbacks
       }
       $buffer = 0;
       $errbuf = 0;
     }
 
-    foreach ($pipes as $pipe) {
-      @fclose($pipe);
-    }
+    @fclose($pipes[1]);
+    @fclose($pipes[2]);
 
     // Get the expected *exit* code to return the value
     $pstatus = proc_get_status($ptr);
