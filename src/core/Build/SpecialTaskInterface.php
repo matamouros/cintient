@@ -40,11 +40,31 @@ interface Build_SpecialTaskInterface
 {
   public function __construct(Project_Build $build);
 
+  /**
+   * The preBuild() method is invoked right before the integration
+   * builder is run.
+   */
   public function preBuild();
 
+  /**
+   * The postBuild() method is invoked right after the integration
+   * builder is run successfully.
+   */
   public function postBuild();
 
+  /**
+   * This is used to provide whatever data structures are required to
+   * render the special task's output in the UI.
+   */
   public function getViewData();
 
+  /**
+   * Gets a specific special task object.
+   *
+   * @param Project_Build $build
+   * @param User $user
+   * @param int $access
+   * @param array $options
+   */
   static public function getById(Project_Build $build, User $user, $access = Access::READ, array $options = array());
 }
