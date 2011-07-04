@@ -148,20 +148,48 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
   public function postBuild()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    //
     // Backup the original junit report file
-    //
     if (!@copy($this->getPtrProjectBuild()->getPtrProject()->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME, $this->getPtrProjectBuild()->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not backup original Junit XML file [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
       return false;
     }
-    return true;
+    // Backup the original codecoverage xml report file
+    if (!@copy($this->getPtrProjectBuild()->getPtrProject()->getReportsWorkingDir() . CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME, $this->getPtrProjectBuild()->getBuildDir() . CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not backup original code coverage XML file [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
+      return false;
+    }
+    // Copy the original codecoverage html dir
+    $ret = true;
+    $origCovDir = $this->getPtrProjectBuild()->getPtrProject()->getReportsWorkingDir() . CINTIENT_CODECOVERAGE_HTML_DIR;
+    if (file_exists($origCovDir)) {
+      $htmlCovDir = $this->getPtrProjectBuild()->getBuildDir() . CINTIENT_CODECOVERAGE_HTML_DIR;
+      if (!@mkdir($htmlCovDir) || !file_exists($htmlCovDir)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create dir for HTML coverage files [DIR={$htmlCovDir}] [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
+        return false;
+      }
+      foreach (new DirectoryIterator($origCovDir) as $file) {
+        if ($file->isDot()) {
+          continue;
+        }
+        if (!copy($origCovDir . $file, $htmlCovDir . basename($file))) {
+          SystemEvent::raise(SystemEvent::ERROR, "Problems copying a file from the original codecoverage HTML dir [FILE={$file}] [DIR={$htmlCovDir}] [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
+          $ret = false;
+        } else {
+          $ret = $ret & true;
+        }
+      }
+      // TODO: remove the original codecoverage dir.
+    }
+    return $ret;
   }
 
   public function getViewData()
   {
     $ret = array();
     $ret['project_buildJunit'] = $this->createReportFromJunit();
+
+    // Get the initial page of the coverage results, if available
+
     return $ret;
   }
 

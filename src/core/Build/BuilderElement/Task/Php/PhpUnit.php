@@ -70,8 +70,8 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
     $fileset->addInclude(CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH);
     $o->setFilesets(array($fileset));
     $o->setLogJunitXmlFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_JUNIT_REPORT_FILENAME);
-    $o->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.xml');
-    $o->setCodeCoverageHtmlFile($GLOBALS['project']->getReportsWorkingDir() . 'codecoverage.html');
+    $o->setCodeCoverageXmlFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME);
+    $o->setCodeCoverageHtmlDir($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_CODECOVERAGE_HTML_DIR);
     return $o;
   }
 
@@ -180,7 +180,7 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
       }
     }
 
-    if ($this->getCodeCoverageHtmlFile()) {
+    if ($this->getCodeCoverageHtmlDir()) {
       if (!extension_loaded('xdebug')) {
         $php .= "
 output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
@@ -188,7 +188,7 @@ output('Code coverage only possible with the Xdebug extension loaded. Option \"-
       } else {
         $php .= "
 \$args[] = '--coverage-html';
-\$args[] = '{$this->getCodeCoverageHtmlFile()}';
+\$args[] = '{$this->getCodeCoverageHtmlDir()}';
 ";
       }
     }
