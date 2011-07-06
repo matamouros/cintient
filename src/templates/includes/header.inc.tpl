@@ -30,12 +30,12 @@
   <link rel="stylesheet" href="/css/avataruploader.css" />
   <link rel="icon" href="/favicon.ico">
   <!--[if lt IE 9]>
-  <script src="/js/html5.js"></script>
+  <script src="/js/lib/html5.js"></script>
   <![endif]-->
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="/js/jquery-1.6.js"></script>
-  <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery-1.6.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery-ui-1.8.12.custom.min.js"></script>
 </head>
 <body>
   <div id="header" class="containerTopLevel">

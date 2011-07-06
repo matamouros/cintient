@@ -1,19 +1,19 @@
 {*
     Cintient, Continuous Integration made simple.
     Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
-    
+
     This file is part of Cintient.
-    
+
     Cintient is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     Cintient is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
@@ -45,7 +45,7 @@
   background-image: url({$globals_user->getAvatarUrl()});
 }
 </style>
-<script type="text/javascript" src="/js/avataruploader.js"></script>
+<script type="text/javascript" src="/js/lib/avataruploader.js"></script>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
@@ -56,7 +56,7 @@ $(document).ready(function() {
     allowedExtensions: ['jpg', 'jpeg', 'png'],
     sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
     onSubmit: function(id, fileName){
-      
+
     },
     onComplete: function(id, fileName, responseJSON) {
       // Update all the avatars on the current page
@@ -67,6 +67,6 @@ $(document).ready(function() {
     }
   });
 });
-//]]> 
+//]]>
 </script>
 {include file='includes/footer.inc.tpl'}
