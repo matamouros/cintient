@@ -620,7 +620,11 @@ EOT;
         //TODO: Redirect and exit?
         exit;
       }
-      $filename = $build->getBuildDir() . $_GET['f'];
+      if (!empty($_GET['cc'])) { // code coverage asset
+        $filename = $build->getBuildDir() . CINTIENT_CODECOVERAGE_HTML_DIR . $_GET['f'];
+      } else { // Normal file
+        $filename = $build->getBuildDir() . $_GET['f'];
+      }
       if (!file_exists($filename)) {
         SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
         //TODO: Redirect and exit?

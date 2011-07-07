@@ -158,7 +158,7 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
       SystemEvent::raise(SystemEvent::ERROR, "Could not backup original code coverage XML file [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
       return false;
     }
-    // Copy the original codecoverage html dir
+    // Copy the original codecoverage html dir and "massage" the files
     $ret = true;
     $origCovDir = $this->getPtrProjectBuild()->getPtrProject()->getReportsWorkingDir() . CINTIENT_CODECOVERAGE_HTML_DIR;
     if (file_exists($origCovDir)) {
@@ -171,11 +171,46 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
         if ($file->isDot()) {
           continue;
         }
-        if (!copy($origCovDir . $file, $htmlCovDir . basename($file))) {
+        $src = $origCovDir . $file;
+        $dest = $htmlCovDir . $file;
+        if (!copy($src, $dest)) {
           SystemEvent::raise(SystemEvent::ERROR, "Problems copying a file from the original codecoverage HTML dir [FILE={$file}] [DIR={$htmlCovDir}] [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
           $ret = false;
         } else {
           $ret = $ret & true;
+          //
+          // We're taking the chance to hack into every code coverage
+          // HTML generated file and bent it to our purposes. While we
+          // don't have the ability to generate our very own
+          //
+          $destHtml = file_get_contents($dest);
+          $that = $this; # Wow, beautiful, thank you PHP 5.3.x...
+          //
+          // Get all links working apropriately for Cintient
+          //
+          $newDestHtml = preg_replace_callback(
+            '/((?:src|href)=)"([\w.#]+)"/m',
+            function ($match) use ($that)
+            {
+              return $match[1] . '"' . UrlManager::getForAsset($match[2], array('bid' => $that->getBuildId(), 'cc' => true)) . '"';
+            },
+            $destHtml,
+            -1
+          );
+          // Add a few CSS tweaks
+          SystemEvent::raise(SystemEvent::ERROR, $file, __METHOD__);
+          if ($file == 'style.css') {
+            $newDestHtml .= "html,body,table,tr,td,a{font-size:8pt;font-family:sans-serif,arial,helvetica;}";
+            $newDestHtml .= <<<EOT
+body {
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+}
+EOT;
+          }
+          file_put_contents($dest, $newDestHtml);
         }
       }
       // TODO: remove the original codecoverage dir.
@@ -183,11 +218,11 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
     return $ret;
   }
 
-  public function getViewData()
+  public function getViewData(Array $params = array())
   {
     $ret = array();
     $ret['project_buildJunit'] = $this->createReportFromJunit();
-
+    
     // Get the initial page of the coverage results, if available
 
     return $ret;

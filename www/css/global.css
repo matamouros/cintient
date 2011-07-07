@@ -1302,6 +1302,15 @@ article#project .avatar
   font-size: .8em;
 }
 
+#ccFrame
+{
+  /*-webkit-border-radius: 16px 16px 16px 16px;*/
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
 /* @end */
 
 

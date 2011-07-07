@@ -103,7 +103,7 @@ class Build_SpecialTask_PhpCodeSniffer extends Framework_DatabaseObjectAbstract 
     return md5($this->getProjectId() . $this->getProjectBuildId() . CINTIENT_PHPCODESNIFFER_REPORT_XML_FILE) . '.xml';
   }
 
-  public function getViewData()
+  public function getViewData(Array $params = array())
   {
     $ret = array();
     $reportFullFile = $this->getPtrProjectBuild()->getBuildDir() . $this->getReportFullFilename();

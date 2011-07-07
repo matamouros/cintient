@@ -56,7 +56,7 @@ interface Build_SpecialTaskInterface
    * This is used to provide whatever data structures are required to
    * render the special task's output in the UI.
    */
-  public function getViewData();
+  public function getViewData(Array $params = array());
 
   /**
    * Gets a specific special task object.

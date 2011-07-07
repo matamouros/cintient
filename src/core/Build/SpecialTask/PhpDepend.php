@@ -159,7 +159,7 @@ class Build_SpecialTask_PhpDepend extends Framework_DatabaseObjectAbstract imple
     return true;
   }
 
-  public function getViewData()
+  public function getViewData(Array $params = array())
   {
     $ret = array();
     if ($this->getJdependChartFilename() !== false && file_exists($this->_ptrProjectBuild->getBuildDir() . $this->getJdependChartFilename())) {
