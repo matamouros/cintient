@@ -43,25 +43,6 @@
   {$project_latestBuild=$project_buildList.0}
 {/if}
 {include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_latestBuild}
-    <div id="buildsList">
-{if !empty($project_buildList)}
-      <div class="label">Choose a different build:</div>
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  $('#buildsListDropdown').change(function() {
-    window.location.replace($(this).find("option:selected").attr('value'));
-  });
-});
-//]]>
-</script>
-      <select class="dropdown" id="buildsListDropdown">
-{foreach from=$project_buildList item=build}
-        <option value="{UrlManager::getForProjectBuildView($globals_project, $build)}"{if $build->getId()==$project_build->getId()} selected{/if}>build {$build->getId()}, r{$build->getScmRevision()} on {$build->getDate()|date_format:"%b %e, %Y at %R"}
-{/foreach}
-      </select>
-{/if}
-    </div>
 {if !empty($project_buildList)}
 <script type="text/javascript">
 // <![CDATA[

@@ -37,7 +37,7 @@ class Project_Log extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
   protected $_date;         // the build's date
-  protected $_type;         // the label on the build, also used to name the release package file
+  protected $_type;         //
   protected $_message;      // a user generated description text (prior or after the build triggered).
   protected $_username;     // The username that triggered the log entry
 
@@ -112,7 +112,7 @@ class Project_Log extends Framework_DatabaseObjectAbstract
     return true;
   }
 
-  static public function getListByProject(Project $project, User $user, $access = Access::READ, array $options = array())
+  static public function getList(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
     isset($options['pageStart'])?:$options['pageStart']=0;
@@ -140,7 +140,7 @@ class Project_Log extends Framework_DatabaseObjectAbstract
     if ($rs = Database::query($sql, $val)) {
       $ret = array();
       while ($rs->nextRow()) {
-        $projectLog = self::_getObject($rs, $project->getId());
+        $projectLog = self::_getObject($rs, $project);
         $ret[] = $projectLog;
       }
     }
