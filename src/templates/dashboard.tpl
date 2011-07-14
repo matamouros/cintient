@@ -1,25 +1,26 @@
 {*
     Cintient, Continuous Integration made simple.
     Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
-    
+
     This file is part of Cintient.
-    
+
     Cintient is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     Cintient is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
   subSectionTitle="Dashboard"
   menuLinks="<a href=\"{UrlManager::getForProjectNew()}\">new project</a>"}
+    <script type="text/javascript" src="/js/lib/jquery.sparkline.min.js"></script>
 {if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
@@ -31,9 +32,19 @@
         <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
-          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: build {$dashboard_latestBuild->getId()}, r{$dashboard_latestBuild->getScmRevision()}, {if $dashboard_latestBuild->getStatus()!=Project_Build::STATUS_FAIL}built{else}failed{/if} on {$dashboard_latestBuild->getDate()|date_format}.{else}This project hasn't been built yet.{/if}</div>
+          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: #{$dashboard_latestBuild->getId()} r{$dashboard_latestBuild->getScmRevision()}, on {$dashboard_latestBuild->getDate()|date_format}.{else}This project hasn't been built yet.{/if}</div>
           {if !empty($dashboard_latestBuild)}<div class="projectStats">Current version: {$dashboard_latestBuild->getLabel()}</div>{/if}
           {*<div class="projectStats">Production version: 1.0.9</div>*}
+        </div>
+        <div class="sparkline">
+{$dashboard_buildList=Project_Build::getList($project, $globals_user)}
+          <div class="sparklineTitle">last {count($dashboard_buildList)} builds</div>
+          <div id="sparklineBuilds">
+{foreach $dashboard_buildList as $build}
+  {if !$build@first}, {/if}
+  {if $build->isOk()}1{else}-1{/if}
+{/foreach}
+          </div>
         </div>
         </a>
       </li>
@@ -67,8 +78,15 @@ $(document).ready(function() {
         });
       });
   });
+  //
+  // The sparklines
+  //
+  $('#sparklineBuilds').sparkline('html', {
+    type: 'tristate',
+    posBarColor: 'rgb(124,196,0)'
+  });
 });
-// ]]> 
+// ]]>
 </script>
 {else}
     <div class="messageInfo container">You don't have any projects, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>

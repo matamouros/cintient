@@ -224,6 +224,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     return true;
   }
 
+  public function isOk()
+  {
+    return $this->_status != self::STATUS_FAIL;
+  }
+
   protected function _save($force = false)
   {
     if (!$this->hasChanged()) {
