@@ -83,7 +83,8 @@ $(document).ready(function() {
   //
   $('#sparklineBuilds').sparkline('html', {
     type: 'tristate',
-    posBarColor: 'rgb(124,196,0)'
+    posBarColor: 'rgb(124,196,0)',
+    negBarColor: 'rgb(255,40,0)'
   });
 });
 // ]]>

@@ -36,6 +36,9 @@
   <meta name="generator" content="Cintient Engine" />
   <script type="text/javascript" src="/js/lib/jquery-1.6.js"></script>
   <script type="text/javascript" src="/js/lib/jquery-ui-1.8.12.custom.min.js"></script>
+{foreach $jsIncludes as $jsInclude}
+  <script type="text/javascript" src="{$jsInclude}"></script>
+{/foreach}
 </head>
 <body>
   <div id="header" class="containerTopLevel">

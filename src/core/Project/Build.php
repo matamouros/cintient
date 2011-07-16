@@ -358,6 +358,60 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     return $ret;
   }
 
+  static public function getStats(Project $project, User $user, $access = Access::READ)
+  {
+    $ret = array();
+
+    //
+    // Build outcomes
+    //
+    $sql = 'SELECT status, COUNT(pb.status) AS c'
+         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+         . ' WHERE pu.projectid=?'
+         . ' AND pu.userid=?'
+         . ' AND pu.access & ?'
+         . ' GROUP BY status';
+    $val = array($project->getId(), $user->getId(), $access);
+    if ($rs = Database::query($sql, $val)) {
+      $r = array(0, 0);
+      while ($rs->nextRow()) {
+        $i = (int)$rs->getStatus();
+        if ($i != self::STATUS_FAIL) {
+          $i = 1;
+        }
+        $r[$i] += (int)$rs->getC();
+      }
+      $ret['buildOutcomes'] = $r;
+    }
+
+    //
+    // Build timeline
+    //
+    $ret['buildTimeline'] = array();
+    $sql = 'SELECT status, date'
+         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+         . ' WHERE pu.projectid=?'
+         . ' AND pu.userid=?'
+         . ' AND pu.access & ?';
+    $val = array($project->getId(), $user->getId(), $access);
+    if ($rs = Database::query($sql, $val)) {
+      $ok = array();
+      $failed = array();
+      while ($rs->nextRow()) {
+        $date = strtotime($rs->getDate());
+        if ($rs->getStatus() != self::STATUS_FAIL) {
+          $ok[] = array(date("j", $date), date("G", $date));
+        } else {
+          $failed[] = array(date("j", $date), date("G", $date));
+        }
+      }
+      $ret['buildTimeline']['ok'] = $ok;
+      $ret['buildTimeline']['failed'] = $failed;
+    }
+
+    return $ret;
+  }
+
   static private function _getObject(Resultset $rs, Project $project)
   {
     $ret = new Project_Build($project);

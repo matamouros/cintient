@@ -763,6 +763,7 @@ EOT;
     }
     $_SESSION['projectId'] = $GLOBALS['project']->getId();
 
+    $GLOBALS['smarty']->assign('project_buildStats', Project_Build::getStats($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_log', Project_Log::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_buildList', Project_Build::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', Project_Build::getLatest($GLOBALS['project'], $GLOBALS['user']));
