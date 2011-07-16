@@ -707,7 +707,7 @@ EOT;
   {
     $ret = null;
     $sql = 'SELECT * FROM project p'
-         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*60) || ' seconds')"
+         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*".CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT.") || ' seconds', 'localtime')"
          . ' ORDER BY datecheckedforchanges ASC LIMIT 1';
     if ($rs = Database::query($sql)) {
       if ($rs->nextRow()) {
