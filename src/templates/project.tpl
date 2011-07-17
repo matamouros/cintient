@@ -49,14 +49,11 @@
 {/foreach}
   </tbody>
 </table>
-{else}
-Not a thing
 {/if}
 </div>
 </div>
 
-{*<script type="text/javascript" src="/js/highcharts-2.1.6.js"></script>
-<script type="text/javascript" src="/js/cintientHighcharts.theme.js"></script>*}
+{if !empty($project_build)}
 <script type="text/javascript">
 // <![CDATA[
 var chartBuildOutcomes;
@@ -209,8 +206,6 @@ $(document).ready(function() {
 </script>
 <div id="chartBuildOutcomesContainer" style="display: none;"></div>
 <div id="chartBuildTimelineContainer" style="display: none;"></div>
-
-<div>
-</div>
+{/if}
 
 {include file='includes/footer.inc.tpl'}

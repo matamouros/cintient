@@ -568,8 +568,8 @@ hr
 
 .sparkline
 {
-  float: right;
-  margin-right: 100px;
+  float: left;
+  margin-left: 60px;
   margin-top: 3px;
 }
 
@@ -618,6 +618,7 @@ hr
 .projectDetails
 {
   float: left;
+  width: 260px;
 }
 
 .projectTitle
@@ -975,7 +976,10 @@ hr
   padding: 0;
   float: left;
   clear: none;
-  z-index: 99999;
+  z-index: 1000;
+  height: 250px;
+  width: 160px;
+  overflow-y: auto;
 }
 
 #buildList table

@@ -36,16 +36,19 @@
           {if !empty($dashboard_latestBuild)}<div class="projectStats">Current version: {$dashboard_latestBuild->getLabel()}</div>{/if}
           {*<div class="projectStats">Production version: 1.0.9</div>*}
         </div>
+{if !empty($dashboard_latestBuild)}
         <div class="sparkline">
 {$dashboard_buildList=Project_Build::getList($project, $globals_user, Access::READ, ['sort' => Sort::DATE_ASC])}
-          <div class="sparklineTitle">last {count($dashboard_buildList)} builds</div>
-          <div id="sparklineBuilds" style="display: hidden;">
+{$count=count($dashboard_buildList)}
+          <div class="sparklineTitle">last {if $count!=1}{$count}{/if} build{if $count!=1}s{/if}</div>
+          <div id="sparklineBuilds{$project->getId()}" class="sparklineBuilds" style="display: hidden;">
 {foreach $dashboard_buildList as $build}
   {if !$build@first}, {/if}
   {if $build->isOk()}1{else}-1{/if}
 {/foreach}
           </div>
         </div>
+{/if}
         </a>
       </li>
 {/foreach}
@@ -81,7 +84,7 @@ $(document).ready(function() {
   //
   // The sparklines
   //
-  $('#sparklineBuilds').sparkline('html', {
+  $('.sparklineBuilds').sparkline('html', {
     type: 'tristate',
     posBarColor: 'rgb(124,196,0)',
     negBarColor: 'rgb(255,40,0)'

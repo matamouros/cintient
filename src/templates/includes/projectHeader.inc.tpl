@@ -22,13 +22,13 @@
       <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
       <div id="statusContainer"><div class="triggerBuild status projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
       <div class="title">{$project->getTitle()}</div>
-      <div id="buildListDropdownLink">
 {if !empty($project_build)}
-      <div id="projectStatus_{$project->getId()}" class="details">
-        #{$project_build->getId()} r{$project_build->getScmRevision()},
-        on {$project_build->getDate()|date_format:"%b %e, %Y at %R"}
-      </div>
-      <div class="dropdownTriangle"></div>
+      <div id="buildListDropdownLink">
+        <div id="projectStatus_{$project->getId()}" class="details">
+          #{$project_build->getId()} r{$project_build->getScmRevision()},
+          on {$project_build->getDate()|date_format:"%b %e, %Y at %R"}
+        </div>
+        <div class="dropdownTriangle"></div>
       </div>
 
       <div id="buildList" class="popupWidget">
@@ -95,19 +95,19 @@ function updateProjectStatus(toStatus)
   projectLastKnownStatus = toStatus;
   switch(toStatus) {
   case {Project::STATUS_OK}:
-    $('#project #statusContainer .projectStatusWaiting').fadeOut(50);
-    $('#project #statusContainer .status').removeClass('projectStatusFailed projectStatusWorking');
-    $('#project #statusContainer .status').addClass('projectStatusOk');
+    $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
+    $('#projectHeader #statusContainer .status').removeClass('projectStatusFailed projectStatusWorking');
+    $('#projectHeader #statusContainer .status').addClass('projectStatusOk');
     break;
   case {Project::STATUS_BUILDING}:
-    $('#project #statusContainer .status').removeClass('projectStatusFailed projectStatusOk');
-    $('#project #statusContainer .status').addClass('projectStatusWorking');
-    $('#project #statusContainer .projectStatusWaiting').fadeIn(150);
+    $('#projectHeader #statusContainer .status').removeClass('projectStatusFailed projectStatusOk');
+    $('#projectHeader #statusContainer .status').addClass('projectStatusWorking');
+    $('#projectHeader #statusContainer .projectStatusWaiting').fadeIn(150);
     break;
   default:
-    $('#project #statusContainer .projectStatusWaiting').fadeOut(50);
-    $('#project #statusContainer .status').removeClass('projectStatusWorking projectStatusOk');
-    $('#project #statusContainer .status').addClass('projectStatusFailed');
+    $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
+    $('#projectHeader #statusContainer .status').removeClass('projectStatusWorking projectStatusOk');
+    $('#projectHeader #statusContainer .status').addClass('projectStatusFailed');
     break;
   }
 }
@@ -116,7 +116,7 @@ $(document).ready(function() {
   //
   // Bind the project status icon to the build link
   //
-  $('#project .triggerBuild').each(function() {
+  $('#projectHeader .triggerBuild').each(function() {
     $(this).click(function() {
       forceBuild();
     });
