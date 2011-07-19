@@ -400,9 +400,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       while ($rs->nextRow()) {
         $date = strtotime($rs->getDate());
         if ($rs->getStatus() != self::STATUS_FAIL) {
-          $ok[] = array(date("j", $date), date("G", $date));
+          $ok[] = $date;
         } else {
-          $failed[] = array(date("j", $date), date("G", $date));
+          $failed[] = $date;
         }
       }
       $ret['buildTimeline']['ok'] = $ok;

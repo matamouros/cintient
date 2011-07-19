@@ -120,21 +120,37 @@ $(document).ready(function() {
       text: ''
     },
     xAxis: {
+      type: 'datetime',
       title: {
         text: '' // Day
       },
-      startOnTick: true,
-      endOnTick: true,
-      showLastLabel: true
+      maxZoom: 1 * 24 * 3600000, // 1 day
+      //startOnTick: true,
+      //endOnTick: true,
+      //showLastLabel: true
     },
     yAxis: {
       title: {
         text: '' // Hour
-      }
+      },
+      labels: {
+        formatter: function() {
+          if (this.value > 999) {
+            hours = 24;
+          } else {
+            yDate = new Date(this.value*86.4*1000);
+            hours = yDate.getHours();
+          }
+          return '' + hours + 'h';
+        }
+      },
+      min: 0,
+      max: 1000,
     },
     tooltip: {
       formatter: function() {
-        return '' + this.x + ' ' + this.y;
+        date = new Date(this.x);
+        return '' + date.toDateString() + ', ' + date.toTimeString();
       }
     },
     legend: {
@@ -173,16 +189,19 @@ $(document).ready(function() {
         }
       }
     },
-    series: [{
-      type: 'scatter',
-      name: 'Ok',
-      color: 'rgba(124,196,0, .4)',
-      data: [
+    series: [
+      {
+        type: 'scatter',
+        name: 'Ok',
+        color: 'rgba(124,196,0, .4)',
+        //pointStart: 1309812869*1000,
+        data: [
 {foreach from=$project_buildStats.buildTimeline.ok item=ok}
 {if !$ok@first}
 ,
 {/if}
-[{$ok.1}, {$ok.0}]
+{$okMilli=$ok*1000}
+[{$okMilli}, {$ok|date_format:"B"}]
 {/foreach}
       ]},
       {
@@ -193,7 +212,8 @@ $(document).ready(function() {
 {if !$failed@first}
 ,
 {/if}
-[{$failed.1}, {$failed.0}]
+{$failedMilli=$failed*1000}
+[{$failedMilli}, {$failed|date_format:"B"}]
 {/foreach}
         ]
       }
