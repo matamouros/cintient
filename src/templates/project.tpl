@@ -122,20 +122,18 @@ $(document).ready(function() {
     xAxis: {
       type: 'datetime',
       title: {
-        text: '' // Day
+        text: ''
       },
-      maxZoom: 1 * 24 * 3600000, // 1 day
-      //startOnTick: true,
-      //endOnTick: true,
-      //showLastLabel: true
+      maxZoom: 5 * 24 * 3600000, // 5 days (minimum to not breakdown from days into hours on the XX axis)
     },
     yAxis: {
       title: {
-        text: '' // Hour
+        text: ''
       },
+      maxZoom: 1 * 24 * 3600000, // 1 day
       labels: {
         formatter: function() {
-          if (this.value > 999) {
+          if (this.value > 999) { // beats to hours
             hours = 24;
           } else {
             yDate = new Date(this.value*86.4*1000);
@@ -158,7 +156,7 @@ $(document).ready(function() {
       align: 'left',
       verticalAlign: 'top',
       x: 30,
-      y: 40,
+      y: 190,
       floating: true,
       backgroundColor: {
         linearGradient: [0, 0, 0, 50],

@@ -38,7 +38,8 @@
         </div>
 {if !empty($dashboard_latestBuild)}
         <div class="sparkline">
-{$dashboard_buildList=Project_Build::getList($project, $globals_user, Access::READ, ['sort' => Sort::DATE_ASC])}
+{$dashboard_buildList=Project_Build::getList($project, $globals_user, Access::READ, ['sort' => Sort::DATE_DESC])}
+{$dashboard_buildList=array_reverse($dashboard_buildList)}
 {$count=count($dashboard_buildList)}
           <div class="sparklineTitle">last {if $count!=1}{$count}{/if} build{if $count!=1}s{/if}</div>
           <div id="sparklineBuilds{$project->getId()}" class="sparklineBuilds" style="display: hidden;">

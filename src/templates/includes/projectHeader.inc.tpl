@@ -161,7 +161,7 @@ $(document).ready(function() {
   $('#buildList table tr:not([class=date])').each( function() {
   	$(this).click(function() {
       pane = '';
-      if (activeResultPane !== undefined) {
+      if (typeof activeResultPane !== 'undefined') {
     	  pane = '#' + $(activeResultPane).attr('id');
       }
   		window.location = $(this).attr('class') + pane;
