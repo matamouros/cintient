@@ -80,7 +80,7 @@ $(document).ready(function() {
   });
 	// Promptly show the default pane
   defaultPane = '#rawOutput';
-  if (window.location.hash !== undefined && $('#projectViewContainer ' + window.location.hash).length>0) {
+  if (window.location.hash != '' && $('#projectViewContainer ' + window.location.hash).length>0) {
     defaultPane = window.location.hash;
   }
 	showBuildResultPane($('#projectViewContainer ' + defaultPane));
