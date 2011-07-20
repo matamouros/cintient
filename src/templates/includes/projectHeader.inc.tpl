@@ -160,7 +160,11 @@ $(document).ready(function() {
   });
   $('#buildList table tr:not([class=date])').each( function() {
   	$(this).click(function() {
-  		window.location = $(this).attr('class');
+      pane = '';
+      if (activeResultPane !== undefined) {
+    	  pane = '#' + $(activeResultPane).attr('id');
+      }
+  		window.location = $(this).attr('class') + pane;
     });
   	$(this).hover(
   		function() {

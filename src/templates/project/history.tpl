@@ -48,7 +48,7 @@
 // <![CDATA[
 $(document).ready(function() {
 	// Show the passed resultPane, hiding all others
-	var activeResultPane = null;
+	activeResultPane = null; // Needs to be global so that the project header build list knows where to change to if another build is chosen
 	function showBuildResultPane(resultPane) {
 		if (activeResultPane === null || $(activeResultPane).attr('id') !== $(resultPane).attr('id')) {
 			// Hide the previous pane
@@ -79,7 +79,11 @@ $(document).ready(function() {
     });
   });
 	// Promptly show the default pane
-	showBuildResultPane($('#projectViewContainer #rawOutput'));
+  defaultPane = '#rawOutput';
+  if (window.location.hash !== undefined && $('#projectViewContainer ' + window.location.hash).length>0) {
+    defaultPane = window.location.hash;
+  }
+	showBuildResultPane($('#projectViewContainer ' + defaultPane));
 });
 //]]>
 </script>
