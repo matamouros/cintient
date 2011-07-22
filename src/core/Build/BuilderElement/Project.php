@@ -261,6 +261,17 @@ if (!defined('STDERR')) {
 	define('STDERR', @fopen('php://stderr', 'w'));
 }
 stream_set_blocking(STDERR, false); // Don't let stderr block, it's only a 16KB buffer
+register_shutdown_function('cleanup');
+function cleanup()
+{
+  // Output globals result vars
+  foreach (\$GLOBALS['result'] as \$key => \$value) {
+    \$value = str_replace(PHP_EOL, '" . CINTIENT_NEWLINE_TOKEN . "', \$value);
+    fwrite(STDOUT, \"\$key=\$value\\n\");
+  }
+  @fclose(STDOUT);
+  @fclose(STDERR);
+}
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/');
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/');
 set_include_path(get_include_path() . PATH_SEPARATOR . '" . CINTIENT_INSTALL_DIR . "lib/PEAR/PHP/');
@@ -333,13 +344,6 @@ foreach (\$GLOBALS['targets'] as \$target) {
     output(\"Target \$target executed.\");
   }
 }
-// Output globals result vars
-foreach (\$GLOBALS['result'] as \$key => \$value) {
-  \$value = str_replace(PHP_EOL, '" . CINTIENT_NEWLINE_TOKEN . "', \$value);
-  fwrite(STDOUT, \"\$key=\$value\\n\");
-}
-@fclose(STDOUT);
-@fclose(STDERR);
 exit;
 ";
     return $php;
