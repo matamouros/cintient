@@ -174,7 +174,6 @@ $(document).ready(function() {
           states: {
             hover: {
               enabled: true,
-              //lineColor: 'rgb(100,100,100)'
             }
           }
         },
@@ -192,7 +191,6 @@ $(document).ready(function() {
         type: 'scatter',
         name: 'Ok',
         color: 'rgba(124,196,0, .4)',
-        //pointStart: 1309812869*1000,
         data: [
 {foreach from=$project_buildStats.buildTimeline.ok item=ok}
 {if !$ok@first}

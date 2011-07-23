@@ -26,9 +26,9 @@
  */
 class UrlManager
 {
-  static public function getForAjaxAvatarUpload()
+  static public function getForAjaxAvatarUpload(Array $params = array())
   {
-    return CINTIENT_BASE_URL . '/ajax/avatar-upload/';
+    return CINTIENT_BASE_URL . '/ajax/avatar-upload/?' .  http_build_query($params);
   }
 
   static public function getForAjaxProjectIntegrationBuilderAddElement()
@@ -76,7 +76,7 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/search/user/';
   }
 
-  static public function getForAsset($filename, $params = array())
+  static public function getForAsset($filename, Array $params = array())
   {
     $params['f'] = $filename;
     return CINTIENT_BASE_URL . "/asset/?" .  http_build_query($params);

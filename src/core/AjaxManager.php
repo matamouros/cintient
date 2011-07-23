@@ -133,12 +133,18 @@ class AjaxManager
       exit;
     }
 
+    // We can be dealing with both project and user avatars here
+    $subject = $GLOBALS['project'];
+    if (!isset($_GET['p'])) {
+      $subject = $GLOBALS['user'];
+    }
+
     //
-    // Save. If the user has a previous local avatar, extract it and
+    // Save. If the there is a previous local avatar, extract it and
     // remove it from the filesystem.
     //
-    if (($pos = strpos($GLOBALS['user']->getAvatar(), 'local:')) === 0) {
-      @unlink(CINTIENT_AVATARS_DIR . substr($GLOBALS['user']->getAvatar(), 6));
+    if (($pos = strpos($subject->getAvatar(), 'local:')) === 0) {
+      @unlink(CINTIENT_AVATARS_DIR . substr($subject->getAvatar(), 6));
     }
     do {
       $filename = uniqid() . '.jpg';
@@ -146,7 +152,7 @@ class AjaxManager
         break;
       }
     } while (true);
-    $GLOBALS['user']->setAvatarLocal($filename);
+    $subject->setAvatarLocal($filename);
 
     $dstPath = CINTIENT_AVATARS_DIR . $filename;
     $dstImg = imagecreatetruecolor(CINTIENT_AVATAR_WIDTH, CINTIENT_AVATAR_HEIGHT);

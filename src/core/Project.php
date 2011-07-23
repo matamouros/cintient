@@ -31,6 +31,7 @@
  */
 class Project extends Framework_DatabaseObjectAbstract
 {
+  protected $_avatar;                  // The avatar's location
   protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
   protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
   protected $_dateCreation;
@@ -71,6 +72,7 @@ class Project extends Framework_DatabaseObjectAbstract
   public function __construct()
   {
     parent::__construct();
+    $this->_avatar = null;
     $this->_buildLabel = '';
     $this->_description = '';
     $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
@@ -306,6 +308,20 @@ class Project extends Framework_DatabaseObjectAbstract
     return $this->getWorkDir() . 'reports/';
   }
 
+  public function getAvatarUrl()
+  {
+    if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {
+      return UrlManager::getForAsset(substr($this->getAvatar(), 6), array('avatar' => 1));
+    } else {
+      return '/imgs/anon_avatar_50.png';
+    }
+  }
+
+  public function setAvatarLocal($filename)
+  {
+    $this->_avatar = 'local:' . $filename;
+  }
+
   /**
    * Call this at the very creation of the project, for checking out the sources
    * and initialization stuff like that.
@@ -418,7 +434,8 @@ CREATE TABLE IF NOT EXISTS project(
   status TINYINT UNSIGNED NOT NULL DEFAULT 0,
   title VARCHAR(255) NOT NULL DEFAULT '',
   visits INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  workdir VARCHAR(255) NOT NULL DEFAULT ''
+  workdir VARCHAR(255) NOT NULL DEFAULT '',
+  avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS projectuser(
   projectid INTEGER UNSIGNED NOT NULL,
@@ -460,18 +477,19 @@ EOT;
     $serializedIntegrationBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getIntegrationBuilder()));
     $serializedDeploymentBuilder = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getDeploymentBuilder()));
     $sql = 'REPLACE INTO project'
-         . ' (id,datecreation,'
+         . ' (id,avatar,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
          . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
          . ' datecheckedforchanges, specialtasks)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
     }
     $val = array(
       $this->getId(),
+      $this->getAvatar(),
       $this->getDateCreation(),
       $this->getDescription(),
       $this->getTitle(),
@@ -725,6 +743,7 @@ EOT;
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;
     $ret = new Project();
+    $ret->setAvatar($rs->getAvatar());
     $ret->setScmConnectorType($rs->getScmConnectorType());
     $ret->setScmRemoteRepository($rs->getScmRemoteRepository());
     $ret->setScmUsername($rs->getScmUsername());

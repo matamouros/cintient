@@ -18,7 +18,8 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
-  subSectionTitle="Settings"}
+  subSectionTitle="Settings"
+  jsIncludes=['/js/lib/avataruploader.js']}
     <div id="settingsContainer" class="container">
       <ul>
         <li class="settingsNode">
@@ -27,7 +28,6 @@
             <noscript>
               {* TODO: Use simple upload form *}
               <p>Please enable JavaScript to use file uploader.</p>
-              <!-- or put a simple form for upload here -->
             </noscript>
           </div>
         </li>
@@ -45,7 +45,6 @@
   background-image: url({$globals_user->getAvatarUrl()});
 }
 </style>
-<script type="text/javascript" src="/js/lib/avataruploader.js"></script>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {

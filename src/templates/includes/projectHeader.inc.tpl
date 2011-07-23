@@ -19,7 +19,7 @@
 
 *}
     <div id="projectHeader">
-      <div class="projectAvatar40x40"><img src="/imgs/redhalo_90x90.jpg" width="40" height="40"></div>
+      <div class="projectAvatar40x40"><img src="{$globals_project->getAvatarUrl()}" width="40" height="40"></div>
       <div id="statusContainer"><div class="triggerBuild status projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
       <div class="title">{$project->getTitle()}</div>
 {if !empty($project_build)}

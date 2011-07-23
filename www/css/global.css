@@ -977,9 +977,9 @@ hr
   float: left;
   clear: none;
   z-index: 1000;
-  height: 250px;
+  /*height: 250px;
   width: 160px;
-  overflow-y: auto;
+  overflow-y: auto;*/
 }
 
 #buildList table
@@ -1010,9 +1010,6 @@ hr
   box-shadow: 1px 1px 2px #111;
   -webkit-box-shadow: #111 1px 1px 2px;
   -moz-box-shadow: #111 1px 1px 2px;
-  transition: all 0.1s ease-in-out;
-  -webkit-transition: all 0.1s ease-in-out;
-  /*-moz-transition: all 0.1s ease-in-out;*/ /* Spoiled in Firefox 4*/
 }
 
 #buildList table th

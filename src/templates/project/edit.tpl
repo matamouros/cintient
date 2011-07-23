@@ -33,11 +33,19 @@
 {include file='includes/header.inc.tpl'
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
-  backLink="{UrlManager::getForProjectView()}"}
+  backLink="{UrlManager::getForProjectView()}"
+  jsIncludes=['/js/lib/avataruploader.js']}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
         <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
         <div class="projectEditContainer container">
+          <div class="label">Project avatar <span class="fineprintLabel">(click image to change it)</span></div>
+          <div id="avatarUploader">
+            <noscript>
+              {* TODO: Use simple upload form *}
+              <p>Please enable JavaScript to use file uploader.</p>
+            </noscript>
+          </div>
           <div class="label">Project title</div>
           <div class="textfieldContainer" style="width: 404px;">
             <input class="textfield" style="width: 400px" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
@@ -217,9 +225,31 @@ $(document).ready(function() {
       }
     });
   });
+
+  //
+  // The project avatar uploader
+  //
+	var uploader = new qq.FileUploader({
+    element: document.getElementById('avatarUploader'),
+    action: '{UrlManager::getForAjaxAvatarUpload(['p'=>1])}',
+    multiple: false,
+    allowedExtensions: ['jpg', 'jpeg', 'png'],
+    sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
+    onComplete: function(id, fileName, responseJSON) {
+      $(".qq-upload-button").css({
+        'background-image' : 'url(' + responseJSON.url + ')'
+      });
+    }
+  });
 });
 //]]>
 </script>
+<style type="text/css">
+.qq-upload-button
+{
+  background-image: url({$globals_project->getAvatarUrl()});
+}
+</style>
         <div class="projectEditContainer container">
           <ul id="userList">
 {$accessLevels=Access::getList()}
