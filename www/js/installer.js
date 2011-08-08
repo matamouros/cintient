@@ -40,163 +40,232 @@ Installer.prototype = {
   /* init */
   init: function (options)
   {
-    this.options = jQuery.extend({
-      index    : 0,
-      steps    : {},
+    this.options = $.extend({
+      curStepIndex : 0,
+      steps        : {},
       elemsClasses : 
       {
-        step      : 'installer_step',
-        error     : 'error' ,
-        mandatory : 'mandatory'
-      },
+        step       : 'installerStep',
+        checkTypes : ['checkPreEmptive', 'checkOnChange', 'form'] 
+        //error     : 'error' ,
+        //mandatory : 'mandatory'
+      }/*,
       elemsIds : 
       {
         step : 'step',
         form : 'install'
-      }
+      }*/
     }, arguments[0] || {});
 
-    this._steps           = jQuery('.'+this.options.elemsClasses.step);
-    this._stepsBuilt      = [];
-    this._mandatoryCheck  = false;
-    this.showStep(this.options.index);
+    this._steps           = $('.'+this.options.elemsClasses.step);
+    //this._stepsBuilt      = [];
+    //this._mandatoryCheck  = false;
+    this._run();
+    
   },
-  /* keep watching for mandatory fields */
-  mandatoryWatchGuard : function ()
-  {
-    var inputs    = jQuery('.'+this.options.elemsClasses.mandatory),
-        i;
-    this._mandatoryCheck  = false;    
-    for (i=0; i<inputs.length; i++) {
-      if (jQuery(inputs[i]).is(":visible")) {
-        this._mandatoryCheck = true;
-        continue;
-      }
-    }
-  },
-  /* Nice highlights for all buttons and input type submits. */
-  highlightButton : function(button)
+  
+  
+  /**
+   * Provide proper styling for on-the-fly created buttons
+   */
+  _styleButton : function(button)
   {
     $(button).each( function() {
-  	  $(this).hover(
-	    function() {
-	      $(this).css({
-	        "cursor" : "pointer",
-	        "border" : "2px solid rgb(255,40,0)",
-	        "box-shadow" : "0px 0px 20px rgb(255,40,0)",
-	        "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 20px",
-	        "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 15px"
-	      });
-	    },
-	    function() {
-	      $(this).css({
-	        "cursor" : "default",
-	        "border" : "2px solid #999",
-	        "box-shadow" : "2px 2px 10px #111",
-	        "-webkit-box-shadow" : "#111 2px 2px 10px",
-	        "-moz-box-shadow" : "#111 2px 2px 10px"
-	      });
-	    });
-	  }
+      $(this).hover(
+      function() {
+        $(this).css({
+          "cursor" : "pointer",
+          "border" : "2px solid rgb(255,40,0)",
+          "box-shadow" : "0px 0px 20px rgb(255,40,0)",
+          "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 20px",
+          "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 15px"
+        });
+      },
+      function() {
+        $(this).css({
+          "cursor" : "default",
+          "border" : "2px solid #999",
+          "box-shadow" : "2px 2px 10px #111",
+          "-webkit-box-shadow" : "#111 2px 2px 10px",
+          "-moz-box-shadow" : "#111 2px 2px 10px"
+        });
+      });
+    }
     );  
   },
-  /* shows a step given its array offset */
-  showStep : function (index)
+  
+  
+  /**
+   * Runs the installer handler. If it's the first time, a splash screen
+   * is shown. If not, the proper installation step is displayed.
+   */
+  _run : function ()
   {
-    var step   = this._steps[index];
-    
-    if (!this.notBuilt(index)) {
-      var button = document.createElement('button'), 
-          backBtn;
-      this.highlightButton(button);
-      /* show next only if this step has no errors */
-      if (jQuery('#'+this.options.elemsIds.step + '-' + (index+1) + ' .' + this.options.elemsClasses.error).length == 0) {
-        button.innerHTML  = 'Next &rarr;';
-        button.className  = index;
-        jQuery(button).bind('click', {self:this}, this.onStepChange);
-        jQuery(step).append(button);
-      } else {
-        button.innerHTML  = 'Retry';
-        button.className  = index;
-        jQuery(button).click(function(e) {
-          e.preventDefault();
-          window.location.href = '?step='+(index+1);
-        });
-        jQuery(step).append(button);
-      }
-    
-      if (index > 0) {
-        backBtn           = document.createElement('button');
-        this.highlightButton(backBtn);
-        backBtn.innerHTML = '&larr; Back';
-        backBtn.className = index;
-        jQuery(backBtn).bind('click', {self:this}, this.stepBack);
-        jQuery(step).append(backBtn);
-      }
-      
-      this._stepsBuilt.push(index);  
+    var that = this;
+    // Show the splash screen
+    if (this.options.curStepIndex == 0) {
+      $('#splashHeader h1').fadeIn(300);
+      $('#splashHeader img').fadeIn(300);
+      setTimeout(
+        function() {
+          $('#splashHeader .greetings').fadeIn(1000);
+        },
+        1000
+      );
+      setTimeout(
+        function() {
+          $('#splashHeader .greetings').fadeOut(100);
+          $('#splashHeader h1').fadeOut(500);
+          $('#splashHeader img').fadeOut(500);
+          setTimeout(
+            function(){
+              $('#splashHeader').hide();
+              $('#logo').show(200);
+              $('#mainMenu').fadeIn(500);
+              that._displayStep();
+            },
+            700
+          );
+        },
+        4000
+      );
+    } else {
+      $('#logo').show(200);
+      $('#mainMenu').fadeIn(500);
+      this._displayStep();
     }
-    jQuery(step).fadeIn(150);
-    this.mandatoryWatchGuard();
   },
-  /* goes back a step */
-  stepBack : function (e)
-  {
-    e.preventDefault();
-    var self     = e.data.self,
-        index    = jQuery(this).attr('class'),
-        curStep  = self._steps[index--];        
-    jQuery(curStep).fadeOut(100, function () {
-      self.showStep(index);
-    });
-    //
-    // Update the breadcrumbs
-    //
-    $('#mainMenu #historyBack .step-' + (index+2)).addClass('ghosted');
-    $('#mainMenu #historyBack .step-' + (index+1)).removeClass('ghosted');
-  },
-  /* tells if a step was allready built */
-  notBuilt : function (index)
+  
+  /**
+   * Checks whether a given step was previously built
+   */
+  isBuilt : function (index)
   {
     for (var i=0; i<this._stepsBuilt.length; i++) {
       if (this._stepsBuilt[i] === index) {
-        return true;
-      }
-    }
-    return false;
-  },
-  /* on step change action */
-  onStepChange : function (e)
-  {
-    e.preventDefault();
-    var self     = e.data.self,
-        index    = jQuery(this).attr('class');
-    if (self._mandatoryCheck) {
-      var inputs  = jQuery('.'+self.options.elemsClasses.mandatory),
-          error   = false;
-      for (var i=0; i<inputs.length; i++) {
-        if (inputs[i].value === '') {
-          error = true;
-        }
-      }
-      if (error) {
-        alert('Make sure all required fields are filled.');
         return false;
       }
     }
-    if (index < (self._steps.length-1)) {
-      var curStep  = self._steps[index++];
-      /* hide this and show next */
-      jQuery(curStep).fadeOut(100, function () {
-        self.showStep(index);
-      });
-      //
-      // Update the breadcrumbs
-      //
-      $('#mainMenu #historyBack .step-' + index).addClass('ghosted');
-      $('#mainMenu #historyBack .step-' + (index+1)).removeClass('ghosted');
-    } else {
-      jQuery('#'+self.options.elemsIds.form).submit();
+    return true;
+  },
+  
+  _displayStep : function ()
+  {
+    var step = this._steps[this.options.curStepIndex];
+    
+    // Register all inputs
+    var that = this;
+    $("li", step).each(function() {
+      if ($(this).attr('class') == 'inputCheckOnChange') {
+        that._registerCheckOnChangeInput($(this).attr('id'), $("input", this));
+      }
+    });
+    
+    // Empty out all previously drawn buttons
+    $("#actionButtons").empty();
+    
+    // Create the back button
+    if (this.options.curStepIndex > 0) {
+      var backBtn = document.createElement('button');
+      this._styleButton(backBtn);
+      backBtn.innerHTML = '<div>&larr; Back</div>';
+      backBtn.className = 'buttonText backButton';
+      $(backBtn).bind('click', {self:this}, this._previousStepListener);
+      $("#actionButtons").append(backBtn);
     }
+    // Create the retry/next button
+    var button = document.createElement('button');
+    this._styleButton(button);
+    var ok = true; // TODO: validate all inputs and mandatory fields 
+    if (ok) {
+      button.innerHTML  = '<div>Next &rarr;</div>';
+      button.className = 'buttonText';
+      $(button).bind('click', {self:this}, this._nextStepListener);
+      $("#actionButtons").append(button);
+    } else {
+      button.innerHTML = '<div>Retry</div>';
+      button.className = 'buttonText';
+      $(button).click(function(e) {
+        e.preventDefault();
+        window.location.href = '?step='+(this.options.curStepIndex+1);
+      });
+      $("#actionButtons").append(button);
+    }
+    
+    // Refresh the section title
+    $("#mainMenu #sectionName").text($(".stepTitle", step).text());
+
+    // Make it visible
+    $(step).fadeIn(150);
+  },
+  
+  
+  _registerCheckOnChangeInput : function (key, input)
+  {
+    $(input).change(function () {
+      $.ajax({
+        url: 'index.php?c=' + key + '&v=' + $(input).val(),
+        //data: { v: input.value },
+        type: 'GET',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (typeof(data.ok) === "undefined") {
+            // TODO: Error somewhere
+            return false;
+          } else {
+            var result = $(input).parent().next('.result');
+            if (data.ok === true) {
+              $(result).removeClass('error');
+              $(result).addClass('success');
+            } else {
+              $(result).removeClass('success');
+              $(result).addClass('error');
+            }
+            $(result).text(data.msg);
+            return true;
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          // TODO: Error
+          alert(errorThrown);
+        }
+      });
+      return false;
+    });
+  },
+  
+  
+  /* goes back a step */
+  _previousStepListener : function (e)
+  {
+    e.preventDefault();
+    var self = e.data.self;
+    var curStep = self._steps[self.options.curStepIndex];
+    // Hide this and show previous
+    $(curStep).fadeOut(100, function () {
+      self.options.curStepIndex--;
+      // Update the breadcrumbs
+      $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+2)).addClass('ghosted');
+      $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+1)).removeClass('ghosted');
+      self._displayStep();
+    });
+  },
+  
+  
+  /* on step change action */
+  _nextStepListener : function (e)
+  {
+    e.preventDefault();
+    var self = e.data.self;
+    var curStep = self._steps[self.options.curStepIndex];
+    // Hide this and show next
+    $(curStep).fadeOut(100, function () {
+      self.options.curStepIndex++;
+      // Update the breadcrumbs
+      $('#mainMenu #historyBack .step-' + self.options.curStepIndex).addClass('ghosted');
+      $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+1)).removeClass('ghosted');
+      self._displayStep();
+    });
   }
 };

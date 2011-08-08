@@ -53,13 +53,13 @@
   font-weight : normal;
 }
 
-#installer .element
+#installer li
 {
   padding: 10px;
   width: 450px;
 }
 
-#installer .element strong
+#installer li strong
 {
   width: 450px;
   display: block;
@@ -75,15 +75,15 @@
 #installer button, #installer #save
 {
   color: #555;
-  font-size: 1.1em;
+  font-size: 13pt;
   width: auto;
   height: auto;
   border: 2px solid #999;
   padding-left: 10px;
   padding-right: 10px;
-  -webkit-border-radius: 16px 16px 16px 16px;
-  -moz-border-radius: 16px 16px 16px 16px;
-  border-radius: 16px 16px 16px 16px;
+  -webkit-border-radius: 7px 7px 7px 7px;
+  -moz-border-radius: 7px 7px 7px 7px;
+  border-radius: 7px 7px 7px 7px;
   box-shadow: 2px 2px 20px #111;
   -webkit-box-shadow: #111 2px 2px 20px;
   -moz-box-shadow: #111 2px 2px 15px;
@@ -98,6 +98,18 @@
   -webkit-transition: all 0.1s ease-in-out;
   -moz-transition: all 0.1s ease-in-out;
   cursor: pointer;
+  float: left;
+}
+
+#installer button.backButton
+{
+  font-size: 7pt;
+  margin-top: 26px;
+}
+
+#installer button .buttonText
+{
+  padding-top: 2px;
 }
 
 #installer .mandatory
@@ -124,4 +136,14 @@
 .textfieldContainer
 {
   margin-bottom: 3px;
+}
+
+.hidden
+{
+  visibility: hidden;
+}
+
+.noDisplay
+{
+  display: none;
 }

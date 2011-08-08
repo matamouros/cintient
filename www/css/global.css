@@ -305,7 +305,8 @@ hr
 {
   font-size: .7em;
   text-indent: 2px;
-  color: rgb(120,120,120);
+  color: #b8b8b8;
+  padding-bottom: 4px;
 }
 
 #loginContainer
@@ -973,7 +974,7 @@ hr
 {
   font-size: 9pt;
   margin: 42px 0 0 170px;
-  padding: 0;
+  padding: 0 0 3px 0;
   float: left;
   clear: none;
   z-index: 1000;
