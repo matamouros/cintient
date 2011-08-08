@@ -168,29 +168,13 @@ Installer.prototype = {
     if (this.options.curStepIndex > 0) {
       var backBtn = document.createElement('button');
       this._styleButton(backBtn);
-      backBtn.innerHTML = '<div>&larr; Back</div>';
+      $(backBtn).html('<div>&larr; Back</div>');
       backBtn.className = 'buttonText backButton';
       $(backBtn).bind('click', {self:this}, this._previousStepListener);
       $("#actionButtons").append(backBtn);
     }
-    // Create the retry/next button
-    var button = document.createElement('button');
-    this._styleButton(button);
-    var ok = true; // TODO: validate all inputs and mandatory fields 
-    if (ok) {
-      button.innerHTML  = '<div>Next &rarr;</div>';
-      button.className = 'buttonText';
-      $(button).bind('click', {self:this}, this._nextStepListener);
-      $("#actionButtons").append(button);
-    } else {
-      button.innerHTML = '<div>Retry</div>';
-      button.className = 'buttonText';
-      $(button).click(function(e) {
-        e.preventDefault();
-        window.location.href = '?step='+(this.options.curStepIndex+1);
-      });
-      $("#actionButtons").append(button);
-    }
+    
+    this._refreshProgressionButton();
     
     // Refresh the section title
     $("#mainMenu #sectionName").text($(".stepTitle", step).text());
@@ -200,38 +184,105 @@ Installer.prototype = {
   },
   
   
+  _refreshProgressionButton: function()
+  {
+    // Empty out all progression buttons
+    $("#actionButtons .progressionButton").remove();
+    
+    // Create the retry/next button
+    var button = document.createElement('button');
+    this._styleButton(button);
+    button.className = 'buttonText progressionButton'; // TODO: browser safe?
+    if (this._steps.length == this.options.curStepIndex+1) {
+      $(button).html("<div>All set, let's go!</div>");
+    } else {
+      $(button).html('<div>Next &rarr;</div>');
+    }
+    if (this._isStepCleared()) {
+      $(button).bind('click', {self:this}, this._nextStepListener);
+    } else {
+      $(button).hover(function(e) {
+        $(this).css({
+          "cursor" : "default",
+          "border" : "2px solid #999",
+          "box-shadow" : "none",
+          "-webkit-box-shadow" : "none",
+          "-moz-box-shadow" : "none"
+        });
+      });
+      $(button).css({
+        "cursor" : "default",
+        "box-shadow" : "none",
+        "-webkit-box-shadow" : "none",
+        "-moz-box-shadow" : "none"
+      });
+      $(button).addClass('buttonTextInactive');
+      $(button).click(function(e) {
+        e.preventDefault();
+      });
+    }
+    button.style.display = 'none';
+    $("#actionButtons").append(button);
+    setTimeout(function() {$(button).fadeIn(800)}, 400);
+  },
+  
+  
+  _isStepCleared: function ()
+  {
+    var step = this._steps[this.options.curStepIndex];
+    return ($(step).find(".result.error").length === 0);
+  },
+  
+  
+  _updateInputValidation: function (result, ok, msg)
+  {
+    if (ok === true) {
+      $(result).removeClass('error');
+      $(result).addClass('success');
+    } else {
+      $(result).removeClass('success');
+      $(result).addClass('error');
+    }
+    $(result).text(msg);
+    this._refreshProgressionButton();
+  },
+  
+  
   _registerCheckOnChangeInput : function (key, input)
   {
+    var that = this;
     $(input).change(function () {
-      $.ajax({
-        url: 'index.php?c=' + key + '&v=' + $(input).val(),
-        //data: { v: input.value },
-        type: 'GET',
-        cache: false,
-        dataType: 'json',
-        success: function(data, textStatus, XMLHttpRequest) {
-          if (typeof(data.ok) === "undefined") {
-            // TODO: Error somewhere
-            return false;
-          } else {
-            var result = $(input).parent().next('.result');
-            if (data.ok === true) {
-              $(result).removeClass('error');
-              $(result).addClass('success');
+      var remoteCheck = true;
+      var functionName = 'inputCheckOnChange' + key.charAt(0).toUpperCase() + key.slice(1);
+      if (typeof window[functionName] === 'function') {
+        var result = eval(functionName + '()');
+        that._updateInputValidation($(this).parent().next('.result'), result.ok, result.msg);
+        remoteCheck = !result.ok;
+        // TODO: no return for now, check it later
+      }
+      if (remoteCheck) {
+        $.ajax({
+          url: 'index.php?c=' + key + '&v=' + $(input).val(),
+          //data: { v: input.value },
+          type: 'GET',
+          cache: false,
+          dataType: 'json',
+          success: function(data, textStatus, XMLHttpRequest) {
+            if (typeof(data.ok) === "undefined") {
+              // TODO: Error somewhere
+              return false;
             } else {
-              $(result).removeClass('success');
-              $(result).addClass('error');
+              that._updateInputValidation($(input).parent().next('.result'), data.ok, data.msg);
+              return true;
             }
-            $(result).text(data.msg);
-            return true;
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            // TODO: Error
+            alert(errorThrown);
           }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          // TODO: Error
-          alert(errorThrown);
-        }
-      });
-      return false;
+        });
+        return false;
+      }
     });
   },
   
@@ -262,10 +313,15 @@ Installer.prototype = {
     // Hide this and show next
     $(curStep).fadeOut(100, function () {
       self.options.curStepIndex++;
-      // Update the breadcrumbs
-      $('#mainMenu #historyBack .step-' + self.options.curStepIndex).addClass('ghosted');
-      $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+1)).removeClass('ghosted');
-      self._displayStep();
+      if (self._steps.length != self.options.curStepIndex) {
+        // Update the breadcrumbs
+        $('#mainMenu #historyBack .step-' + self.options.curStepIndex).addClass('ghosted');
+        $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+1)).removeClass('ghosted');
+        self._displayStep();
+      } else {
+        // Display a spinning waiting graphic and wait for a response
+        // to the form submission
+      }
     });
   }
 };

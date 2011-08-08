@@ -76,7 +76,7 @@ if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query
  * Following are default values for the installation script
  */
 $defaults = array();
-$defaults['appLogFile'] = '/var/log/cintient.log';
+$defaults['baseUrl'] = $baseUrl;
 $defaults['appWorkDir'] = '/var/run/cintient/';
 
 
@@ -114,6 +114,14 @@ function phpWithGd()
   $msg[1] = "Detected version " . $gdInfo['GD Version'] . ".";
   $ok = ((isset($gdInfo['PNG Support']) && $gdInfo['PNG Support'] !== false)) &&
         ((isset($gdInfo['FreeType Support']) && $gdInfo['FreeType Support'] !== false));
+  return array($ok, $msg[(int)$ok]);
+}
+
+function baseUrl($url)
+{
+  $msg[0] = "Check that you have specified a valid URL.";
+  $msg[1] = "Ready.";
+  $ok = true; // TODO!
   return array($ok, $msg[(int)$ok]);
 }
 
@@ -366,10 +374,14 @@ list ($ok, $msg) = phpWithGd();
       <div class="stepTitle" style="display: none;">Basic setup</div>
       <div>
         <ul class="item">
-          <li id="baseUrl">
+<?php
+list ($ok, $msg) = baseUrl($defaults['baseUrl']);
+?>
+          <li class="inputCheckOnChange" id="baseUrl">
             <div class="label">Base URL where Cintient will run from</div>
-            <div class="fineprintLabel">(we tried to automatically guess it. If you are not sure, go with it)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="CONFIG_VAR-CINTIENT_BASE_URL" id="CONFIG_VAR-CINTIENT_BASE_URL" value="http://cintient/" style="width: 450px;" /></div>
+            <div class="fineprintLabel">(we tried to automatically guess it. If you are not sure, just go with our suggestion)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="baseUrl" value="<?php echo $defaults['baseUrl']; ?>" style="width: 450px;" /></div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
 <?php
 list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
@@ -385,11 +397,51 @@ list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
       </div>
     </div>
 
+    <div id="step-3" class="installerStep noDisplay container">
+      <div class="stepTitle" style="display: none;">Administration account</div>
+      <div>
+        <ul class="item">
+          <li class="inputCheckOnChange" id="email">
+            <div class="label">Email</div>
+            <div class="fineprintLabel">(for administration notifications)</div>
+            <div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="email" name="email" value="" /></div>
+            <div class="result <?php $ok = false; $msg = 'Email field is empty/invalid'; echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+          <li class="inputCheckOnChange" id="password">
+            <div class="label">Password</div>
+            <div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" name="password" value="" /></div>
+            <div class="fineprintLabel">(and again here, to make sure you remember what you typed above)</div>
+            <div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" name="passwordr" value="" /></div>
+            <div class="result <?php $ok = false; $msg = "Passwords don't match"; echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <div id="actionButtons" class="container"></div>
+
+    <div id="done" class="noDisplay container"></div>
 
   </div>
 <script type="text/javascript">
 // <![CDATA[
+//inputLocalCheckOnChange validation function
+function inputCheckOnChangeEmail()
+{
+  var input = $("#step-3 .item #email input").val();
+  var msg = ['Email field is empty/invalid', 'Ready.'];
+  var ok = (input.length > 1);
+  return {ok: ok, msg: msg[Number(ok)]}; // TODO: check email better
+}
+//inputLocalCheckOnPassword validation function
+function inputCheckOnChangePassword()
+{
+  var input1 = $("#step-3 .item #password input[name=password]").val();
+  var input2 = $("#step-3 .item #password input[name=passwordr]").val();
+  var msg = ["Passwords don't match", 'Ready.'];
+  var ok = (input1.length > 0 && input1 == input2);
+  return {ok: ok, msg: msg[Number(ok)]}; // TODO: check email better
+}
 $(document).ready(function() {
   new Installer({step:0});
 });
