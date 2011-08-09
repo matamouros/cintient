@@ -41,8 +41,8 @@ define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR', 'src/tests/');
 define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH', '*Test.php');
 
 
-define('LOG_FILE', '/var/log/cintient.log');
 define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulled from the user .ini config file
+define('LOG_FILE', CINTIENT_WORK_DIR . 'cintient.log');
 define('CINTIENT_INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
 define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
 define('CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME', 'codecoverage.xml');
@@ -81,9 +81,6 @@ define('SMARTY_TEMPLATE_DIR', CINTIENT_INSTALL_DIR . 'src/templates/');
 define('SMARTY_COMPILE_DIR', '/tmp/');
 
 define('PASSWORD_SALT', 'rOTA4spNYI3yXvAL');
-
-define('SERVER', 'localhost');
-define('CINTIENT_SERVER_NAME', 'cintient');
 
 define('CINTIENT_DATABASE_FILE', CINTIENT_WORK_DIR . 'cintient.sqlite');
 
