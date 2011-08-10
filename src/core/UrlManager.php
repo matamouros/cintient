@@ -92,6 +92,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/dashboard/';
   }
 
+  static public function getForLogout()
+  {
+    return CINTIENT_BASE_URL . '/logout/';
+  }
+
   static public function getForProjectBuildHistory()
   {
     return CINTIENT_BASE_URL . '/project/history/';
@@ -129,5 +134,10 @@ class UrlManager
   static public function getForRegistration()
   {
     return CINTIENT_BASE_URL . "/registration/";
+  }
+
+  static public function getForSettings()
+  {
+    return CINTIENT_BASE_URL . '/settings/';
   }
 }

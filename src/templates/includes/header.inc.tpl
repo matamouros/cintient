@@ -51,7 +51,7 @@
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
               <div id="username">{$globals_user->getUsername()}</div>
-              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{UrlManager::getForDashboard()}">admin</a> | {/if}<a href="/settings/">settings</a> | <a href="/logout/">logout</a></div>
+              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{UrlManager::getForDashboard()}">admin</a> | {/if}<a href="{UrlManager::getForSettings()}">settings</a> | <a href="{UrlManager::getForLogout()}">logout</a></div>
             </div>
           </nav>
         </hgroup>
