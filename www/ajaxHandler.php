@@ -39,7 +39,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 |* | SETUP                                                          | *|
 \* +----------------------------------------------------------------+ */
 
-require 'src/config/cintient.conf.php';
+require dirname(__FILE__) . '/../src/config/cintient.conf.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);

@@ -72,12 +72,33 @@ if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query
   $baseUrl = substr($baseUrl, 0, $pos);
 }
 
+
 /**
  * Following are default values for the installation script
  */
 $defaults = array();
-$defaults['baseUrl'] = $baseUrl;
 $defaults['appWorkDir'] = '/var/run/cintient/';
+$defaults['baseUrl'] = $baseUrl;
+$defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
+$defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
+$defaults['installDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+
+/**
+ * Utility functions
+ */
+//
+// Returns a configuration file directive replacement regex, to be used
+// while populating the configuration file
+//
+function directiveValueUpdate($str, $directive, $value)
+{
+  $cb = function ($matches) use ($value) {
+    if (count($matches) == 4) {
+      return $matches[1] . $value . $matches[3];
+    }
+  };
+  return preg_replace_callback('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.+)((?:\'|")\s*\);)/', $cb, $str);
+}
 
 
 /**
@@ -138,6 +159,35 @@ function appWorkDir($dir)
   return array($ok, $msg[(int)$ok]);
 }
 
+function htaccessFile($dir)
+{
+  $msg[0] = "Make sure your webserver has write permissions to create this file. For now you can't change its location.";
+  $msg[1] = "Ready.";
+  $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess', 'a+');
+  if ($fd === false) {
+    $ok = false;
+  } else {
+    $ok = true;
+  }
+  @fclose($fd);
+  return array($ok, $msg[(int)$ok]);
+}
+
+function configurationFile($dir)
+{
+  global $defaults;
+  $msg[0] = "Cintient needs to change this file, make sure your webserver has write permissions for this.";
+  $msg[1] = "Ready.";
+  $fd = @fopen($defaults['configurationFile'], 'r+');
+  if ($fd === false) {
+    $ok = false;
+  } else {
+    $ok = true;
+  }
+  @fclose($fd);
+  return array($ok, $msg[(int)$ok]);
+}
+
 //
 // AJAX checks
 //
@@ -160,111 +210,137 @@ if (!empty($_GET['c'])) {
     ENT_NOQUOTES
   );
   exit;
+} elseif (!empty($_GET['s'])) {
+  sleep(3); # Avoids a race condition at the end of the installation process while updating UI elements
+  define('CINTIENT_INSTALLER_DEFAULT_DIR_MASK', 0700);
 
+  //
+  // Extract everything
+  //
+  $get = array();
+  foreach ($_GET as $key => $value) {
+    // TODO: filter everything
+    if ($key != '_' && $key != 's') {
+      if ($key == 'appWorkDir' && substr($value, -1) != DIRECTORY_SEPARATOR) {
+        $value .= DIRECTORY_SEPARATOR;
+      } elseif ($key == 'baseUrl' && substr($value, -1) == '/') {
+        $value = substr($value, 0, -1);
+      }
+      $get[$key] = $value;
+    }
+  }
+
+  //
+  // Update configuration file
+  //
+  // TODO: make a copy of the original conf file? security risk?
+  if (($fd = fopen($defaults['configurationFile'], 'r+')) === false) {
+    // TODO: error out
+  }
+  $originalConfFile = fread($fd, filesize($defaults['configurationFile']));
+  $modifiedConfFile = $originalConfFile;
+  // Replacements:
+  $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_INSTALL_DIR', $defaults['installDir']);
+  $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_WORK_DIR', $get['appWorkDir']);
+  $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_BASE_URL', $get['baseUrl']);
+  fclose($fd);
+  file_put_contents($defaults['configurationFile'], $modifiedConfFile);
+
+  //$rollbackCallbacks = array();
+  $ok = false;
+  $msg = 'Invalid request';
+
+  //
+  // The .htaccess file
+  //
   /*
+  $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'www/.htaccess';
+  $fd = @fopen($file, 'w');
+  if ($fd !== false) {
+    @fwrite($fd, "RewriteEngine on\n");
+    @fwrite($fd, "RewriteRule ^/ajax/ /ajaxHandler.php [L]\n");
+    @fwrite($fd, "RewriteRule ^(?!/js/)(?!/css/)(?!/imgs/)(?!/fonts/)(.*)$ /webHandler.php [L]\n");
+    @fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
+    @fclose($fd);
+  } else {
+    $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+  }*/
+
+  //
+  // The configuration file
+  //
 
 
   //
-  // save config file
+  // From here on Cintient will try to handle the rest of the installation
   //
-  $installDir         = '';
-  $configFileLocation = '';
-  $content            = "";
-  foreach ($_POST as $key => $value) {
-    if (strpos($key, 'CONFIG_VAR') !== false) {
-      $cKey = str_replace('CONFIG_VAR-' , '' , $key);
-      if ($cKey == 'CINTIENT_INSTALL_DIR') {
-        $installDir = $value;
-        $configFileLocation = $value . "/src/config/cintient.conf.php";
-      }
-      $content .= "define('".$cKey."', '".$value."');\n";
-    }
-  }
-
-  // test xml install file one more time
-  $fpThis = fopen(__FILE__, "r");
-  fseek($fpThis, __COMPILER_HALT_OFFSET__);
-  $configVars = new SimpleXMLElement(stream_get_contents($fpThis), LIBXML_NOCDATA);
-  fclose($fpThis);
-  if (!$configVars instanceOf SimpleXMLElement) {
-    die("ERROR: Could not load installation file!");
-  }
-
-  // add xml config vars
-  foreach ($configVars->config->var as $configVar) {
-    $configVarName        = $configVar['name'];
-    eval("\$configVarValue=".(string)$configVar.";");
-    $content .= "define('{$configVarName}', {$configVarValue});\n";
-  }
-
-  // add autoloader
-  $content .= (string)$configVars->autoload;
-  $fp = fopen($configFileLocation, 'w');
-  fwrite($fp, "<?php\n".$content);
-  fclose($fp);
-
+  @session_destroy();
+  require $defaults['configurationFile'];
   //
-  // save htaccess file
+  // Create necessary dirs
   //
-  $file = 'www/.htaccess';
-  $fp   = fopen($file, 'w');
-  if ($fp) {
-    fwrite($fp, "RewriteEngine on\n");
-    fwrite($fp, "RewriteRule ^/ajax/ /ajaxHandler.php [L]\n");
-    fwrite($fp, "RewriteRule ^(?!/js/)(?!/css/)(?!/imgs/)(?!/fonts/)(.*)$ /webHandler.php [L]\n");
-    fwrite($fp, "php_value include_path " . $installDir);
-    fclose($fp);
+  if (!file_exists(CINTIENT_WORK_DIR) && !mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not create working dir. Check your permissions.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
   }
-
-  // try to fix permissions
-  // TODO: warn the user about this
-  //       permissions on .htaccess and config file
-  //       should have the right ones after installation
-  chmod('.htaccess',         0755);
-  chmod($configFileLocation, 0755);
-
-  // install user admin info
-  eval($content); # now we can use config settings
-  $userName     = "";
-  $userEmail    = "";
-  $userUsername = "";
-  $userPassword = "";
-  $passwordTest = "";
-  foreach ($_POST as $key => $value) {
-    if (strpos($key, 'DATABASE_VAR') !== false) {
-      $cKey = str_replace('DATABASE_VAR-' , '' , $key);
-      switch ($cKey) {
-        case 'NAME'            : $userName = $value; break;
-        case 'EMAIL'           : $userEmail = $value; break;
-        case 'USERNAME'        : $userUsername = $value; break;
-        case 'PASSWORD'        : $userPassword = $value; break;
-        case 'PASSWORD_REPEAT' : $passwordTest = $value; break;
-        default: break;
-      }
-    }
+  if (!file_exists(CINTIENT_PROJECTS_DIR) && !mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not create projects dir. Check your permissions.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
   }
-
-  // TODO: add a 'nicer' message here
-  if ($userPassword !== $passwordTest) {
-    die('Please double check your password again!');
+  if (!file_exists(CINTIENT_ASSETS_DIR) && !mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not create assets dir. Check your permissions.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
   }
-
-  // install admin user
-  // TODO: run all Classes 'install' method dynamically here
-  User::install();    # create user table
-  Project::install(); # creat project table
+  if (!file_exists(CINTIENT_AVATARS_DIR) && !mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not create avatars dir. Check your permissions.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
+  }
+  //
+  // Setup all objects
+  //
+  if (!User::install()) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not setup User object.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
+  }
+  if (!Project::install()) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not setup Project object.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
+  }
+  if (!SystemSettings::install()) {
+    SystemEvent::raise(SystemEvent::ERROR, "Could not setup SystemSettings object.", __METHOD__);
+    echo "Error"; // TODO: treat this properly
+    exit;
+  }
+  //
+  // Root user account
+  //
   $user = new User();
-  $user->setEmail($userEmail);
-  $user->setNotificationEmails($userEmail); # TODO: this should allow even more emails to add to this list
-  $user->setName($userName);
-  $user->setUsername($userUsername);
+  $user->setEmail($get['email']);
+  $user->setNotificationEmails($get['email'] . ',');
+  $user->setName('Administrative Account');
+  $user->setUsername('root');
   $user->setCos(UserCos::ROOT);
   $user->init();
-  $user->setPassword($userPassword);
+  $user->setPassword($get['password']);
 
-  header('Location: ' . UrlManager::getForDashboard());
+  $msg = 'Please refresh this page.';
+
+  echo htmlspecialchars(
+    json_encode(
+      array(
+        'ok'  => true,
+        'msg' => $msg,
+      )
+    ),
+    ENT_NOQUOTES
+  );
   exit;
-  */
 }
 
 //
@@ -392,7 +468,24 @@ list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
             <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
-
+<?php
+list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
+?>
+          <li class="inputCheckOnChange" id="htaccessFile">
+            <div class="label">.htaccess</div>
+            <div class="fineprintLabel">(the webserver's specific configuration file for Cintient)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" /></div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+<?php
+list ($ok, $msg) = configurationFile($defaults['configurationFile']);
+?>
+          <li class="inputCheckOnChange" id="configurationFile">
+            <div class="label">cintient.conf.php</div>
+            <div class="fineprintLabel">(Cintient's own configuration file)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="configurationFile" value="<?php echo $defaults['configurationFile']; ?>" /></div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
         </ul>
       </div>
     </div>

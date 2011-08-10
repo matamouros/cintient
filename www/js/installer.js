@@ -37,7 +37,9 @@ var Installer = function (options)
 };
 
 Installer.prototype = {
-  /* init */
+  /**
+   * 
+   */
   init: function (options)
   {
     this.options = $.extend({
@@ -45,23 +47,11 @@ Installer.prototype = {
       steps        : {},
       elemsClasses : 
       {
-        step       : 'installerStep',
-        checkTypes : ['checkPreEmptive', 'checkOnChange', 'form'] 
-        //error     : 'error' ,
-        //mandatory : 'mandatory'
-      }/*,
-      elemsIds : 
-      {
-        step : 'step',
-        form : 'install'
-      }*/
+        step       : 'installerStep'
+      }
     }, arguments[0] || {});
-
-    this._steps           = $('.'+this.options.elemsClasses.step);
-    //this._stepsBuilt      = [];
-    //this._mandatoryCheck  = false;
+    this._steps = $('.'+this.options.elemsClasses.step);
     this._run();
-    
   },
   
   
@@ -135,19 +125,7 @@ Installer.prototype = {
       this._displayStep();
     }
   },
-  
-  /**
-   * Checks whether a given step was previously built
-   */
-  isBuilt : function (index)
-  {
-    for (var i=0; i<this._stepsBuilt.length; i++) {
-      if (this._stepsBuilt[i] === index) {
-        return false;
-      }
-    }
-    return true;
-  },
+
   
   _displayStep : function ()
   {
@@ -160,6 +138,9 @@ Installer.prototype = {
         that._registerCheckOnChangeInput($(this).attr('id'), $("input", this));
       }
     });
+    
+    // Refresh the section title
+    $("#mainMenu #sectionName").text($(".stepTitle", step).text());
     
     // Empty out all previously drawn buttons
     $("#actionButtons").empty();
@@ -175,9 +156,6 @@ Installer.prototype = {
     }
     
     this._refreshProgressionButton();
-    
-    // Refresh the section title
-    $("#mainMenu #sectionName").text($(".stepTitle", step).text());
 
     // Make it visible
     $(step).fadeIn(150);
@@ -263,7 +241,6 @@ Installer.prototype = {
       if (remoteCheck) {
         $.ajax({
           url: 'index.php?c=' + key + '&v=' + $(input).val(),
-          //data: { v: input.value },
           type: 'GET',
           cache: false,
           dataType: 'json',
@@ -287,7 +264,6 @@ Installer.prototype = {
   },
   
   
-  /* goes back a step */
   _previousStepListener : function (e)
   {
     e.preventDefault();
@@ -304,23 +280,75 @@ Installer.prototype = {
   },
   
   
-  /* on step change action */
   _nextStepListener : function (e)
   {
     e.preventDefault();
     var self = e.data.self;
     var curStep = self._steps[self.options.curStepIndex];
-    // Hide this and show next
-    $(curStep).fadeOut(100, function () {
-      self.options.curStepIndex++;
-      if (self._steps.length != self.options.curStepIndex) {
+    self.options.curStepIndex++; // Increment the step
+    if (self._steps.length != self.options.curStepIndex) {
+      $(curStep).fadeOut(100, function() {
         // Update the breadcrumbs
         $('#mainMenu #historyBack .step-' + self.options.curStepIndex).addClass('ghosted');
         $('#mainMenu #historyBack .step-' + (self.options.curStepIndex+1)).removeClass('ghosted');
         self._displayStep();
-      } else {
-        // Display a spinning waiting graphic and wait for a response
-        // to the form submission
+      });
+    } else {
+      // Display a spinning waiting graphic and wait for a response
+      // to the form submission
+      $('#logo').fadeOut(100);
+      $('#mainMenu').fadeOut(50);
+      $('#actionButtons').fadeOut(50);
+      $(curStep).fadeOut(100, function () {
+        $('#done').html('<div id="pleaseWait">Please wait...</div><div><img src="/imgs/loading-3.gif" /></div>');
+        $('#done').fadeIn(500);
+        setTimeout(function() {
+          $('#logo').fadeIn(500);
+        }, 1000);
+      });
+      self._formSubmit();
+    }
+  },
+  
+  
+  _formSubmit: function ()
+  {
+    var data = function() {
+      var x = {};
+      $('.installerStep').find('input').each( function() {
+        //x[this.name] = { type: this.type, value: this.value };
+        x[this.name] = this.value;
+      });
+      $('.installerStep').find('textarea').each( function() {
+        //x[this.name] = { type: this.type, value: this.value };
+        x[this.name] = this.value;
+      });
+      return x;
+    }();
+    $.ajax({
+      url: 'index.php?s=1',
+      data: data,
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (typeof data.ok === "undefined") {
+          // TODO: Error somewhere
+          return false;
+        } else {
+          var result = 'Installation failed.';
+          if (data.ok === true) {
+            result = 'Finished!';
+          }
+          $('#done').fadeOut(100);
+          $('#done img').fadeOut(100);
+          $('#done').html('<div id="result">' + result + '</div><div id="resultMessage">' + data.msg + '</div>');
+          $('#done').fadeIn(300);
+          return true;
+        }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
       }
     });
   }
