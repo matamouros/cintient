@@ -241,12 +241,12 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine On\n");
-    fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule ajax/ www/ajaxHandler.php [L]\n");
-    fwrite($fd, "RewriteRule .* www/webHandler.php [L]\n");
+    fwrite($fd, "RewriteRule (fonts)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (imgs)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (js)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (css)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule ajax/ {$uriPrefix}ajaxHandler.php [L]\n");
+    fwrite($fd, "RewriteRule .* {$uriPrefix}webHandler.php [L]\n");
     //fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
     fclose($fd);
   } else {
