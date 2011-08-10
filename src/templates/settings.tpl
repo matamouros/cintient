@@ -19,7 +19,7 @@
 
 *}{include file='includes/header.inc.tpl'
   subSectionTitle="Settings"
-  jsIncludes=['/js/lib/avataruploader.js']}
+  jsIncludes=['js/lib/avataruploader.js']}
     <div id="settingsContainer" class="container">
       <ul>
         <li class="settingsNode">

@@ -25,7 +25,7 @@
 {include file='includes/header.inc.tpl'
   subSectionTitle="Project"
   menuLinks=$menuLinks
-  jsIncludes=['/js/lib/highcharts-2.1.6.js', '/js/lib/cintientHighcharts.theme.js']}
+  jsIncludes=['js/lib/highcharts-2.1.6.js', 'js/lib/cintientHighcharts.theme.js']}
 {include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_latestBuild}
 
 <div class="whiteBoard">

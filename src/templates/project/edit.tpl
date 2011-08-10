@@ -34,7 +34,7 @@
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   backLink="{UrlManager::getForProjectView()}"
-  jsIncludes=['/js/lib/avataruploader.js']}
+  jsIncludes=['js/lib/avataruploader.js']}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
         <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
@@ -117,7 +117,7 @@ $(document).ready(function() {
         // TODO: Setup a spinning loading icon
         //
         $('#searchUserPane ul li').remove();
-        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="/imgs/loading-3.gif" /></li>');
+        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="imgs/loading-3.gif" /></li>');
         $.ajax({
           url: '{UrlManager::getForAjaxSearchUser()}',
           data: { userTerm: userTermVal },

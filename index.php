@@ -230,6 +230,30 @@ if (!empty($_GET['c'])) {
     }
   }
 
+  //$rollbackCallbacks = array();
+  //$ok = false;
+  //$msg = 'Invalid request';
+
+  //
+  // The .htaccess file
+  //
+  $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
+  $fd = @fopen($file, 'w');
+  if ($fd !== false) {
+    fwrite($fd, "RewriteEngine On\n");
+    fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule ajax/ www/ajaxHandler.php [L]\n");
+    fwrite($fd, "RewriteRule .* www/webHandler.php [L]\n");
+    //fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
+    fclose($fd);
+  } else {
+    // TODO: Error properly
+    $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+  }
+
   //
   // Update configuration file
   //
@@ -245,31 +269,6 @@ if (!empty($_GET['c'])) {
   $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_BASE_URL', $get['baseUrl']);
   fclose($fd);
   file_put_contents($defaults['configurationFile'], $modifiedConfFile);
-
-  //$rollbackCallbacks = array();
-  $ok = false;
-  $msg = 'Invalid request';
-
-  //
-  // The .htaccess file
-  //
-  /*
-  $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'www/.htaccess';
-  $fd = @fopen($file, 'w');
-  if ($fd !== false) {
-    @fwrite($fd, "RewriteEngine on\n");
-    @fwrite($fd, "RewriteRule ^/ajax/ /ajaxHandler.php [L]\n");
-    @fwrite($fd, "RewriteRule ^(?!/js/)(?!/css/)(?!/imgs/)(?!/fonts/)(.*)$ /webHandler.php [L]\n");
-    @fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
-    @fclose($fd);
-  } else {
-    $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
-  }*/
-
-  //
-  // The configuration file
-  //
-
 
   //
   // From here on Cintient will try to handle the rest of the installation

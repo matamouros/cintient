@@ -23,19 +23,19 @@
   <meta charset="UTF-8" />
   <meta property="url" content="{*SERVER_NAME*}">
   <title>Cintient</title>
-  <link rel="stylesheet" href="/css/font_anonymouspro.css" />
-  <link rel="stylesheet" href="/css/font_orbitron.css" />
-  <link rel="stylesheet" href="/css/font_syncopate.css" />
-  <link rel="stylesheet" href="/css/global.css" />
-  <link rel="stylesheet" href="/css/avataruploader.css" />
-  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="css/font_anonymouspro.css" />
+  <link rel="stylesheet" href="css/font_orbitron.css" />
+  <link rel="stylesheet" href="css/font_syncopate.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/avataruploader.css" />
+  <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
-  <script src="/js/lib/html5.js"></script>
+  <script src="js/lib/html5.js"></script>
   <![endif]-->
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="/js/lib/jquery-1.6.js"></script>
-  <script type="text/javascript" src="/js/lib/jquery-ui-1.8.12.custom.min.js"></script>
+  <script type="text/javascript" src="js/lib/jquery-1.6.js"></script>
+  <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
@@ -46,7 +46,7 @@
     <div id="userHeader" class="container">
       <header>
         <hgroup>
-          <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
+          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
           <nav>
             <div id="user">
               <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
@@ -78,7 +78,7 @@ $(document).ready(function() {
     <div id="userHeader" class="container">
       <header>
         <hgroup>
-          <h1 id="logo">Cintient <img src="/imgs/redhalo_45.jpg" height="25"></h1>
+          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
         </hgroup>
       </header>
     </div>
@@ -103,7 +103,7 @@ $(document).ready(function() {
       <header>
         <hgroup>
           <h1>Cintient</h1>
-          <img src="/imgs/redhalo.jpg" width="195" height="130">
+          <img src="imgs/redhalo.jpg" width="195" height="130">
         </hgroup>
       </header>
     </div>

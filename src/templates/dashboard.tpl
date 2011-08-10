@@ -20,7 +20,7 @@
 *}{include file='includes/header.inc.tpl'
   subSectionTitle="Dashboard"
   menuLinks="<a href=\"{UrlManager::getForProjectNew()}\">new project</a>"}
-    <script type="text/javascript" src="/js/lib/jquery.sparkline.min.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.sparkline.min.js"></script>
 {if !empty($dashboard_projectList)}
     <div id="projectListContainer" class="container">
       <ul>
