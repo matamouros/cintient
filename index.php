@@ -1,7 +1,4 @@
 <?php
-//
-// Check for PHP support.
-//
 if (false) {
 ?>
 <!DOCTYPE html>
