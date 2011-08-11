@@ -63,10 +63,11 @@ if (false) {
 // 'SCRIPT_FILENAME' => string '/home/www/cintient/index.php'
 //
 // Sanitize document root a bit
-$docRoot = $_SERVER['DOCUMENT_ROOT'] . (substr($_SERVER['DOCUMENT_ROOT'], -1) != '/' ? '/' : '');
+$docRoot = realpath($_SERVER['DOCUMENT_ROOT']) . '/';
+$scriptFilename = realpath($_SERVER['SCRIPT_FILENAME']);
 $uriPrefix = '';
-if ($docRoot != dirname($_SERVER['SCRIPT_FILENAME'])) {
-  $uriPrefix = substr(dirname($_SERVER['SCRIPT_FILENAME']), strlen($docRoot));
+if ($docRoot != dirname($scriptFilename)) {
+  $uriPrefix = substr(dirname($scriptFilename), strlen($docRoot));
   if ($uriPrefix[0] == '/') {
     $uriPrefix = substr($uriPrefix, 1); // Remove leading slash
   }
@@ -78,10 +79,13 @@ if ($docRoot != dirname($_SERVER['SCRIPT_FILENAME'])) {
 //
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
-$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $uriPrefix;
+$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . ($uriPrefix != '/' ? $uriPrefix : '');
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
-$defaults['installDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+// realpath() is required here because later on, we need to make sure we're
+// dealing with expanded paths in order to properly extract the proper
+// URL parts to make Cintient work on every request.
+$defaults['installDir'] = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 
 //
 // Utility functions

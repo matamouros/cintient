@@ -47,18 +47,15 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 //
 // Global stuff
 //
-// Get to the part of the URL that matters, i.e., strip the document
-// root part, and the relative path to Cintient installation from there.
-// Stripping the query string from the REQUEST_URI here. It seems that
-// REDIRECT_URL could be used, but I'm not sure of its universality. Must
-// check...
-$reqFilename = (substr($_SERVER['DOCUMENT_ROOT'], -1) != '/' ?
-                $_SERVER['DOCUMENT_ROOT'] :
-                substr($_SERVER['DOCUMENT_ROOT'], 0, strlen($_SERVER['DOCUMENT_ROOT'])-1))
+// Check the comments for this snippet in the webHandler.
+$reqFilename = realpath($_SERVER['DOCUMENT_ROOT'])
              . (($pos = strpos($_SERVER['REQUEST_URI'], '?')) !== false ?
                 substr($_SERVER['REQUEST_URI'], 0, $pos) :
                 $_SERVER['REQUEST_URI']);
-$GLOBALS['uri'] = substr($reqFilename, strlen(CINTIENT_INSTALL_DIR)-1) . (substr($reqFilename, -1) != '/' ? '/' : '');
+$GLOBALS['uri'] = substr($reqFilename, strlen(CINTIENT_INSTALL_DIR)-1);
+if (substr($GLOBALS['uri'], -1) != '/') {
+  $GLOBALS['uri'] .= '/';
+}
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "AjaxHandler");
 $GLOBALS['ajaxMethod'] = null;
 $GLOBALS['section'] = null;
