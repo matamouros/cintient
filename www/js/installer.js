@@ -300,7 +300,7 @@ Installer.prototype = {
       $('#mainMenu').fadeOut(50);
       $('#actionButtons').fadeOut(50);
       $(curStep).fadeOut(100, function () {
-        $('#done').html('<div id="pleaseWait">Please wait...</div><div><img src="/imgs/loading-3.gif" /></div>');
+        $('#done').html('<div id="pleaseWait">Please wait...</div><div><img src="www/imgs/loading-3.gif" /></div>');
         $('#done').fadeIn(500);
         setTimeout(function() {
           $('#logo').fadeIn(500);
