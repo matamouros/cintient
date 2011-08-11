@@ -29,8 +29,8 @@
 //
 // Nothing works until the installation file is out of the way.
 //
-if (file_exists(dirname(__FILE__) . '/../index.php')) {
-  //include dirname(__FILE__) . '/../index.php';
+if (file_exists(dirname(__FILE__) . '/../../index.php')) {
+  //include dirname(__FILE__) . '/../../index.php';
   //exit;
 }
 //
@@ -49,7 +49,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 ob_start();
 header('Content-type: text/html; charset=UTF-8');
 
-require dirname(__FILE__) . '/../src/config/cintient.conf.php';
+require dirname(__FILE__) . '/../config/cintient.conf.php';
 require 'lib/Smarty-3.0rc4/Smarty.class.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
