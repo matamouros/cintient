@@ -57,35 +57,35 @@ if (false) {
  *
  */
 
+
 //
-// Try to check if we already have our own document root setup, i.e.,
-// a vhost (from a previous install). Adapt relative URIs accordingly.
+// Extract the DocumentRoot-relative path to this file, excluding the
+// filename, so that we can adapt relative URIs accordingly.
+//
+// 'DOCUMENT_ROOT'   => string '/home/www'
+// 'SCRIPT_FILENAME' => string '/home/www/cintient/index.php'
 //
 $uriPrefix = '';
-if (!preg_match('/(.+\/www)\/?$/', $_SERVER['DOCUMENT_ROOT'], $matches) ||
-     dirname(__FILE__) . '/www' != $matches[1]
-) {
-  $uriPrefix = 'www/';
-}
-$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $uriPrefix;
-if (($pos = strpos($baseUrl, '?')) !== false) { // Remove the query
-  $baseUrl = substr($baseUrl, 0, $pos);
+if ($_SERVER['DOCUMENT_ROOT'] != dirname($_SERVER['SCRIPT_FILENAME'])) {
+  $uriPrefix = substr(dirname($_SERVER['SCRIPT_FILENAME']), strlen($_SERVER['DOCUMENT_ROOT']));
+  if ($uriPrefix[0] == '/') {
+    $uriPrefix = substr($uriPrefix, 1); // Remove leading slash
+  }
+  $uriPrefix .= '/'; // Add trailing slash, for comodity reasons
 }
 
-
-/**
- * Following are default values for the installation script
- */
+//
+// Following are default values for the installation script
+//
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
-$defaults['baseUrl'] = $baseUrl;
+$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $uriPrefix;
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
 $defaults['installDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 
-/**
- * Utility functions
- */
+//
+// Utility functions
 //
 // Returns a configuration file directive replacement regex, to be used
 // while populating the configuration file
@@ -101,9 +101,9 @@ function directiveValueUpdate($str, $directive, $value)
 }
 
 
-/**
- * Following are function definitions for all items
- */
+//
+// Following are function definitions for all items
+//
 function apacheModRewrite()
 {
   $msg[0] = "Apache mod_rewrite is required.";
@@ -241,12 +241,12 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine On\n");
-    fwrite($fd, "RewriteRule (fonts)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (imgs)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (js)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (css)/(.*) {$uriPrefix}\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule ajax/ {$uriPrefix}ajaxHandler.php [L]\n");
-    fwrite($fd, "RewriteRule .* {$uriPrefix}webHandler.php [L]\n");
+    fwrite($fd, "RewriteRule (fonts)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (imgs)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (js)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (css)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule ajax/ {$uriPrefix}src/handlers/ajaxHandler.php [L]\n");
+    fwrite($fd, "RewriteRule .* {$uriPrefix}src/handlers/webHandler.php [L]\n");
     //fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
     fclose($fd);
   } else {
@@ -364,25 +364,25 @@ $greetings = array(
 <head>
   <meta charset="UTF-8" />
   <title>Cintient Installation</title>
-  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_anonymouspro.css" />
-  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_orbitron.css" />
-  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/font_syncopate.css" />
-  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/global.css" />
-  <link rel="stylesheet" href="<?php echo $uriPrefix; ?>css/installer.css" />
-  <link rel="icon" href="<?php echo $uriPrefix; ?>favicon.ico">
+  <link rel="stylesheet" href="www/css/font_anonymouspro.css" />
+  <link rel="stylesheet" href="www/css/font_orbitron.css" />
+  <link rel="stylesheet" href="www/css/font_syncopate.css" />
+  <link rel="stylesheet" href="www/css/global.css" />
+  <link rel="stylesheet" href="www/css/installer.css" />
+  <link rel="icon" href="www/favicon.ico">
   <!--[if lt IE 9]>
-  <script src="<?php echo $uriPrefix; ?>js/lib/html5.js"></script>
+  <script src="www/js/lib/html5.js"></script>
   <![endif]-->
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="<?php echo $uriPrefix; ?>js/lib/jquery-1.6.js"></script>
-  <script type="text/javascript" src="<?php echo $uriPrefix; ?>js/installer.js"></script>
+  <script type="text/javascript" src="www/js/lib/jquery-1.6.js"></script>
+  <script type="text/javascript" src="www/js/installer.js"></script>
 </head>
 <body id="installer">
   <div id="splashHeader" class="container">
     <header>
       <hgroup>
         <h1 style="display: none;">Cintient</h1>
-        <img style="display: none;" src="<?php echo $uriPrefix; ?>imgs/redhalo.jpg" width="195" height="130">
+        <img style="display: none;" src="www/imgs/redhalo.jpg" width="195" height="130">
       </hgroup>
     </header>
     <div class="greetings" style="display: none;"><?php echo $greetings[rand(0, count($greetings)-1)]; ?></div>
@@ -391,7 +391,7 @@ $greetings = array(
     <div id="userHeader" class="container">
       <header>
         <hgroup>
-          <h1 id="logo" style="display: none;">Cintient <img src="<?php echo $uriPrefix; ?>imgs/redhalo_45.jpg" height="25"></h1>
+          <h1 id="logo" style="display: none;">Cintient <img src="www/imgs/redhalo_45.jpg" height="25"></h1>
         </hgroup>
       </header>
     </div>
