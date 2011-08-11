@@ -722,7 +722,7 @@ hr
 .projectStatusWaiting
 {
   display: none;
-  background-image: url('/imgs/loading.gif');
+  background-image: url('imgs/loading.gif');
   background-repeat: no-repeat;
   background-position: center center;
   width: 24px;

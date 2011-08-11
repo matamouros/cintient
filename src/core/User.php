@@ -154,7 +154,7 @@ class User
       // instead of storing the definitive URL to it.
       return substr($this->getAvatar(), 9);
     } else {
-      return '/imgs/anon_avatar_50.png';
+      return 'imgs/anon_avatar_50.png';
     }
   }
 

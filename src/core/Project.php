@@ -313,7 +313,7 @@ class Project extends Framework_DatabaseObjectAbstract
     if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {
       return UrlManager::getForAsset(substr($this->getAvatar(), 6), array('avatar' => 1));
     } else {
-      return '/imgs/anon_avatar_50.png';
+      return 'imgs/anon_avatar_50.png';
     }
   }
 

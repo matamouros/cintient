@@ -242,14 +242,13 @@ if (!empty($_GET['c'])) {
   $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
-    fwrite($fd, "RewriteEngine On\n");
+    fwrite($fd, "RewriteEngine on\n");
     fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule ajax/ src/handlers/ajaxHandler.php [L]\n");
+    fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]\n");
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
-    //fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
     fclose($fd);
   } else {
     // TODO: Error properly
@@ -330,8 +329,12 @@ if (!empty($_GET['c'])) {
   $user->init();
   $user->setPassword($get['password']);
 
-  $msg = 'Please refresh this page.';
+  //
+  // Last step: remove this file
+  //
+  @unlink(__FILE__);
 
+  $msg = 'Please refresh this page.';
   echo htmlspecialchars(
     json_encode(
       array(

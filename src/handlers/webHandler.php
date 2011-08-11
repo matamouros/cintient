@@ -54,18 +54,29 @@ require 'lib/Smarty-3.0rc4/Smarty.class.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
-SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_NAME']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", __METHOD__);
 
 //
-// Volatile stuff
+// Global stuff
 //
+// Get to the part of the URL that matters, i.e., strip the document
+// root part, and the relative path to Cintient installation from there.
+// Stripping the query string from the REQUEST_URI here. It seems that
+// REDIRECT_URL could be used, but I'm not sure of its universality. Must
+// check...
+$reqFilename = (substr($_SERVER['DOCUMENT_ROOT'], -1) != '/' ?
+                $_SERVER['DOCUMENT_ROOT'] :
+                substr($_SERVER['DOCUMENT_ROOT'], 0, strlen($_SERVER['DOCUMENT_ROOT'])-1))
+             . (($pos = strpos($_SERVER['REQUEST_URI'], '?')) !== false ?
+                substr($_SERVER['REQUEST_URI'], 0, $pos) :
+                $_SERVER['REQUEST_URI']);
+$GLOBALS['uri'] = substr($reqFilename, strlen(CINTIENT_INSTALL_DIR)-1) . (substr($reqFilename, -1) != '/' ? '/' : '');
+SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "WebHandler");
 $GLOBALS['section'] = null;
 $GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings
 $GLOBALS['smarty'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
-$GLOBALS['uri'] = substr($_SERVER['SCRIPT_FILENAME']), strlen(CINTIENT_INSTALL_DIR)-1) . (substr($_SERVER['SCRIPT_FILENAME'], -1) != '/' ? '/' : '');
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 $GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
 //
