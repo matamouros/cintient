@@ -65,9 +65,11 @@ if (false) {
 // 'DOCUMENT_ROOT'   => string '/home/www'
 // 'SCRIPT_FILENAME' => string '/home/www/cintient/index.php'
 //
+// Sanitize document root a bit
+$docRoot = $_SERVER['DOCUMENT_ROOT'] . (substr($_SERVER['DOCUMENT_ROOT'], -1) != '/' ? '/' : '');
 $uriPrefix = '';
-if ($_SERVER['DOCUMENT_ROOT'] != dirname($_SERVER['SCRIPT_FILENAME'])) {
-  $uriPrefix = substr(dirname($_SERVER['SCRIPT_FILENAME']), strlen($_SERVER['DOCUMENT_ROOT']));
+if ($docRoot != dirname($_SERVER['SCRIPT_FILENAME'])) {
+  $uriPrefix = substr(dirname($_SERVER['SCRIPT_FILENAME']), strlen($docRoot));
   if ($uriPrefix[0] == '/') {
     $uriPrefix = substr($uriPrefix, 1); // Remove leading slash
   }
@@ -241,12 +243,12 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine On\n");
-    fwrite($fd, "RewriteRule (fonts)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (imgs)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (js)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (css)/(.*) {$uriPrefix}www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule ajax/ {$uriPrefix}src/handlers/ajaxHandler.php [L]\n");
-    fwrite($fd, "RewriteRule .* {$uriPrefix}src/handlers/webHandler.php [L]\n");
+    fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule ajax/ src/handlers/ajaxHandler.php [L]\n");
+    fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
     //fwrite($fd, "php_value include_path " . dirname(__FILE__) . DIRECTORY_SEPARATOR);
     fclose($fd);
   } else {

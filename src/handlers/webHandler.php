@@ -54,7 +54,7 @@ require 'lib/Smarty-3.0rc4/Smarty.class.php';
 
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
-SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_URL']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", __METHOD__);
+SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$_SERVER['SCRIPT_NAME']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", __METHOD__);
 
 //
 // Volatile stuff
@@ -65,7 +65,7 @@ $GLOBALS['smarty'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
-$GLOBALS['uri'] = $_SERVER['SCRIPT_URL'] . (substr($_SERVER['SCRIPT_URL'], -1) != '/' ? '/' : '');
+$GLOBALS['uri'] = substr($_SERVER['SCRIPT_FILENAME']), strlen(CINTIENT_INSTALL_DIR)-1) . (substr($_SERVER['SCRIPT_FILENAME'], -1) != '/' ? '/' : '');
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 $GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
 //
