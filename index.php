@@ -1,24 +1,7 @@
 <?php
 if (false) {
 ?>
-<!DOCTYPE html>
-<html dir="ltr" lang="en-US">
-<head>
-  <meta charset="UTF-8" />
-  <title>Cintient installation halted!</title>
-  <link rel="icon" href="/favicon.ico">
-  <meta name="generator" content="Cintient Engine" />
-  <style type="text/css">
-    .error {color:red;font-weight:bold;}
-  </style>
-</head>
-<body>
-  <h1>Cintient</h1>
-  <h2><span class="error">Error:</span> PHP environment not found!</h2>
-  <p>Cintient requires a <a href="http://php.net">PHP</a> environment in order to run.</p>
-  <p>Please install PHP and try again.</p>
-</body>
-</html>
+Cintient requires a PHP environment in order to run. Please install PHP and try again.
 <!--
 <?php
 }
@@ -48,13 +31,23 @@ if (false) {
  *
  *  This is Cintient's installation script. The only way to make it past
  *  installation is to delete this, which should be done automatically at
- *  the end of this very script, if every pre-requisite is satisfied.
+ *  the very end of this script, if install is successful.
  *
  *  @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  *
  */
 
 
+//
+// Make sure no previous .htaccess file is present here and refuse to
+// run if we can't delete it. If present, our DOCUMENT_ROOT and
+// SCRIPT_FILENAME might become poluted, breaking Cintient afterwards.
+//
+if (is_file('.htaccess')) {
+  if (!@unlink('.htaccess')) {
+    die("An .htaccess file is present in Cintient's directory and couldn't be removed. Please remove it manually and try again.");
+  }
+}
 //
 // Extract the DocumentRoot-relative path to this file, excluding the
 // filename, so that we can adapt relative URIs accordingly.
@@ -63,7 +56,7 @@ if (false) {
 // 'SCRIPT_FILENAME' => string '/home/www/cintient/index.php'
 //
 // Sanitize document root a bit
-$docRoot = realpath($_SERVER['DOCUMENT_ROOT']) . '/';
+$docRoot = realpath($_SERVER['DOCUMENT_ROOT']);
 $scriptFilename = realpath($_SERVER['SCRIPT_FILENAME']);
 $uriPrefix = '';
 if ($docRoot != dirname($scriptFilename)) {
@@ -118,7 +111,6 @@ function sendResponse($ok, $msg)
   );
   exit;
 }
-
 
 //
 // Following are function definitions for all checkable items
@@ -246,10 +238,6 @@ if (!empty($_GET['c'])) {
     }
   }
 
-  //$rollbackCallbacks = array();
-  //$ok = false;
-  //$msg = 'Invalid request';
-
   //
   // Write the .htaccess file
   //
@@ -273,7 +261,6 @@ if (!empty($_GET['c'])) {
   //
   // Update the configuration file
   //
-  // TODO: make a copy of the original conf file? security risk?
   if (($fd = fopen($defaults['configurationFile'], 'r+')) === false) {
     $ok = false;
     $msg = "Couldn't update the configuration file in {$defaults['configurationFile']}";
@@ -289,7 +276,7 @@ if (!empty($_GET['c'])) {
   file_put_contents($defaults['configurationFile'], $modifiedConfFile);
 
   //
-  // From here on Cintient will handle the rest of the installation
+  // From here on Cintient itself will handle the rest of the installation
   //
   require $defaults['configurationFile'];
   //
@@ -355,7 +342,13 @@ if (!empty($_GET['c'])) {
   //
   // Last step: remove the installation file
   //
-  @unlink(__FILE__);
+  if (!@unlink(__FILE__)) {
+    $ok = false;
+    $msg = "Couldn't remove the installation 'index.php' file. You need "
+         . "to remove this manually before refreshing this page, or else"
+         . " Cintient won't be able to start";
+    sendResponse($ok, $msg);
+  }
 
   $ok = true;
   $msg = "Use 'root' and the password you provided to login. Please refresh this page when you are ready.";
