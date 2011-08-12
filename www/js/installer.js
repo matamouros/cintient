@@ -358,10 +358,10 @@ Installer.prototype = {
           if (data.ok === true) {
             result = 'Finished!';
           }
-          $('#done').fadeOut(100);
-          //$('#done img').fadeOut(100);
-          $('#done').html('<div id="result">' + result + '</div><div id="resultMessage">' + data.msg + '</div>');
-          $('#done').fadeIn(300);
+          $('#done').fadeOut(100, function () {
+            $('#done').html('<div id="result">' + result + '</div><div id="resultMessage">' + data.msg + '</div>');
+            $('#done').fadeIn(300);
+          });
           return true;
         }
       },
