@@ -47,10 +47,10 @@ class Redirector
   {
     if (self::NOT_FOUND) {
       SystemEvent::raise(SystemEvent::INFO, "Not found. [URI={$GLOBALS['uri']}] [USER=" . (($GLOBALS['user'] instanceof User)? $GLOBALS['user']->getUsername() : 'N/A') . ']');
-      header('Location: http://' . SERVER . '/not-found/', true, 404);
+      header('Location: ' . CINTIENT_BASE_URL . '/not-found/', true, 404);
     } elseif (self::NOT_AUTHORIZED) {
       SystemEvent::raise(SystemEvent::INFO, "Not authorized. [URI={$GLOBALS['uri']}] [USER=" . (($GLOBALS['user'] instanceof User)? $GLOBALS['user']->getUsername() : 'N/A') . ']');
-      header('Location: http://' . SERVER . '/not-authorized/', true, 403);
+      header('Location: ' . CINTIENT_BASE_URL . '/not-authorized/', true, 403);
     }
     exit;
   }
