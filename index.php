@@ -358,7 +358,7 @@ if (!empty($_GET['c'])) {
   @unlink(__FILE__);
 
   $ok = true;
-  $msg = 'Please refresh this page.';
+  $msg = "Use 'root' and the password you provided to login. Please refresh this page when you are ready.";
   SystemEvent::raise(SystemEvent::INFO, "Installation successful.", __METHOD__);
   sendResponse($ok, $msg);
 }
