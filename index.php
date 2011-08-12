@@ -82,16 +82,15 @@ $defaults['appWorkDir'] = '/var/run/cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . ($uriPrefix != '/' ? $uriPrefix : '');
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
-// realpath() is required here because later on, we need to make sure we're
-// dealing with expanded paths in order to properly extract the proper
+// realpath() is required here because later on we need to make sure
+// we're dealing with expanded paths in order to extract the proper
 // URL parts to make Cintient work on every request.
 $defaults['installDir'] = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 
 //
 // Utility functions
 //
-// Returns a configuration file directive replacement regex, to be used
-// while populating the configuration file
+// Returns a modified configuration file, given a directive and value
 //
 function directiveValueUpdate($str, $directive, $value)
 {
@@ -103,9 +102,26 @@ function directiveValueUpdate($str, $directive, $value)
   return preg_replace_callback('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.+)((?:\'|")\s*\);)/', $cb, $str);
 }
 
+//
+// The response generator. Will terminate execution promptly.
+//
+function sendResponse($ok, $msg)
+{
+  echo htmlspecialchars(
+    json_encode(
+      array(
+        'ok'  => $ok,
+        'msg' => $msg,
+      )
+    ),
+    ENT_NOQUOTES
+  );
+  exit;
+}
+
 
 //
-// Following are function definitions for all items
+// Following are function definitions for all checkable items
 //
 function apacheModRewrite()
 {
@@ -192,7 +208,7 @@ function configurationFile($dir)
 }
 
 //
-// AJAX checks
+// AJAX check requests
 //
 if (!empty($_GET['c'])) {
   $ok = false;
@@ -203,22 +219,19 @@ if (!empty($_GET['c'])) {
   if (function_exists($c)) {
     list($ok, $msg) = $c($v);
   }
-  echo htmlspecialchars(
-    json_encode(
-      array(
-        'ok'  => $ok,
-        'msg' => $msg,
-      )
-    ),
-    ENT_NOQUOTES
-  );
-  exit;
+  sendResponse($ok, $msg);
+//
+// Final form submission
+//
 } elseif (!empty($_GET['s'])) {
+  $ok = false;
+  $msg = "Invalid request";
+
   sleep(3); # Avoids a race condition at the end of the installation process while updating UI elements
   define('CINTIENT_INSTALLER_DEFAULT_DIR_MASK', 0700);
 
   //
-  // Extract everything
+  // Extract all sent inputs into key/value pairs
   //
   $get = array();
   foreach ($_GET as $key => $value) {
@@ -238,7 +251,7 @@ if (!empty($_GET['c'])) {
   //$msg = 'Invalid request';
 
   //
-  // The .htaccess file
+  // Write the .htaccess file
   //
   $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
   $fd = @fopen($file, 'w');
@@ -252,16 +265,19 @@ if (!empty($_GET['c'])) {
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
     fclose($fd);
   } else {
-    // TODO: Error properly
+    $ok = false;
     $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+    sendResponse($ok, $msg);
   }
 
   //
-  // Update configuration file
+  // Update the configuration file
   //
   // TODO: make a copy of the original conf file? security risk?
   if (($fd = fopen($defaults['configurationFile'], 'r+')) === false) {
-    // TODO: error out
+    $ok = false;
+    $msg = "Couldn't update the configuration file in {$defaults['configurationFile']}";
+    sendResponse($ok, $msg);
   }
   $originalConfFile = fread($fd, filesize($defaults['configurationFile']));
   $modifiedConfFile = $originalConfFile;
@@ -273,50 +289,56 @@ if (!empty($_GET['c'])) {
   file_put_contents($defaults['configurationFile'], $modifiedConfFile);
 
   //
-  // From here on Cintient will try to handle the rest of the installation
+  // From here on Cintient will handle the rest of the installation
   //
-  @session_destroy();
   require $defaults['configurationFile'];
   //
   // Create necessary dirs
   //
   if (!file_exists(CINTIENT_WORK_DIR) && !mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not create working dir. Check your permissions.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not create working dir. Check your permissions.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_PROJECTS_DIR) && !mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not create projects dir. Check your permissions.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not create projects dir. Check your permissions.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_ASSETS_DIR) && !mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not create assets dir. Check your permissions.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not create assets dir. Check your permissions.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_AVATARS_DIR) && !mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not create avatars dir. Check your permissions.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not create avatars dir. Check your permissions.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   //
   // Setup all objects
   //
   if (!User::install()) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not setup User object.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not setup User object.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   if (!Project::install()) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not setup Project object.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not setup Project object.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   if (!SystemSettings::install()) {
-    SystemEvent::raise(SystemEvent::ERROR, "Could not setup SystemSettings object.", __METHOD__);
-    echo "Error"; // TODO: treat this properly
-    exit;
+    $ok = false;
+    $msg = "Could not setup SystemSettings object.";
+    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    sendResponse($ok, $msg);
   }
   //
   // Root user account
@@ -331,21 +353,14 @@ if (!empty($_GET['c'])) {
   $user->setPassword($get['password']);
 
   //
-  // Last step: remove this file
+  // Last step: remove the installation file
   //
   @unlink(__FILE__);
 
+  $ok = true;
   $msg = 'Please refresh this page.';
-  echo htmlspecialchars(
-    json_encode(
-      array(
-        'ok'  => true,
-        'msg' => $msg,
-      )
-    ),
-    ENT_NOQUOTES
-  );
-  exit;
+  SystemEvent::raise(SystemEvent::INFO, "Installation successful.", __METHOD__);
+  sendResponse($ok, $msg);
 }
 
 //

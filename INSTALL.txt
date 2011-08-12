@@ -1,30 +1,35 @@
-  
-  Cintient, Continuous Integration made simple.
-  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
 
-  This file is part of Cintient.
-
-  Cintient is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Cintient is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
++----------------------------------------------------------------------+
+|                                                                      |
+| Cintient, Continuous Integration made simple.                        |
+| Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca                  |
+|                                                                      |
+| This file is part of Cintient.                                       |
+|                                                                      |
+| Cintient is free software: you can redistribute it and/or modify     |
+| it under the terms of the GNU General Public License as published by |
+| the Free Software Foundation, either version 3 of the License, or    |
+| (at your option) any later version.                                  |
+|                                                                      |
+| Cintient is distributed in the hope that it will be useful,          |
+| but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+| GNU General Public License for more details.                         |
+|                                                                      |
+| You should have received a copy of the GNU General Public License    |
+| along with Cintient. If not, see <http://www.gnu.org/licenses/>.     |
+|                                                                      |
++----------------------------------------------------------------------+
 
 
 
 1. INTRODUCTION
 
 Cintient is a Continuous Integration web application written in PHP. It
-was written to be simple to setup and uncumbersome to use, with special
-attention to UI, in order to bring CI practices to most small to medium
-projects that just don't justify the setup of a more complex CI solution.
+was written to be simple to setup and straightforward to use - with
+special attention to UI - in order to bring CI practices to most small
+to medium projects that just don't justify the setup of a more complex
+CI solution.
 
 Cintient is portuguese software, made passionately in fine Portugal.
 
@@ -41,9 +46,9 @@ What Cintient does/has:
  . PHPUnit integration for unit testing
  . PHPDepend for quality metrics
  . PHPCodeSniffer for coding standards enforcement
- . Code coverage support (Xdebug extension to PHP required)
- . Perl syntax check (just so you know you can add support to pretty much
-   every language you want)
+ . Code coverage support (PHP Xdebug extension required)
+ . Perl syntax check (just so you know you can add support to pretty
+   much every language you want)
  . sexy looks... O:-)
     
 What's planned for the future (in no specific order):
@@ -79,11 +84,13 @@ install. Go through the following steps:
  1 .  Your web server's configuration must allow you to specify per
       directory .htaccess files and mod_rewrite directives within them.
       For this you need to have at least "AllowOverride FileInfo". Also,
-      enable "Options Indexes" and "DirectoryIndex index.php". If you
-      changed these just now, don't forget to restart your Apache server. 
+      enable "Options Indexes" and "DirectoryIndex index.php". If you've
+      changed these just now, don't forget to restart your Apache
+      server. 
  2 .  Open up a browser window, navigate to the directory where you
       unpacked Cintient. You should see the installer coming up.
- 3 .  Follow the instructions. It should only take you a minute or so.
+ 3 .  Follow the instructions. It should only take you a minute to
+      finish.
 
 
 
@@ -99,10 +106,11 @@ If you're willing to contribute, there's many ways to go about it. The
 prefered would probably mean jumping in on the developers mailing list
 (cintient-developers@googlegroups.com) and getting acquainted. It would
 also probably mean you checking out the sources and providing some
-patches, on the list. If you really want to contribute but really have
-no idea what to do, there's no harm in asking on the mailing list.
+patches, on that list. If you really want to contribute but really have
+no idea what to do, there's no harm in asking.
+
 Anyway, I'm guessing that if enough people use Cintient, they will
-probably miss a task or two, and probably would get around to actually
+probably miss a task or two, and probably will get around to actually
 contribute them. Anyway you see it, just come on the mailing list and
 get yourself known.
 
