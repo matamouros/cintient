@@ -1,0 +1,133 @@
+  
+  Cintient, Continuous Integration made simple.
+  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+
+  This file is part of Cintient.
+
+  Cintient is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Cintient is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+1. INTRODUCTION
+
+Cintient is a Continuous Integration web application written in PHP. It
+was written to be simple to setup and uncumbersome to use, with special
+attention to UI, in order to bring CI practices to most small to medium
+projects that just don't justify the setup of a more complex CI solution.
+
+Cintient is portuguese software, made passionately in fine Portugal.
+
+What Cintient does not do/have:
+ . distributed builds (master/slave)
+ . +10.000 plugins to do every single imaginable task
+ . fugly UI
+ 
+What Cintient does/has:
+ . easy one-time setup of the application (1 minute)
+ . visual edition for builder tasks, i.e., no messing around with Ant
+   XML sources or any other, in order to configure your project builds
+ . PHP syntax checking tasks
+ . PHPUnit integration for unit testing
+ . PHPDepend for quality metrics
+ . PHPCodeSniffer for coding standards enforcement
+ . Code coverage support (Xdebug extension to PHP required)
+ . Perl syntax check (just so you know you can add support to pretty much
+   every language you want)
+ . sexy looks... O:-)
+    
+What's planned for the future (in no specific order):
+ . Git support
+ . Trends and history charts for pretty much all collected metrics
+ . Packaging and [simple] deployment flows
+ . PHP code browser with contextual information (syntax errors, etc)
+ . PHP documentation generation
+ . MySQL support (possibly...)
+ . Notifications system
+ . ...
+
+
+
+2. REQUIREMENTS
+
+We tried to go easy on the requirements. These are what you absolutely
+need in order to successfully install and start using Cintient:
+ . PHP 5.3.0 or better
+ . Apache HTTPD with mod_rewrite
+ . PHP with sqlite3 version 2.5 or better
+ . PHP with GD (with PNG and FreeType) - we're working on removing this
+   requirement completely from the list.
+ . [Optional] Xdebug (for PHP code coverage support)
+
+
+
+3. INSTALLATION
+3.1. EASY INSTALLATION - (RECOMMENDED)
+
+Check the requirements above. You need them in order to perform an easy
+install. Go through the following steps:
+ 1 .  Your web server's configuration must allow you to specify per
+      directory .htaccess files and mod_rewrite directives within them.
+      For this you need to have at least "AllowOverride FileInfo". Also,
+      enable "Options Indexes" and "DirectoryIndex index.php". If you
+      changed these just now, don't forget to restart your Apache server. 
+ 2 .  Open up a browser window, navigate to the directory where you
+      unpacked Cintient. You should see the installer coming up.
+ 3 .  Follow the instructions. It should only take you a minute or so.
+
+
+
+3.2. MANUAL INSTALLATION
+
+* Later *
+
+
+
+4. CONTRIBUTIONS
+
+If you're willing to contribute, there's many ways to go about it. The
+prefered would probably mean jumping in on the developers mailing list
+(cintient-developers@googlegroups.com) and getting acquainted. It would
+also probably mean you checking out the sources and providing some
+patches, on the list. If you really want to contribute but really have
+no idea what to do, there's no harm in asking on the mailing list.
+Anyway, I'm guessing that if enough people use Cintient, they will
+probably miss a task or two, and probably would get around to actually
+contribute them. Anyway you see it, just come on the mailing list and
+get yourself known.
+
+
+
+5. CONTACTS AND CREDITS
+
+Project page:
+ . http://code.google.com/p/cintient/
+
+Authored by:
+ . Pedro Mata-Mouros
+   Twitter: @matamouros
+   email: pedro.matamouros@gmail.com
+
+Past contributors:
+ . voxmachina
+ . miguellmanso
+ 
+Developers mailing list:
+ . cintient-developers@googlegroups.com
+ 
+Announce mailing list:
+ . cintient-announce@googlegroups.com
+ 
+Users mailing list:
+ . cintient-users@googlegroups.com
+ 
