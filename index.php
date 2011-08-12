@@ -553,7 +553,7 @@ function inputCheckOnChangePassword()
   var input2 = $("#step-3 .item #password input[name=passwordr]").val();
   var msg = ["Passwords don't match", 'Ready.'];
   var ok = (input1.length > 0 && input1 == input2);
-  return {ok: ok, msg: msg[Number(ok)]}; // TODO: check email better
+  return {ok: ok, msg: msg[Number(ok)]};
 }
 $(document).ready(function() {
   new Installer({step:0});

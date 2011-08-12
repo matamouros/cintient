@@ -21,14 +21,11 @@
  */
 
 /**
- * Installer
+ * This is Cintient's installer JS helper class. It's pretty much event
+ * oriented, so the only required thing is to set it up and call init().
  * 
- * Installation process helper
- * 
- * Using the javascript prototype development pattern
- * 
- * @version 1.0
- * @param options
+ * @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>, based on
+ * initial work by voxmachina.
  */
 
 var Installer = function (options)
@@ -43,8 +40,19 @@ Installer.prototype = {
   init: function (options)
   {
     this.options = $.extend({
+      /**
+       * The current step index
+       */
       curStepIndex : 0,
-      steps        : {},
+
+      /**
+       * Keeps an eye on previously displayed steps
+       */
+      steps        : [],
+
+      /**
+       * Classes for selectors
+       */
       elemsClasses : 
       {
         step       : 'installerStep'
@@ -87,7 +95,8 @@ Installer.prototype = {
   
   /**
    * Runs the installer handler. If it's the first time, a splash screen
-   * is shown. If not, the proper installation step is displayed.
+   * is shown. If not, the proper installation step is displayed, although
+   * currently this doesn't happen anymore.
    */
   _run : function ()
   {
@@ -131,19 +140,24 @@ Installer.prototype = {
   {
     var step = this._steps[this.options.curStepIndex];
     
-    // Register all inputs
-    var that = this;
-    $("li", step).each(function() {
-      if ($(this).attr('class') == 'inputCheckOnChange') {
-        that._registerCheckOnChangeInput($(this).attr('id'), $("input", this));
-      }
-    });
-    
     // Refresh the section title
     $("#mainMenu #sectionName").text($(".stepTitle", step).text());
     
     // Empty out all previously drawn buttons
     $("#actionButtons").empty();
+    
+    // Register all inputs, only if it's the first time for this step
+    if (this.options.steps.length < this.options.curStepIndex+1) {
+      var that = this;
+      $("li", step).each(function() {
+        if ($(this).attr('class') == 'inputCheckOnChange') {
+          that._registerCheckOnChangeInput($(this).attr('id'), $("input", this));
+        }
+      });
+    } else {
+      // Update the displayed steps
+      this.options.steps[this.options.curStepIndex] = this.options.curStepIndex;
+    }
     
     // Create the back button
     if (this.options.curStepIndex > 0) {
@@ -156,7 +170,7 @@ Installer.prototype = {
     }
     
     this._refreshProgressionButton();
-
+    
     // Make it visible
     $(step).fadeIn(150);
   },
@@ -236,7 +250,11 @@ Installer.prototype = {
         var result = eval(functionName + '()');
         that._updateInputValidation($(this).parent().next('.result'), result.ok, result.msg);
         remoteCheck = !result.ok;
-        // TODO: no return for now, check it later
+        // This is ugly, maybe do it better later on. If passwords don't
+        // match, a remote check is triggered
+        if ($(this).attr('type') == 'password') {
+          return true;
+        }
       }
       if (remoteCheck) {
         $.ajax({
@@ -300,7 +318,7 @@ Installer.prototype = {
       $('#mainMenu').fadeOut(50);
       $('#actionButtons').fadeOut(50);
       $(curStep).fadeOut(100, function () {
-        $('#done').html('<div id="pleaseWait">Please wait...</div><div><img src="www/imgs/loading-3.gif" /></div>');
+        $('#done').html('<div id="pleaseWait">Please wait...</div><div><img src="www/imgs/loading-2.gif" /></div>');
         $('#done').fadeIn(500);
         setTimeout(function() {
           $('#logo').fadeIn(500);
@@ -336,12 +354,12 @@ Installer.prototype = {
           // TODO: Error somewhere
           return false;
         } else {
-          var result = 'Installation failed.';
+          var result = 'Failed.';
           if (data.ok === true) {
             result = 'Finished!';
           }
           $('#done').fadeOut(100);
-          $('#done img').fadeOut(100);
+          //$('#done img').fadeOut(100);
           $('#done').html('<div id="result">' + result + '</div><div id="resultMessage">' + data.msg + '</div>');
           $('#done').fadeIn(300);
           return true;
