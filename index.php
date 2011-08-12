@@ -38,13 +38,15 @@ Cintient requires a PHP environment in order to run. Please install PHP and try 
  */
 
 
+error_reporting(0);
+
 //
 // Make sure no previous .htaccess file is present here and refuse to
 // run if we can't delete it. If present, our DOCUMENT_ROOT and
 // SCRIPT_FILENAME might become poluted, breaking Cintient afterwards.
 //
-if (is_file('.htaccess')) {
-  if (!@unlink('.htaccess')) {
+if (is_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
+  if (!@unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
     die("An .htaccess file is present in Cintient's directory and couldn't be removed. Please remove it manually and try again.");
   }
 }
@@ -279,28 +281,29 @@ if (!empty($_GET['c'])) {
   // From here on Cintient itself will handle the rest of the installation
   //
   require $defaults['configurationFile'];
+  error_reporting(0);
   //
   // Create necessary dirs
   //
-  if (!file_exists(CINTIENT_WORK_DIR) && !mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
+  if (!file_exists(CINTIENT_WORK_DIR) && !@mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create working dir. Check your permissions.";
     SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
     sendResponse($ok, $msg);
   }
-  if (!file_exists(CINTIENT_PROJECTS_DIR) && !mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+  if (!file_exists(CINTIENT_PROJECTS_DIR) && !@mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create projects dir. Check your permissions.";
     SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
     sendResponse($ok, $msg);
   }
-  if (!file_exists(CINTIENT_ASSETS_DIR) && !mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+  if (!file_exists(CINTIENT_ASSETS_DIR) && !@mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create assets dir. Check your permissions.";
     SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
     sendResponse($ok, $msg);
   }
-  if (!file_exists(CINTIENT_AVATARS_DIR) && !mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
+  if (!file_exists(CINTIENT_AVATARS_DIR) && !@mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create avatars dir. Check your permissions.";
     SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
