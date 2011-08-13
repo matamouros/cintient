@@ -1214,6 +1214,12 @@ hr
   width: 100%;
 }
 
+.builderElement .builderElementTitle a.submit
+{
+  display: none;
+  margin-right: 14px;
+}
+
 .builderElement .builderElementTitle p.title
 {
   float: left;

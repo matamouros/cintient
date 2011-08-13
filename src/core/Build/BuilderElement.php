@@ -83,11 +83,8 @@ class Build_BuilderElement extends Framework_BaseObject
         if ($o->isEditable()) {
           h::li(function() {h::a('save', '#', array('class' => 'submit'));});
         }
-        if ($o->isEditable() && $o->isDeletable()) {
-          h::li(function() {h::p(array('class' => 'pipe'), ' | ');});
-        }
         if ($o->isDeletable()) {
-          h::li(function() {h::a('x', '#', array('class' => 'delete'));});
+          h::li(function() {h::a('delete', '#', array('class' => 'delete'));});
         }
       });
     });

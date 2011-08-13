@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="css/font_syncopate.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/avataruploader.css" />
+  <link rel="stylesheet" href="js/lib/jgrowl/jquery.jgrowl.css" />
   <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
@@ -36,6 +37,7 @@
   <meta name="generator" content="Cintient Engine" />
   <script type="text/javascript" src="js/lib/jquery-1.6.js"></script>
   <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
+  <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}

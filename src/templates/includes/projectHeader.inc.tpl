@@ -95,6 +95,7 @@ function updateProjectStatus(toStatus)
   projectLastKnownStatus = toStatus;
   switch(toStatus) {
   case {Project::STATUS_OK}:
+    $.jGrowl("Build finished successfully.");
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#projectHeader #statusContainer .status').removeClass('projectStatusFailed projectStatusWorking');
     $('#projectHeader #statusContainer .status').addClass('projectStatusOk');
@@ -105,6 +106,7 @@ function updateProjectStatus(toStatus)
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeIn(150);
     break;
   default:
+    $.jGrowl("Build failed!", { header: "Warning", life: 10000 });
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#projectHeader #statusContainer .status').removeClass('projectStatusWorking projectStatusOk');
     $('#projectHeader #statusContainer .status').addClass('projectStatusFailed');

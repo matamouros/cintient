@@ -70,7 +70,16 @@ $(document).ready(function() {
     return false;
   }).parent('.builderElementTitle').next().hide();
   //
-	// Set up save links
+	// Show save links on change
+  //
+  $('.builderElementForm input').live('change keyup', function(e) {
+    // TODO: in case of keyup event, only activate save in case something
+    // was written (prevent tab, cursor, etc). Better yet, only in case
+    // the value has become different from the original.
+    $(this).parents('.builderElement').find('.builderElementTitle a.submit').fadeIn(100);
+  });
+  //
+	// Register click events for save links
   //
   $('.builderElementTitle a.submit').live('click', function(e) {
     e.preventDefault();
@@ -100,6 +109,8 @@ $(document).ready(function() {
           //TODO: treat this properly
           alert('error');
         } else {
+          $(that).fadeOut(300);
+          $.jGrowl($(that).parents('.builderElementTitle').find('.title').text() + " builder element saved.");
           //alert('ok');
         }
       },

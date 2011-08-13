@@ -31,12 +31,14 @@
             </noscript>
           </div>
         </li>
+        {*
         <li class="settingsNode">
           <div class="label">Notification emails <span class="fineprintLabel">(2 max. More will be ignored)</span></div>
           <div class="textareaContainer">
             <textarea class="textarea" name="notificationEmails"></textarea>
           </div>
         </li>
+        *}
       </ul>
     </div>
 <style type="text/css">
