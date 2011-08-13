@@ -118,9 +118,15 @@ class Project extends Framework_DatabaseObjectAbstract
     // TODO: implement "add to id" logic later
     //
     if (empty($id)) {
-      $targets = $this->getIntegrationBuilder()->getTargets();
-      $target = $targets[0];
-      $target->addTask($element);
+      if ($element instanceof Build_BuilderElement_Type_Property) {
+        $properties = $this->getIntegrationBuilder()->getProperties();
+        $properties[] = $element;
+        $this->getIntegrationBuilder()->setProperties($properties);
+      } else {
+        $targets = $this->getIntegrationBuilder()->getTargets();
+        $target = $targets[0];
+        $target->addTask($element);
+      }
     }
     //
     // If it's a special task, register it with the project
