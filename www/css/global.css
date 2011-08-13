@@ -1485,7 +1485,6 @@ hr
 
 #newProjectContainer
 {
-  width: 600px;
   margin-bottom: 80px;
 }
 
@@ -1513,7 +1512,7 @@ article#project .avatar
 
 #settingsContainer
 {
-  width: 400px;
+  /*width: 400px;*/
   margin-bottom: 80px;
 }
 

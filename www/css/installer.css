@@ -47,32 +47,13 @@
   color: #7CC400;
 }
 
-#installer .note
-{
-  font-size : 0.7em;
-  font-weight : normal;
-}
-
 #installer li
 {
   padding: 10px;
   width: 450px;
 }
 
-#installer li strong
-{
-  width: 450px;
-  display: block;
-}
-
-#installer button, input[type=submit]
-{
-  float: right;
-  margin-right: 10px;
-  margin-top: 20px;
-}
-
-#installer button, #installer #save
+#installer button
 {
   color: #555;
   font-size: 13pt;
@@ -99,6 +80,8 @@
   -moz-transition: all 0.1s ease-in-out;*/
   cursor: pointer;
   float: left;
+  margin-right: 10px;
+  margin-top: 20px;
 }
 
 #installer button.backButton
@@ -116,11 +99,6 @@
 {
   opacity: .2;
   cursor: default;
-}
-
-#installer .mandatory
-{
-  /*border: 1px solid #7A5559;*/
 }
 
 #splashHeader .greetings
