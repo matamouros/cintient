@@ -82,7 +82,7 @@ $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
-$GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
+$GLOBALS['project'] = (isset($_SESSION['projectId']) && !empty($GLOBALS['user']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
 //
 // Smarty
 //
