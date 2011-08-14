@@ -1,4 +1,7 @@
-/* @override http://cintient/project/edit/js/lib/jgrowl/jquery.jgrowl.css */
+/* @override 
+	http://cintient/project/edit/js/lib/jgrowl/jquery.jgrowl.css
+	http://cintient/project/js/lib/jgrowl/jquery.jgrowl.css
+*/
 
 div.jGrowl {
 	padding: 			10px;
@@ -99,10 +102,10 @@ div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
 	-webkit-border-radius:	5px;
 	/* matamouros 20110813: added following properties and decremented opacity */
 	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-	border: 2px solid #fff;
-	box-shadow: 2px 2px 5px #111;
-    -webkit-box-shadow: #111 2px 2px 5px;
-    -moz-box-shadow: #111 2px 2px 5px;
+	border: 1px solid #fff;
+	box-shadow: 2px 3px 6px #111;
+    -webkit-box-shadow: #111 2px 3px 6px;
+    -moz-box-shadow: #111 2px 3px 6px;
 }
 
 div.jGrowl div.jGrowl-notification {
