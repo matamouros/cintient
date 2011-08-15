@@ -96,7 +96,7 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
       $methodsNames = array();
       $methods = array();
       $class = new TestClass();
-      $class->setName($node->attributes()->name);
+      $class->setName((string)$node->attributes()->name);
       $class->setFile((string)$node->attributes()->file);
       $class->setTests((string)$node->attributes()->tests);
       $class->setAssertions((string)$node->attributes()->assertions);
@@ -110,7 +110,7 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
       // test case).
       foreach ($node->children() as $methodXml) {
         $method = new TestMethod();
-        $method->setName($methodXml->getName());
+        $method->setName((string)$methodXml->attributes()->name);
         $method->setTests((string)$methodXml->attributes()->tests);
         $method->setAssertions((string)$methodXml->attributes()->assertions);
         $method->setFailures((string)$methodXml->attributes()->failures);
@@ -119,7 +119,7 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
         $methods[] = $method;
 
         $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
-        $methodsNames[] = $methodXml->attributes()->name;
+        $methodsNames[] = (string)$methodXml->attributes()->name;
         $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
         $successes[] = (float)$time - (float)$f;
         $failures[] = $f;
@@ -222,7 +222,7 @@ EOT;
   {
     $ret = array();
     $ret['project_buildJunit'] = $this->createReportFromJunit();
-    
+
     // Get the initial page of the coverage results, if available
 
     return $ret;
