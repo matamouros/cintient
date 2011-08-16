@@ -67,11 +67,9 @@ What's planned for the future (in no specific order):
 
 We tried to go easy on the requirements. These are what you absolutely
 need in order to successfully install and start using Cintient:
- . PHP 5.3.0 or better
  . Apache HTTPD with mod_rewrite
+ . PHP 5.3.0 or better
  . PHP with sqlite3 version 2.5 or better
- . PHP with GD (with PNG and FreeType) - we're working on removing this
-   requirement completely from the list.
  . [Optional] Xdebug (for PHP code coverage support)
 
 

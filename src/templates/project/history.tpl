@@ -37,7 +37,8 @@
 {include file='includes/header.inc.tpl'
   subSectionTitle="Build history"
   menuLinks=$menuLinks
-  backLink="{UrlManager::getForProjectView()}"}
+  backLink="{UrlManager::getForProjectView()}"
+	jsIncludes=['js/lib/highcharts-2.1.6.js', 'js/lib/cintientHighcharts.theme.js', 'js/cintientHighcharts.js']} {* TODO: Make it load only on PHPUnit presence *}
 {$project_latestBuild=""}
 {if !empty($project_buildList)}
   {$project_latestBuild=$project_buildList.0}

@@ -141,16 +141,6 @@ function phpWithSqlite()
   return array($ok, $msg[(int)$ok]);
 }
 
-function phpWithGd()
-{
-  $gdInfo = gd_info();
-  $msg[0] = "PHP with GD (with PNG and FreeType support) is required.";
-  $msg[1] = "Detected version " . $gdInfo['GD Version'] . ".";
-  $ok = ((isset($gdInfo['PNG Support']) && $gdInfo['PNG Support'] !== false)) &&
-        ((isset($gdInfo['FreeType Support']) && $gdInfo['FreeType Support'] !== false));
-  return array($ok, $msg[(int)$ok]);
-}
-
 function baseUrl($url)
 {
   $msg[0] = "Check that you have specified a valid URL.";
@@ -449,13 +439,6 @@ list ($ok, $msg) = phpWithSqlite();
 ?>
           <li id="phpWithSqlite">
             <div class="label">PHP compiled with SQLite3 2.5.x</div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-<?php
-list ($ok, $msg) = phpWithGd();
-?>
-          <li id="phpWithGd">
-            <div class="label">PHP compiled with GD</div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
         </ul>

@@ -1,4 +1,8 @@
-/* @override http://cintient/css/global.css */
+/* @override 
+	http://cintient/css/global.css
+	http://cintient/project/css/global.css
+	http://cintient/project/history/css/global.css
+*/
 
 /*
  * 
@@ -1158,6 +1162,23 @@ hr
 }
 
 /* @end */
+
+
+
+/* @group Project history */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT HISTORY                                                | *|
+\* +----------------------------------------------------------------+ */
+
+.unitTestsChart
+{
+  float: left;
+  margin-bottom: 20px;
+}
+
+/* @end */
+
+
 
 /* @group Builder Elements */
 /* +----------------------------------------------------------------+ *\

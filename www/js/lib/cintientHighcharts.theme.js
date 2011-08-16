@@ -91,7 +91,15 @@ Highcharts.theme = {
       color: '#999',
       textShadow: 'none',
       textDecoration: 'line-through'
-    }
+    },
+    floating: false,
+    backgroundColor: {
+      linearGradient: [0, 0, 0, 50],
+      stops: [
+        [0, 'rgba(96, 96, 96, .1)'],
+        [1, 'rgba(16, 16, 16, .1)']
+      ]
+    },
   },
   labels: {
     style: {

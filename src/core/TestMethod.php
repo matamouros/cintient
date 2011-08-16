@@ -26,37 +26,15 @@
  *
  * @package Utility
  */
-class TestMethod
+class TestMethod extends Framework_BaseObject
 {
-  private $_name;
-  private $_tests;
-  private $_assertions;
-  private $_failures;
-  private $_errors;
-  private $_time;
-  private $_testCases;
-
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    } else {
-      trigger_error("No valid method available for calling", E_USER_ERROR);
-      exit;
-    }
-    return false;
-  }
+  protected $_name;
+  protected $_tests;
+  protected $_assertions;
+  protected $_failures;
+  protected $_errors;
+  protected $_time;
+  protected $_testCases;
+  protected $_calculatedOks;
+  protected $_calculatedFaileds;
 }

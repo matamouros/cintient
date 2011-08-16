@@ -56,89 +56,6 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
     parent::__destruct();
   }
 
-  public function createReportFromJunit()
-  {
-    $junitReportFile = $this->getPtrProjectBuild()->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME;
-    if (!is_file($junitReportFile)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}] [FILE={$junitReportFile}]", __METHOD__);
-      return false;
-    }
-    try {
-      $xml = new SimpleXMLElement($junitReportFile, 0, true);
-    } catch (Exception $e) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems processing Junit XML file. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
-      return false;
-    }
-    // Apparently using call_user_func(__FUNCTION__) inside a closure,
-    // doesn't work... Anyway I'm just going for a closure here, to
-    // avoid the whole function definition crap here, inside a method.
-    //
-    // This closure takes a SimpleXMLElement loaded with the Junit report
-    // and searches for the first element with a file attribute. That
-    // level is the Class Test level, and what we want here is to iterate
-    // over all class tests.
-    $f = function ($node) use (&$parent, &$f)
-    {
-      if (isset($node->attributes()->file)) {
-        return $parent->children();
-      } else {
-        $parent = $node;
-        return $f($node->children());
-      }
-    };
-    $parent = $xml;
-    $classTestsXml = $f($xml->children());
-    $classes = array();
-    foreach ($classTestsXml as $node) {
-      $imageFilename = '';
-      $successes = array(); // assertions - failures
-      $failures = array();
-      $methodsNames = array();
-      $methods = array();
-      $class = new TestClass();
-      $class->setName((string)$node->attributes()->name);
-      $class->setFile((string)$node->attributes()->file);
-      $class->setTests((string)$node->attributes()->tests);
-      $class->setAssertions((string)$node->attributes()->assertions);
-      $class->setFailures((string)$node->attributes()->failures);
-      $class->setErrors((string)$node->attributes()->errors);
-      $class->setTime((string)$node->attributes()->time);
-      $class->setChartFilename(md5($this->getProjectId() . $this->getProjectBuildId() . $class->getFile()) . '.png');
-      // Right here we're exactly at the test class (file) root level,
-      // with level 1 being the unit test (method of the original class)
-      // and level 2 being the various datasets used in the test (each a
-      // test case).
-      foreach ($node->children() as $methodXml) {
-        $method = new TestMethod();
-        $method->setName((string)$methodXml->attributes()->name);
-        $method->setTests((string)$methodXml->attributes()->tests);
-        $method->setAssertions((string)$methodXml->attributes()->assertions);
-        $method->setFailures((string)$methodXml->attributes()->failures);
-        $method->setErrors((string)$methodXml->attributes()->errors);
-        $method->setTime((string)$methodXml->attributes()->time);
-        $methods[] = $method;
-
-        $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
-        $methodsNames[] = (string)$methodXml->attributes()->name;
-        $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
-        $successes[] = (float)$time - (float)$f;
-        $failures[] = $f;
-      }
-
-      $chartFile = "{$this->getPtrProjectBuild()->getBuildDir()}{$class->getChartFilename()}";
-      if (!is_file($chartFile)) {
-        if (!Chart::unitTests($chartFile, $methodsNames, $successes, $failures)) {
-          SystemEvent::raise(SystemEvent::ERROR, "Chart file for unit tests was not saved. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
-        } else {
-          SystemEvent::raise(SystemEvent::INFO, "Generated chart file for unit tests. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
-        }
-      }
-      $class->setTestMethods($methods);
-      $classes[] = $class;
-    }
-    return $classes;
-  }
-
   public function preBuild()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -220,10 +137,77 @@ EOT;
 
   public function getViewData(Array $params = array())
   {
-    $ret = array();
-    $ret['project_buildJunit'] = $this->createReportFromJunit();
+    $junitReportFile = $this->getPtrProjectBuild()->getBuildDir() . CINTIENT_JUNIT_REPORT_FILENAME;
+    if (!is_file($junitReportFile)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Junit file not found. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}] [FILE={$junitReportFile}]", __METHOD__);
+      return false;
+    }
+    try {
+      $xml = new SimpleXMLElement($junitReportFile, 0, true);
+    } catch (Exception $e) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems processing Junit XML file. [PID={$this->getProjectId()}] [BUILD={$this->getProjectBuildId()}]", __METHOD__);
+      return false;
+    }
+    // Apparently using call_user_func(__FUNCTION__) inside a closure,
+    // doesn't work... Anyway I'm just going for a closure here, to
+    // avoid the whole function definition crap here, inside a method.
+    //
+    // This closure takes a SimpleXMLElement loaded with the Junit report
+    // and searches for the first element with a file attribute. That
+    // level is the Class Test level, and what we want here is to iterate
+    // over all class tests.
+    $f = function ($node) use (&$parent, &$f)
+    {
+      if (isset($node->attributes()->file)) {
+        return $parent->children();
+      } else {
+        $parent = $node;
+        return $f($node->children());
+      }
+    };
+    $parent = $xml;
+    $classTestsXml = $f($xml->children());
+    $classes = array();
+    foreach ($classTestsXml as $node) {
+      $imageFilename = '';
+      $methodsNames = array();
+      $methods = array();
+      $class = new TestClass();
+      $class->setName((string)$node->attributes()->name);
+      $class->setFile((string)$node->attributes()->file);
+      $class->setTests((string)$node->attributes()->tests);
+      $class->setAssertions((string)$node->attributes()->assertions);
+      $class->setFailures((string)$node->attributes()->failures);
+      $class->setErrors((string)$node->attributes()->errors);
+      $class->setTime((string)$node->attributes()->time);
+      $class->setChartFilename(md5($this->getProjectId() . $this->getProjectBuildId() . $class->getFile()) . '.png');
+      // Right here we're exactly at the test class (file) root level,
+      // with level 1 being the unit test (method of the original class)
+      // and level 2 being the various datasets used in the test (each a
+      // test case).
+      foreach ($node->children() as $methodXml) {
+        $time = (float)$methodXml->attributes()->time * 1000; // to milliseconds
+        $methodsNames[] = (string)$methodXml->attributes()->name;
+        $f = ((((float)$methodXml->attributes()->failures) * $time) / (float)$methodXml->attributes()->assertions);
 
-    // Get the initial page of the coverage results, if available
+        $method = new TestMethod();
+        $method->setName((string)$methodXml->attributes()->name);
+        $method->setTests((string)$methodXml->attributes()->tests);
+        $method->setAssertions((string)$methodXml->attributes()->assertions);
+        $method->setFailures((string)$methodXml->attributes()->failures);
+        $method->setErrors((string)$methodXml->attributes()->errors);
+        $method->setTime((string)$methodXml->attributes()->time);
+        $method->setCalculatedOks(((float)$time - (float)$f));
+        $method->setCalculatedFaileds($f);
+
+        $methods[] = $method;
+      }
+      $class->setTestMethods($methods);
+      $classes[] = $class;
+    }
+
+    $ret = array();
+    $ret['project_buildJunit'] = $classes;
 
     return $ret;
   }
