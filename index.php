@@ -50,31 +50,13 @@ if (is_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
     die("An .htaccess file is present in Cintient's directory and couldn't be removed. Please remove it manually and try again.");
   }
 }
-//
-// Extract the DocumentRoot-relative path to this file, excluding the
-// filename, so that we can adapt relative URIs accordingly.
-//
-// 'DOCUMENT_ROOT'   => string '/home/www'
-// 'SCRIPT_FILENAME' => string '/home/www/cintient/index.php'
-//
-// Sanitize document root a bit
-$docRoot = realpath($_SERVER['DOCUMENT_ROOT']);
-$scriptFilename = realpath($_SERVER['SCRIPT_FILENAME']);
-$uriPrefix = '';
-if ($docRoot != dirname($scriptFilename)) {
-  $uriPrefix = substr(dirname($scriptFilename), strlen($docRoot));
-  if ($uriPrefix[0] == '/') {
-    $uriPrefix = substr($uriPrefix, 1); // Remove leading slash
-  }
-  $uriPrefix .= '/'; // Add trailing slash, for comodity reasons
-}
 
 //
 // Following are default values for the installation script
 //
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
-$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . ($uriPrefix != '/' ? $uriPrefix : '');
+$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
 // realpath() is required here because later on we need to make sure
