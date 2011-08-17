@@ -54,9 +54,10 @@ if (is_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
 //
 // Following are default values for the installation script
 //
+$reqUri = strtok($_SERVER['REQUEST_URI'], '?');
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
-$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . $reqUri;
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
 // realpath() is required here because later on we need to make sure
@@ -99,27 +100,38 @@ function sendResponse($ok, $msg)
 //
 // Following are function definitions for all checkable items
 //
-function apacheModRewrite()
-{
-  $msg[0] = "Apache mod_rewrite is required.";
-  $msg[1] = "Detected.";
-  $ok = in_array("mod_rewrite", apache_get_modules());
-  return array($ok, $msg[(int)$ok]);
-}
-
 function phpInstallationVersion()
 {
   $msg[0] = "Version 5.3.3 or higher is required.";
-  $msg[1] = "Detected version " . phpversion() . ".";
-  $ok = version_compare(phpversion(), '5.3.3', '>=');
+  $ok = false;
+  if (function_exists('phpversion') && function_exists('version_compare')) {
+    $msg[0] .= " Version " . phpversion() . " detected.";
+    $msg[1] = "Detected version " . phpversion() . ".";
+    $ok = version_compare(phpversion(), '5.3.3', '>=');
+  }
   return array($ok, $msg[(int)$ok]);
 }
 
 function phpWithSqlite()
 {
   $msg[0] = "PHP with sqlite3 version 2.5 or higher required.";
-  $msg[1] = "Detected version " . sqlite_libversion() . ".";
-  $ok = extension_loaded('sqlite3') && sqlite_libversion() > '2.5';
+  $ok = false;
+  if (extension_loaded('sqlite3') && function_exists('sqlite_libversion')) {
+    $msg[0] .= " Version " . sqlite_libversion() . " detected.";
+    $msg[1] = "Detected version " . sqlite_libversion() . ".";
+    $ok = extension_loaded('sqlite3') && sqlite_libversion() > '2.5';
+  }
+  return array($ok, $msg[(int)$ok]);
+}
+
+function apacheModRewrite()
+{
+  $msg[0] = "Apache mod_rewrite is required.";
+  $msg[1] = "Detected.";
+  $ok = false;
+  if (function_exists('apache_get_modules')) {
+    $ok = in_array("mod_rewrite", apache_get_modules());
+  }
   return array($ok, $msg[(int)$ok]);
 }
 
@@ -219,6 +231,7 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine on\n");
+    fwrite($fd, "RewriteBase {$reqUri}\n");
     fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
@@ -403,13 +416,6 @@ $greetings = array(
       <div>
         <ul class="item">
 <?php
-list ($ok, $msg) = apacheModRewrite();
-?>
-          <li id="apacheModRewrite">
-            <div class="label">Apache mod_rewrite</div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-<?php
 list ($ok, $msg) = phpInstallationVersion();
 ?>
           <li id="phpInstallationVersion">
@@ -420,7 +426,14 @@ list ($ok, $msg) = phpInstallationVersion();
 list ($ok, $msg) = phpWithSqlite();
 ?>
           <li id="phpWithSqlite">
-            <div class="label">PHP compiled with SQLite3 2.5.x</div>
+            <div class="label">PHP with SQLite3 2.5.x</div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+<?php
+list ($ok, $msg) = apacheModRewrite();
+?>
+          <li id="apacheModRewrite">
+            <div class="label">Apache mod_rewrite</div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
         </ul>

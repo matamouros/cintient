@@ -82,9 +82,9 @@ install. Go through the following steps:
  1 .  Your web server's configuration must allow you to specify per
       directory .htaccess files and mod_rewrite directives within them.
       For this you need to have at least "AllowOverride FileInfo". Also,
-      enable "Options Indexes" and "DirectoryIndex index.php". If you've
-      changed these just now, don't forget to restart your Apache
-      server. 
+      enable "Options FollowSymLinks" and "DirectoryIndex index.php".
+      If you've changed these just now, don't forget to restart your
+      Apache server. 
  2 .  Open up a browser window, navigate to the directory where you
       unpacked Cintient. You should see the installer coming up.
  3 .  Follow the instructions. It should only take you a minute to

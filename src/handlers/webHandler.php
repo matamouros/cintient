@@ -58,22 +58,10 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 //
 // Global stuff
 //
-// Get to the part of the URL that matters, i.e., strip the document
-// root part, and the relative path to Cintient installation from there.
-// Stripping the query string from the REQUEST_URI here. It seems that
-// REDIRECT_URL could be used, but I'm not sure of its universality. Must
-// check...
-// CINTIENT_INSTALL_DIR was already properly expanded by realpath() in
-// the installer, so we just need to make sure that document root is also
-// here, in order to properly obtain the relevant URL parts.
-$reqFilename = realpath($_SERVER['DOCUMENT_ROOT'])
-             . (($pos = strpos($_SERVER['REQUEST_URI'], '?')) !== false ?
-                substr($_SERVER['REQUEST_URI'], 0, $pos) :
-                $_SERVER['REQUEST_URI']);
-$GLOBALS['uri'] = substr($reqFilename, strlen(CINTIENT_INSTALL_DIR)-1);
-if (substr($GLOBALS['uri'], -1) != '/') {
-  $GLOBALS['uri'] .= '/';
-}
+// Get to the part of the URL that matters
+$currentUrl = 'http://' . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?');
+$GLOBALS['uri'] = substr($currentUrl, strlen(CINTIENT_BASE_URL));
+
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "WebHandler");
 $GLOBALS['section'] = null;
 $GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings

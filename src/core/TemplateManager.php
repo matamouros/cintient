@@ -84,7 +84,7 @@ class TemplateManager
     //echo $delete->toString('ant');
 
     $echo = new Build_BuilderElement_Task_Echo();
-    $echo->setMessage('Ol‡');
+    $echo->setMessage('Olï¿½');
     $echo->setFile('${workDir}/ixo.txt');
 
     $echo2 = new Build_BuilderElement_Task_Echo();
@@ -732,7 +732,7 @@ EOT;
   static public function logout()
   {
     Auth::logout();
-    header('Location: /');
+    header('Location: ' . CINTIENT_BASE_URL . '/');
     exit;
   }
 

@@ -258,7 +258,7 @@ Installer.prototype = {
       }
       if (remoteCheck) {
         $.ajax({
-          url: 'index.php?c=' + key + '&v=' + $(input).val(),
+          url: '?c=' + key + '&v=' + $(input).val(),
           type: 'GET',
           cache: false,
           dataType: 'json',
@@ -344,7 +344,7 @@ Installer.prototype = {
       return x;
     }();
     $.ajax({
-      url: 'index.php?s=1',
+      url: '?s=1',
       data: data,
       type: 'GET',
       cache: false,
