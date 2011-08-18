@@ -54,10 +54,11 @@ if (is_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
 //
 // Following are default values for the installation script
 //
-$reqUri = strtok($_SERVER['REQUEST_URI'], '?');
+$uriPathInfo = pathinfo($_SERVER['REQUEST_URI']); # Takes care of /a/b/c/index.php and /a/b/c/index.php?a=1&b=1
+$reqUri = $uriPathInfo['dirname'];
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
-$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . $reqUri;
+$defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
 $defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
 // realpath() is required here because later on we need to make sure
@@ -231,7 +232,7 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine on\n");
-    fwrite($fd, "RewriteBase {$reqUri}\n");
+    fwrite($fd, "RewriteBase {$reqUri}/\n"); # There's a trailing slash here, it's needed!
     fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
