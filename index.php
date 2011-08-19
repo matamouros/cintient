@@ -54,8 +54,20 @@ if (is_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess')) {
 //
 // Following are default values for the installation script
 //
-$uriPathInfo = pathinfo($_SERVER['REQUEST_URI']); # Takes care of /a/b/c/index.php and /a/b/c/index.php?a=1&b=1
+// All cases considered (all with and without trailing slash):
+// . /a/b/c/index.php
+// . /a/b/c/index.php?a=1&b=1
+// . /a/b/c/
+// . /a
+// . /
+$uriPathInfo = pathinfo(strtok($_SERVER['REQUEST_URI'], '?'));
 $reqUri = $uriPathInfo['dirname'];
+if ($uriPathInfo['basename'] != 'index.php') {
+  if ($reqUri != '/') {
+    $reqUri .= '/';
+  }
+  $reqUri .= $uriPathInfo['basename'];
+}
 $defaults = array();
 $defaults['appWorkDir'] = '/var/run/cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
@@ -232,7 +244,7 @@ if (!empty($_GET['c'])) {
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine on\n");
-    fwrite($fd, "RewriteBase {$reqUri}/\n"); # There's a trailing slash here, it's needed!
+    fwrite($fd, "RewriteBase {$reqUri}/\n"); # Insert a trailing slash here, it's needed!
     fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
