@@ -798,9 +798,9 @@ EOT;
           !isset($_POST['scmRemoteRepository']) ||
            empty($_POST['scmRemoteRepository']) ||
           !isset($_POST['scmUsername']) ||
-           empty($_POST['scmUsername']) ||
+           empty($_POST['scmUsername']) /*||
           !isset($_POST['scmPassword']) ||
-           empty($_POST['scmPassword'])
+           empty($_POST['scmPassword'])*/
       ) {
         //
         // TODO: Error notification!!!
@@ -886,6 +886,10 @@ EOT;
     } else {
       $build = Project_Build::getLatest($GLOBALS['project'], $GLOBALS['user']);
     }
+
+    //
+    // TODO: don't let user access the build history of a still unfinished build!
+    //
 
     if ($build instanceof Project_Build) {
       //
