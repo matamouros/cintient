@@ -1004,7 +1004,7 @@ EOT;
   {
     $dir = CINTIENT_INSTALL_DIR . 'src/core/Build/BuilderElement/';
     $elements = array();
-    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST);
     //
     // TODO: Disabling support for Target and Project at the moment, for simplification purposes.
     //
@@ -1035,6 +1035,21 @@ EOT;
     }
     $it = null;
     unset($it);
+
+    // Closure to help sort this multi-dimensional array with the tasks.
+    // It makes sure that all tasks/subtasks are properly sorted.
+    $f = function ($arr) use (&$f) {
+      foreach ($arr as $key => $value) {
+        if (is_array($value)) {
+          $v = call_user_func($f, $value);
+          ksort($v, SORT_STRING);
+          $arr[$key] = $v;
+        }
+      }
+      return $arr;
+    };
+    $elements = $f($elements);
+
     $GLOBALS['smarty']->assign('providerAvailableBuilderElements_elements', $elements);
   }
 
