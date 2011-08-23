@@ -38,7 +38,13 @@ Cintient requires a PHP environment in order to run. Please install PHP and try 
  */
 
 
-error_reporting(0);
+error_reporting(-1);
+ini_set('display_errors', 'off');
+
+// Control var, so that we can guess if we're exiting because of an
+// error or because of normal script execution.
+global $exited;
+$exited = false;
 
 //
 // Make sure no previous .htaccess file is present here and refuse to
@@ -98,6 +104,8 @@ function directiveValueUpdate($str, $directive, $value)
 //
 function sendResponse($ok, $msg)
 {
+  global $exited;
+  $exited = true;
   echo htmlspecialchars(
     json_encode(
       array(
@@ -108,6 +116,26 @@ function sendResponse($ok, $msg)
     ENT_NOQUOTES
   );
   exit;
+}
+
+/**
+ * A shutdown function to be registered in all AJAX calls. This ensures
+ * that a default error message is always sent to the client, in case of
+ * unexpected error.
+ *
+ * Basically the mechanism is: if a response wasn't sent back by
+ * sendResponse(), then takeover and send a generic error, asking the
+ * user to check the PHP error log. We know that all AJAX calls should
+ * terminate on sendResponse(), so any unexpected errors will fallback
+ * to this callback.
+ */
+function cleanup()
+{
+  global $exited;
+  if (!$exited) {
+    // Assume error
+    sendResponse(false, 'Sorry, but there was an unknown error. Please check your PHP error log.');
+  }
 }
 
 //
@@ -202,6 +230,7 @@ function configurationFile($dir)
 // AJAX check requests
 //
 if (!empty($_GET['c'])) {
+  register_shutdown_function('cleanup'); // If an error occurs, this will show the user some info
   $ok = false;
   $msg = 'Invalid request';
   // TODO: Sanatize input
@@ -215,6 +244,7 @@ if (!empty($_GET['c'])) {
 // Final form submission
 //
 } elseif (!empty($_GET['s'])) {
+  register_shutdown_function('cleanup'); // If an error occurs, this will show the user some info
   $ok = false;
   $msg = "Invalid request";
 
@@ -279,7 +309,8 @@ if (!empty($_GET['c'])) {
   // From here on Cintient itself will handle the rest of the installation
   //
   require $defaults['configurationFile'];
-  error_reporting(0);
+  error_reporting(-1);
+  ini_set('display_errors', 'off');
   //
   // Create necessary dirs
   //
