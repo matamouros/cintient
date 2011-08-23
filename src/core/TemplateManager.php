@@ -830,9 +830,9 @@ EOT;
         $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
         $project->setScmUsername($_POST['scmUsername']);
         $project->setScmPassword($_POST['scmPassword']);
-        $project->addToUsers(array(
-          $GLOBALS['user']->getId(),
-          Access::OWNER)
+        $project->addToUsers(
+          $GLOBALS['user'],
+          Access::OWNER
         );
         $GLOBALS['project'] = $project;
         $GLOBALS['project']->log("Project edited.");
@@ -972,9 +972,9 @@ EOT;
         $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
         $project->setScmUsername($_POST['scmUsername']);
         $project->setScmPassword($_POST['scmPassword']);
-        $project->addToUsers(array(
-          $GLOBALS['user']->getId(),
-          Access::OWNER)
+        $project->addToUsers(
+          $GLOBALS['user'],
+          Access::OWNER
         );
 
         if (!$project->init()) {

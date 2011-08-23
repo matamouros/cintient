@@ -417,7 +417,6 @@ class Project extends Framework_DatabaseObjectAbstract
 
   static public function install()
   {
-    $access = Access::READ;
     $sql = <<<EOT
 CREATE TABLE IF NOT EXISTS project(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -443,14 +442,8 @@ CREATE TABLE IF NOT EXISTS project(
   workdir VARCHAR(255) NOT NULL DEFAULT '',
   avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
-CREATE TABLE IF NOT EXISTS projectuser(
-  projectid INTEGER UNSIGNED NOT NULL,
-  userid INTEGER UNSIGNED NOT NULL,
-  access TINYINT UNSIGNED NOT NULL DEFAULT {$access},
-  PRIMARY KEY (projectid, userid)
-);
 EOT;
-    if (!Database::execute($sql)) {
+    if (!Database::execute($sql) || !Project_User::install()) {
       SystemEvent::raise(SystemEvent::INFO, "Could not create Project related tables.", __METHOD__);
       return false;
     } else {
@@ -529,27 +522,8 @@ EOT;
       }
     }
 
-    $sql = 'DELETE FROM projectuser WHERE projectid=' . $this->getId();
-    if (!Database::execute($sql)) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project to db.", __METHOD__);
-      return false;
-    }
-    $sql = 'REPLACE INTO projectuser'
-         . ' (projectid,userid,access)'
-         . ' VALUES (?,?,?)';
-    if (empty($this->_users) || !is_array($this->_users)) {
-      Database::rollbackTransaction();
-      SystemEvent::raise(SystemEvent::ERROR, "No users available. Problems saving project to db.", __METHOD__);
-      return false;
-    }
-    foreach ($this->_users as $pair) {
-      $val = array(
-        $this->getId(),
-        $pair[0],
-        $pair[1],
-      );
-      if (!Database::insert($sql, $val)) {
+    foreach ($this->_users as $projectUser) {
+      if (!$projectUser->save(true)) {
         Database::rollbackTransaction();
         SystemEvent::raise(SystemEvent::ERROR, "Problems saving project to db.", __METHOD__);
         return false;
@@ -567,17 +541,18 @@ EOT;
     return true;
   }
 
-  public function addToUsers(array $pair)
+  public function addToUsers(User $user, $accessLevel = null)
   {
-    $this->_users = array_merge($this->_users, array($pair));
+    $projectUser = new Project_User($this, $user, $accessLevel);
+    $this->_users = array_merge($this->_users, array($projectUser));
   }
 
   public function removeFromUsers(User $user)
   {
     $i = 0;
     $removed = false;
-    foreach ($this->_users as $pair) {
-      if ($pair[0] == $user->getId()) {
+    foreach ($this->_users as $projectUser) {
+      if ($user->getId() == $projectUser->getUserId()) {
         unset($this->_users[$i]);
         $removed = true;
         break;
@@ -589,36 +564,28 @@ EOT;
 
   public function getAccessLevelFromUser(User $user)
   {
-    foreach ($this->_users as $pair) {
-      if ($pair[0] == $user->getId()) {
-        return $pair[1];
+    foreach ($this->_users as $projectUser) {
+      if ($user->getId() == $projectUser->getUserId()) {
+        return $projectUser->getAccess();
       }
     }
     return false;
   }
 
-  public function setAccessLevelForUser(User $user, $access)
+  public function setAccessLevelForUser(User $user, $accessLevel = null)
   {
-    $i = 0;
-    foreach ($this->_users as $pair) {
-      if ($pair[0] == $user->getId()) {
-        $this->_users[$i][1] = $access;
+    foreach ($this->_users as $projectUser) {
+      if ($user->getId() == $projectUser->getUserId()) {
+        $projectUser->setAccess($accessLevel);
         return true;
       }
-      $i++;
     }
     return false;
   }
 
   public function loadUsers()
   {
-    $ret = array();
-    $sql = "SELECT * FROM projectuser WHERE projectid=?";
-    if ($rs = Database::query($sql, array($this->getId()))) {
-      while ($rs->nextRow()) {
-        $ret[] = array($rs->getUserId(), $rs->getAccess());
-      }
-    }
+    $ret = Project_User::getList($this);
     $this->setUsers($ret);
   }
 
@@ -649,13 +616,13 @@ EOT;
   public function userHasAccessLevel(User $user, $accessLevel)
   {
     $hasAccessLevel = false;
-    foreach ($this->_users as $userPair) {
-      if ($user->getId() == $userPair[0]) {
-        $hasAccessLevel = ($userPair[1] >= $accessLevel);
+    foreach ($this->_users as $projectUser) {
+      if ($user->getId() == $projectUser->getUserId()) {
+        $hasAccessLevel = ($projectUser->getAccess() >= $accessLevel);
         break;
       }
     }
-    SystemEvent::raise(SystemEvent::DEBUG, "User " . ($hasAccessLevel?'has':"doesn't have") . " access. [USER={$user->getUsername()}] [ACCESS={$accessLevel}] [PROJECTACCESSLEVEL={$userPair[1]}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "User " . ($hasAccessLevel?'has':"doesn't have") . " access. [USER={$user->getUsername()}] [ACCESS={$accessLevel}] [PROJECTACCESSLEVEL={$projectUser->getAccess()}]", __METHOD__);
     return $hasAccessLevel;
   }
 
@@ -682,6 +649,12 @@ EOT;
     return $ret;
   }
 
+  /**
+   * Fetches a user's project list for which he has at least READ access
+   * @param User $user The user to fetch the project list from.
+   * @param int $access An access permission value.
+   * @param array $options Options to this method.
+   */
   static public function &getList(User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::ALPHA_ASC;

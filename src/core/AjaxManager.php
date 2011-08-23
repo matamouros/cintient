@@ -292,7 +292,7 @@ class AjaxManager
       exit;
     }
 
-    $GLOBALS['project']->addToUsers(array($user->getId(), Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT));
+    $GLOBALS['project']->addToUsers($user);
     $accessLevels = Access::getList();
     $html = <<<EOT
             <li id="{$user->getUsername()}" style="display: none;">
