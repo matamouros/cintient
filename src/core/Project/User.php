@@ -36,17 +36,30 @@
  */
 class Project_User extends Framework_DatabaseObjectAbstract
 {
-  protected $_project;
-  protected $_user;
   protected $_access;
   protected $_notificationSettings;
 
+  protected $_ptrProject;
+  protected $_ptrUser;
+
   public function __construct(Project $project, User $user, $access = Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT)
   {
-    $this->_project = $project;
-    $this->_user = $user;
+    parent::__construct();
+    $this->_ptrProject = $project;
+    $this->_ptrUser = $user;
     $this->_access = $access;
     $this->_notificationSettings = array();
+  }
+
+  public function __destruct()
+  {
+    parent::__destruct();
+  }
+
+  static public function deleteByProject(Project $project)
+  {
+    $sql = "DELETE FROM projectuser WHERE projectid=?";
+    return Database::execute($sql, array($project->getId()));
   }
 
   public function getAccessLevel()
@@ -55,11 +68,26 @@ class Project_User extends Framework_DatabaseObjectAbstract
   }
 
   /**
+   * Overriding the base class method, to get rid of the ptr attributes
+   */
+  protected function _getCurrentSignature()
+  {
+    $arr = get_object_vars($this);
+    $arr['_signature'] = null;
+    unset($arr['_signature']);
+    $arr['_ptrProject'] = null;
+    unset($arr['_ptrProject']);
+    $arr['_ptrUser'] = null;
+    unset($arr['_ptrUser']);
+    return md5(serialize($arr));
+  }
+
+  /**
    * Utility getter
    */
   public function getProjectId()
   {
-    return $this->_project->getId();
+    return $this->_ptrProject->getId();
   }
 
   /**
@@ -67,7 +95,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
    */
   public function getUserId()
   {
-    return $this->_user->getId();
+    return $this->_ptrUser->getId();
   }
 
   public function init()
@@ -121,11 +149,6 @@ EOT;
       SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
 
-    $sql = 'DELETE FROM projectuser WHERE projectid=' . $this->getProjectId();
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project to db.", __METHOD__);
-      return false;
-    }
     $sql = 'REPLACE INTO projectuser'
     . ' (projectid,userid,access)'
     . ' VALUES (?,?,?)';
@@ -135,7 +158,7 @@ EOT;
       $this->getAccess(),
     );
     if (!Database::insert($sql, $val)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project to db.", __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, "Problems saving project user to db.", __METHOD__);
       return false;
     }
 

@@ -288,6 +288,11 @@ class Project extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project log table. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
+    if (!$this->deleteUsers()) {
+      Database::rollbackTransaction();
+      SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project user records. [ID={$this->getId()}]", __METHOD__);
+      return false;
+    }
     $sql = "DELETE FROM project WHERE id=?";
     if (!Database::execute($sql, array($this->getId()))) {
       Database::rollbackTransaction();
@@ -302,6 +307,12 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->setId(null);
     $this->resetSignature(); // No more saves for this project
     return true;
+  }
+
+  public function deleteUsers()
+  {
+    $this->_users = array();
+    return Project_User::deleteByProject($this);
   }
 
   public function getScmLocalWorkingCopy()
@@ -522,6 +533,8 @@ EOT;
       }
     }
 
+    // The project users
+    Project_User::deleteByProject($this); // Reset it
     foreach ($this->_users as $projectUser) {
       if (!$projectUser->save(true)) {
         Database::rollbackTransaction();

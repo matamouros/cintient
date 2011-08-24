@@ -253,9 +253,9 @@ $(document).ready(function() {
         <div class="projectEditContainer container">
           <ul id="userList">
 {$accessLevels=Access::getList()}
-{foreach from=$globals_project->getUsers() item=user}
-{$userAccessLevel=$user[1]}
-{$user=User::getById($user[0])}
+{foreach from=$globals_project->getUsers() item=projectUser}
+{$userAccessLevel=$projectUser->getAccess()}
+{$user=$projectUser->getPtrUser()}
             <li id="{$user->getUsername()}">
               <div class="user">
                 <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
