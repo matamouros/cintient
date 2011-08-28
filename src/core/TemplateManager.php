@@ -771,6 +771,17 @@ EOT;
 
   static public function project_edit()
   {
+    if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems fetching requested project.", __METHOD__);
+      //
+      // TODO: Notification
+      //
+      //
+      // TODO: this should really be a redirect to the previous page.
+      //
+      Redirector::redirectToUri(UrlManager::getForDashboard());
+      exit;
+    }
     if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       //
       //TODO: Notify user and redirect

@@ -37,7 +37,7 @@
 class Project_User extends Framework_DatabaseObjectAbstract
 {
   protected $_access;
-  protected $_notificationSettings;
+  protected $_notifications;  // Array of Notification interface objects
 
   protected $_ptrProject;
   protected $_ptrUser;
@@ -48,7 +48,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     $this->_ptrProject = $project;
     $this->_ptrUser = $user;
     $this->_access = $access;
-    $this->_notificationSettings = array();
+    $this->_notifications = array();
   }
 
   public function __destruct()
@@ -60,6 +60,21 @@ class Project_User extends Framework_DatabaseObjectAbstract
   {
     $sql = "DELETE FROM projectuser WHERE projectid=?";
     return Database::execute($sql, array($project->getId()));
+  }
+
+  public function fireNotification($msg, $params = array())
+  {
+    if (empty($params['title'])) {
+      $params['title'] = $this->_ptrProject->getTitle();
+    }
+    if (empty($params['uri'])) {
+      $params['uri'] = '';
+    }
+    foreach ($this->_notifications as $method) {
+      if (!$method->fire($msg, $params)) {
+        $this->_ptrProject->log("Problems notifying user {$this->_ptrUser->getUsername()} using method '" . get_class($method) . "'");
+      }
+    }
   }
 
   public function getAccessLevel()
@@ -80,6 +95,29 @@ class Project_User extends Framework_DatabaseObjectAbstract
     $arr['_ptrUser'] = null;
     unset($arr['_ptrUser']);
     return md5(serialize($arr));
+  }
+
+  /**
+   * Not only a getter for the notifications attribute, it always tries
+   * to make sure that this attribute always has the latest notification
+   * methods, even if they have not been configured/seen by the user b4.
+   */
+  public function getNotifications()
+  {
+    $baseline = array();
+    foreach ($this->_notifications as $method) {
+      $baseline[] = get_class($method);
+    }
+    $availableMethods = Notification::getMethods();
+    foreach ($availableMethods as $method) {
+      $class = 'Notification_' . $method;
+      if (!in_array($class, $baseline)) {
+        // Create an empty notification instance
+        $notification = new $class();
+        $this->_notifications[$method] = $notification;
+      }
+    }
+    return $this->_notifications;
   }
 
   /**
@@ -112,6 +150,7 @@ CREATE TABLE IF NOT EXISTS projectuser(
   projectid INTEGER UNSIGNED NOT NULL,
   userid INTEGER UNSIGNED NOT NULL,
   access TINYINT UNSIGNED NOT NULL DEFAULT {$access},
+  notifications TEXT NOT NULL DEFAULT '',
   PRIMARY KEY (projectid, userid)
 );
 EOT;
@@ -149,13 +188,26 @@ EOT;
       SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
 
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $serializedNotifications = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getNotifications()));
+
     $sql = 'REPLACE INTO projectuser'
-    . ' (projectid,userid,access)'
-    . ' VALUES (?,?,?)';
+    . ' (projectid,userid,access,notifications)'
+    . ' VALUES (?,?,?,?)';
     $val = array(
       $this->getProjectId(),
       $this->getUserId(),
       $this->getAccess(),
+      $serializedNotifications,
     );
     if (!Database::insert($sql, $val)) {
       SystemEvent::raise(SystemEvent::ERROR, "Problems saving project user to db.", __METHOD__);
@@ -167,6 +219,23 @@ EOT;
     #endif
     $this->resetSignature();
     return true;
+  }
+
+  /**
+   * Gets a specific Project_User.
+   *
+   * @param Project $project
+   * @param User $user
+   * @param array $options
+   */
+  static public function getByUser(Project $project, User $user, array $options = array())
+  {
+    $ret = null;
+    $sql = "SELECT * FROM projectuser WHERE projectid=? AND userid=?";
+    if (($rs = Database::query($sql, array($project->getId(), $user->getId()))) && $rs->nextRow()) {
+      $ret = self::_getObject($rs, array('project' => $project, 'user' => $user));
+    }
+    return $ret;
   }
 
   /**
@@ -204,11 +273,21 @@ EOT;
       return false;
     }
     $ret = new self($options['project'], $options['user'], $rs->getAccess());
-    $notificationSettings = @unserialize($rs->getNotificationSettings());
-    if ($notificationSettings === false) {
-      $notificationSettings = array();
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $unsafeSerializedNotifications = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getNotifications());
+    if (($notifications = unserialize($unsafeSerializedNotifications)) === false) {
+      $notifications = array();
     }
-    $ret->setNotificationSettings($notificationSettings);
+    $ret->setNotifications($notifications);
     $ret->resetSignature();
     return $ret;
   }

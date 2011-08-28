@@ -370,10 +370,9 @@ EOT;
       );
       exit;
     }
-
     $GLOBALS['project']->log("A building was triggered.");
     if (!$GLOBALS['project']->build(true)) {
-      $GLOBALS['project']->log("Building failed.");
+      $GLOBALS['project']->log("Build failed!");
       echo json_encode(
         array(
           'success' => true,
@@ -381,7 +380,7 @@ EOT;
         )
       );
     } else {
-      $GLOBALS['project']->log("Building successful.");
+      $GLOBALS['project']->log("Build successful.");
       echo json_encode(
         array(
           'success' => true,
@@ -666,6 +665,55 @@ EOT;
     echo json_encode(
       array(
       	'success' => true,
+      )
+    );
+    exit;
+  }
+
+  static public function project_notificationsSave()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    // Pull up the user's notifications
+    $projectUser = Project_User::getByUser($GLOBALS['project'], $GLOBALS['user']);
+    $notifications = array();
+    foreach ($_REQUEST as $method => $payload) {
+      $notificationClass = 'Notification_' . $method;
+      if (!class_exists($notificationClass)) {
+        SystemEvent::raise(SystemEvent::INFO, "Invalid notification method specified for save. [METHOD={$method}]", __METHOD__);
+        continue;
+      }
+      $notification = new $notificationClass();
+      foreach ($payload as $attribute => $data) {
+        $setter = 'set' . ucfirst($attribute);
+        if (!is_callable(array($notification, $setter))) { // method_exists() does not invoke __call() to check the method exists
+          SystemEvent::raise(SystemEvent::INFO, "Invalid notification method attribute specified for save. [METHOD={$method}] [ATTRIBUTE={$attribute}]", __METHOD__);
+          continue;
+        }
+        $notification->$setter($data['value']);
+      }
+      $notifications[$method] = $notification;
+    }
+    $projectUser->setNotifications($notifications);
+
+    $GLOBALS['project']->log("Notification settings changed for user {$GLOBALS['user']->getUsername()}.");
+
+    SystemEvent::raise(SystemEvent::DEBUG, "Project notification settings changed for user {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
       )
     );
     exit;

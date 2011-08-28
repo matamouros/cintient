@@ -38,9 +38,16 @@
   <script type="text/javascript" src="js/lib/jquery-1.6.js"></script>
   <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
   <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
+  <script type="text/javascript" src="js/cintient.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
+  <script type="text/javascript">
+  // <![CDATA[
+  $(document).ready(function() {
+    cintient = new Cintient();
+  });
+  </script>
 </head>
 <body>
   <div id="header" class="containerTopLevel">

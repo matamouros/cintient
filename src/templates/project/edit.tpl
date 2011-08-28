@@ -26,7 +26,7 @@
   {$defaultPane="#generalPane"}
 {/if}
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a></span>"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a></span>"}
   {*$defaultPane="#generalPane"*}
   {$defaultPane="#integrationBuilderPane"}
 {/if}
@@ -34,7 +34,7 @@
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   backLink="{UrlManager::getForProjectView()}"
-  jsIncludes=['js/lib/avataruploader.js']}
+  jsIncludes=['js/lib/avataruploader.js', 'js/cintientNotifications.js']}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
         <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
@@ -61,6 +61,25 @@
           <input type="submit" value="Edit!" id="submitButton">
         </div>
         {*</form>*}
+      </div>
+      <div id="notificationsPane" class="exclusivePane">
+{foreach $globals_project->getNotificationsFromUser($globals_user) as $notification}
+        <div id="{$notification->getMethod()}" class="projectEditContainer container">
+          <div>{$notification->getMethod()}</div>
+{$notification->getView()}
+        </div>
+{if !$notification@last}
+        <hr />
+{/if}
+{/foreach}
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  new CintientNotifications({
+    submitUrl: '{URLManager::getForAjaxProjectNotificationsSave()}',
+  });
+});
+</script>
       </div>
       <div id="scmPane" class="exclusivePane">
         {* TODO: this should be a separate form so that we don't erroneously send a hidden tab's form that the user didn't intend to *}

@@ -66,6 +66,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/project/build/';
   }
 
+  static public function getForAjaxProjectNotificationsSave()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/notifications-save/';
+  }
+
   static public function getForAjaxProjectRemoveUser()
   {
     return CINTIENT_BASE_URL . '/ajax/project/remove-user/';
