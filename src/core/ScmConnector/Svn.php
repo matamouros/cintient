@@ -31,7 +31,15 @@ class ScmConnector_Svn implements ScmConnectorInterface
 {
   static public function checkout(array $args)
   {
-    $command = "svn co --username {$args['username']} --password \"{$args['password']}\" --non-interactive {$args['remote']} {$args['local']}";
+    $username = '';
+    $password = '';
+    if (!empty($args['username'])) {
+      $username = "--username {$args['username']} ";
+      if (!empty($args['password'])) {
+        $password = "--password \"{$args['password']}\" ";
+      }
+    }
+    $command = "svn co {$username}{$password}--non-interactive {$args['remote']} {$args['local']}";
     $lastline = exec($command, $output, $return);
     if ($return != 0) {
       $output = implode("\n", $output);
@@ -46,7 +54,15 @@ class ScmConnector_Svn implements ScmConnectorInterface
     //
     // svn info the local sources
     //
-    $command = "svn info --username {$args['username']} --password \"{$args['password']}\" --non-interactive {$args['remote']} {$args['local']}";
+    $username = '';
+    $password = '';
+    if (!empty($args['username'])) {
+      $username = "--username {$args['username']} ";
+      if (!empty($args['password'])) {
+        $password = "--password \"{$args['password']}\" ";
+      }
+    }
+    $command = "svn info {$username}{$password}--non-interactive {$args['remote']} {$args['local']}";
     $lastline = exec($command, $output, $return);
     $output = implode("\n", $output);
     if ($return != 0) {
@@ -65,7 +81,15 @@ class ScmConnector_Svn implements ScmConnectorInterface
 
   static public function update(array $args, &$rev)
   {
-    $command = "svn up --username {$args['username']} --password \"{$args['password']}\" --non-interactive {$args['local']}";
+    $username = '';
+    $password = '';
+    if (!empty($args['username'])) {
+      $username = "--username {$args['username']} ";
+      if (!empty($args['password'])) {
+        $password = "--password \"{$args['password']}\" ";
+      }
+    }
+    $command = "svn up {$username}{$password}--non-interactive {$args['local']}";
     $lastline = exec($command, $output, $return);
     if ($return != 0) {
       $output = implode("\n", $output);
