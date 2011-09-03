@@ -19,8 +19,8 @@
 
 *}
 {*$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilderPane\">deployment</a> | <a href=\"#\" class=\"integrationBuilderPane\">integration</a>"*}
-{$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
-{$defaultPane="#deploymentBuilder"}
+{$menuLinks="<a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
+{$defaultPane="#deploymentBuilderPane"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
   {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
   {$defaultPane="#generalPane"}
@@ -28,13 +28,13 @@
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
   {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a></span>"}
   {*$defaultPane="#generalPane"*}
-  {$defaultPane="#integrationBuilderPane"}
+  {$defaultPane="#generalPane"}
 {/if}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Edit project"
   menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   backLink="{UrlManager::getForProjectView()}"
-  jsIncludes=['js/lib/avataruploader.js', 'js/cintientNotifications.js']}
+  jsIncludes=['js/lib/avataruploader.js']}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
         <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
@@ -63,23 +63,21 @@
         {*</form>*}
       </div>
       <div id="notificationsPane" class="exclusivePane">
-{foreach $globals_project->getNotificationsFromUser($globals_user) as $notification}
-        <div id="{$notification->getMethod()}" class="projectEditContainer container">
-          <div>{$notification->getMethod()}</div>
-{$notification->getView()}
-        </div>
-{if !$notification@last}
-        <hr />
-{/if}
-{/foreach}
+        <div class="projectEditContainer container" id="notificationsForm">
+{$projectUser=Project_User::getByUser($globals_project, $globals_user)}
+{$notifications=$projectUser->getNotifications()}
+{$notifications->getView()}
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  new CintientNotifications({
+  cintient.initGenericForm({
+    formSelector : '#notificationsPane .projectEditContainer',
+    submitButtonAppendTo : '#notificationsPane',
     submitUrl: '{URLManager::getForAjaxProjectNotificationsSave()}',
   });
 });
 </script>
+        </div>
       </div>
       <div id="scmPane" class="exclusivePane">
         {* TODO: this should be a separate form so that we don't erroneously send a hidden tab's form that the user didn't intend to *}
@@ -316,39 +314,7 @@ $(document).ready(function() {
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  // Show the passed exclusivePane, hiding all others
-  var activeExclusivePane = null;
-  function showExclusivePane(exclusivePane) {
-    if (activeExclusivePane === null || $(activeExclusivePane).attr('id') !== $(exclusivePane).attr('id')) {
-      // Hide the previous pane
-      $(activeExclusivePane).hide();
-      // Reset the previous link
-      $('#exclusivePaneLinks a.' + $(activeExclusivePane).attr('id')).css({
-        "color" : "rgb(255,40,0)",
-        "font-weight" : "bold",
-        "text-decoration" : "none",
-        "text-shadow" : "#303030 1px 1px 1px"
-      });
-      // Highlight the active link
-      $('#exclusivePaneLinks a.' + $(exclusivePane).attr('id')).css({
-        "color" : "rgb(255,60,0)",
-        "text-shadow" : "0px 0px 6px rgba(255,40,0,1)",
-        "text-decoration" : "none"
-      });
-      // Show the current pane
-      exclusivePane.fadeIn(300);
-
-      activeExclusivePane = exclusivePane;
-    }
-  }
-  // Bind the click link events to their corresponding panes
-  $('#exclusivePaneLinks a').each(function() {
-    $(this).click(function() {
-      showExclusivePane($('#paneContainer').find('#' + $(this).attr('class')));
-    });
-  });
-  // Promptly show the default pane
-  showExclusivePane($('{$defaultPane}'));
+  cintient.initExclusivePanes('{$defaultPane}');
 
   //
   // For the access level panes

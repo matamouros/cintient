@@ -688,28 +688,22 @@ EOT;
 
     // Pull up the user's notifications
     $projectUser = Project_User::getByUser($GLOBALS['project'], $GLOBALS['user']);
-    $notifications = array();
-    foreach ($_REQUEST as $method => $payload) {
-      $notificationClass = 'Notification_' . $method;
-      if (!class_exists($notificationClass)) {
-        SystemEvent::raise(SystemEvent::INFO, "Invalid notification method specified for save. [METHOD={$method}]", __METHOD__);
-        continue;
+
+    $notificationSettings = $projectUser->getNotifications();
+    $newNotificationSettings = array();
+
+    foreach ($_POST['notificationsForm'] as $key => $value) {
+      $keyParts = explode('_', $key);
+      $event = $keyParts[0];
+      $handler = 'Notification_' . $keyParts[1];
+      if (!isset($newNotificationSettings[$handler])) {
+        $newNotificationSettings[$handler] = array();
       }
-      $notification = new $notificationClass();
-      foreach ($payload as $attribute => $data) {
-        $setter = 'set' . ucfirst($attribute);
-        if (!is_callable(array($notification, $setter))) { // method_exists() does not invoke __call() to check the method exists
-          SystemEvent::raise(SystemEvent::INFO, "Invalid notification method attribute specified for save. [METHOD={$method}] [ATTRIBUTE={$attribute}]", __METHOD__);
-          continue;
-        }
-        $notification->$setter($data['value']);
-      }
-      $notifications[$method] = $notification;
+      $newNotificationSettings[$handler][$event] = (bool)($value['value']);
     }
-    $projectUser->setNotifications($notifications);
+    $projectUser->setNotifications(new NotificationSettings($newNotificationSettings));
 
     $GLOBALS['project']->log("Notification settings changed for user {$GLOBALS['user']->getUsername()}.");
-
     SystemEvent::raise(SystemEvent::DEBUG, "Project notification settings changed for user {$GLOBALS['user']->getUsername()}.", __METHOD__);
     echo json_encode(
       array(
@@ -819,6 +813,52 @@ EOT;
       array(
         'success' => true,
         'result' => $usersToJson,
+      )
+    );
+    exit;
+  }
+
+  static public function settings_notificationsSave()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $notifications = array();
+    foreach ($_REQUEST as $handler => $payload) {
+      $notificationClass = /*'Notification_' . */$handler;
+      if (!class_exists($notificationClass)) {
+        SystemEvent::raise(SystemEvent::INFO, "Invalid notification handler specified for save. [METHOD={$handler}]", __METHOD__);
+        continue;
+      }
+      $notification = new $notificationClass();
+      foreach ($payload as $attribute => $data) {
+        $setter = 'set' . ucfirst($attribute);
+        if (!is_callable(array($notification, $setter))) {
+          // method_exists() does not invoke __call() to check the method exists
+          SystemEvent::raise(SystemEvent::INFO, "Invalid notification handler attribute specified for save. [METHOD={$handler}] [ATTRIBUTE={$attribute}]", __METHOD__);
+          continue;
+        }
+        $notification->$setter($data['value']);
+      }
+      $notifications[$handler] = $notification;
+    }
+    $GLOBALS['user']->setNotifications($notifications);
+
+    SystemEvent::raise(SystemEvent::DEBUG, "Notification settings changed for user {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
       )
     );
     exit;

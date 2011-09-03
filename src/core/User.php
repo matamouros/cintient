@@ -24,45 +24,25 @@
 /**
  * @package User
  */
-class User
+class User extends Framework_DatabaseObjectAbstract
 {
-  private $_avatar;          // The avatar's location
-  private $_cos;                // The user's classes of service
-  private $_creationDate;
-  private $_email;              // Registration unique email
-  private $_enabled;            // 0 for disabled or >0 for enabled
-  private $_id;
-  private $_name;               // Real name
-  private $_notificationEmails; // Email addresses for notification purposes
-  private $_signature;
-  private $_username;
+  protected $_avatar;         // The avatar's location
+  protected $_cos;            // The user's classes of service
+  protected $_creationDate;
+  protected $_email;          // Registration unique email
+  protected $_enabled;        // 0 for disabled or >0 for enabled
+  protected $_id;
+  protected $_name;           // Real name
+  protected $_notifications;  // Global notifications settings for the user
+  protected $_signature;
+  protected $_username;
 
-  private $_projectId;          // The active project ID
-  private $_projectAccess;      // The active project access level
-
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      $this->$var = $args[0];
-      return true;
-    }
-    return false;
-  }
+  protected $_projectId;      // The active project ID
+  protected $_projectAccess;  // The active project access level
 
   public function __construct()
   {
+    parent::__construct();
     $this->_avatar = null;
     $this->_cos = UserCos::USER;
     $this->_creationDate = date('Y-m-d H:i:s');
@@ -70,25 +50,39 @@ class User
     $this->_enabled = true;
     $this->_id = null;
     $this->_name = '';
-    $this->_notificationEmails = '';
-    $this->_signature = null;
+    $this->_notifications = array();
     $this->_username = '';
   }
 
   public function __destruct()
   {
-    $this->_save();
+    parent::__destruct();
   }
 
-  private function _save($force=false)
+  protected function _save($force = false)
   {
-    if ($this->_getCurrentSignature() == $this->_signature && !$force) {
-      SystemEvent::raise(SystemEvent::DEBUG, "User save called, but no saving is required.", __METHOD__);
-      return false;
+  if (!$this->hasChanged()) {
+      if (!$force) {
+        return false;
+      }
+      SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
+
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $serializedNotifications = str_replace("\0", CINTIENT_NULL_BYTE_TOKEN, serialize($this->getNotifications()));
+
     $sql = 'REPLACE INTO user'
          . ' (id,avatar,cos,creationdate,email,enabled,name,'
-         . 'notificationEmails,username)'
+         . 'notifications,username)'
          . ' VALUES (?,?,?,?,?,?,?,?,?)';
     $val = array(
       $this->getId(),
@@ -98,7 +92,7 @@ class User
       $this->getEmail(),
       $this->getEnabled(),
       $this->getName(),
-      $this->getNotificationEmails(),
+      $serializedNotifications,
       $this->getUsername(),
     );
     if ($this->_id === null) {
@@ -114,13 +108,13 @@ class User
       }
     }
     SystemEvent::raise(SystemEvent::DEBUG, "Saved user. [USERNAME={$this->getUsername()}]", __METHOD__);
-    $this->updateSignature();
+    $this->resetSignature();
     return true;
   }
 
   /**
-   * Call this at the very creation of the object, whenever not loading it from
-   * the database.
+   * Call this at the very creation of the object, whenever not loading
+   * it from the database.
    */
   public function init()
   {
@@ -168,12 +162,34 @@ class User
     $this->_avatar = 'gravatar:' . $id;
   }
 
-  private function _getCurrentSignature()
+  /**
+   * Not only a getter for the notifications attribute, it always tries
+   * to make sure that this attribute always has the latest notification
+   * handlers, even if they have not been configured/seen by the user b4.
+   */
+  public function getNotifications()
   {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    return md5(serialize($arr));
+    $baseline = array();
+    foreach ($this->_notifications as $handler) {
+      $baseline[] = get_class($handler);
+    }
+    $availableHandlers = NotificationSettings::getHandlers();
+    foreach ($availableHandlers as $handler) {
+      if (!in_array($handler, $baseline)) {
+        // Create an empty notification instance
+        $notification = new $handler();
+        $this->_notifications[$handler] = $notification;
+      }
+    }
+    return $this->_notifications;
+  }
+
+  /**
+   * Gets a notification handler
+   */
+  public function getActiveNotificationHandler($handler)
+  {
+    return (!empty($this->_notifications[$handler])?$this->_notifications[$handler]:false);
   }
 
   /**
@@ -195,11 +211,6 @@ class User
     SystemEvent::raise(SystemEvent::DEBUG, "Updated password for user. [USERNAME={$this->getUsername()}]", __METHOD__);
     #endif
     return true;
-  }
-
-  public function updateSignature()
-  {
-    $this->setSignature($this->_getCurrentSignature());
   }
 
   static public function getById($id)
@@ -248,7 +259,7 @@ CREATE TABLE IF NOT EXISTS user(
   email VARCHAR(255),
   cos TINYINT UNSIGNED,
   name VARCHAR(255) NOT NULL DEFAULT '',
-  notificationemails TEXT NOT NULL DEFAULT '',
+  notifications TEXT NOT NULL DEFAULT '',
   avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS userauth(
@@ -274,9 +285,23 @@ EOT;
     $ret->setEnabled($rs->getEnabled());
     $ret->setId($rs->getId());
     $ret->setName($rs->getName());
-    $ret->setNotificationEmails($rs->getNotificationEmails());
     $ret->setUsername($rs->getUsername());
-    $ret->updateSignature();
+    //
+    // The following is a workaround on the fact that the translation of this
+    // serialized object to the database gets all broken, due to the fact of PHP
+    // introducing NULL bytes around the '*' that is prepended before protected
+    // variable members, in the serialized mode. This method replaces those
+    // problematic NULL bytes with an identifier string '~~NULL_BYTE~~',
+    // rendering serialization and unserialization of these specific kinds of
+    // object safe. Credits to travis@travishegner.com on:
+    // http://pt.php.net/manual/en/function.serialize.php#96504
+    //
+    $unsafeSerializedNotifications = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getNotifications());
+    if (($notifications = unserialize($unsafeSerializedNotifications)) === false) {
+    $notifications = array();
+    }
+    $ret->setNotifications($notifications);
+    $ret->resetSignature();
     return $ret;
   }
 }

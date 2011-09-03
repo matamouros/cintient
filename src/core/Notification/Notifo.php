@@ -47,11 +47,6 @@ class Notification_Notifo extends NotificationAbstract
     $this->_key = '';
   }
 
-  public function getMethod()
-  {
-    return 'Notifo';
-  }
-
   public function getView()
   {
     $o = $this;

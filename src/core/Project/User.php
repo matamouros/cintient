@@ -37,7 +37,7 @@
 class Project_User extends Framework_DatabaseObjectAbstract
 {
   protected $_access;
-  protected $_notifications;  // Array of Notification interface objects
+  protected $_notifications; // A NotificationSettings object
 
   protected $_ptrProject;
   protected $_ptrUser;
@@ -48,7 +48,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     $this->_ptrProject = $project;
     $this->_ptrUser = $user;
     $this->_access = $access;
-    $this->_notifications = array();
+    $this->_notifications = new NotificationSettings();
   }
 
   public function __destruct()
@@ -62,7 +62,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     return Database::execute($sql, array($project->getId()));
   }
 
-  public function fireNotification($msg, $params = array())
+  public function fireNotification($event, $msg, $params = array())
   {
     if (empty($params['title'])) {
       $params['title'] = $this->_ptrProject->getTitle();
@@ -70,9 +70,22 @@ class Project_User extends Framework_DatabaseObjectAbstract
     if (empty($params['uri'])) {
       $params['uri'] = '';
     }
-    foreach ($this->_notifications as $method) {
-      if (!$method->fire($msg, $params)) {
-        $this->_ptrProject->log("Problems notifying user {$this->_ptrUser->getUsername()} using method '" . get_class($method) . "'");
+    // TODO: this whole method's content should be a full fledged operational
+    // class for dealing with notifications.
+    foreach ($this->_notifications->getSettings() as $handlerClass => $settings) {
+      if (!empty($settings[$event]) &&
+          ($handler = $this->_ptrUser->getActiveNotificationHandler($handlerClass)) !== false &&
+          !$handler->isEmpty())
+      {
+        if (!$handler->fire($msg, $params)) {
+          $msg = "Problems notifying user {$this->_ptrUser->getUsername()} using handler '" . $handlerClass . "'.";
+          SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+          $this->_ptrProject->log($msg);
+        } else {
+          SystemEvent::raise(SystemEvent::DEBUG, "Notification sent through $handlerClass, on event $event.", __METHOD__);
+        }
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Notification not sent through $handlerClass.", __METHOD__);
       }
     }
   }
@@ -95,29 +108,6 @@ class Project_User extends Framework_DatabaseObjectAbstract
     $arr['_ptrUser'] = null;
     unset($arr['_ptrUser']);
     return md5(serialize($arr));
-  }
-
-  /**
-   * Not only a getter for the notifications attribute, it always tries
-   * to make sure that this attribute always has the latest notification
-   * methods, even if they have not been configured/seen by the user b4.
-   */
-  public function getNotifications()
-  {
-    $baseline = array();
-    foreach ($this->_notifications as $method) {
-      $baseline[] = get_class($method);
-    }
-    $availableMethods = Notification::getMethods();
-    foreach ($availableMethods as $method) {
-      $class = 'Notification_' . $method;
-      if (!in_array($class, $baseline)) {
-        // Create an empty notification instance
-        $notification = new $class();
-        $this->_notifications[$method] = $notification;
-      }
-    }
-    return $this->_notifications;
   }
 
   /**

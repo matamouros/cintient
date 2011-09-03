@@ -44,6 +44,7 @@
 {/foreach}
   <script type="text/javascript">
   // <![CDATA[
+  cintient = null;
   $(document).ready(function() {
     cintient = new Cintient();
   });

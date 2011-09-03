@@ -111,10 +111,27 @@ class Database
     if (!$db) {
       return false;
     }
-    if (self::query($query, $values) !== false) {
-      return $db->lastInsertRowID();
+    $starttime = microtime(true);
+    if (empty($values)) {
+      if ($db->exec($query) === false) {
+        SystemEvent::raise(SystemEvent::ERROR, 'Error inserting query. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
+        return false;
+      }
+    } else {
+      if (!$stmt = self::_prepareAndBindValues($query, $values)) {
+        SystemEvent::raise(SystemEvent::ERROR, 'Error binding parameters. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        return false;
+      }
+      if ($stmt->execute() === false) {
+        SystemEvent::raise(SystemEvent::ERROR, 'Error inserting statement. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        return false;
+      }
     }
-    return false;
+    $proctime = microtime(true)-$starttime;
+    #if DEBUG
+    SystemEvent::raise(SystemEvent::DEBUG, 'Inserted. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    #endif
+    return $db->lastInsertRowID();
   }
 
   /**
@@ -156,11 +173,11 @@ class Database
     $proctime = microtime(true)-$starttime;
     $tmp = '';
     if (!$rs = new Resultset($ret)) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Error executing. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+      SystemEvent::raise(SystemEvent::ERROR, 'Error querying. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
       return false;
     }
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, 'Executed. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, 'Queried. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
     #endif
     return $rs;
   }

@@ -17,30 +17,49 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl'
+*}{$defaultPane="#notificationsPane"}
+{$menuLinks="<a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a>"}
+{include file='includes/header.inc.tpl'
   subSectionTitle="Settings"
+  menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
   jsIncludes=['js/lib/avataruploader.js']}
-    <div id="settingsContainer" class="container">
-      <ul>
-        <li class="settingsNode">
-          <div class="label">Change your avatar</div>
-          <div id="avatarUploader">
-            <noscript>
-              {* TODO: Use simple upload form *}
-              <p>Please enable JavaScript to use file uploader.</p>
-            </noscript>
-          </div>
-        </li>
-        {*
-        <li class="settingsNode">
-          <div class="label">Notification emails <span class="fineprintLabel">(2 max. More will be ignored)</span></div>
-          <div class="textareaContainer">
-            <textarea class="textarea" name="notificationEmails"></textarea>
-          </div>
-        </li>
-        *}
-      </ul>
+    <div id="paneContainer">
+      <div id="generalPane" class="exclusivePane">
+        <ul>
+          <li class="settingsNode">
+            <div class="label">Change your avatar</div>
+            <div id="avatarUploader">
+              <noscript>
+                {* TODO: Use simple upload form *}
+                <p>Please enable JavaScript to use file uploader.</p>
+              </noscript>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div id="notificationsPane" class="exclusivePane">
+{foreach $globals_user->getNotifications() as $notification}
+        <div id="{$notification->getHandler()}" class="projectEditContainer container">
+          <div>{$notification->getHandler()}</div>
+{$notification->getView()}
+        </div>
+{if !$notification@last}
+        <hr />
+{/if}
+{/foreach}
+      </div>
     </div>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  cintient.initExclusivePanes('{$defaultPane}');
+  cintient.initGenericForm({
+    formSelector : '#notificationsPane .projectEditContainer',
+    submitButtonAppendTo : '#notificationsPane',
+    submitUrl: '{URLManager::getForAjaxSettingsNotificationsSave()}',
+  });
+});
+</script>
 <style type="text/css">
 .qq-upload-button
 {

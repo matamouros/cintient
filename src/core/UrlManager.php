@@ -81,6 +81,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/search/user/';
   }
 
+  static public function getForAjaxSettingsNotificationsSave()
+  {
+    return CINTIENT_BASE_URL . '/ajax/settings/notifications-save/';
+  }
+
   static public function getForAsset($filename, Array $params = array())
   {
     $params['f'] = $filename;

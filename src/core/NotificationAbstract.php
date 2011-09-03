@@ -24,7 +24,7 @@
 require_once 'lib/lib.htmlgen.php';
 
 /**
- * Abstract class for all Notification methods to extend.
+ * Abstract class for all Notification handlers to extend.
  *
  * @package     Notification
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
@@ -37,9 +37,13 @@ require_once 'lib/lib.htmlgen.php';
 abstract class NotificationAbstract extends Framework_BaseObject
 {
   /**
-   * Returns the notification method corresponding to the current class.
+   * Returns the notification handler corresponding to the current,
+   * derived, class.
    */
-  abstract public function getMethod();
+  public function getHandler()
+  {
+    return get_class($this);
+  }
 
   /**
    * Returns the HTML code for generating the notification view
@@ -51,4 +55,9 @@ abstract class NotificationAbstract extends Framework_BaseObject
    * Fires a notification.
    */
   abstract public function fire($msg, $params = array());
+
+  /**
+   * States how to consider a child notification class empty.
+   */
+  abstract public function isEmpty();
 }

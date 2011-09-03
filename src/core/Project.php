@@ -245,9 +245,7 @@ class Project extends Framework_DatabaseObjectAbstract
     if (!$build->init()) {
       $this->setStatus(self::STATUS_ERROR);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
-      if (true) { // TODO: IF BUILD_FAILED_NOTIFICATIONS_ACTIVE_FOR_USER
-        $projectUser->fireNotification('Build failed!');
-      }
+      $projectUser->fireNotification(NotificationSettings::BUILD_FAILED, 'Build failed!');
       return false;
     }
 
@@ -257,10 +255,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
-    if (true) {
-      // TODO: IF BUILD_FAILED_NOTIFICATIONS_ACTIVE_FOR_USER
-      $projectUser->fireNotification('Build successful.');
-    }
+    $projectUser->fireNotification(NotificationSettings::BUILD_SUCCESS, 'Build successful.');
     return true;
   }
 

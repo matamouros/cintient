@@ -61,7 +61,9 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 // Get to the part of the URL that matters
 $currentUrl = 'http://' . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?');
 $GLOBALS['uri'] = substr($currentUrl, strlen(CINTIENT_BASE_URL));
-
+if (substr($GLOBALS['uri'], -1) != '/') {
+  $GLOBALS['uri'] .= '/';
+}
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "WebHandler");
 $GLOBALS['section'] = null;
 $GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings

@@ -39,7 +39,11 @@ Cintient.prototype = {
   {
   },
 
-  createButton: function(text)
+  /**
+   * Creates a button, styles it and returns it. Whomever calls this,
+   * must then be responsible for appending it to the DOM tree.
+   */
+  createButton: function (text)
   {
     var button = document.createElement('button');
     //
@@ -69,5 +73,117 @@ Cintient.prototype = {
     );
     $(button).html("<div>" + text + "</div>");
     return button;
+  },
+  
+  /**
+   * Sets up a page that was rigged with exclusive panes, so that only
+   * one of them is shown at a time. Currently used for controlling
+   * the project edit page and also the settings page. Note: exclusive
+   * panes are closely tied to their respective activation links.
+   * 
+   * Activation links to panes should be inside an #exclusivePaneLinks
+   * element. They must have a class name that is the same as the pane's
+   * id.
+   * 
+   * Exclusive panes themselves should have an .exclusivePane class,
+   * and their id must match the corresponding activation link's class.
+   * 
+   * A default pane object must be provided, in order to have a default
+   * pane show up.
+   */
+  initExclusivePanes: function (defaultPane)
+  {
+    // Show the passed exclusivePane, hiding all others
+    var activeExclusivePane = null;
+    function showExclusivePane(exclusivePane) {
+      if (activeExclusivePane === null || $(activeExclusivePane).attr('id') !== $(exclusivePane).attr('id')) {
+        // Hide the previous pane
+        $(activeExclusivePane).hide();
+        // Reset the previous link
+        $('#exclusivePaneLinks a.' + $(activeExclusivePane).attr('id')).css({
+          "color" : "rgb(255,40,0)",
+          "font-weight" : "bold",
+          "text-decoration" : "none",
+          "text-shadow" : "#303030 1px 1px 1px"
+        });
+        // Highlight the active link
+        $('#exclusivePaneLinks a.' + $(exclusivePane).attr('id')).css({
+          "color" : "rgb(255,60,0)",
+          "text-shadow" : "0px 0px 6px rgba(255,40,0,1)",
+          "text-decoration" : "none"
+        });
+        // Show the current pane
+        exclusivePane.fadeIn(300);
+        activeExclusivePane = exclusivePane;
+      }
+    }
+    // Bind the click link events to their corresponding panes
+    $('#exclusivePaneLinks a').bind('click', function() {
+      showExclusivePane($('#paneContainer #' + $(this).attr('class')));
+    });
+    // Promptly show the default pane
+    showExclusivePane($(defaultPane));
+  },
+  
+  /**
+   * 
+   */
+  initGenericForm: function (params)
+  {
+    var options = $.extend({
+      formSelector : 'form',
+      submitButtonText : 'Save',
+      submitButtonClass : 'buttonText',
+      submitButtonAppendTo : '',
+      successMsg : 'Saved.'
+    }, arguments[0] || {});
+    
+    //
+    // Create the submit button
+    //
+    var button = cintient.createButton(options.submitButtonText);
+    button.className = options.submitButtonClass;
+    button.style.display = 'none';
+    //
+    // Bind the click action
+    //
+    $(button).click(function () {
+      $.ajax({
+        url: options.submitUrl,
+        data: function () {
+          var data = {};
+          $(options.formSelector).each(function () {
+            var that = this;
+            data[$(this).attr('id')] = function() {
+              var x = {};
+              $(':input', that).each( function() {
+                x[this.name] = { type: this.type, value: this.value };
+              });
+              return x;
+            }();
+          });
+          return data;
+        }(),
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (!data.success) {
+            //TODO: treat this properly
+            alert('error');
+          } else {
+            $.jGrowl(options.successMsg);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(errorThrown);
+        }
+      });
+    });
+    //
+    // Get it into the DOM tree and show it!
+    //
+    $(options.submitButtonAppendTo).append(button);
+    setTimeout(function() {$(button).fadeIn(800)}, 400);
   }
 };

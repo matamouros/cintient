@@ -45,11 +45,6 @@ class Notification_Email extends NotificationAbstract
     $this->_emails = array();
   }
 
-  public function getMethod()
-  {
-    return 'Email';
-  }
-
   public function getView()
   {
     $o = $this;
@@ -72,5 +67,10 @@ class Notification_Email extends NotificationAbstract
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Email sent!", __METHOD__);
     return true;
+  }
+
+  public function isEmpty()
+  {
+    return empty($this->_emails);
   }
 }
