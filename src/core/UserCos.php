@@ -27,5 +27,5 @@
 class UserCos
 {
   const USER = 1;
-  const ROOT = 2;
+  const ROOT = 2; // The installer directly uses this value...
 }

@@ -43,7 +43,6 @@ ini_set('display_errors', 'off');
 
 // Control var, so that we can guess if we're exiting because of an
 // error or because of normal script execution.
-global $exited;
 $exited = false;
 
 //
@@ -89,14 +88,10 @@ $defaults['installDir'] = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 //
 // Returns a modified configuration file, given a directive and value
 //
-function directiveValueUpdate($str, $directive, $value)
+function directiveValueUpdate($str, $directive, $directiveValue)
 {
-  $cb = function ($matches) use ($value) {
-    if (count($matches) == 4) {
-      return $matches[1] . $value . $matches[3];
-    }
-  };
-  return preg_replace_callback('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.+)((?:\'|")\s*\);)/', $cb, $str);
+  $cb = create_function('$matches', 'global $directiveValue; if (count($matches) == 4) { return $matches[1] . $directiveValue . $matches[3]; }');
+  return preg_replace_callback('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.*)((?:\'|")\s*\);)/', $cb, $str);
 }
 
 //
@@ -317,25 +312,25 @@ if (!empty($_GET['c'])) {
   if (!file_exists(CINTIENT_WORK_DIR) && !@mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create working dir. Check your permissions.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_PROJECTS_DIR) && !@mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create projects dir. Check your permissions.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_ASSETS_DIR) && !@mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create assets dir. Check your permissions.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_AVATARS_DIR) && !@mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create avatars dir. Check your permissions.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   //
@@ -344,19 +339,19 @@ if (!empty($_GET['c'])) {
   if (!User::install()) {
     $ok = false;
     $msg = "Could not setup User object.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!Project::install()) {
     $ok = false;
     $msg = "Could not setup Project object.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!SystemSettings::install()) {
     $ok = false;
     $msg = "Could not setup SystemSettings object.";
-    SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+    SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   //
@@ -367,7 +362,7 @@ if (!empty($_GET['c'])) {
   $user->setNotificationEmails($get['email'] . ',');
   $user->setName('Administrative Account');
   $user->setUsername('root');
-  $user->setCos(UserCos::ROOT);
+  $user->setCos(/*UserCos::ROOT*/ 2);
   $user->init();
   $user->setPassword($get['password']);
 
@@ -384,7 +379,7 @@ if (!empty($_GET['c'])) {
 
   $ok = true;
   $msg = "Use 'root' and the password you provided to login. Please refresh this page when you are ready.";
-  SystemEvent::raise(SystemEvent::INFO, "Installation successful.", __METHOD__);
+  SystemEvent::raise(1024, "Installation successful.", "Installer");
   sendResponse($ok, $msg);
 }
 
