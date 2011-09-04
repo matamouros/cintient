@@ -1,0 +1,42 @@
+
++----------------------------------------------------------------------+
+|                                                                      |
+| Cintient, Continuous Integration made simple.                        |
+| Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca                  |
+|                                                                      |
+| This file is part of Cintient.                                       |
+|                                                                      |
+| Cintient is free software: you can redistribute it and/or modify     |
+| it under the terms of the GNU General Public License as published by |
+| the Free Software Foundation, either version 3 of the License, or    |
+| (at your option) any later version.                                  |
+|                                                                      |
+| Cintient is distributed in the hope that it will be useful,          |
+| but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+| GNU General Public License for more details.                         |
+|                                                                      |
+| You should have received a copy of the GNU General Public License    |
+| along with Cintient. If not, see <http://www.gnu.org/licenses/>.     |
+|                                                                      |
++----------------------------------------------------------------------+
+
+
+
+CHANGELOG
+
+[ 2011-09-04 cintient-0-alpha-5 ]
+
+  ADDED: Notifo.com user account notifications, as well as an extendable
+         architecture for new notification handlers. Users can configure
+         available notification handlers and can configure per project
+         notifications for specific predetermined events.
+
+  FIXED: Installer is now compatible with PHP 4 and PHP 5.2.
+
+  FIXED: Several minor tweaks and improvements.
+
+  
+[ 2011-08-19 cintient-0-alpha-4 ]
+
+  FIXED: URL handling issues bug squashing.
