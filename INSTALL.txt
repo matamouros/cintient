@@ -32,16 +32,13 @@ to medium projects that just don't justify the setup of a more complex
 CI solution.
 
 Cintient is portuguese software, made passionately in fine Portugal.
-
-What Cintient does not do/have:
- . distributed builds (master/slave)
- . +10.000 plugins to do every single imaginable task
- . fugly UI
  
 What Cintient does/has:
  . easy one-time setup of the application (1 minute)
  . visual edition for builder tasks, i.e., no messing around with Ant
    XML sources or any other, in order to configure your project builds
+ . Notifo.com push notifications on your desktop and mobile (free user
+   account)
  . PHP syntax checking tasks
  . PHPUnit integration for unit testing
  . PHPDepend for quality metrics
@@ -50,6 +47,11 @@ What Cintient does/has:
  . Perl syntax check (just so you know you can add support to pretty
    much every language you want)
  . sexy looks... O:-)
+ 
+What Cintient does not do/have:
+ . distributed builds (master/slave)
+ . +10.000 plugins to do every single imaginable task
+ . fugly UI
     
 What's planned for the future (in no specific order):
  . Git support
