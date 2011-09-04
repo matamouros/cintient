@@ -90,8 +90,7 @@ $defaults['installDir'] = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 //
 function directiveValueUpdate($str, $directive, $directiveValue)
 {
-  $cb = create_function('$matches', 'global $directiveValue; if (count($matches) == 4) { return $matches[1] . $directiveValue . $matches[3]; }');
-  return preg_replace_callback('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.*)((?:\'|")\s*\);)/', $cb, $str);
+  return preg_replace('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.*)((?:\'|")\s*\);)/', '$1' . $directiveValue . '$3', $str);
 }
 
 //

@@ -41,14 +41,14 @@ define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_DIR', 'src/tests/');
 define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH', '*Test.php');
 
 
-define('CINTIENT_WORK_DIR', '/var/run/cintient/'); // TODO: This should be pulled from the user .ini config file
+define('CINTIENT_WORK_DIR', ''); // TODO: This should be pulled from the user .ini config file
 define('LOG_FILE', CINTIENT_WORK_DIR . 'cintient.log');
-define('CINTIENT_INSTALL_DIR', '/Users/pfonseca/Dev/cintient/');
+define('CINTIENT_INSTALL_DIR', '');
 define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
 define('CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME', 'codecoverage.xml');
 define('CINTIENT_CODECOVERAGE_HTML_DIR', 'codecoverage/');
 
-define('CINTIENT_BASE_URL', 'http://cintient'); // Without trailing slash
+define('CINTIENT_BASE_URL', ''); // Without trailing slash
 
 define('CINTIENT_PROJECTS_DIR', CINTIENT_WORK_DIR . 'projects/');
 
