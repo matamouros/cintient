@@ -23,84 +23,78 @@
 
 
 
-1. INTRODUCTION
+ INTRODUCTION
+ ============
 
 Cintient is a Continuous Integration web application written in PHP. It
 was written to be simple to setup and straightforward to use - with
 special attention to UI - in order to bring CI practices to most small
 to medium projects that just don't justify the setup of a more complex
 CI solution.
+ 
+ 
+ 
+ WHAT IT DOES
+ ============
+ 
+Cintient keeps track of all commits going into your sourcecode repository
+and automatically runs an integration builder. The user defines what this
+integration builder does specifically, through the use of a visual
+interface for configuring tasks - ranging from simple code syntax
+checks, to more complex software quality analysis. The results are
+collected and shown in a variety of charts that you can use to inspect
+your projects. Whenever a build fails, Cintient can push-notify users.
+These are some of the features:
 
-Cintient is portuguese software, made passionately in fine Portugal.
- 
-What Cintient does/has:
- . easy one-time setup of the application (1 minute)
- . visual edition for builder tasks, i.e., no messing around with Ant
-   XML sources or any other, in order to configure your project builds
- . Notifo.com push notifications on your desktop and mobile (free user
-   account)
- . PHP syntax checking tasks
- . PHPUnit integration for unit testing
- . PHPDepend for quality metrics
- . PHPCodeSniffer for coding standards enforcement
- . Code coverage support (PHP Xdebug extension required)
- . Perl syntax check (just so you know you can add support to pretty
-   much every language you want)
- . sexy looks... O:-)
- 
-What Cintient does not do/have:
- . distributed builds (master/slave)
- . +10.000 plugins to do every single imaginable task
- . fugly UI
+ 1. easy one-time setup of the application (1 minute)
+ 2. visual edition for builder tasks, i.e., no messing around with Ant
+    XML sources for configuring builds
+ 3. Notifo.com push notifications on your desktop and mobile (using the
+    free user account)
+ 4. PHP syntax checking tasks
+ 5. PHPUnit integration for unit testing
+ 6. PHPDepend for quality metrics
+ 7. PHPCodeSniffer for coding standards enforcement
+ 8. Code coverage support (PHP Xdebug extension required)
+ 9. Perl syntax check (just so you know you can add support to pretty
+    much every language you want)
+
+On the other hand, if you're looking for a distributed-builds capable
+CI server, you'll really have to look elsewhere. Cintient will probably
+never try to do this.
     
-What's planned for the future (in no specific order):
- . Git support
- . Trends and history charts for pretty much all collected metrics
- . Packaging and [simple] deployment flows
- . PHP code browser with contextual information (syntax errors, etc)
- . PHP documentation generation
- . MySQL support (possibly...)
- . Notifications system
- . ...
+    
+
+ REQUIREMENTS
+ ============
+
+ 1. Apache HTTPD with mod_rewrite (for the automatic installation)
+ 2. PHP 5.3.0 or later
+ 3. PHP with sqlite3 version 2.5 or later
+ 4. [Optional] Xdebug (for PHP code coverage support)
 
 
 
-2. REQUIREMENTS
-
-We tried to go easy on the requirements. These are what you absolutely
-need in order to successfully install and start using Cintient:
- . Apache HTTPD with mod_rewrite
- . PHP 5.3.0 or better
- . PHP with sqlite3 version 2.5 or better
- . [Optional] Xdebug (for PHP code coverage support)
-
-
-
-3. INSTALLATION
-3.1. EASY INSTALLATION - (RECOMMENDED)
+ INSTALLING
+ ==========
 
 Check the requirements above. You need them in order to perform an easy
 install. Go through the following steps:
- 1 .  Your web server's configuration must allow you to specify per
-      directory .htaccess files and mod_rewrite directives within them.
-      For this you need to have at least "AllowOverride FileInfo". Also,
-      enable "Options FollowSymLinks" and "DirectoryIndex index.php".
-      If you've changed these just now, don't forget to restart your
-      Apache server. 
- 2 .  Open up a browser window, navigate to the directory where you
-      unpacked Cintient. You should see the installer coming up.
- 3 .  Follow the instructions. It should only take you a minute to
-      finish.
+ 1. Your web server's configuration must allow you to specify per
+    directory .htaccess files and mod_rewrite directives within them.
+    For this you need to have at least "AllowOverride FileInfo". Also,
+    enable "Options FollowSymLinks" and "DirectoryIndex index.php".
+    If you've changed these just now, don't forget to restart your
+    Apache server. 
+ 2. Open up a browser window, navigate to the directory where you
+    unpacked Cintient. You should see the installer coming up.
+ 3. Follow the instructions. It should only take you a minute to
+    finish.
 
 
 
-3.2. MANUAL INSTALLATION
-
-* Later *
-
-
-
-4. CONTRIBUTIONS
+ CONTRIBUTING
+ ============
 
 If you're willing to contribute, there's many ways to go about it. The
 prefered would probably mean jumping in on the developers mailing list
@@ -116,7 +110,8 @@ get yourself known.
 
 
 
-5. CONTACTS AND CREDITS
+ CREDITS
+ =======
 
 Project page:
  . http://code.google.com/p/cintient/
