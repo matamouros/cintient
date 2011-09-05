@@ -701,7 +701,7 @@ EOT;
       }
       $newNotificationSettings[$handler][$event] = (bool)($value['value']);
     }
-    $projectUser->setNotifications(new NotificationSettings($newNotificationSettings));
+    $projectUser->setNotifications(new NotificationSettings($GLOBALS['project'], $GLOBALS['user'], $newNotificationSettings));
 
     $GLOBALS['project']->log("Notification settings changed for user {$GLOBALS['user']->getUsername()}.");
     SystemEvent::raise(SystemEvent::DEBUG, "Project notification settings changed for user {$GLOBALS['user']->getUsername()}.", __METHOD__);

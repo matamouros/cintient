@@ -174,11 +174,18 @@ class User extends Framework_DatabaseObjectAbstract
       $baseline[] = get_class($handler);
     }
     $availableHandlers = NotificationSettings::getHandlers();
+    // If new handlers are not available here, create them.
     foreach ($availableHandlers as $handler) {
       if (!in_array($handler, $baseline)) {
         // Create an empty notification instance
         $notification = new $handler();
         $this->_notifications[$handler] = $notification;
+      }
+    }
+    // If existing handlers are not available anymore, remove them
+    foreach ($this->_notifications as $handler => $_) {
+      if (!in_array($handler, $availableHandlers)) {
+        unset($this->_notifications[$handler]);
       }
     }
     return $this->_notifications;

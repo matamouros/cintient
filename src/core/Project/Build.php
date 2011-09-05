@@ -161,15 +161,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     //
     $output = explode(PHP_EOL, $builderProcess->getStdout());
     $GLOBALS['result'] = array();
+    $GLOBALS['result']['ok'] = false;
     foreach ($output as $line) {
       $neck = strpos($line, '=');
       $key = substr($line, 0, $neck);
       $value = substr($line, $neck+1);
       $value = str_replace(CINTIENT_NEWLINE_TOKEN, PHP_EOL, $value);
       $GLOBALS['result'][$key] = $value;
-    }
-    if (empty($GLOBALS['result']['ok'])) {
-      $GLOBALS['result']['ok'] = false;
     }
     if (!empty($GLOBALS['result']['stacktrace'])) {
       $this->addToOutput($GLOBALS['result']['stacktrace']);

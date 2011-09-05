@@ -57,7 +57,7 @@ class Notification_Notifo extends NotificationAbstract
         'style' => 'width: 200px;',
         'type'  => 'text',
         'name'  => 'username',
-        'value' => $o->getUsername()
+        'value' => $o->getUsername(),
       ));
     });
     h::div(array('class' => 'label'), 'API Secret');
@@ -67,7 +67,7 @@ class Notification_Notifo extends NotificationAbstract
         'style' => 'width: 450px;',
         'type'  => 'text',
         'name'  => 'key',
-        'value' => $o->getKey()
+        'value' => $o->getKey(),
       ));
     });
   }

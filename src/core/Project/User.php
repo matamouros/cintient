@@ -48,7 +48,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     $this->_ptrProject = $project;
     $this->_ptrUser = $user;
     $this->_access = $access;
-    $this->_notifications = new NotificationSettings();
+    $this->_notifications = new NotificationSettings($project, $user);
   }
 
   public function __destruct()
@@ -274,11 +274,14 @@ EOT;
     // http://pt.php.net/manual/en/function.serialize.php#96504
     //
     $unsafeSerializedNotifications = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getNotifications());
-    if (($notifications = unserialize($unsafeSerializedNotifications)) === false) {
-      $notifications = array();
+    if ((($notifications = unserialize($unsafeSerializedNotifications)) === false) || !($notifications instanceof NotificationSettings)) {
+      $notifications = new NotificationSettings($options['project'], $options['user']);
     }
     $ret->setNotifications($notifications);
     $ret->resetSignature();
+    // Update user and project for these notification settings
+    $notifications->setPtrProject($options['project']);
+    $notifications->setPtrUser($options['user']);
     return $ret;
   }
 }

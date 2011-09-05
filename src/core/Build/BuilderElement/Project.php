@@ -269,6 +269,11 @@ function cleanup()
     \$value = str_replace(PHP_EOL, '" . CINTIENT_NEWLINE_TOKEN . "', \$value);
     fwrite(STDOUT, \"\$key=\$value\\n\");
   }
+  // In case fatal occurred, last task didn't have time to finish and the
+  // build could come out successful. Check for errors, to avoid this.
+  if (error_get_last() != null) {
+  	fwrite(STDOUT, \"ok=0\");
+  }
   @fclose(STDOUT);
   @fclose(STDERR);
 }

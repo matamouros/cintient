@@ -70,7 +70,7 @@ class NotificationSettings extends Framework_BaseObject
    * Sets default values to all notification event types, for each of
    * the available notification handlers.
    */
-  public function __construct($settings = null)
+  public function __construct(Project $project, User $user, $settings = null)
   {
     // TODO: This is a blind attribution... The $settings coming in must
     // be validated...
@@ -84,6 +84,15 @@ class NotificationSettings extends Framework_BaseObject
         $this->_settings[$handler] = self::$eventDefaults;
       }
     }
+    $this->_ptrProject = $project;
+    $this->_ptrUser = $user;
+  }
+
+  public function __sleep()
+  {
+    $arr = array();
+    $arr[] = '_settings';
+    return $arr;
   }
 
   /**
@@ -133,8 +142,8 @@ class NotificationSettings extends Framework_BaseObject
         h::tr(function () use ($o, $event, $checked) {
           h::td(NotificationSettings::$eventDescriptions[$event]);
           foreach ($o->getSettings() as $handler => $settings) {
-            h::td(function () use ($event, $handler, $settings) {
-              h::div(array('class' => 'checkboxContainer'), function() use ($event, $handler, $settings) {
+            h::td(function () use ($o, $event, $handler, $settings) {
+              h::div(array('class' => 'checkboxContainer'), function() use ($o, $event, $handler, $settings) {
                 $params = array(
                   // Strip the Notification_ part from the class name
                 	'name' => $event . '_' . substr($handler, strpos($handler, '_')+1),
@@ -142,6 +151,13 @@ class NotificationSettings extends Framework_BaseObject
                 );
                 if ($settings[$event]) {
                   $params['checked'] = 'checked';
+                }
+                // If the user's settings don't have this handler configured,
+                // then ghost out these per project settings.
+                if (!(($handlerObj = $o->getPtrUser()->getActiveNotificationHandler($handler)) instanceof NotificationAbstract) ||
+                      $handlerObj->isEmpty())
+                {
+                  $params['disabled'] = 'disabled';
                 }
                 h::input($params);
               });

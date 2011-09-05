@@ -881,8 +881,10 @@ EOT;
             continue;
           }
           $viewData = $o->getViewData();
-          foreach($viewData as $key => $value) {
-            $GLOBALS['smarty']->assign($key, $value);
+          if (is_array($viewData)) {
+            foreach($viewData as $key => $value) {
+              $GLOBALS['smarty']->assign($key, $value);
+            }
           }
           $o = null;
           unset($o);

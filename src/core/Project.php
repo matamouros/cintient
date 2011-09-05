@@ -242,6 +242,7 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     $build = new Project_Build($this);
     $build->setScmRevision($rev);
+    $projectUser->fireNotification(NotificationSettings::BUILD_STARTED, 'Build started.');
     if (!$build->init()) {
       $this->setStatus(self::STATUS_ERROR);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);

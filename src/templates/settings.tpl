@@ -27,7 +27,7 @@
       <div id="generalPane" class="exclusivePane">
         <ul>
           <li class="settingsNode">
-            <div class="label">Change your avatar</div>
+            <div class="label">Your avatar <span class="fineprintLabel">(click image to change it)</span></div>
             <div id="avatarUploader">
               <noscript>
                 {* TODO: Use simple upload form *}
@@ -40,7 +40,7 @@
       <div id="notificationsPane" class="exclusivePane">
 {foreach $globals_user->getNotifications() as $notification}
         <div id="{$notification->getHandler()}" class="projectEditContainer container">
-          <div>{$notification->getHandler()}</div>
+          <div class="title">{substr($notification->getHandler(), 13)} notifications</div>
 {$notification->getView()}
         </div>
 {if !$notification@last}

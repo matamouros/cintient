@@ -2,6 +2,8 @@
 	http://cintient/css/global.css
 	http://cintient/project/css/global.css
 	http://cintient/project/history/css/global.css
+	http://cintient/settings/css/global.css
+	http://cintient/project/edit/css/global.css
 */
 
 /*
@@ -1010,6 +1012,21 @@ button.inactive
   clear: both;
 }
 
+#projectEditNotifications td
+{
+  padding: 4px 2px 6px 2px;
+}
+
+#projectEditNotifications .checkboxContainer
+{
+  text-align: center;
+}
+
+#projectEditNotifications th
+{
+  text-decoration: underline;
+}
+
 /* @end */
 
 
@@ -1587,6 +1604,12 @@ article#project .avatar
 {
   /* Because no matter what I can't make the li that owns this, respect its own CSS */
   margin-bottom: 60px;
+}
+
+#notificationsPane .title
+{
+  font-size: 14pt;
+  margin-bottom: 10px;
 }
 
 /* @end */
