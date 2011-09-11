@@ -31,15 +31,16 @@ sleep(5); // defer it a little, to give it's [possibly] web-request-father proce
 do {
   $projects = Project::getNextToBuild();
   foreach ($projects as $project) {
-    if ($project instanceof Project) {
-      SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
-      if (!$project->build()) {
-        SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
-      } else {
-        SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
-      }
+    SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
+    if (!$project->build()) {
+      SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
+      // Could be due to the project not having been initialized, or
+      // currently building, etc. This sleep() is the easiest way to
+      // make sure that the runBuilderWorker is not force trying to
+      // build a "unbuildable" (even if temporary) single project.
+      sleep(60);
     } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "No projects to build for now. Sleeping...", 'runBuildWorker');
+      SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
     }
     $project = null;
     unset($project);
@@ -48,10 +49,11 @@ do {
       SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
       exit(0);
     }
-    // Rest a bit...
-    if (count($projects) == 1) {
-      sleep(60);
-    }
+  }
+  // Rest a bit...
+  if (empty($projects)) {
+    SystemEvent::raise(SystemEvent::DEBUG, "No projects to build for now. Sleeping...", 'runBuildWorker');
+    sleep(60);
   }
   $projects = null;
   unset($projects);
