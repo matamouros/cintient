@@ -70,4 +70,16 @@ class Framework_BaseObject
       exit;
     }
   }
+
+  public function __sleep()
+  {
+    $toSleep = array();
+    $objVars = get_object_vars($this);
+    foreach ($objVars as $key => $_) {
+      if (strpos($key, '_ptr') !== 0) {
+        $toSleep[] = $key;
+      }
+    }
+    return $toSleep;
+  }
 }

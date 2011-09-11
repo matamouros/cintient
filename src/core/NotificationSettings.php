@@ -88,13 +88,6 @@ class NotificationSettings extends Framework_BaseObject
     $this->_ptrUser = $user;
   }
 
-  public function __sleep()
-  {
-    $arr = array();
-    $arr[] = '_settings';
-    return $arr;
-  }
-
   /**
    * This makes sure that when unserializing a version of this class,
    * the freshest possible handlers/settings are reflected in it, i.e.,

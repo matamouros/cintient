@@ -49,21 +49,13 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
 
   public function __sleep()
   {
-    $toSleep = array();
-    $objVars = get_object_vars($this);
-    $exclusions[]= '_signature'; // Always exclude the _signature attribute
-    foreach ($objVars as $key => $_) {
-      if (!in_array($key, $exclusions)) {
-        $toSleep[] = $key;
-      }
+    $toSleep = parent::__sleep();
+    // super already gives us the serializable attributes, we just need
+    // to remove _signature here.
+    if (($pos = array_search('_signature', $toSleep)) !== false) {
+      unset($toSleep[$pos]);
     }
     return $toSleep;
-  }
-
-  public function getCurrentSignature()
-  {
-    //SystemEvent::raise(SystemEvent::DEBUG, "Called. [OBJ=".get_class($this)."]", __METHOD__);
-    return $this->_getCurrentSignature();
   }
 
   protected function _getCurrentSignature(array $exclusions = array())
@@ -71,9 +63,13 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
     //SystemEvent::raise(SystemEvent::DEBUG, "Called. [OBJ=".get_class($this)."]", __METHOD__);
     $sigVars = array();
     $objVars = get_object_vars($this);
-    $exclusions[]= '_signature'; // Always exclude the _signature attribute
     foreach ($objVars as $key => $objVar) {
-      if (!in_array($key, $exclusions)) {
+      // TODO: Do this properly and, as __sleep(), make super return a
+      // list of to-sign attributes (with _ptr* already excluded) and
+      // have this just remove _signature. _ptr should be super's
+      // jurisdiction. Probably we need to setup a method in super just
+      // for returning the list of to-sign attributes, but yet unsigned.
+      if ($key != '_signature' && strpos($key, '_ptr') !== 0) {
         $sigVars[$key] = $objVar;
       }
     }
