@@ -98,16 +98,9 @@ class Project_User extends Framework_DatabaseObjectAbstract
   /**
    * Overriding the base class method, to get rid of the ptr attributes
    */
-  protected function _getCurrentSignature()
+  protected function _getCurrentSignature(array $exclusions = array())
   {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    $arr['_ptrProject'] = null;
-    unset($arr['_ptrProject']);
-    $arr['_ptrUser'] = null;
-    unset($arr['_ptrUser']);
-    return md5(serialize($arr));
+    return parent::_getCurrentSignature(array('_ptrProject', '_ptrUser'));
   }
 
   /**
@@ -223,7 +216,7 @@ EOT;
     $ret = null;
     $sql = "SELECT * FROM projectuser WHERE projectid=? AND userid=?";
     if (($rs = Database::query($sql, array($project->getId(), $user->getId()))) && $rs->nextRow()) {
-      $ret = self::_getObject($rs, array('project' => $project, 'user' => $user));
+      $ret = self::_getObject($rs, $project, $user);
     }
     return $ret;
   }
@@ -245,7 +238,7 @@ EOT;
         if (!$user instanceof User) {
           SystemEvent::raise(SystemEvent::ERROR, "User ID references a non-existing user.",__METHOD__);
         } else {
-          if (($projectUser = self::_getObject($rs, array('project' => $project, 'user' => $user))) === false) {
+          if (($projectUser = self::_getObject($rs, $project, $user)) === false) {
             SystemEvent::raise(SystemEvent::ERROR, "User is required for creating a new " . __CLASS__, __METHOD__);
             continue;
           }
@@ -256,13 +249,13 @@ EOT;
     return $ret;
   }
 
-  static private function _getObject(Resultset $rs, Array $options = array())
+  static private function _getObject(Resultset $rs, Project $project, User $user)
   {
-    if (empty($options['user']) || !($options['user'] instanceof User) ||
-        empty($options['project']) || !($options['project'] instanceof Project)) {
+    if (empty($user) || !($user instanceof User) ||
+        empty($project) || !($project instanceof Project)) {
       return false;
     }
-    $ret = new self($options['project'], $options['user'], $rs->getAccess());
+    $ret = new self($project, $user, $rs->getAccess());
     //
     // The following is a workaround on the fact that the translation of this
     // serialized object to the database gets all broken, due to the fact of PHP
@@ -275,13 +268,13 @@ EOT;
     //
     $unsafeSerializedNotifications = str_replace(CINTIENT_NULL_BYTE_TOKEN, "\0", $rs->getNotifications());
     if ((($notifications = unserialize($unsafeSerializedNotifications)) === false) || !($notifications instanceof NotificationSettings)) {
-      $notifications = new NotificationSettings($options['project'], $options['user']);
+      $notifications = new NotificationSettings($project, $user);
     }
     $ret->setNotifications($notifications);
     $ret->resetSignature();
     // Update user and project for these notification settings
-    $notifications->setPtrProject($options['project']);
-    $notifications->setPtrUser($options['user']);
+    $notifications->setPtrProject($project);
+    $notifications->setPtrUser($user);
     return $ret;
   }
 }

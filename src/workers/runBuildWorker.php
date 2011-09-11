@@ -29,24 +29,32 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
-  $project = Project::getNextToBuild();
-  if ($project instanceof Project) {
-    SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
-    if (!$project->build()) {
-      SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
+  $projects = Project::getNextToBuild();
+  foreach ($projects as $project) {
+    if ($project instanceof Project) {
+      SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
+      if (!$project->build()) {
+        SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
+      } else {
+        SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
+      }
     } else {
-      SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
+      SystemEvent::raise(SystemEvent::DEBUG, "No projects to build for now. Sleeping...", 'runBuildWorker');
     }
-  } else {
-    SystemEvent::raise(SystemEvent::DEBUG, "No projects to build for now. Sleeping...", 'runBuildWorker');
+    $project = null;
+    unset($project);
+    // Take the chance to look if we're close to breaking the mem limit
     if (memory_get_usage(true) > ((int)(Utility::phpIniSizeToBytes(ini_get('memory_limit'))*0.9))) {
       SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
       exit(0);
     }
-    sleep(60);
+    // Rest a bit...
+    if (count($projects) == 1) {
+      sleep(60);
+    }
   }
-  $project = null;
-  unset($project);
+  $projects = null;
+  unset($projects);
   SystemEvent::raise(SystemEvent::DEBUG, "Memory usage stats [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", 'runBuildWorker');
 } while (true);
 

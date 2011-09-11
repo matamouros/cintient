@@ -47,19 +47,46 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
     $this->_save();
   }
 
-  protected function _getCurrentSignature()
+  public function __sleep()
   {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    return md5(serialize($arr));
+    $toSleep = array();
+    $objVars = get_object_vars($this);
+    $exclusions[]= '_signature'; // Always exclude the _signature attribute
+    foreach ($objVars as $key => $_) {
+      if (!in_array($key, $exclusions)) {
+        $toSleep[] = $key;
+      }
+    }
+    return $toSleep;
+  }
+
+  public function getCurrentSignature()
+  {
+    //SystemEvent::raise(SystemEvent::DEBUG, "Called. [OBJ=".get_class($this)."]", __METHOD__);
+    return $this->_getCurrentSignature();
+  }
+
+  protected function _getCurrentSignature(array $exclusions = array())
+  {
+    //SystemEvent::raise(SystemEvent::DEBUG, "Called. [OBJ=".get_class($this)."]", __METHOD__);
+    $sigVars = array();
+    $objVars = get_object_vars($this);
+    $exclusions[]= '_signature'; // Always exclude the _signature attribute
+    foreach ($objVars as $key => $objVar) {
+      if (!in_array($key, $exclusions)) {
+        $sigVars[$key] = $objVar;
+      }
+    }
+    return md5(serialize($sigVars));
   }
 
   public function hasChanged()
   {
     if ($this->_getCurrentSignature() == $this->_signature) {
+      //SystemEvent::raise(SystemEvent::DEBUG, "Object not changed [OBJ=".get_class($this)."]", __METHOD__);
       return false;
     }
+    //SystemEvent::raise(SystemEvent::DEBUG, "Object changed [OBJ=".get_class($this)."]", __METHOD__);
     return true;
   }
 

@@ -52,8 +52,8 @@
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  cintient.initExclusivePanes('{$defaultPane}');
-  cintient.initGenericForm({
+  Cintient.initExclusivePanes('{$defaultPane}');
+  Cintient.initGenericForm({
     formSelector : '#notificationsPane .projectEditContainer',
     submitButtonAppendTo : '#notificationsPane',
     submitUrl: '{URLManager::getForAjaxSettingsNotificationsSave()}',

@@ -21,23 +21,12 @@
  */
 
 /**
- * This is Cintient's JS helper class.
+ * This is Cintient's JS helper class. It implements a singleton pattern,
+ * by just using a simple object literal and assigning to Cintient var.
  * 
  * @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  */
-
-var Cintient = function (options)
-{
-  this.init(options);
-};
-
-Cintient.prototype = {
-  /**
-   * 
-   */
-  init: function (options)
-  {
-  },
+var Cintient = {
 
   /**
    * Creates a button, styles it and returns it. Whomever calls this,
@@ -128,7 +117,7 @@ Cintient.prototype = {
   /**
    * 
    */
-  initGenericForm: function (params)
+  initGenericForm: function ()
   {
     var options = $.extend({
       formSelector : 'form',
@@ -141,7 +130,7 @@ Cintient.prototype = {
     //
     // Create the submit button
     //
-    var button = cintient.createButton(options.submitButtonText);
+    var button = this.createButton(options.submitButtonText);
     button.className = options.submitButtonClass;
     button.style.display = 'none';
     //

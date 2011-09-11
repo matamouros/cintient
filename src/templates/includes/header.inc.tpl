@@ -42,13 +42,6 @@
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
-  <script type="text/javascript">
-  // <![CDATA[
-  cintient = null;
-  $(document).ready(function() {
-    cintient = new Cintient();
-  });
-  </script>
 </head>
 <body>
   <div id="header" class="containerTopLevel">

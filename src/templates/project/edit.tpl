@@ -70,7 +70,7 @@
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  cintient.initGenericForm({
+  Cintient.initGenericForm({
     formSelector : '#notificationsPane .projectEditContainer',
     submitButtonAppendTo : '#notificationsPane',
     submitUrl: '{URLManager::getForAjaxProjectNotificationsSave()}',
@@ -314,7 +314,7 @@ $(document).ready(function() {
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  cintient.initExclusivePanes('{$defaultPane}');
+  Cintient.initExclusivePanes('{$defaultPane}');
 
   //
   // For the access level panes
