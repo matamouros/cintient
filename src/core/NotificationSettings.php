@@ -158,7 +158,7 @@ class NotificationSettings extends Framework_BaseObject
                 }
                 // If the user's settings don't have this handler configured,
                 // then ghost out these per project settings.
-                if (!(($handlerObj = $o->getPtrUser()->getActiveNotificationHandler($handler)) instanceof NotificationAbstract) ||
+                if (!(($handlerObj = $o->getPtrUser()->getActiveNotificationHandler($handler)) instanceof NotificationHandlerAbstract) ||
                       $handlerObj->isEmpty())
                 {
                   $params['disabled'] = 'disabled';
