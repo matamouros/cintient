@@ -52,12 +52,23 @@ class NotificationSettings extends Framework_BaseObject
   const BUILD_SUCCESS = 3;
 
   /**
-   * Array with human description strings for all notification events.
+   * Array with human description strings for all notification events,
+   * for project event notification settings edit purposes.
    */
   static public $eventDescriptions = array(
     self::BUILD_FAILED  => 'On build failed',
     self::BUILD_STARTED => 'On build started',
     self::BUILD_SUCCESS => 'On build success',
+  );
+
+  /**
+  * Array with human description strings for all notification events,
+  * for notification message sending purposes.
+  */
+  static public $eventMessages = array(
+    self::BUILD_FAILED  => 'Build failed!',
+    self::BUILD_STARTED => 'Build started.',
+    self::BUILD_SUCCESS => 'Build successful.',
   );
 
   static public $eventDefaults = array(

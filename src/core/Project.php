@@ -234,19 +234,16 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->setStatus(self::STATUS_BUILDING);
     $this->_save(true); // We want the building status to update imediatelly
 
-    // For user notifications
-    $projectUser = Project_User::getByUser($GLOBALS['project'], $GLOBALS['user']);
-
     //
     // Scm stuff done, setup a new build for the project
     //
     $build = new Project_Build($this);
     $build->setScmRevision($rev);
-    $projectUser->fireNotification(NotificationSettings::BUILD_STARTED, 'Build started.');
+    $this->triggerNotification(NotificationSettings::BUILD_STARTED);
     if (!$build->init()) {
       $this->setStatus(self::STATUS_ERROR);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
-      $projectUser->fireNotification(NotificationSettings::BUILD_FAILED, 'Build failed!');
+      $this->triggerNotification(NotificationSettings::BUILD_FAILED);
       return false;
     }
 
@@ -256,7 +253,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
-    $projectUser->fireNotification(NotificationSettings::BUILD_SUCCESS, 'Build successful.');
+    $this->triggerNotification(NotificationSettings::BUILD_SUCCESS);
     return true;
   }
 
@@ -319,6 +316,19 @@ class Project extends Framework_DatabaseObjectAbstract
   {
     $this->_users = array();
     return Project_User::deleteByProject($this);
+  }
+
+  /**
+   * Triggers a notification event, that will in turn fire a notification
+   * for all registered project users.
+   *
+   * @param int $event The event type for the notification. @see NotificationSettings
+   */
+  public function triggerNotification($event)
+  {
+    foreach ($this->_users as $user) {
+      $user->fireNotification($event);
+    }
   }
 
   public function getScmLocalWorkingCopy()

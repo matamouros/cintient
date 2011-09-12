@@ -36,7 +36,7 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class Notification_Notifo extends NotificationAbstract
+class Notification_Notifo extends NotificationHandlerAbstract
 {
   protected $_username; // Notifo username
   protected $_key;      // Notifo API key

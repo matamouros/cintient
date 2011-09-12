@@ -62,7 +62,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     return Database::execute($sql, array($project->getId()));
   }
 
-  public function fireNotification($event, $msg, $params = array())
+  public function fireNotification($event, $params = array())
   {
     if (empty($params['title'])) {
       $params['title'] = $this->_ptrProject->getTitle();
@@ -70,6 +70,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     if (empty($params['uri'])) {
       $params['uri'] = '';
     }
+    $msg = NotificationSettings::$eventMessages[$event];
     // TODO: this whole method's content should be a full fledged operational
     // class for dealing with notifications.
     foreach ($this->_notifications->getSettings() as $handlerClass => $settings) {

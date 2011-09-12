@@ -34,7 +34,7 @@ require_once 'lib/lib.htmlgen.php';
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-abstract class NotificationAbstract extends Framework_BaseObject
+abstract class NotificationHandlerAbstract extends Framework_BaseObject
 {
   /**
    * Returns the notification handler corresponding to the current,
