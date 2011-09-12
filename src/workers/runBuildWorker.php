@@ -42,6 +42,7 @@ do {
     } else {
       SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
     }
+    $project->__destruct();
     $project = null;
     unset($project);
     // Take the chance to look if we're close to breaking the mem limit
@@ -57,10 +58,6 @@ do {
   }
   $projects = null;
   unset($projects);
-
-  // Force garbage collection. Project wasn't being updated (status) at
-  // the end, without this, despite all the unset()s.
-  gc_collect_cycles();
 
   SystemEvent::raise(SystemEvent::DEBUG, "Memory usage stats [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", 'runBuildWorker');
 } while (true);
