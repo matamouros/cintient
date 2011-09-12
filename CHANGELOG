@@ -23,6 +23,17 @@
 
 
 
+ 2011-09-13 cintient-0-alpha-6
+ =============================
+ 
+FIXED: LOTS of bugs squashed and performance issues (some quite SERIOUS)
+       fixed, either in the backend and frontend.
+FIXED: Serious Notification design flaw caused only the logged on user
+       to receive notifications, instead of all project registered
+       users.
+
+
+
  2011-09-05 cintient-0-alpha-5
  =============================
 
