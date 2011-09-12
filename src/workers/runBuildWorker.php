@@ -30,7 +30,7 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
   $projects = Project::getNextToBuild();
-  foreach ($projects as $project) {
+  foreach ($projects as &$project) {
     SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
     if (!$project->build()) {
       SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
