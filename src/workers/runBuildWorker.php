@@ -57,6 +57,9 @@ do {
   }
   $projects = null;
   unset($projects);
+
+  gc_collect_cycles();
+
   SystemEvent::raise(SystemEvent::DEBUG, "Memory usage stats [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", 'runBuildWorker');
 } while (true);
 
