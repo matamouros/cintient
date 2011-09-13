@@ -63,7 +63,7 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('delete');
     if (!$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files set for task delete.', __METHOD__);

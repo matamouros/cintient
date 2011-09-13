@@ -78,7 +78,7 @@ class Build_BuilderElement_Project extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('project');
     if (!$this->getTargets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No targets set for the project.', __METHOD__);
@@ -159,7 +159,7 @@ class Build_BuilderElement_Project extends Build_BuilderElement
 
   public function toPhing()
   {
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('project');
     if (!$this->getTargets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No targets set for the project.', __METHOD__);

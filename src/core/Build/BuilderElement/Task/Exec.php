@@ -89,7 +89,7 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
       SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
       return false;
     }
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('exec');
     if ($this->getOutputProperty()) {
       $xml->writeAttribute('outputproperty', $this->getOutputProperty());
@@ -162,7 +162,7 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
       SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);
       return false;
     }
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('exec');
     if ($this->getOutputProperty()) {
       $xml->writeAttribute('outputProperty', $this->getOutputProperty());

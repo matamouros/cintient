@@ -22,10 +22,11 @@
  */
 
 /**
- * XML builder element helper class, to help out all builder elements
- * deal with XML exports.
+ * XML document builder helper class, to help out all XML exportation
+ * needs. This class maps XMLWriter's methods directly, so that its
+ * usage is basically the same as if you
  *
- * @package     Build
+ * @package     Utility
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
  * @copyright   2010-2011, Pedro Mata-Mouros Fonseca.
  * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU GPLv3 or later.
@@ -34,47 +35,27 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class Build_Build_XmlBuilderElement
+class XmlDoc extends XmlWriter
 {
-  private $_xml;
-
   public function __construct()
   {
-    $this->_xml = new XMLWriter();
-    $this->_xml->openMemory();
-    //$this->_xml->startDocument(); // this hack avoids the output of the <?xml version="1.0" element
-    $this->_xml->setIndent(true);
-    $this->_xml->setIndentString('  ');
+    parent::openMemory();
+    //parent::startDocument(); // this hack avoids the output of the <?xml version="1.0" element
+    parent::setIndent(true);
+    parent::setIndentString('  ');
   }
 
-  public function __destruct()
+  /**
+   * The parameter is merely to comply with PHP's notion that I am
+   * overriding the parent's flush, so I should provide the same
+   * signature. Nor am I not, but, even if I was, PHP should allow
+   * different signatures, i.e., enable both methods to be called...
+   *
+   * @see XMLWriter::flush()
+   */
+  public function flush($empty = true)
   {
-    $this->_xml = null;
-    unset($this->_xml);
-  }
-
-  public function __call($name, $args)
-  {
-    if (method_exists($this->_xml, $name)) {
-      if (empty($args)) {
-        return $this->_xml->$name();
-      } elseif (count($args) == 1) {
-        return $this->_xml->$name($args[0]);
-      } elseif (count($args) == 2) {
-        return $this->_xml->$name($args[0], $args[1]);
-      } else {
-        trigger_error("Invalid arguments specified for called method", E_USER_ERROR);
-        exit;
-      }
-    } else {
-      trigger_error("No valid method available for calling", E_USER_ERROR);
-      exit;
-    }
-  }
-
-  public function flush()
-  {
-    $this->_xml->endDocument();
-    return $this->_xml->flush();
+    parent::endDocument();
+    return parent::flush($empty);
   }
 }

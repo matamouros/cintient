@@ -70,7 +70,7 @@ class Build_BuilderElement_Target extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $xml->startElement('target');
     if (!$this->getName()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No name set for the target.', __METHOD__);

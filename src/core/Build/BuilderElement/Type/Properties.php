@@ -60,7 +60,7 @@ class Build_BuilderElement_Type_Properties extends Build_BuilderElement
       SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);
       return false;
     }
-    $xml = new Build_XmlBuilderElement();
+    $xml = new XmlDoc();
     $properties = parse_ini_string($this->getText());
     foreach ($properties as $key => $value) {
       $xml->startElement('property');
