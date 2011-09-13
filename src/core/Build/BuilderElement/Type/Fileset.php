@@ -154,7 +154,7 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new XmlBuilderElement();
+    $xml = new Build_XmlBuilderElement();
 
     $xml->startElement('fileset');
     if (!$this->getDir()) {

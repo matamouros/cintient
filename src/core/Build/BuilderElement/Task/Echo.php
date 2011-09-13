@@ -63,7 +63,7 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
       return false;
     }
-    $xml = new XmlBuilderElement();
+    $xml = new Build_XmlBuilderElement();
     $xml->startElement('echo');
     if ($this->getFile()) {
       $xml->writeAttribute('file', $this->getFile());

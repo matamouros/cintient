@@ -60,7 +60,7 @@ class Build_BuilderElement_Task_Perl_PerlSyntax extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new XmlBuilderElement();
+    $xml = new Build_XmlBuilderElement();
     $xml->startElement('apply');
     if (!$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files set for task perl syntax.', __METHOD__);

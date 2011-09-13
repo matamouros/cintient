@@ -58,7 +58,7 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
 
   public function toAnt()
   {
-    $xml = new XmlBuilderElement();
+    $xml = new Build_XmlBuilderElement();
     $xml->startElement('property');
     if (!$this->getName() || !$this->getValue()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Name and value not set for type property.', __METHOD__);

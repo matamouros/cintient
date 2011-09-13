@@ -25,7 +25,7 @@
  * A class for storing all of the platform's sort criteria, for easy and
  * centralized access.
  *
- * @package Reference
+ * @package Global
  */
 class Sort
 {

@@ -59,7 +59,7 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
       return false;
     }
-    $xml = new XmlBuilderElement();
+    $xml = new Build_XmlBuilderElement();
     $xml->startElement('mkdir');
     $xml->writeAttribute('dir', $this->getDir());
     $xml->endElement();
