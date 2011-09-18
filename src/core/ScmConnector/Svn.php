@@ -68,6 +68,32 @@ class ScmConnector_Svn implements ScmConnectorInterface
         $password = "--password \"{$args['password']}\" ";
       }
     }
+    /*
+    # svn info http://cintient.googlecode.com/svn/trunk/ ./
+    svn: warning: cannot set LC_CTYPE locale
+    svn: warning: environment variable LC_CTYPE is US-ASCII
+    svn: warning: please check that your locale name is correct
+    Path: trunk
+    URL: http://cintient.googlecode.com/svn/trunk
+    Repository Root: http://cintient.googlecode.com/svn
+    Repository UUID: b5843765-8500-0169-a8a4-cd43f2d668ef
+    Revision: 359
+    Node Kind: directory
+    Last Changed Author: pedro.matamouros
+    Last Changed Rev: 359
+    Last Changed Date: 2011-09-18 11:32:48 +0100 (Sun, 18 Sep 2011)
+
+    Path: .
+    URL: http://cintient.googlecode.com/svn/trunk
+    Repository Root: http://cintient.googlecode.com/svn
+    Repository UUID: b5843765-8500-0169-a8a4-cd43f2d668ef
+    Revision: 358
+    Node Kind: directory
+    Schedule: normal
+    Last Changed Author: pedro.matamouros
+    Last Changed Rev: 358
+    Last Changed Date: 2011-09-18 11:30:30 +0100 (Sun, 18 Sep 2011)
+    */
     $command = "svn info {$username}{$password}--non-interactive {$args['remote']} {$args['local']}";
     $lastline = exec($command, $output, $return);
     $output = implode("\n", $output);
