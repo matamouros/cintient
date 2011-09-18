@@ -79,7 +79,6 @@ class ScmConnector_Svn implements ScmConnectorInterface
       SystemEvent::raise(SystemEvent::ERROR, "Could not check for modifications. [OUTPUT=\"{$output}\"]", __METHOD__);
       return false;
     }
-SystemEvent::raise(SystemEvent::ALERT, print_r($matches, true), __METHOD__);
     #if DEBUG
     SystemEvent::raise(SystemEvent::DEBUG, "Repository " . ($matches[1][0]!=$matches[1][1]?'':'not ') . "changed.", __METHOD__);
     #endif
