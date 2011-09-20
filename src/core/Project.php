@@ -208,7 +208,6 @@ class Project extends Framework_DatabaseObjectAbstract
       //
       $this->touchDateCheckedForChanges();
       if ($this->getStatus() == self::STATUS_UNINITIALIZED ||
-          $this->getStatus() == self::STATUS_UNBUILT ||
           !file_exists($this->getScmLocalWorkingCopy()))
       {
         if (!ScmConnector::checkout($params)) {
@@ -218,6 +217,9 @@ class Project extends Framework_DatabaseObjectAbstract
         }
         $this->setStatus(self::STATUS_MODIFIED);
       } else {
+        if ($this->getStatus() == self::STATUS_UNBUILT) {
+          $force = true;
+        }
         if (!ScmConnector::isModified($params)) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
           if (!$force) {

@@ -4,6 +4,7 @@
 	http://cintient/project/history/css/global.css
 	http://cintient/settings/css/global.css
 	http://cintient/project/edit/css/global.css
+	http://cintient/dashboard/css/global.css
 */
 
 /*
@@ -669,7 +670,7 @@ button.inactive
 .projectDetails
 {
   float: left;
-  width: 260px;
+  width: 290px;
 }
 
 .projectTitle

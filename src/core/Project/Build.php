@@ -61,7 +61,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->_output = '';
     $this->_specialTasks = $project->getSpecialTasks();
     $this->_status = self::STATUS_FAIL;
-    $this->_scmRevision = null;
+    $this->_scmRevision = '';
 
     $this->_ptrProject = $project;
   }
@@ -440,7 +440,7 @@ CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
   output TEXT NOT NULL DEFAULT '',
   specialtasks TEXT NOT NULL DEFAULT '',
   status TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  scmrevision INTEGER UNSIGNED NOT NULL DEFAULT 0
+  scmrevision VARCHAR(40) NOT NULL DEFAULT ''
 );
 EOT;
     if (!Database::execute($sql)) {
