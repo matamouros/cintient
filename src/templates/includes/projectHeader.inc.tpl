@@ -25,7 +25,7 @@
 {if !empty($project_build)}
       <div id="buildListDropdownLink">
         <div id="projectStatus_{$project->getId()}" class="details">
-          #{$project_build->getId()} r{$project_build->getScmRevision()},
+          #{$project_build->getId()}, rev {$project_build->getScmRevision()},
           on {$project_build->getDate()|date_format:"%b %e, %Y at %R"}
         </div>
         <div class="dropdownTriangle"></div>
@@ -45,7 +45,7 @@
             <tr class="{UrlManager::getForProjectBuildView($globals_project, $build)}">
               <td><dt class="{if $build->getStatus()!=Project_Build::STATUS_FAIL}buildOk{else}buildFail{/if}">{$build->getDate()|date_format:"%R"}</dt></td>
               <td>#{$build->getId()}</td>
-              <td>r{$build->getScmRevision()}</td>
+              <td>rev {$build->getScmRevision()}</td>
             </tr>
 {$lastDate=$build->getDate()|date_format:"%b %e, %Y"}
 {/foreach}
