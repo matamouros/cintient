@@ -88,15 +88,7 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
       $o->getHtmlTitle(array('title' => 'PhpUnit'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Fail on error, checkbox
-        h::div(array('class' => 'label'), 'Fail on error?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-          if ($o->getFailOnError()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
-        });
+        $o->toHtmlFailOnError();
         // Fail on failure, checkbox
         h::div(array('class' => 'label'), 'Fail on failure?');
         h::div(array('class' => 'checkboxContainer'), function() use ($o) {

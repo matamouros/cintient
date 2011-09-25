@@ -40,7 +40,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 \* +----------------------------------------------------------------+ */
 
 require dirname(__FILE__) . '/../config/cintient.conf.php';
-
+ini_set('display_errors', 0); // Don't echo errors on AJAX calls
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 

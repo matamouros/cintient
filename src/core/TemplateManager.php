@@ -899,74 +899,7 @@ EOT;
 
   static public function project_new()
   {
-    //
-    // New project form submission
-    //
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      //
-      // Check for mandatory attributes
-      //
-      if (!isset($_POST['title']) ||
-           empty($_POST['title']) ||
-          !isset($_POST['buildLabel']) ||
-           empty($_POST['buildLabel']) ||
-          //!isset($_POST['description']) ||
-          // empty($_POST['description']) ||
-          !isset($_POST['scmConnectorType']) ||
-           empty($_POST['scmConnectorType']) ||
-          !isset($_POST['scmRemoteRepository']) ||
-           empty($_POST['scmRemoteRepository'])/* ||
-          !isset($_POST['scmUsername']) ||
-           empty($_POST['scmUsername']) ||
-          !isset($_POST['scmPassword']) ||
-           empty($_POST['scmPassword'])*/
-      ) {
-        //
-        // TODO: Error notification!!!
-        //
-        SystemEvent::raise(SystemEvent::DEBUG, "Project creation failed, required attributes were empty.", __METHOD__);
-        $formData = array();
-        $formData['title'] = $_POST['title'];
-        $formData['buildLabel'] = $_POST['buildLabel'];
-        $formData['description'] = $_POST['description'];
-        $formData['scmConnectorType'] = $_POST['scmConnectorType'];
-        $formData['scmRemoteRepository'] = $_POST['scmRemoteRepository'];
-        $formData['scmUsername'] = $_POST['scmUsername'];
-        $formData['scmPassword'] = $_POST['scmPassword'];
-        $GLOBALS['smarty']->assign('formData', $formData);
-        $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
-      } else {
-        $GLOBALS['project'] = null;
-        $project = new Project();
-        $project->setTitle($_POST['title']);
-        $project->setBuildLabel($_POST['buildLabel']);
-        $project->setDescription($_POST['description']);
-        $project->setScmConnectorType($_POST['scmConnectorType']);
-        $project->setScmRemoteRepository($_POST['scmRemoteRepository']);
-        $project->setScmUsername($_POST['scmUsername']);
-        $project->setScmPassword($_POST['scmPassword']);
-        $project->addToUsers(
-          $GLOBALS['user'],
-          Access::OWNER
-        );
-
-        if (!$project->init()) {
-          SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
-          //
-          // TODO: Notification
-          //
-          header('Location: ' . UrlManager::getForProjectNew());
-          exit;
-        }
-        $GLOBALS['project'] = $project;
-        $_SESSION['projectId'] = $GLOBALS['project']->getId();
-        $GLOBALS['project']->log("Project created.");
-        Redirector::redirectToUri(UrlManager::getForDashboard());
-        exit;
-      }
-    } else {
-      $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
-    }
+    $GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
   }
 
   /**

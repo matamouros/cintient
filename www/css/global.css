@@ -5,6 +5,7 @@
 	http://cintient/settings/css/global.css
 	http://cintient/project/edit/css/global.css
 	http://cintient/dashboard/css/global.css
+	http://cintient/project/new/css/global.css
 */
 
 /*
@@ -276,6 +277,17 @@ hr
   font-size: 1px;
   line-height: 0;
   overflow: visible;
+}
+
+.tooltip
+{
+  cursor: help;
+}
+
+.emphasis
+{
+  color: rgb(255,40,0);
+  text-decoration: none;
 }
 
 /* @end */
@@ -1624,5 +1636,19 @@ article#project .avatar
 .messageInfo
 {
   font-size: 12pt;
+}
+/* @end */
+
+
+/* @group Overrides */
+/* +----------------------------------------------------------------+ *\
+|* | OVERRIDES                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+#tiptip_content
+{
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
 }
 /* @end */

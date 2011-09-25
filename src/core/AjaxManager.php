@@ -670,12 +670,151 @@ EOT;
     exit;
   }
 
+  static public function project_delete()
+  {
+    $postVars = array();
+    foreach ($_POST['deletePane'] as $name => $value) {
+      if (isset($value['value'])) {
+        $postVars[$name] = $value['value'];
+      }
+    }
+
+    // Make sure the user knows what he is deleting
+    if ($GLOBALS['project']->getId() != $postVars['pid']) {
+      $msg = 'Trying to delete a different project from the current active one is not allowed.';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    // User access level
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+        'success' => false,
+        'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $ret = $GLOBALS['project']->delete();
+    if (!$ret) {
+      $msg = 'Project could not be deleted. Please check the logs.';
+      SystemEvent::raise(SystemEvent::ERROR, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    } else {
+      $GLOBALS['project'] = $_SESSION['projectId'] = null;
+      unset($GLOBALS['project']);
+      unset($_SESSION['projectId']);
+      $msg = 'Project deleted.';
+      SystemEvent::raise(SystemEvent::INFO, "Project deleted. [PID={$postVars['pid']}] [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
+      echo json_encode(
+        array(
+          'success' => true
+        )
+      );
+      exit;
+    }
+  }
+
+  static public function project_new()
+  {
+    $postVars = array();
+    foreach ($_POST['newProjectContainer'] as $name => $value) {
+      if (isset($value['value'])) {
+        $postVars[$name] = $value['value'];
+      }
+    }
+    //
+    // Check for mandatory attributes
+    //
+    if (!isset($postVars['title']) ||
+         empty($postVars['title']) ||
+        !isset($postVars['buildLabel']) ||
+         empty($postVars['buildLabel']) ||
+        !isset($postVars['scmConnectorType']) ||
+         empty($postVars['scmConnectorType']) ||
+        !isset($postVars['scmRemoteRepository']) ||
+         empty($postVars['scmRemoteRepository'])
+    ) {
+      //
+      // TODO: Error notification!!!
+      //
+      SystemEvent::raise(SystemEvent::DEBUG, "Project creation failed, required attributes were empty.", __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Missing required attributes. Make sure all attributes not marked as optional are filled.',
+        )
+      );
+      exit;
+    } else {
+      $GLOBALS['project'] = null;
+      $project = new Project();
+      $project->setTitle($postVars['title']);
+      $project->setBuildLabel($postVars['buildLabel']);
+      $project->setScmConnectorType($postVars['scmConnectorType']);
+      $project->setScmRemoteRepository($postVars['scmRemoteRepository']);
+      $project->setScmUsername($postVars['scmUsername']);
+      $project->setScmPassword($postVars['scmPassword']);
+      $project->addToUsers(
+        $GLOBALS['user'],
+        Access::OWNER
+      );
+      if (!$project->init()) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not initialize project. Try again later.", __METHOD__);
+        echo json_encode(
+          array(
+            'success' => false,
+            'error' => 'The project was created but could not be initialized. Please check the logs and/or try the first build manually.',
+          )
+        );
+        exit;
+      }
+      $GLOBALS['project'] = $project;
+      $_SESSION['projectId'] = $GLOBALS['project']->getId();
+      $GLOBALS['project']->log("Project created.");
+      echo json_encode(
+        array(
+          'success' => true
+        )
+      );
+      exit;
+    }
+  }
+
   static public function project_notificationsSave()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
     if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
       $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(
         array(

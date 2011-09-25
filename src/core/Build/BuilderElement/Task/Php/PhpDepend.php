@@ -121,15 +121,7 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
     h::li(array('class' => 'builderElement', 'id' => $this->getInternalId()), function() use ($o) {
       $o->getHtmlTitle(array('title' => 'PhpDepend'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Fail on error, checkbox
-        h::div(array('class' => 'label'), 'Fail on error?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-          if ($o->getFailOnError()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
-        });
+        $o->toHtmlFailOnError();
         // Include Dirs, textfield
         h::div(array('class' => 'label'), 'Include dirs <span class="fineprintLabel">(space separated)</span>');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {

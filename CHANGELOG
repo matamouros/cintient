@@ -23,6 +23,14 @@
 
 
 
+ 2011-09-21 cintient-0-alpha-7
+ =============================
+
+ADDED: Git support as an SCM connector. Still very dodgy and alpha-ish.
+FIXED: Some minor bugs squashed.
+       
+       
+
  2011-09-13 cintient-0-alpha-6
  =============================
  

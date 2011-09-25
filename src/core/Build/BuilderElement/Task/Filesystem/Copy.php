@@ -87,17 +87,9 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
     }
     $o = $this;
     h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      BuilderConnector_Html::Build_BuilderElementTitle($o, array('title' => 'Copy'));
+      $o->getHtmlTitle(array('title' => 'Copy'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Fail on error, checkbox
-        h::div(array('class' => 'label'), 'Fail on error?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-          if ($o->getFailOnError()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
-        });
+        $o->toHtmlFailOnError();
         // File, textfield
         h::div(array('class' => 'label'), 'File');
         h::div(array('class' => 'textfieldContainer'), function() use ($o) {

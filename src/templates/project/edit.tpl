@@ -22,11 +22,11 @@
 {$menuLinks="<a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
 {$defaultPane="#deploymentBuilderPane"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a>"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a>"}
   {$defaultPane="#generalPane"}
 {/if}
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a></span>"}
+  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a>"}
   {*$defaultPane="#generalPane"*}
   {$defaultPane="#generalPane"}
 {/if}
@@ -50,13 +50,13 @@
           <div class="textfieldContainer" style="width: 404px;">
             <input class="textfield" style="width: 400px" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
           </div>
-          <div class="label">A small description</div>
-          <div class="textareaContainer">
-            <textarea class="textarea" name="description">{if isset($formData['description'])}{$formData['description']}{/if}</textarea>
-          </div>
           <div class="label">A build label</div>
           <div class="textfieldContainer" style="width: 364px;">
             <input class="textfield" style="width: 360px;" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}">
+          </div>
+          <div class="label">A small description</div>
+          <div class="textareaContainer">
+            <textarea class="textarea" name="description">{if isset($formData['description'])}{$formData['description']}{/if}</textarea>
           </div>
           <input type="submit" value="Edit!" id="submitButton">
         </div>
@@ -91,6 +91,10 @@ $(document).ready(function() {
 {/foreach}
             </select>
           </div>
+          <div class="label">The SCM remote repository</div>
+          <div class="textfieldContainer" style="width: 556px;">
+            <input class="textfield" style="width: 550px;" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}">
+          </div>
           <div class="label">Username for SCM access</div>
           <div class="textfieldContainer" style="width: 304px;">
             <input class="textfield" style="width: 300px;" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}">
@@ -99,14 +103,29 @@ $(document).ready(function() {
           <div class="textfieldContainer" style="width: 304px;">
             <input class="textfield" style="width: 300px;" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
           </div>
-          <div class="label">The SCM remote repository</div>
-          <div class="textfieldContainer" style="width: 556px;">
-            <input class="textfield" style="width: 550px;" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}">
-          </div>
           <input type="submit" value="Edit!" id="submitButton">
         </div>
         </form>
       </div>
+      <div id="deletePane" class="exclusivePane">
+        <div class="projectEditContainer container">
+          <div class="label">Do you really want to delete <span class="emphasis">{$globals_project->getTitle()}</span>? This action is irreversible.</div>
+          <input type="hidden" value="{$globals_project->getId()}" name="pid">
+        </div>
+      </div>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initGenericForm({
+    formSelector : '#deletePane',
+    onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
+    submitButtonAppendTo : '#deletePane .projectEditContainer',
+    submitButtonText : 'Yes, I want to delete this project!',
+    submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
+    successMsg : 'Deleted!',
+  });
+});
+</script>
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
       <div id="usersPane" class="exclusivePane">
         <div id="addUserPane" class="projectEditContainer container">

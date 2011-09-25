@@ -300,4 +300,23 @@ class Build_BuilderElement extends Framework_BaseObject
   {
     require_once 'lib/lib.htmlgen.php';
   }
+
+  /**
+   * Utility method for centralizing the Fail On Error attribute, that
+   * will be pretty much used by every build element.
+   */
+  public function toHtmlFailOnError()
+  {
+    $o = $this;
+    h::div(array('class' => 'label tooltip',
+                 'title' => 'Check this if you wish the integration'
+                          . ' builder to immediately stop when this task generates an error.'), 'Fail on error?');
+    h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+      $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
+      if ($o->getFailOnError()) {
+        $params['checked'] = 'checked';
+      }
+      h::input($params);
+    });
+  }
 }

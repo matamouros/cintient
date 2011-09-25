@@ -27,7 +27,6 @@
  * @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  */
 var Cintient = {
-
   /**
    * Creates a button, styles it and returns it. Whomever calls this,
    * must then be responsible for appending it to the DOM tree.
@@ -121,6 +120,8 @@ var Cintient = {
   {
     var options = $.extend({
       formSelector : 'form',
+      onSuccessRedirectUrl : null,
+      onSuccessRedirectTimer : 3000, // milliseconds
       submitButtonText : 'Save',
       submitButtonClass : 'buttonText',
       submitButtonAppendTo : '',
@@ -157,14 +158,21 @@ var Cintient = {
         cache: false,
         dataType: 'json',
         success: function(data, textStatus, XMLHttpRequest) {
-          if (!data.success) {
-            //TODO: treat this properly
-            alert('error');
+          if (data == null || data.success == null) {
+            $.jGrowl('An unknown error occurred. Yeah, it seems we have those too... :-(', { header: "Warning", sticky: true });
+          } else if (!data.success) {
+            $.jGrowl(data.error + '', { header: "Warning", sticky: true });
           } else {
             $.jGrowl(options.successMsg);
+            if (options.onSuccessRedirectUrl !== null) {
+              setTimeout(function () {
+                window.location.replace(options.onSuccessRedirectUrl);
+              }, options.onSuccessRedirectTimer);
+            }
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
+          $.jGrowl('An unknown error occurred. Yeah, it seems we have those too...', { header: "Warning", sticky: true });
           alert(errorThrown);
         }
       });

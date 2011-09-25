@@ -93,15 +93,7 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
     h::li(array('class' => 'builderElement', 'id' => $this->getInternalId()), function() use ($o) {
       $o->getHtmlTitle(array('title' => 'PhpLint'));
       h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Fail on error, checkbox
-        h::div(array('class' => 'label'), 'Fail on error?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-          if ($o->getFailOnError()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
-        });
+        $o->toHtmlFailOnError();
         if ($o->getFilesets()) {
           $filesets = $o->getFilesets();
           foreach ($filesets as $fileset) {

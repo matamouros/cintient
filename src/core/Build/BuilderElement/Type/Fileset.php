@@ -204,7 +204,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     // Type, radio button
     h::ul(array('class' => 'radioContainer'), function() use ($o) {
       h::li(function() use ($o) {
-        h::div(array('class' => 'label'), 'Files only');
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'Check this if you ONLY want to match files.'), 'Files only');
         $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::FILE);
         if ($o->getType() == Build_BuilderElement_Type_Fileset::FILE) {
           $params['checked'] = 'checked';
@@ -212,7 +213,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
         h::input($params);
       });
       h::li(function() use ($o) {
-        h::div(array('class' => 'label'), 'Dirs only');
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'Check this if you ONLY want to match directories.'), 'Dirs only');
         $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::DIR);
         if ($o->getType() == Build_BuilderElement_Type_Fileset::DIR) {
           $params['checked'] = 'checked';
@@ -221,7 +223,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
       });
 
       h::li(function() use ($o) {
-        h::div(array('class' => 'label'), 'Both');
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'Check this if you want to match BOTH files and directories.'), 'Both');
         $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::BOTH);
         if ($o->getType() == Build_BuilderElement_Type_Fileset::BOTH) {
           $params['checked'] = 'checked';
@@ -231,7 +234,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     });
 
     // Default excludes, checkbox
-    h::div(array('class' => 'label'), 'Default excludes?');
+    h::div(array('class' => 'label tooltip',
+                 'title' => 'Enabling this will automatically exclude files and directories that match the following: *~, #*#, .#*, %*%, ._*, CVS, CVS/**, .cvsignore, SCCS, SCCS/**, vssver.scc, .svn, .svn/**, .DS_Store, .git, .git/**, .gitattributes, .gitignore, .gitmodules, .hg, .hg/**, .hgignore, .hgsub, .hgsubstate, .hgtags, .bzr, .bzr/**, .bzrignore.'), 'Default excludes?');
     h::div(array('class' => 'checkboxContainer'), function() use ($o) {
       $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultExcludes',);
       if ($o->getDefaultExcludes()) {
@@ -240,7 +244,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
       h::input($params);
     });
     // Dir, textfield
-    h::div(array('class' => 'label'), 'Base dir');
+    h::div(array('class' => 'label tooltip',
+                 'title' => 'The base directory on which to execute the task.'), 'Base dir');
     h::div(array('class' => 'textfieldContainer'), function() use ($o) {
       //h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
       h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
@@ -257,7 +262,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
       }
     }
     // Includes, textfield
-    h::div(array('class' => 'label'), 'Files/dirs to include');
+    h::div(array('class' => 'label tooltip',
+                 'title' => 'Comma separated. All files and/or dirs that match this WILL BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.'), 'Files/dirs to include');
     h::div(array('class' => 'textfieldContainer'), function() use ($o, $includesLine) {
       h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'include', 'value' => $includesLine));
     });
@@ -273,7 +279,8 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
       }
     }
     // Excludes, textfield
-    h::div(array('class' => 'label'), 'Files/dirs to exclude');
+    h::div(array('class' => 'label tooltip',
+                 'title' => 'Comma separated. All files and/or dirs that match this WILL NOT BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.'), 'Files/dirs to exclude');
     h::div(array('class' => 'textfieldContainer'), function() use ($o, $excludesLine) {
       h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
     });
