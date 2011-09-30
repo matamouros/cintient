@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{$defaultPane="#notificationsPane"}
+*}{$defaultPane="#generalPane"}
 {$menuLinks="<a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a>"}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Settings"

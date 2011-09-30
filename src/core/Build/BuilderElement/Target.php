@@ -122,7 +122,40 @@ class Build_BuilderElement_Target extends Build_BuilderElement
 
   public function toPhing()
   {
-    return $this->toAnt();
+    $xml = new XmlDoc();
+    $xml->startElement('target');
+    if (!$this->getName()) {
+      SystemEvent::raise(SystemEvent::ERROR, 'No name set for the target.', __METHOD__);
+      return false;
+    }
+    if ($this->getName() !== null) {
+      $xml->writeAttribute('name', $this->getName());
+    }
+    if ($this->getProperties()) {
+      $properties = $this->getProperties();
+      foreach ($properties as $property) {
+        $xml->writeRaw($property->toPhing());
+      }
+    }
+    if ($this->getDependencies()) {
+      $dependencies = $this->getDependencies();
+      $value = '';
+      for ($i=0; $i < count($dependencies); $i++) {
+        if ($i > 0) {
+          $value .= ',';
+        }
+        $value .= $dependencies[$i];
+      }
+      $xml->writeAttribute('depends', $value);
+    }
+    if ($this->getTasks()) {
+      $tasks = $this->getTasks();
+      foreach ($tasks as $task) {
+        $xml->writeRaw($task->toPhing());
+      }
+    }
+    $xml->endElement();
+    return $xml->flush();
   }
 
   public function toPhp(Array &$context = array())

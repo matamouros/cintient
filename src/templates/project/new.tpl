@@ -19,6 +19,7 @@
 
 *}{include file='includes/header.inc.tpl' subSectionTitle="New project" level=1}
     <div id="newProjectContainer" class="container">
+    <form>
       <div class="label">Project title</div>
       <div class="textfieldContainer" style="width: 404px;">
         <input class="textfield" style="width: 400px" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
@@ -47,6 +48,7 @@
       <div class="textfieldContainer" style="width: 304px;">
         <input class="textfield" style="width: 300px;" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
       </div>
+    </form>
     </div>
 <script type="text/javascript">
 // <![CDATA[

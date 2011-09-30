@@ -137,15 +137,22 @@ include = **/*
 toDir = /tmp/src2/
 ");
 
+    $rr = new Build_BuilderElement_Task_ReplaceRegexp();
+    $rr->setFile('/tmp/whatevs.txt');
+    //$rr->setFilesets(array($fileset));
+    $rr->setFlags('gmi');
+    $rr->setReplace('asd$1');
+    $rr->setMatch('/^ola"asd(.*)$/');
+
     $target = new Build_BuilderElement_Target();
     $target->setName('tests');
-    $target->setTasks(array($perl));
+    $target->setTasks(array($rr));
     //echo $target->toString('php');
 
     $target2 = new Build_BuilderElement_Target();
     $target2->setName('tests2');
     //$target->setTasks(array($delete, $exec));
-    $target2->setTasks(array($echo, $mkdir));
+    $target2->setTasks(array($echo, $rr));
     //echo $target->toString('php');
 
     $project = new Build_BuilderElement_Project();

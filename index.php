@@ -74,14 +74,12 @@ if ($uriPathInfo['basename'] != 'index.php') {
   $reqUri .= $uriPathInfo['basename'];
 }
 $defaults = array();
-$defaults['appWorkDir'] = '/var/run/cintient/';
+$defaults['appWorkDir'] = realpath(dirname(__FILE__) . '/..') . '/.cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
-$defaults['configurationFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/cintient.conf.php';
+$defaults['configurationDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/';
+$defaults['configurationSampleFile'] = $defaults['configurationDir'] . 'cintient.conf.sample';
+$defaults['configurationNewFile'] = $defaults['configurationDir'] . 'cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
-// realpath() is required here because later on we need to make sure
-// we're dealing with expanded paths in order to extract the proper
-// URL parts to make Cintient work on every request.
-$defaults['installDir'] = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 
 //
 // Utility functions
@@ -205,18 +203,24 @@ function htaccessFile($dir)
   return array($ok, $msg[(int)$ok]);
 }
 
-function configurationFile($dir)
+function configurationDir($dir)
 {
   global $defaults;
-  $msg[0] = "Cintient needs to change this file, make sure your webserver has write permissions for this.";
+  $msg[0] = "Cintient needs to read and create files in this dir, make sure your webserver has write permissions for this.";
   $msg[1] = "Ready.";
-  $fd = @fopen($defaults['configurationFile'], 'r+');
-  if ($fd === false) {
+  // Must be able to read the sample file provided and either create the
+  // unexisting new one, or backup an existing one and change the original
+  $testFilename = $defaults['configurationNewFile'] . uniqid();
+  $fd1 = @fopen($defaults['configurationSampleFile'], 'r');
+  $fd2 = @fopen($testFilename, 'a');
+  if ($fd1 === false || $fd2 === false) {
     $ok = false;
   } else {
     $ok = true;
   }
-  @fclose($fd);
+  @fclose($fd1);
+  @fclose($fd2);
+  @unlink($testFilename);
   return array($ok, $msg[(int)$ok]);
 }
 
@@ -283,26 +287,34 @@ if (!empty($_GET['c'])) {
   }
 
   //
-  // Update the configuration file
+  // The configuration file
   //
-  if (($fd = fopen($defaults['configurationFile'], 'r+')) === false) {
+  if (($fdSample = fopen($defaults['configurationSampleFile'], 'r')) === false) {
     $ok = false;
-    $msg = "Couldn't update the configuration file in {$defaults['configurationFile']}";
+    $msg = "Couldn't read the sample configuration file {$defaults['configurationSampleFile']}. Check dir permissions.";
     sendResponse($ok, $msg);
   }
-  $originalConfFile = fread($fd, filesize($defaults['configurationFile']));
+  $originalConfFile = fread($fdSample, filesize($defaults['configurationSampleFile']));
   $modifiedConfFile = $originalConfFile;
   // Replacements:
-  $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_INSTALL_DIR', $defaults['installDir']);
   $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_WORK_DIR', $get['appWorkDir']);
   $modifiedConfFile = directiveValueUpdate($modifiedConfFile, 'CINTIENT_BASE_URL', $get['baseUrl']);
-  fclose($fd);
-  file_put_contents($defaults['configurationFile'], $modifiedConfFile);
+  fclose($fdSample);
+  // If the configuration file already exists, back it up
+  if (file_exists($defaults['configurationNewFile'])) {
+    if (!@copy($defaults['configurationNewFile'], $defaults['configurationNewFile'] . '_' . date("Ymd") . '_' . time())) {
+      $ok = false;
+      $msg = "Couldn't backup an existing configuration file {$defaults['configurationNewFile']}. Check dir permissions.";
+      sendResponse($ok, $msg);
+    }
+    @unlink($defaults['configurationNewFile']);
+  }
+  file_put_contents($defaults['configurationNewFile'], $modifiedConfFile);
 
   //
   // From here on Cintient itself will handle the rest of the installation
   //
-  require $defaults['configurationFile'];
+  require $defaults['configurationNewFile'];
   error_reporting(-1);
   ini_set('display_errors', 'off');
   //
@@ -487,17 +499,8 @@ list ($ok, $msg) = baseUrl($defaults['baseUrl']);
 ?>
           <li class="inputCheckOnChange" id="baseUrl">
             <div class="label">Base URL where Cintient will run from</div>
-            <div class="fineprintLabel">(we tried to automatically guess it. If you are not sure, just go with our suggestion)</div>
+            <div class="fineprintLabel">(Cintient tried to guess it. If you are not sure, just go with its suggestion)</div>
             <div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="baseUrl" value="<?php echo $defaults['baseUrl']; ?>" style="width: 450px;" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-<?php
-list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
-?>
-          <li class="inputCheckOnChange" id="appWorkDir">
-            <div class="label">Application work files directory</div>
-            <div class="fineprintLabel">(the place for work files and databases, different from the installation directory)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
 <?php
@@ -510,12 +513,21 @@ list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
 <?php
-list ($ok, $msg) = configurationFile($defaults['configurationFile']);
+list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
 ?>
-          <li class="inputCheckOnChange" id="configurationFile">
-            <div class="label">cintient.conf.php</div>
-            <div class="fineprintLabel">(Cintient's own configuration file)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="configurationFile" value="<?php echo $defaults['configurationFile']; ?>" /></div>
+          <li class="inputCheckOnChange" id="appWorkDir">
+            <div class="label">Application work files directory</div>
+            <div class="fineprintLabel">(the place for work files and databases, different from the installation directory)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+<?php
+list ($ok, $msg) = configurationDir($defaults['configurationDir']);
+?>
+          <li class="inputCheckOnChange" id="configurationDir">
+            <div class="label">Application configuration directory</div>
+            <div class="fineprintLabel">(Cintient's own configuration dir, not related to the work files directory above)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="configurationDir" value="<?php echo $defaults['configurationDir']; ?>" /></div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
         </ul>

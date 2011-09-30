@@ -29,16 +29,12 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
+  $ret = true;
   $projects = Project::getNextToBuild();
   foreach ($projects as &$project) {
     SystemEvent::raise(SystemEvent::INFO, "Starting project build. [PID={$project->getId()}]", 'runBuildWorker');
-    if (!$project->build()) {
+    if (!($ret = $project->build())) {
       SystemEvent::raise(SystemEvent::INFO, "Project not built. [PID={$project->getId()}]", 'runBuildWorker');
-      // Could be due to the project not having been initialized, or
-      // currently building, etc. This sleep() is the easiest way to
-      // make sure that the runBuilderWorker is not force trying to
-      // build a "unbuildable" (even if temporary) single project.
-      sleep(60);
     } else {
       SystemEvent::raise(SystemEvent::INFO, "Project built. [PID={$project->getId()}]", 'runBuildWorker');
     }
@@ -50,6 +46,13 @@ do {
       SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
       exit(0);
     }
+  }
+  if (!$ret) {
+    // Could be due to the project not having been initialized, or
+    // currently building, etc. This sleep() is the easiest way to
+    // make sure that the runBuilderWorker is not force trying to
+    // build a "unbuildable" (even if temporary) single project.
+    sleep(60);
   }
   // Rest a bit...
   if (empty($projects)) {
