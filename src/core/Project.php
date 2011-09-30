@@ -748,7 +748,7 @@ EOT;
     return $ret;
   }
 
-  static public function getNextToBuild(Array $options = array())
+  static public function &getNextToBuild(Array $options = array())
   {
     isset($options['pageStart'])?:$options['pageStart']=0;
     isset($options['pageLength'])?:$options['pageLength']=CINTIENT_NEXT_TO_BUILD_PAGE_LENGTH;
@@ -769,7 +769,7 @@ EOT;
    *
    * @param unknown_type $rs
    */
-  static private function _getObject(Resultset $rs, Array $options = array())
+  static private function &_getObject(Resultset $rs, Array $options = array())
   {
     isset($options['loadUsers'])?:$options['loadUsers']=true;
     $ret = new Project();
