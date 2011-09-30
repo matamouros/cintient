@@ -126,7 +126,7 @@ class PHPUnit_TextUI_Command
     public static function main($exit = TRUE)
     {
         $command = new PHPUnit_TextUI_Command;
-        $command->run($_SERVER['argv'], $exit);
+        return $command->run($_SERVER['argv'], $exit);
     }
 
     /**
@@ -190,6 +190,23 @@ class PHPUnit_TextUI_Command
 
         catch (PHPUnit_Framework_Exception $e) {
             print $e->getMessage() . "\n";
+        }
+
+
+        $ret = PHPUnit_TextUI_TestRunner::FAILURE_EXIT;
+
+        if (isset($result) && $result->wasSuccessful()) {
+          $ret = PHPUnit_TextUI_TestRunner::SUCCESS_EXIT;
+        }
+
+        else if (!isset($result) || $result->errorCount() > 0) {
+          $ret = PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT;
+        }
+
+        if ($exit) {
+            exit($ret);
+        } else {
+            return $ret;
         }
 
         if ($exit) {
