@@ -222,6 +222,16 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     return $this->_status != self::STATUS_FAIL;
   }
 
+  public function setScmRevision($rev)
+  {
+    // Trying to counter the fact that very rarely the revision number
+    // on an SCM connector can not be fetched... (no clue why, yet)
+    if (empty($rev)) {
+      $rev = '---';
+    }
+    $this->_scmRevision = $rev;
+  }
+
   protected function _save($force = false)
   {
     if (!$this->hasChanged()) {
