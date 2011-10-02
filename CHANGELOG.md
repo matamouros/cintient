@@ -8,7 +8,7 @@ Changelog
            with more information.
  *  ADDED: ReplaceRegex task.
  *  ADDED: Configuration file now generated at install time.
- *  CHANG: Delete task now activated.
+ *  CHANGED: Delete task now activated.
 
 2011-09-21 cintient-0-alpha-7
 -----------------------------
