@@ -67,15 +67,15 @@ pull requests our way.
 Credits
 -------
 
-Project page: <http://github.com/matamouros/cintient>
-
 Authored by:
 
-* Pedro Mata-Mouros
-  Twitter: @matamouros
+* Pedro Mata-Mouros,
+  Twitter: @matamouros,
   email: pedro.matamouros@gmail.com
 
 Past contributors:
 
 * voxmachina
 * miguellmanso
+
+Project page: <http://github.com/matamouros/cintient>
