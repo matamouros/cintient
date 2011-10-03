@@ -178,7 +178,7 @@ function baseUrl($url)
 
 function appWorkDir($dir)
 {
-  $msg[0] = "Check that the path exists and that your webserver has write permissions there.";
+  $msg[0] = "Check dir exists and enable write permissions.";
   $msg[1] = "Ready.";
   if (substr($dir, -1) != DIRECTORY_SEPARATOR) {
     $dir .= DIRECTORY_SEPARATOR;
@@ -191,7 +191,7 @@ function appWorkDir($dir)
 
 function htaccessFile($dir)
 {
-  $msg[0] = "Make sure your webserver has write permissions to create this file. For now you can't change its location.";
+  $msg[0] = "Enable write permissions in this dir.";
   $msg[1] = "Ready.";
   $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess', 'a+');
   if ($fd === false) {
@@ -206,7 +206,7 @@ function htaccessFile($dir)
 function configurationDir($dir)
 {
   global $defaults;
-  $msg[0] = "Cintient needs to read and create files in this dir, make sure your webserver has write permissions for this.";
+  $msg[0] = "Enable write permissions in this dir.";
   $msg[1] = "Ready.";
   // Must be able to read the sample file provided and either create the
   // unexisting new one, or backup an existing one and change the original
@@ -504,29 +504,27 @@ list ($ok, $msg) = baseUrl($defaults['baseUrl']);
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
 <?php
+list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
+?>
+          <li class="inputCheckOnChange" id="appWorkDir">
+            <div class="label">Work files dir</div>
+            <div class="fineprintLabel">(place for working files and databases, independent from the installation dir)</div>
+            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
+            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
+          </li>
+<?php
 list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
 ?>
           <li class="inputCheckOnChange" id="htaccessFile">
             <div class="label">.htaccess</div>
-            <div class="fineprintLabel">(the webserver's specific configuration file for Cintient)</div>
             <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-<?php
-list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
-?>
-          <li class="inputCheckOnChange" id="appWorkDir">
-            <div class="label">Application work files directory</div>
-            <div class="fineprintLabel">(the place for work files and databases, different from the installation directory)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>
 <?php
 list ($ok, $msg) = configurationDir($defaults['configurationDir']);
 ?>
           <li class="inputCheckOnChange" id="configurationDir">
-            <div class="label">Application configuration directory</div>
-            <div class="fineprintLabel">(Cintient's own configuration dir, not related to the work files directory above)</div>
+            <div class="label">Configuration dir</div>
             <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="configurationDir" value="<?php echo $defaults['configurationDir']; ?>" /></div>
             <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
           </li>

@@ -144,9 +144,10 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
         $php .= "
 \$callback = function (\$entry) {
   \$ret = true;
-  if (is_file(\$entry) || ({$this->getIncludeEmptyDirs()} && is_dir(\$entry))) { // includeemptydirs
-    // TODO: activate the unlink() and unleash hell with extreme prejudice
-    \$ret = unlink(\$entry);
+  if (is_file(\$entry)) { // includeemptydirs
+    \$ret = @unlink(\$entry);
+  } elseif({$this->getIncludeEmptyDirs()} && is_dir(\$entry)) {
+    \$ret = @rmdir(\$entry);
   }
   if (!\$ret) {
     output(\"Failed deleting \$entry.\");

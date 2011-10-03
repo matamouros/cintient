@@ -800,6 +800,11 @@ EOT;
           return false;
         }
         $project = $GLOBALS['project'];
+
+        if ($_POST['scmConnectorType'] != $project->getScmConnectorType()) {
+          $project->resetScmConnector();
+        }
+
         $project->setId($GLOBALS['project']->getId());
         $project->setTitle($_POST['title']);
         $project->setBuildLabel($_POST['buildLabel']);

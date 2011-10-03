@@ -143,6 +143,24 @@ class Project extends Framework_DatabaseObjectAbstract
     }
   }
 
+  public function resetScmConnector()
+  {
+    if (!Framework_Filesystem::removeDir($this->getScmLocalWorkingCopy()) && file_exists($this->getScmLocalWorkingCopy())) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not remove existing sources working copy. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not recreate sources dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    // Don't checkout the project here, or else the request might timeout
+    //if (!ScmConnector::checkout($params)) {
+      $this->setStatus(self::STATUS_UNINITIALIZED);
+    //  return false;
+    //}
+    return true;
+  }
+
 	/**
    * Receives a builder element and removes it from the project's integration
    * builder. It does it's best to find the matching [deeply] nested element
