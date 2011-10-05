@@ -37,30 +37,38 @@
   jsIncludes=['js/lib/avataruploader.js']}
     <div id="paneContainer">
       <div id="generalPane" class="exclusivePane">
-        <form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">
-        <div class="projectEditContainer container">
+      <form>
+        <div class="projectEditContainer container" id="generalForm">
           <div class="label">Project avatar <span class="fineprintLabel">(click image to change it)</span></div>
           <div id="avatarUploader">
             <noscript>
-              {* TODO: Use simple upload form *}
               <p>Please enable JavaScript to use file uploader.</p>
             </noscript>
           </div>
           <div class="label">Project title</div>
           <div class="textfieldContainer" style="width: 404px;">
-            <input class="textfield" style="width: 400px" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
+            <input class="textfield" style="width: 400px" type="text" name="title" value="{$globals_project->getTitle()}">
           </div>
           <div class="label">A build label</div>
           <div class="textfieldContainer" style="width: 364px;">
-            <input class="textfield" style="width: 360px;" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}">
+            <input class="textfield" style="width: 360px;" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}">
           </div>
           <div class="label">A small description</div>
           <div class="textareaContainer">
-            <textarea class="textarea" name="description">{if isset($formData['description'])}{$formData['description']}{/if}</textarea>
+            <textarea class="textarea" name="description">{$globals_project->getDescription()}</textarea>
           </div>
-          <input type="submit" value="Edit!" id="submitButton">
         </div>
-        {*</form>*}
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initGenericForm({
+    formSelector : '#generalPane .projectEditContainer',
+    submitButtonAppendTo : '#generalPane',
+    submitUrl: '{URLManager::getForAjaxProjectEditGeneral()}',
+  });
+});
+</script>
+      </form>
       </div>
       <div id="notificationsPane" class="exclusivePane">
         <div class="projectEditContainer container" id="notificationsForm">
@@ -80,32 +88,40 @@ $(document).ready(function() {
         </div>
       </div>
       <div id="scmPane" class="exclusivePane">
-        {* TODO: this should be a separate form so that we don't erroneously send a hidden tab's form that the user didn't intend to *}
-        {*<form action="{if isset($smarty.get.new)}{UrlManager::getForProjectNew()}{else}{UrlManager::getForProjectEdit()}{/if}" method="post">*}
-        <div class="projectEditContainer container">
+        <form>
+        <div class="projectEditContainer container" id="scmForm">
           <div class="label">The SCM connector</div>
           <div class="dropdownContainer">
             <select class="dropdown" name="scmConnectorType">
 {foreach from=$project_availableConnectors item=connector}
-              <option value="{$connector}"{if isset($formData['scmConnectorType']) && $formData['scmConnectorType']==$connector} selected{/if}>{$connector|capitalize}
+              <option value="{$connector}"{if $globals_project->getScmConnectorType()==$connector} selected{/if}>{$connector|capitalize}
 {/foreach}
             </select>
           </div>
           <div class="label">The SCM remote repository</div>
           <div class="textfieldContainer" style="width: 556px;">
-            <input class="textfield" style="width: 550px;" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}">
+            <input class="textfield" style="width: 550px;" type="text" name="scmRemoteRepository" value="{$globals_project->getScmRemoteRepository()}">
           </div>
           <div class="label">Username for SCM access</div>
           <div class="textfieldContainer" style="width: 304px;">
-            <input class="textfield" style="width: 300px;" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}">
+            <input class="textfield" style="width: 300px;" type="text" name="scmUsername" value="{$globals_project->getScmUsername()}">
           </div>
           <div class="label">Password for SCM access</div>
           <div class="textfieldContainer" style="width: 304px;">
-            <input class="textfield" style="width: 300px;" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
+            <input class="textfield" style="width: 300px;" type="text" name="scmPassword" value="{$globals_project->getScmPassword()}">
           </div>
-          <input type="submit" value="Edit!" id="submitButton">
         </div>
         </form>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initGenericForm({
+    formSelector : '#scmPane .projectEditContainer',
+    submitButtonAppendTo : '#scmPane',
+    submitUrl: '{URLManager::getForAjaxProjectEditScm()}',
+  });
+});
+</script>
       </div>
       <div id="deletePane" class="exclusivePane">
         <div class="projectEditContainer container">

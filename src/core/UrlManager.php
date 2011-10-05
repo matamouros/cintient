@@ -79,6 +79,16 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/project/delete/';
   }
 
+  static public function getForAjaxProjectEditGeneral()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/edit-general/';
+  }
+
+  static public function getForAjaxProjectEditScm()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/edit-scm/';
+  }
+
   static public function getForAjaxProjectNew()
   {
     return CINTIENT_BASE_URL . '/ajax/project/new/';

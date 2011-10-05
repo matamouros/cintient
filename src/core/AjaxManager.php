@@ -693,7 +693,7 @@ EOT;
     }
 
     // User access level
-    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::OWNER) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(
@@ -729,6 +729,128 @@ EOT;
       );
       exit;
     }
+  }
+
+  static public function project_editGeneral()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $postVars = $_POST['generalForm'];
+
+    if (empty($postVars['title']['value']) || empty($postVars['buildLabel']['value'])) {
+      // TODO: visual clue for required attributes, in the interface
+      $msg = 'Required attributes were empty.';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $project = $GLOBALS['project'];
+    $project->setTitle($postVars['title']['value']);
+    $project->setBuildLabel($postVars['buildLabel']['value']);
+    $project->setDescription($postVars['description']['value']);
+    $GLOBALS['project'] = $project;
+    $msg = "Project general settings edited by user {$GLOBALS['user']->getUsername()}.";
+    $GLOBALS['project']->log($msg);
+    SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+      )
+    );
+    exit;
+  }
+
+  static public function project_editScm()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $postVars = $_POST['scmForm'];
+
+    if (empty($postVars['scmConnectorType']['value']) || empty($postVars['scmRemoteRepository']['value'])) {
+      // TODO: visual clue for required attributes, in the interface
+      $msg = 'Required attributes were empty.';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $project = $GLOBALS['project'];
+    $project->setScmConnectorType($postVars['scmConnectorType']['value']);
+    $project->setScmRemoteRepository($postVars['scmRemoteRepository']['value']);
+    $project->setScmUsername($postVars['scmUsername']['value']);
+    $project->setScmPassword($postVars['scmPassword']['value']);
+    if ($postVars['scmConnectorType']['value'] != $project->getScmConnectorType()) {
+      $project->resetScmConnector();
+    }
+    $GLOBALS['project'] = $project;
+    $msg = "Project SCM settings edited by user {$GLOBALS['user']->getUsername()}.";
+    $GLOBALS['project']->log($msg);
+    SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+      )
+    );
+    exit;
   }
 
   static public function project_new()
