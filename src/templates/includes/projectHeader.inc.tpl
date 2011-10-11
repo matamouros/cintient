@@ -63,7 +63,8 @@
 {if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}
 <script type="text/javascript">
 //<![CDATA[
-var projectLastKnownStatus = {$globals_project->getStatus()};
+projectLastKnownStatus = {$globals_project->getStatus()};
+updateProjectStatus(projectLastKnownStatus);
 function forceBuild()
 {
   updateProjectStatus({Project::STATUS_BUILDING});
@@ -74,28 +75,49 @@ function forceBuild()
     url: '{UrlManager::getForAjaxProjectBuild()}',
     cache: false,
     dataType: 'json',
+    done: function (x, s) {
+      console.log('done: ' + s);
+    },
+    fail: function (x, s) {
+      console.log('fail: ' + s);
+    },
+    complete: function (x, s) {
+      console.log('complete: ' + s);
+    },
     success: function(data, textStatus, XMLHttpRequest) {
-      if (!data.success) {
-        //TODO: User notification of problems
-        if (undefined === data.projectStatus) {
-          data.projectStatus = projectLastKnownStatus;
-        }
+      console.log('success: ' + textStatus);
+      if (data == null || data.success == null || data.projectStatus == null) {
+        $.jGrowl("An unknown error occurred!", { header: "Warning", sticky: true });
+        data = {
+          success: false,
+          projectStatus: projectLastKnownStatus
+        };
+      } else if (data.success) {
+        $.jGrowl("Build finished successfully.");
+      } else {
+        $.jGrowl("Build failed!", { header: "Warning", life: 10000 });
       }
       updateProjectStatus(data.projectStatus);
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
+      console.log('error: ' + textStatus);
+
+      if (textStatus == 'parsererror') {
+        $.jGrowl("An error occurred!", { header: "Warning", sticky: true });
+      } else {
+        $.jGrowl("An unknown error occurred!", { header: "Warning", sticky: true });
+      }
       updateProjectStatus(projectLastKnownStatus);
-      alert(errorThrown);
     }
   });
+
 }
 
 function updateProjectStatus(toStatus)
 {
-  projectLastKnownStatus = toStatus;
   switch(toStatus) {
   case {Project::STATUS_OK}:
-    $.jGrowl("Build finished successfully.");
+    projectLastKnownStatus = toStatus;
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#projectHeader #statusContainer .status').removeClass('projectStatusFailed projectStatusWorking');
     $('#projectHeader #statusContainer .status').addClass('projectStatusOk');
@@ -106,7 +128,7 @@ function updateProjectStatus(toStatus)
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeIn(150);
     break;
   default:
-    $.jGrowl("Build failed!", { header: "Warning", life: 10000 });
+    projectLastKnownStatus = toStatus;
     $('#projectHeader #statusContainer .projectStatusWaiting').fadeOut(50);
     $('#projectHeader #statusContainer .status').removeClass('projectStatusWorking projectStatusOk');
     $('#projectHeader #statusContainer .status').addClass('projectStatusFailed');
@@ -118,11 +140,8 @@ $(document).ready(function() {
   //
   // Bind the project status icon to the build link
   //
-  $('#projectHeader .triggerBuild').each(function() {
-    $(this).click(function() {
-      forceBuild();
-    });
-    $(this).hover(
+  $('#projectHeader .triggerBuild')
+    .hover(
       function() {
         $(this).css({
           "cursor" : "pointer",
@@ -132,8 +151,11 @@ $(document).ready(function() {
         $(this).css({
           "cursor" : "default",
         });
-      });
-  });
+      })
+    .click(function(e) {
+      e.stopPropagation();
+      forceBuild();
+    });
 
   //
   // The build list dropdown
@@ -184,7 +206,8 @@ $(document).ready(function() {
       		"text-shadow" : "1px 1px 1px #303030",
           "background" : "transparent"
         });
-      });
+      }
+    );
   });
 
   // Close any menus on click anywhere on the page

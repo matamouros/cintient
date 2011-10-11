@@ -36,7 +36,7 @@
   <![endif]-->
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="js/lib/jquery-1.6.js"></script>
+  <script type="text/javascript" src="js/lib/jquery-1.6.4.min.js"></script>
   <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
   <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>

@@ -41,7 +41,6 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 
 require dirname(__FILE__) . '/../config/cintient.conf.php';
 ini_set('display_errors', 0); // Don't echo errors on AJAX calls
-session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 
 //
@@ -55,8 +54,10 @@ SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}
 $GLOBALS['ajaxMethod'] = null;
 $GLOBALS['section'] = null;
 $GLOBALS['subSection'] = null;
+session_start();
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 $GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
+session_write_close();
 
 
 

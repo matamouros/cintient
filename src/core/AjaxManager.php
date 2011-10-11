@@ -717,9 +717,11 @@ EOT;
       );
       exit;
     } else {
+      session_start();
       $GLOBALS['project'] = $_SESSION['projectId'] = null;
       unset($GLOBALS['project']);
       unset($_SESSION['projectId']);
+      session_write_close();
       $msg = 'Project deleted.';
       SystemEvent::raise(SystemEvent::INFO, "Project deleted. [PID={$postVars['pid']}] [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(
@@ -908,7 +910,6 @@ EOT;
         exit;
       }
       $GLOBALS['project'] = $project;
-      $_SESSION['projectId'] = $GLOBALS['project']->getId();
       $GLOBALS['project']->log("Project created.");
       echo json_encode(
         array(

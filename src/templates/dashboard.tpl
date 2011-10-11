@@ -29,7 +29,7 @@
       <li class="projectDraggableContainer container">
         <a href="{UrlManager::getForProjectView($project)}" class="projectLink">
         <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
-        <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting"></div></div></div>
+        <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting" {if $project->getStatus()==Project::STATUS_BUILDING}style="display:block;"{/if}></div></div></div>
         <div class="projectDetails">
           <div class="projectTitle">{$project->getTitle()}</div>
           <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: #{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}, on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}.{else}This project hasn't been built yet.{/if}</div>
