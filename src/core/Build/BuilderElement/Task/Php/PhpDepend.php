@@ -146,7 +146,9 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
-    $php = '';
+    $php              = '';
+    $getFailedOnError = $this->getFailOnError() ? "true" : "false";
+    
     if (!$this->getIncludeDirs()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No include dirs set for task PhpDepend.', __METHOD__);
       return false;
@@ -202,7 +204,7 @@ unset(\$_SERVER['argc']);
 if (\$ret > 0) {
   output('PHP_Depend analysis failed.');
   \$GLOBALS['result']['ok'] = false;
-  if ({$this->getFailOnError()}) {
+  if (".$getFailedOnError.") {
     return false;
   }
 } else {
