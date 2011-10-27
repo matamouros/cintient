@@ -1,0 +1,273 @@
+/* @override 
+	http://cintient/dashboard/css/new.css
+	http://cintient/css/new.css
+	http://cintient/project/new/css/new.css
+*/
+
+/* @group Top Bar */
+
+.topbar .fill
+{
+  padding-top: 2px;
+  border-bottom: 1px solid #000;
+  background: #222;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#333', endColorstr='#111');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #7f7f7f), color-stop(0.25, #555), color-stop(0.51, #444), color-stop(0.51, #333), color-stop(0.76, #222), color-stop(1, #111));
+  background: -moz-linear-gradient(top, #7f7f7f 0%, #555 25%, #444 51%, #333 51%, #222 76%, #111 100%);
+          box-shadow: 0px 1px 7px #111;
+     -moz-box-shadow: #111 0px 1px 7px;
+  -webkit-box-shadow: #111 0px 1px 7px;
+  color: #797979;
+  opacity: .96;
+}
+
+.topbar .fill .container
+{
+  height: 34px;
+  text-shadow: #000 1px 1px 0px;
+}
+
+#topbarRight
+{
+  float: right;
+  width: 250px;
+}
+
+#topbarRight #user #avatar
+{
+  float: left;
+  width: 30px;
+  height: 30px;
+          box-shadow: 1px 1px 1px #111;
+     -moz-box-shadow: #111 1px 1px 1px;
+  -webkit-box-shadow: #111 1px 1px 1px;
+}
+
+#topbarRight #user #username
+{
+  float: left;
+  margin-left: 10px;
+  line-height: .9em; /* helps regulate the proximity of the links below */
+  padding-right: 180px; /* to force the user links below this element */
+  font-size: 12pt;
+  color: rgb(230,230,230);
+}
+
+#topbarRight #user #links
+{
+  float: left;
+  margin-left: 11px;
+  padding-top: 1px;
+  font-size: .8em;
+}
+
+/* Just the actual lettering, not including positioning */
+#cintientLettering
+{
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  font-size: 18pt;
+  letter-spacing: 2px;
+}
+
+/* These are specific to the lettering on the topbar */
+#topbarLeft #cintientLettering
+{
+  color: rgb(230,230,230);
+  float: left;
+  margin-top: 8px;
+  float: left;
+  text-shadow: #000 1px 1px 0px;
+}
+
+#topbarLeft #logoLettering
+{
+  float: left;
+  width: 130px;
+}
+
+#topbarLeft ul.nav
+{
+  float: left;
+}
+
+#topbarLeft ul.dropdown-menu
+{
+  margin-top: -5px; /* place the menu dropdown the pixel right after the bar */
+}
+
+/* Active links in the topbar */
+#topbarLeft ul.nav .active > a
+{
+  margin-top: -5px;
+  color: #fff;
+  padding-top: 15px;
+  height: 14px;
+}
+
+/* Links in the dropdown menu */
+#topbarLeft ul.secondary-nav .dropdown > a
+{
+  margin-top: -5px;
+  padding-top: 15px;
+  text-shadow: #000 1px 1px 0px;
+}
+
+/* @end */
+
+
+/* @group Defaults */
+
+/* Override some defaults */
+html, body
+{
+  background-color: #eee;
+}
+
+body
+{
+  padding-top: 37px; /* container below topbar */
+}
+
+.container > footer, p
+{
+  text-align: center; /* center align it with the container */
+}
+
+/* The white background content wrapper */
+.content
+{
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+          box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+      
+/* Page header tweaks */
+.page-header
+{
+  background-color: #f5f5f5;
+  padding: 20px 20px 10px;
+  margin: -20px -20px 20px;
+}
+
+.leftRow
+{
+  border-right: 1px solid #EEE;
+}
+
+.rightRow
+{
+  margin-left: 0;
+  padding-left: 19px;
+}
+      
+/* @end */
+
+/* @group Dashboard */
+
+#dashboard ul
+{
+  margin-left: 0px;
+}
+
+/* The project avatar is col1 and the status and project name are col2 */
+#dashboard .col1, .col2
+{
+  float: left;
+  padding-right: 10px;
+  margin-bottom: 4px; /* Space between the project avatar and the line after */
+}
+
+/* The project list */
+#dashboard li.project
+{
+  clear: both;
+  padding: 15px 10px 0px 10px; /* to beautify the on-hover highlight */
+  margin-right: 7px; /* to beautify the on-hover highlight */
+          transition: all 0.3s ease-in-out;
+     -moz-transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  min-height: 111px; /* Try to give all projects an even height */
+  padding-bottom: 15px;
+}
+
+#dashboard li.project:not(:last-child)
+{
+  border-bottom: 1px solid #EEE; /* Line between each project */
+}
+
+#dashboard ul#projectList
+{
+  margin-bottom: 0px;
+  padding-right: 4px;
+}
+
+/* The items inside a project, on the project list */
+#dashboard ul#projectList > li > ul > li
+{
+  clear: both;
+}
+
+#dashboard ul#projectList > li > ul > li.sparkline
+{
+  /* To properly empty space above the sparkline */
+  margin-top: 6px;
+  margin-left: 1px;
+}
+
+#dashboard .sparklineBuilds
+{
+  /* Small trick to not show the 1, 1, 1, 1, 0, 0, 1 numbers that might
+     be there in a fraction of a section before the sparkline.js can
+     turn them into a canvas image. This way we don't have to mess around
+     with visibility or display - it seems sparkline.js doesn't play well
+     with that. */
+  color: transparent;
+}
+
+#dashboard .leftRow
+{
+  /*margin-left: 8px;*/ /* Less space than default between left bar content and left container margin */
+}
+
+#dashboard .projectRevision
+{
+  font-size: 12pt; /* slightly increase the revision line */
+}
+
+#dashboard .builtOn
+{
+  font-size: .86em;
+  margin-top: 3px;
+}
+
+#dashboard a.projectLink
+{
+  color: inherit;
+}
+
+.projectAvatar40x40
+{
+  width: 40px;
+  height: 40px;
+          box-shadow: 1px 1px 1px #888;
+     -moz-box-shadow: #888 1px 1px 1px;
+  -webkit-box-shadow: #888 1px 1px 1px;
+  background-color: #eee; /* nice fill color while images don't load up */
+}
+
+#dashboard h3.projectTitle
+{
+  float: none;
+  margin-top: -4px;
+  margin-bottom: -6px;
+  clear: right;
+}
+
+/* @end */
+

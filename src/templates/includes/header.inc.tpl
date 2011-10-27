@@ -23,13 +23,16 @@
   <meta charset="UTF-8" />
   <meta property="url" content="{*SERVER_NAME*}">
   <title>Cintient</title>
+  <link rel="stylesheet" href="css/reset.css" />
   <link rel="stylesheet" href="css/font_anonymouspro.css" />
   <link rel="stylesheet" href="css/font_orbitron.css" />
   <link rel="stylesheet" href="css/font_syncopate.css" />
   <link rel="stylesheet" href="css/avataruploader.css" />
   <link rel="stylesheet" href="js/lib/jgrowl/jquery.jgrowl.css" />
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
-  <link rel="stylesheet" href="css/global.css" />
+  {*<link rel="stylesheet" href="css/global.css" />*}
+  <link rel="stylesheet" href="css/lib/bootstrap.css" />
+  <link rel="stylesheet" href="css/new.css" />
   <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
@@ -41,77 +44,71 @@
   <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="js/cintient.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap-dropdown.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
+  <script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initSectionHeader();
+});
+// ]]>
+  </script>
 </head>
 <body>
-  <div id="header" class="containerTopLevel">
 {if $globals_user instanceof User}
-    <div id="userHeader" class="container">
-      <header>
-        <hgroup>
-          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
-          <nav>
-            <div id="user">
-              <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
-              <div id="username">{$globals_user->getUsername()}</div>
-              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{UrlManager::getForDashboard()}">admin</a> | {/if}<a href="{UrlManager::getForSettings()}">settings</a> | <a href="{UrlManager::getForLogout()}">logout</a></div>
-            </div>
-          </nav>
-        </hgroup>
-      </header>
+  <div class="topbar">
+    <div class="fill">
+      <div class="container">
+        <div id="topbarLeft">
+          <div id="logoLettering"><a href="{UrlManager::getForDashboard()}"><div id="cintientLettering" style="display: none;">Cintient</div></a></div>{* <img src="imgs/redhalo_45.jpg" height="25">*}
+          <ul class="nav">
+            <ul class="nav secondary-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle">{$subSectionTitle}</a>
+                <ul class="dropdown-menu">
+                  <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
+                  <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
+                  {if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if}
+                </ul>
+              </li>
+            </ul>
+        		{if !empty($menuLinks)}<li>{$menuLinks}</li>{/if}
+          </ul>
+        </div>
+        <div id="topbarRight">
+          <div id="user">
+            <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"></div>
+            <div id="username">{$globals_user->getUsername()}</div>
+            <div id="links"><a href="{UrlManager::getForSettings()}">Settings</a> | <a href="{UrlManager::getForLogout()}">Logout</a></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div id="menu" class="containerTopLevel">
-    <nav id="mainMenu">
-      <ul>
-        <li id="historyBack">{if !empty($backLink)}<a href="{UrlManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
-        <li id="sectionName">{$subSectionTitle}</li>
-        {if !empty($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
-      </ul>
-    </nav>
-<script type="text/javascript">
-// <![CDATA[
-$('#logo').hide();
-$(document).ready(function() {
-  $('#logo').show(200);
-});
-// ]]>
-</script>
 {elseif $globals_subSection == 'registration'}
-    <div id="userHeader" class="container">
-      <header>
-        <hgroup>
-          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
-        </hgroup>
-      </header>
+  <div class="topbar">
+    <div class="fill">
+      <div class="container">
+        <div id="topbarLeft">
+          <ul class="nav">
+            <li id="historyBack"><a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
+            <li id="sectionName">{$subSectionTitle}</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
-  <div id="menu" class="containerTopLevel">
-    <nav id="mainMenu">
-      <ul>
-        <li id="historyBack"><a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
-        <li id="sectionName">{$subSectionTitle}</li>
-      </ul>
-    </nav>
-<script type="text/javascript">
-// <![CDATA[
-$('#logo').hide();
-$(document).ready(function() {
-  $('#logo').show(200);
-});
-// ]]>
-</script>
 {else}
-    <div id="splashHeader" class="container">
-      <header>
-        <hgroup>
-          <h1>Cintient</h1>
-          <img src="imgs/redhalo.jpg" width="195" height="130">
-        </hgroup>
-      </header>
-    </div>
+  <div id="splashHeader" class="container">
+    <header>
+      <hgroup>
+        <h1>Cintient</h1>
+        <img src="imgs/redhalo.jpg" width="195" height="130">
+      </hgroup>
+    </header>
+  </div>
 <script type="text/javascript">
 // <![CDATA[
 $('#splashHeader h1').hide();
@@ -123,5 +120,8 @@ $(document).ready(function() {
 // ]]>
 </script>
 {/if}
-  </div>
-  <div id="main" class="containerTopLevel">
+  <div class="container">
+    <div class="content" id="{$subSectionId}">
+      <div class="page-header">
+        <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>
+      </div>

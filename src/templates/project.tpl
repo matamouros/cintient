@@ -18,9 +18,9 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{$menuLinks="<a href=\"{UrlManager::getForProjectBuildHistory()}\">build history</a>"}
+{$menuLinks="<a href=\"{UrlManager::getForProjectBuildHistory()}\">Build history</a>"}
 {if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"{UrlManager::getForProjectEdit()}\">edit</a>"}
+  {$menuLinks="$menuLinks | <a href=\"{UrlManager::getForProjectEdit()}\">Edit</a>"}
 {/if}
 {include file='includes/header.inc.tpl'
   subSectionTitle="Project"

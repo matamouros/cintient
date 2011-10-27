@@ -63,6 +63,44 @@ var Cintient = {
     return button;
   },
   
+  initSectionDashboard: function ()
+  {
+    //$('#dashboard a.projectLink').each( function() {
+    $('#dashboard li.project').each( function() {
+      $(this).click(function(e) {
+        e.preventDefault();
+        window.location = $(this).find('a.projectLink').attr('href');
+      });
+      $(this).hover(
+        function() {
+          $(this).css({
+            "cursor" : "pointer",
+            "background-color" : "rgb(248, 248, 248)"
+          });
+        },
+        function() {
+          $(this).css({
+            "cursor" : "default",
+            "background-color" : "#fff"
+          });
+        });
+    });
+    //
+    // The sparklines
+    //
+    $('#dashboard .sparklineBuilds').sparkline('html', {
+      type: 'tristate',
+      posBarColor: '#46A546',
+      negBarColor: '#C43C35'
+    });
+  },
+  
+  initSectionHeader: function ()
+  {
+    $('#cintientLettering').fadeIn(500);
+    $('.topbar').dropdown();
+  },
+  
   /**
    * Sets up a page that was rigged with exclusive panes, so that only
    * one of them is shown at a time. Currently used for controlling
@@ -122,22 +160,16 @@ var Cintient = {
       formSelector : 'form',
       onSuccessRedirectUrl : null,
       onSuccessRedirectTimer : 3000, // milliseconds
-      submitButtonText : 'Save',
-      submitButtonClass : 'buttonText',
-      submitButtonAppendTo : '',
       successMsg : 'Saved.'
     }, arguments[0] || {});
     
     //
-    // Create the submit button
+    // Bind *only* to the submit button
     //
-    var button = this.createButton(options.submitButtonText);
-    button.className = options.submitButtonClass;
-    button.style.display = 'none';
-    //
-    // Bind the click action
-    //
-    $(button).click(function () {
+    $(options.formSelector).submit(function() {
+      return false;
+    });
+    $(options.formSelector + ' :submit').click(function (e) {
       $.ajax({
         url: options.submitUrl,
         data: function () {
@@ -178,9 +210,14 @@ var Cintient = {
       });
     });
     //
-    // Get it into the DOM tree and show it!
+    // Show *all* the action buttons
     //
-    $(options.submitButtonAppendTo).append(button);
-    setTimeout(function() {$(button).fadeIn(800)}, 400);
+    /*
+    setTimeout(function() {
+      $(options.formSelector + ' input[type="submit"]').fadeIn(800);
+      $(options.formSelector + ' button').each(function() {
+        $(this).fadeIn(800);
+      });
+    }, 400);*/
   }
 };
