@@ -2,6 +2,8 @@
 	http://cintient/dashboard/css/new.css
 	http://cintient/css/new.css
 	http://cintient/project/new/css/new.css
+	http://cintient/project/css/new.css
+	http://cintient/settings/css/new.css
 */
 
 /* @group Top Bar */
@@ -30,7 +32,7 @@
 #topbarRight
 {
   float: right;
-  width: 250px;
+  width: 200px;
 }
 
 #topbarRight #user #avatar
@@ -48,7 +50,7 @@
   float: left;
   margin-left: 10px;
   line-height: .9em; /* helps regulate the proximity of the links below */
-  padding-right: 180px; /* to force the user links below this element */
+  padding-right: 130px; /* to force the user links below this element */
   font-size: 12pt;
   color: rgb(230,230,230);
 }
@@ -82,34 +84,52 @@
 #topbarLeft #logoLettering
 {
   float: left;
-  width: 130px;
+  width: 150px;
 }
 
 #topbarLeft ul.nav
 {
   float: left;
+  margin-right: 0px;
 }
 
+/* This is both the menu and the link that opened it */
+#topbarLeft ul.nav .dropdown
+{
+  /* Bigger font just for the main dropdown */
+  font-size: 1.26em;
+}
+
+/* This is just the menu, not including the link that opened it */
 #topbarLeft ul.dropdown-menu
 {
   margin-top: -5px; /* place the menu dropdown the pixel right after the bar */
 }
 
-/* Active links in the topbar */
-#topbarLeft ul.nav .active > a
+#topbarLeft ul.dropdown-menu > li
 {
-  margin-top: -5px;
-  color: #fff;
-  padding-top: 15px;
-  height: 14px;
+  /* space between menu items */
+  padding-top: 4px;
 }
 
-/* Links in the dropdown menu */
-#topbarLeft ul.secondary-nav .dropdown > a
+#topbarLeft ul.dropdown-menu > li:last-child
 {
-  margin-top: -5px;
-  padding-top: 15px;
-  text-shadow: #000 1px 1px 0px;
+  padding-bottom: 4px;
+}
+
+#topbarLeft ul.sectionLinks
+{
+  padding-top: 1px;
+  padding-left: 10px;
+}
+
+#topbarLeft ul.sectionLinks > li
+{
+  height: 34px;
+  margin-top: -3px;
+  padding-top: 3px;
+  float: left;
+  /*border-left: 1px solid #999;*/
 }
 
 /* @end */
@@ -193,7 +213,7 @@ body
      -moz-transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
   min-height: 111px; /* Try to give all projects an even height */
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 }
 
 #dashboard li.project:not(:last-child)
@@ -251,16 +271,6 @@ body
   color: inherit;
 }
 
-.projectAvatar40x40
-{
-  width: 40px;
-  height: 40px;
-          box-shadow: 1px 1px 1px #888;
-     -moz-box-shadow: #888 1px 1px 1px;
-  -webkit-box-shadow: #888 1px 1px 1px;
-  background-color: #eee; /* nice fill color while images don't load up */
-}
-
 #dashboard h3.projectTitle
 {
   float: none;
@@ -270,4 +280,43 @@ body
 }
 
 /* @end */
+
+/* @group Project */
+
+#project .projectAvatar40x40
+{
+  float: left;
+  margin-right: 14px;
+}
+
+/* @end */
+
+/* @group Settings */
+
+#settings #avatarUploader
+{
+  clear: both;
+  display: inline;
+  
+}
+
+#settings #avatarUploader + .help-inline
+{
+  float: left;
+  clear: both;
+  padding-top: 4px;
+  padding-left: 0px;
+}
+
+/* @end */
+
+.projectAvatar40x40
+{
+  width: 40px;
+  height: 40px;
+          box-shadow: 1px 1px 1px #888;
+     -moz-box-shadow: #888 1px 1px 1px;
+  -webkit-box-shadow: #888 1px 1px 1px;
+  background-color: #eee; /* nice fill color while images don't load up */
+}
 

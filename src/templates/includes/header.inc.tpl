@@ -27,12 +27,15 @@
   <link rel="stylesheet" href="css/font_anonymouspro.css" />
   <link rel="stylesheet" href="css/font_orbitron.css" />
   <link rel="stylesheet" href="css/font_syncopate.css" />
-  <link rel="stylesheet" href="css/avataruploader.css" />
+  <link rel="stylesheet" href="css/lib/avataruploader.css" />
   <link rel="stylesheet" href="js/lib/jgrowl/jquery.jgrowl.css" />
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
   {*<link rel="stylesheet" href="css/global.css" />*}
   <link rel="stylesheet" href="css/lib/bootstrap.css" />
   <link rel="stylesheet" href="css/new.css" />
+{foreach $cssIncludes as $cssInclude}
+  <link rel="stylesheet" href="{$cssInclude}" />
+{/foreach}
   <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
@@ -63,8 +66,8 @@ $(document).ready(function() {
       <div class="container">
         <div id="topbarLeft">
           <div id="logoLettering"><a href="{UrlManager::getForDashboard()}"><div id="cintientLettering" style="display: none;">Cintient</div></a></div>{* <img src="imgs/redhalo_45.jpg" height="25">*}
-          <ul class="nav">
-            <ul class="nav secondary-nav">
+          <div>
+            <ul class="nav">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle">{$subSectionTitle}</a>
                 <ul class="dropdown-menu">
@@ -74,10 +77,10 @@ $(document).ready(function() {
                 </ul>
               </li>
             </ul>
-        		{if !empty($menuLinks)}<li>{$menuLinks}</li>{/if}
-          </ul>
+        		  {if !empty($menuLinks)}<ul class="sectionLinks">{$menuLinks}</ul>{/if}
+          </div>
         </div>
-        <div id="topbarRight">
+        <div id="topbarRight">{* Bootstrap uses ul.secondary-nav to implement this right aligned nav... *}
           <div id="user">
             <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"></div>
             <div id="username">{$globals_user->getUsername()}</div>
@@ -123,5 +126,6 @@ $(document).ready(function() {
   <div class="container">
     <div class="content" id="{$subSectionId}">
       <div class="page-header">
+        {if !empty($subSectionImg)}<div class="projectAvatar40x40"><img src="{$subSectionImg}" width="40" height="40"></div>{/if}
         <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>
       </div>

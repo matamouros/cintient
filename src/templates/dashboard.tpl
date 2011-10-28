@@ -55,7 +55,6 @@ jsIncludes=['js/lib/jquery.sparkline.min.js']}
                 </div>
               </li>
 {/if}
-
             </ul>
           </li>
 {/foreach}

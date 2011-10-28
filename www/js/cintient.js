@@ -101,58 +101,26 @@ var Cintient = {
     $('.topbar').dropdown();
   },
   
-  /**
-   * Sets up a page that was rigged with exclusive panes, so that only
-   * one of them is shown at a time. Currently used for controlling
-   * the project edit page and also the settings page. Note: exclusive
-   * panes are closely tied to their respective activation links.
-   * 
-   * Activation links to panes should be inside an #exclusivePaneLinks
-   * element. They must have a class name that is the same as the pane's
-   * id.
-   * 
-   * Exclusive panes themselves should have an .exclusivePane class,
-   * and their id must match the corresponding activation link's class.
-   * 
-   * A default pane object must be provided, in order to have a default
-   * pane show up.
-   */
-  initExclusivePanes: function (defaultPane)
+  initSectionSettings: function ()
   {
-    // Show the passed exclusivePane, hiding all others
-    var activeExclusivePane = null;
-    function showExclusivePane(exclusivePane) {
-      if (activeExclusivePane === null || $(activeExclusivePane).attr('id') !== $(exclusivePane).attr('id')) {
-        // Hide the previous pane
-        $(activeExclusivePane).hide();
-        // Reset the previous link
-        $('#exclusivePaneLinks a.' + $(activeExclusivePane).attr('id')).css({
-          "color" : "rgb(255,40,0)",
-          "font-weight" : "bold",
-          "text-decoration" : "none",
-          "text-shadow" : "#303030 1px 1px 1px"
-        });
-        // Highlight the active link
-        $('#exclusivePaneLinks a.' + $(exclusivePane).attr('id')).css({
-          "color" : "rgb(255,60,0)",
-          "text-shadow" : "0px 0px 6px rgba(255,40,0,1)",
-          "text-decoration" : "none"
-        });
-        // Show the current pane
-        exclusivePane.fadeIn(300);
-        activeExclusivePane = exclusivePane;
-      }
-    }
-    // Bind the click link events to their corresponding panes
-    $('#exclusivePaneLinks a').bind('click', function() {
-      showExclusivePane($('#paneContainer #' + $(this).attr('class')));
-    });
-    // Promptly show the default pane
-    showExclusivePane($(defaultPane));
+    $('.tabs').tabs();
+    $('.tabs').bind('change', function (e) {
+      $($(e.relatedTarget).attr('href')).hide(); // previous tab
+      $($(e.target).attr('href')).fadeIn(300); // activated tab
+    })    
   },
   
   /**
+   * This form initializer receives a top container (not necessarily a
+   * form) and binds the closest() form's submit button to an AJAX call.
+   * It searches for a given set of inputs within that top container and
+   * sends them in the AJAX call.
    * 
+   * Aditionally, it has a very specific behaviour where it iterates
+   * through the provided formSelector parameter and groups it's input
+   * field values by that formSelector id. This means that within a form
+   * you can have groups of inputs that are neatly packed by their
+   * group (formSelector) id. 
    */
   initGenericForm: function ()
   {
@@ -164,16 +132,23 @@ var Cintient = {
     }, arguments[0] || {});
     
     //
-    // Bind *only* to the submit button
+    // Stop the default form submission behaviour by the submit button
     //
-    $(options.formSelector).submit(function() {
+    $(options.formSelector).closest('form').submit(function() {
       return false;
     });
-    $(options.formSelector + ' :submit').click(function (e) {
+    // TODO: doubting this next find is the best implementation to get
+    // the submit button of this form
+    ($(options.formSelector).closest('form')).find(':submit').click(function (e) {
       $.ajax({
         url: options.submitUrl,
         data: function () {
           var data = {};
+          //
+          // Iterate through each of the existing (if more than one)
+          // formSelector elements. Check the method's documentation
+          // for more details.
+          //
           $(options.formSelector).each(function () {
             var that = this;
             data[$(this).attr('id')] = function() {
