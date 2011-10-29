@@ -21,7 +21,7 @@
 subSectionTitle="New project"
 subSectionId="projectNew"
 level=1}
-      <form action class="form-stacked" id="newProjectContainer">
+      <form action class="form" id="newProjectContainer">
         <fieldset>
           <div class="clearfix">
             <label for="title">Project title</label>

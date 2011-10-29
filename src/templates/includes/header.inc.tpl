@@ -47,7 +47,7 @@
   <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="js/cintient.js"></script>
-  <script type="text/javascript" src="js/lib/bootstrap-dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap/bootstrap-dropdown.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}

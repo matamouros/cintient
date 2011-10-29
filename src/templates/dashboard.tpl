@@ -19,15 +19,21 @@
 
 *}{include file='includes/header.inc.tpl'
 subSectionTitle="Dashboard"
+subSectionDescription="your projects at a glance"
 subSectionId="dashboard"
-jsIncludes=['js/lib/jquery.sparkline.min.js']}
+jsIncludes=['js/lib/jquery.sparkline.min.js',
+            'js/lib/bootstrap/bootstrap-tabs.js',
+            'js/lib/highcharts-2.1.6.js',
+            'js/lib/cintientHighcharts.theme.js',
+						'js/lib/jquery.tablesorter.min.js']}
 {if !empty($dashboard_projectList)}
     <div class="row">
       <div class="span5 leftRow">
         <ul id="projectList">
 {foreach $dashboard_projectList as $project}
+
 {$dashboard_latestBuild=Project_Build::getLatest($project, $globals_user)}
-          <li class="project">
+          <li class="project" id="{$project->getId()}">
             <ul>
               <li>
                 <div class="col1">
@@ -60,14 +66,21 @@ jsIncludes=['js/lib/jquery.sparkline.min.js']}
 {/foreach}
           </ul>
           </div>
-          <div class="span11 rightRow">
-            asjdoaij oajsdoiaj sdoaij sdoai jsdoaij sdoai jdoai jdoi
+          <div class="span11 rightRow" id="dashboardProject">
+{include file='includes/dashboardProject.inc.tpl'
+project = $dashboard_projectList.0
+project_buildStats = Project_Build::getStats($dashboard_projectList.0, $globals_user)
+project_build = Project_Build::getLatest($dashboard_projectList.0, $globals_user)
+project_log = Project_Log::getList($dashboard_projectList.0, $globals_user)}
           </div>
         </div>
 <script type="text/javascript">
 // <![CDATA[
+activeProjectId = {$dashboard_projectList.0->getId()};
 $(document).ready(function() {
-  Cintient.initSectionDashboard();
+  Cintient.initSectionDashboard({
+    submitUrl : '{UrlManager::getForAjaxDashboardProject()}'
+  });
 });
 // ]]>
 </script>

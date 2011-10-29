@@ -182,6 +182,68 @@ class AjaxManager
     exit;
   }
 
+  static public function dashboard_project()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (!isset($_REQUEST['projectId'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+    if (!(($project = Project::getById($GLOBALS['user'], $_REQUEST['projectId'], Access::READ)) instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+    // The following is probably redundant because above the project is
+    // already fetched with the Access constriction.
+    if (!$project->userHasAccessLevel($GLOBALS['user'], Access::READ) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    //
+    // We need to process a Smarty file... Fuck tha police!
+    //
+    require_once 'lib/Smarty-3.0rc4/Smarty.class.php';
+    $smarty = new Smarty();
+    $smarty->setAllowPhpTag(true);
+    $smarty->setCacheLifetime(0);
+    $smarty->setDebugging(SMARTY_DEBUG);
+    $smarty->setForceCompile(SMARTY_FORCE_COMPILE);
+    $smarty->setCompileCheck(SMARTY_COMPILE_CHECK);
+    $smarty->setTemplateDir(SMARTY_TEMPLATE_DIR);
+    $smarty->setCompileDir(SMARTY_COMPILE_DIR);
+    $smarty->error_reporting = error_reporting();
+    Framework_SmartyPlugin::init($smarty);
+    $smarty->assign('project_buildStats', Project_Build::getStats($project, $GLOBALS['user']));
+    $smarty->assign('project_log', Project_Log::getList($project, $GLOBALS['user']));
+    $smarty->assign('project_build', Project_Build::getLatest($project, $GLOBALS['user']));
+    $smarty->assign('project', $project);
+    $smarty->display('includes/dashboardProject.inc.tpl');
+    exit;
+  }
+
   static public function project_accessLevel()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);

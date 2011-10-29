@@ -209,9 +209,9 @@ body
   clear: both;
   padding: 15px 10px 0px 10px; /* to beautify the on-hover highlight */
   margin-right: 7px; /* to beautify the on-hover highlight */
-          transition: all 0.3s ease-in-out;
-     -moz-transition: all 0.3s ease-in-out;
-  -webkit-transition: all 0.3s ease-in-out;
+          transition: all 0.15s ease-in-out;
+     -moz-transition: all 0.15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
   min-height: 111px; /* Try to give all projects an even height */
   padding-bottom: 10px;
 }
@@ -279,6 +279,27 @@ body
   clear: right;
 }
 
+#dashboard .chart
+{
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#dashboard .success
+{
+  background-color: rgb(124,196,0);
+}
+#dashboard .important
+{
+  background-color: rgb(255,40,0);
+}
+/*
+#dashboard .media-grid
+{
+  margin-top: 20px;
+}*/
+
 /* @end */
 
 /* @group Project */
@@ -320,3 +341,16 @@ body
   background-color: #eee; /* nice fill color while images don't load up */
 }
 
+/* These properties are taken from Bootstrap's ul.media-grid li a */
+.chart
+{
+  float: left;
+  padding: 4px;
+  border: 1px solid #DDD;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+}

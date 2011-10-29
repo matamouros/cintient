@@ -65,34 +65,121 @@ var Cintient = {
   
   initSectionDashboard: function ()
   {
-    //$('#dashboard a.projectLink').each( function() {
-    $('#dashboard li.project').each( function() {
-      $(this).click(function(e) {
-        e.preventDefault();
-        window.location = $(this).find('a.projectLink').attr('href');
+    var options = $.extend({}, arguments[0] || {});
+    
+    function activate(elem)
+    {
+      elem.css({
+        "background-color" : "rgba(0, 67, 138, 0.1)" // Active color is stronger than hover
       });
-      $(this).hover(
-        function() {
-          $(this).css({
-            "cursor" : "pointer",
-            "background-color" : "rgb(248, 248, 248)"
+    }
+    
+    function deactivate(elem)
+    {
+      elem.css({
+        "cursor" : "default",
+        "background-color" : "#fff",
+      });
+    }
+    
+    function hover(elem)
+    {
+      elem.css({
+        "cursor" : "pointer",
+        "background-color" : "rgb(248, 248, 248)"
+      });
+    }
+    
+    // Activate the default project
+    activate($('#dashboard li.project#' + activeProjectId));
+    
+    //
+    // Hover & click on the project list
+    //
+    $('#dashboard li.project')
+      .click(function(e) {
+        //
+        // Engage only if an unactive project was clicked
+        //
+        if ($(this).attr('id') != activeProjectId) {
+          activate($(this)); // Visual clues: promptly activate the clicked project
+          deactivate($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
+          activeProjectId = $(this).attr('id'); // Update the active project
+          
+          // Promptly hide the content
+          // TODO: show a waiting indicator
+          $('#dashboard #dashboardProject').hide();
+          
+          $.ajax({
+            url: options.submitUrl,
+            data: { projectId : $(this).attr('id') },
+            type: 'GET',
+            cache: true,
+            dataType: 'html',
+            success: function(data, textStatus, XMLHttpRequest) {
+              // Following condition according to jQuery's .load() method
+              // documentation:
+              // http://api.jquery.com/load/
+              if (textStatus == 'success' || textStatus == 'notmodified') {
+                var activeId = $('.pill-content .active').attr('id'); // Fetch the currently active id before it goes away
+                $('#dashboard #dashboardProject').html(data); // Update the HTML (replace it)
+                $('ul.tabs > li.active').removeClass('active'); // Throw away the HTML forced active tab
+                $('.pill-content .active').removeClass('active'); // Throw away the HTML forced active content
+                $('ul.tabs > li a[href="#' + activeId + '"]').parent().addClass('active'); // Honor the previously user active tab
+                $('.pill-content #' + activeId).addClass('active'); // Honor the previously user active content
+                $('.tabs').tabs(); // Init the Bootstrap tabs
+                $("#log table").tablesorter({ sortList: [[0,1]] }); // Init the project log table sorter, sort the first column, DESC
+                $('#dashboard #dashboardProject').fadeIn(300); // Show it all
+              } else {
+                $.jGrowl('An unknown error occurred. Yeah, it seems we have those too... :-(', { header: "Warning", sticky: true });
+              }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              $.jGrowl('An unknown error occurred. Yeah, it seems we have those too...', { header: "Warning", sticky: true });
+            }
           });
+        }
+        //e.preventDefault(); // Prevents any real link clicked inside the project to work
+      })
+      .hover(
+        function() {
+          // Don't highlight the active project
+          if (activeProjectId != $(this).attr('id')) {
+
+            hover($(this));
+          }
         },
         function() {
-          $(this).css({
-            "cursor" : "default",
-            "background-color" : "#fff"
-          });
-        });
-    });
+          // Don't un-highlight the active project
+          if (activeProjectId != $(this).attr('id')) {
+            deactivate($(this));
+          }
+        }
+      )
+    ;
+    
     //
     // The sparklines
     //
     $('#dashboard .sparklineBuilds').sparkline('html', {
       type: 'tristate',
-      posBarColor: '#46A546',
-      negBarColor: '#C43C35'
+      //posBarColor: '#46A546',
+      //negBarColor: '#C43C35'
+      posBarColor: 'rgb(124,196,0)',
+      negBarColor: 'rgb(255,40,0)'
     });
+    //
+    // Tabs for the projects
+    //
+    $('.tabs').tabs();
+    $('.tabs').bind('change', function (e) {
+      $($(e.relatedTarget).attr('href')).hide(); // previous tab
+      $($(e.target).attr('href')).fadeIn(300); // activated tab
+    })
+    //
+    // Project log table sorting
+    //
+    $("#log table").tablesorter({ sortList: [[0,1]] }); // Sort the first column, DESC
   },
   
   initSectionHeader: function ()

@@ -46,7 +46,7 @@
         </form>
       </div>
       <div id="notifications">
-        <form action class="form-stacked" id="notificationsForm">
+        <form action class="form" id="notificationsForm">
           <fieldset>
 {foreach $globals_user->getNotifications() as $notification}
             <div id="{$notification->getHandler()}" class="notificationHandler">{* Required to diferentiate between possible future handlers *}
