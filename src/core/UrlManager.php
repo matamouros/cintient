@@ -140,9 +140,9 @@ class UrlManager
     return CINTIENT_BASE_URL . '/logout/';
   }
 
-  static public function getForProjectBuildHistory()
+  static public function getForProjectBuildHistory(Array $params = array())
   {
-    return CINTIENT_BASE_URL . '/project/history/';
+    return CINTIENT_BASE_URL . '/project/history/?' .  http_build_query($params);
   }
 
   static public function getForProjectBuildView(Project $project, Project_Build $build)
@@ -150,9 +150,9 @@ class UrlManager
     return CINTIENT_BASE_URL . "/project/history/?pid={$project->getId()}&bid={$build->getId()}";
   }
 
-  static public function getForProjectEdit()
+  static public function getForProjectEdit(Array $params = array())
   {
-    return CINTIENT_BASE_URL . '/project/edit/';
+    return CINTIENT_BASE_URL . '/project/edit/?' .  http_build_query($params);
   }
 
   static public function getForProjectEditUsers()

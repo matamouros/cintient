@@ -63,6 +63,11 @@ var Cintient = {
     return button;
   },
   
+  initSectionBuildHistory: function()
+  {
+    this._setupTabs();
+  },
+  
   initSectionDashboard: function ()
   {
     var options = $.extend({}, arguments[0] || {});
@@ -92,6 +97,13 @@ var Cintient = {
     
     // Activate the default project
     activate($('#dashboard li.project#' + activeProjectId));
+    
+    //
+    // Stop propagation on a few special zones
+    //
+    $('#dashboard li.project a').click(function (e) {
+      e.stopPropagation();
+    });
     
     //
     // Hover & click on the project list
@@ -171,11 +183,7 @@ var Cintient = {
     //
     // Tabs for the projects
     //
-    $('.tabs').tabs();
-    $('.tabs').bind('change', function (e) {
-      $($(e.relatedTarget).attr('href')).hide(); // previous tab
-      $($(e.target).attr('href')).fadeIn(300); // activated tab
-    })
+    this._setupTabs();
     //
     // Project log table sorting
     //
@@ -190,11 +198,7 @@ var Cintient = {
   
   initSectionSettings: function ()
   {
-    $('.tabs').tabs();
-    $('.tabs').bind('change', function (e) {
-      $($(e.relatedTarget).attr('href')).hide(); // previous tab
-      $($(e.target).attr('href')).fadeIn(300); // activated tab
-    })    
+    this._setupTabs();    
   },
   
   /**
@@ -281,5 +285,17 @@ var Cintient = {
         $(this).fadeIn(800);
       });
     }, 400);*/
+  },
+  
+  _setupTabs: function()
+  {
+    //
+    // Tabs for the projects
+    //
+    $('.tabs').tabs();
+    $('.tabs').bind('change', function (e) {
+      $($(e.relatedTarget).attr('href')).hide(); // previous tab
+      $($(e.target).attr('href')).fadeIn(300); // activated tab
+    });
   }
 };

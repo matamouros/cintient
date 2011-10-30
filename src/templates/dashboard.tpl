@@ -41,10 +41,10 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
                 </div>
                 <div class="col2">
                 <span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span>
-                  <h3 class="projectTitle"><a href="{UrlManager::getForProjectView($project)}" class="projectLink">{$project->getTitle()}</a></h3>
+                  <h3 class="projectTitle"><a href="{UrlManager::getForProjectEdit(['pid' => $project->getId()])}">{$project->getTitle()}</a></h3>
                 </div>
               </li>
-        			{if !empty($dashboard_latestBuild)}<li class="projectRevision">#{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}</li>{/if}
+        			{if !empty($dashboard_latestBuild)}<li class="projectRevision"><a href="{UrlManager::getForProjectBuildHistory(['pid' => $project->getId()])}">#{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}</a></li>{/if}
               <li class="builtOn">{if !empty($dashboard_latestBuild)}Built on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}{else}This project hasn't been built yet{/if}</li>
           		{*if !empty($dashboard_latestBuild)}<li>Current version: {$dashboard_latestBuild->getLabel()}.</li>{/if*}
 {if !empty($dashboard_latestBuild)}
