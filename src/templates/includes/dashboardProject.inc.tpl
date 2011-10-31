@@ -25,7 +25,7 @@
               <li><a href="#releases">Releases</a></li>
             </ul>
 
-            <div class="pill-content">
+            <div class="tab-content">
               <div class="active" id="general">
                 <div class="row">
                   <div class="span2">Current status:</div>

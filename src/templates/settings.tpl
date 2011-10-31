@@ -29,7 +29,7 @@
       <li><a href="#notifications">Notifications</a></li>
     </ul>
 
-    <div class="pill-content">
+    <div class="tab-content">
       <div class="active" id="general">
         <form action class="form" id="generalForm">
           <fieldset>

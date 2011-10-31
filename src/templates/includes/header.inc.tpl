@@ -27,10 +27,7 @@
   <link rel="stylesheet" href="css/font_anonymouspro.css" />
   <link rel="stylesheet" href="css/font_orbitron.css" />
   <link rel="stylesheet" href="css/font_syncopate.css" />
-  <link rel="stylesheet" href="css/lib/avataruploader.css" />
-  <link rel="stylesheet" href="js/lib/jgrowl/jquery.jgrowl.css" />
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
-  {*<link rel="stylesheet" href="css/global.css" />*}
   <link rel="stylesheet" href="css/lib/bootstrap.css" />
 {foreach $cssIncludes as $cssInclude}
   <link rel="stylesheet" href="{$cssInclude}" />
@@ -43,15 +40,13 @@
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
   <script type="text/javascript" src="js/lib/jquery-1.6.4.min.js"></script>
-  <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
-  <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
-  <script type="text/javascript" src="js/cintient.js"></script>
   <script type="text/javascript" src="js/lib/bootstrap/bootstrap-alerts.js"></script>
   <script type="text/javascript" src="js/lib/bootstrap/bootstrap-dropdown.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
+  <script type="text/javascript" src="js/cintient.js"></script>
   <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {

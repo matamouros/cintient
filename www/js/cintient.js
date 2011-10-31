@@ -267,7 +267,7 @@ var Cintient = {
     this._setupTabs();
     
     //
-    // Toggle the delete button on confirmation
+    // Toggle the project delete button on confirmation
     //
     $('#projectEdit #delete #pid').change(function () {
       if (this.checked) {

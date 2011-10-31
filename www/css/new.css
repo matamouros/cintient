@@ -319,11 +319,11 @@ body
 {
   background-color: rgb(255,40,0);
 }
-/*
-#dashboard .media-grid
+
+#dashboard #log table
 {
-  margin-top: 20px;
-}*/
+  float: left;
+}
 
 /* @end */
 

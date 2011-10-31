@@ -328,6 +328,7 @@ class AjaxManager
       echo json_encode(
         array(
         	'success' => true,
+        	'error' => 'Saved!',
         )
       );
     } else {

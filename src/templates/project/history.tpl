@@ -50,7 +50,7 @@
 {/foreach}
     </ul>
 
-    <div class="pill-content">
+    <div class="tab-content">
       <div class="active" id="rawOutput"><div class="log">{$project_build->getOutput()|raw2html}</div></div>
 {foreach $specialTaskPanes as $taskPane}
 {$taskPane}

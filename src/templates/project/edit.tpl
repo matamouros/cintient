@@ -17,15 +17,17 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}
-{include file='includes/header.inc.tpl'
-  subSectionId="projectEdit"
-  subSectionTitle=$globals_project->getTitle()
-  subSectionDescription="Edit project"
-	subSectionImg=$globals_project->getAvatarUrl()
-  jsIncludes=['js/lib/avataruploader.js',
-              'js/lib/bootstrap/bootstrap-tabs.js']
-  cssIncludes=['css/lib/avataruploader.css']}
+*}{include file='includes/header.inc.tpl'
+subSectionId="projectEdit"
+subSectionTitle=$globals_project->getTitle()
+subSectionDescription="Edit project"
+subSectionImg=$globals_project->getAvatarUrl()
+cssIncludes=['css/lib/avataruploader.css']
+jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
+            'js/lib/avataruploader.js',
+            'js/lib/bootstrap/bootstrap-tabs.js']}
+{* Holy shit... You cannot add jquery-ui jsInclude after the bootstrap-tabs
+   one, or else tabs won't work... *}
 
     <ul class="tabs">
 {if $globals_project->userHasAccessLevel($globals_user, Access::READ) || $globals_user->hasCos(UserCos::ROOT)}
@@ -41,7 +43,7 @@
 {/if}
     </ul>
 
-    <div class="pill-content">
+    <div class="tab-content">
       <div id="general" class="active">
         <form action class="form" id="generalForm">
           <fieldset>
@@ -58,13 +60,13 @@
             <div class="clearfix">
               <label for="title">Project title</label>
               <div class="input">
-                <input class="span7" type="text" name="title" value="{$globals_project->getTitle()}">
+                <input class="span7" type="text" name="title" value="{$globals_project->getTitle()}" />
               </div>
             </div>
             <div class="clearfix">
               <label for="buildLabel" class="tooltip" title="This will be used to name the release package files.">A build label</label>
               <div class="input">
-                <input class="span6" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}">
+                <input class="span6" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}" />
               </div>
             </div>
             <div class="clearfix">
@@ -74,7 +76,7 @@
               </div>
             </div>
             <div class="actions">
-              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+              <input type="submit" class="btn primary" value="Save changes" />&nbsp;<button type="reset" class="btn">Cancel</button>
             </div>
           </fieldset>
         </form>
@@ -88,7 +90,7 @@
 {$notifications->getView()}
           </fieldset>
           <div class="actions">
-            <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            <input type="submit" class="btn primary" value="Save changes" />&nbsp;<button type="reset" class="btn">Cancel</button>
           </div>
         </form>
       </div>
@@ -109,25 +111,25 @@
             <div class="clearfix">
               <label for="scmRemoteRepository">The SCM remote repository</label>
               <div class="input">
-                <input class="span10" type="text" name="scmRemoteRepository" value="{$globals_project->getScmRemoteRepository()}">
+                <input class="span10" type="text" name="scmRemoteRepository" value="{$globals_project->getScmRemoteRepository()}" />
               </div>
             </div>
             <div class="clearfix">
               <label for="scmUsername">Username for SCM access</label>
               <div class="input">
-                <input class="span6" type="text" name="scmUsername" value="{$globals_project->getScmUsername()}">
+                <input class="span6" type="text" name="scmUsername" value="{$globals_project->getScmUsername()}" />
                 <span class="help-block">This field is optional.</span>
               </div>
             </div>
             <div class="clearfix">
               <label for="scmPassword">Password for SCM access</label>
               <div class="input">
-                <input class="span6" type="text" name="scmPassword" value="{$globals_project->getScmPassword()}">
+                <input class="span6" type="text" name="scmPassword" value="{$globals_project->getScmPassword()}" />
                 <span class="help-block">This field is optional.</span>
               </div>
             </div>
             <div class="actions">
-              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+              <input type="submit" class="btn primary" value="Save changes" />&nbsp;<button type="reset" class="btn">Cancel</button>
             </div>
       	  </fieldset>
         </form>
@@ -143,7 +145,7 @@
                 <ul class="inputs-list">
                   <li>
                     <label>
-                      <input type="checkbox" id="pid" name="pid" value="{$globals_project->getId()}">
+                      <input type="checkbox" id="pid" name="pid" value="{$globals_project->getId()}" />
                       <span>I understand this action is irreversible.</span>
                     </label>
                   </li>
@@ -297,23 +299,7 @@ $(document).ready(function() {
     });
   });
 
-  //
-  // The project avatar uploader
-  //
-	var uploader = new qq.FileUploader({
-    element: document.getElementById('avatarUploader'),
-    action: '{UrlManager::getForAjaxAvatarUpload(['p'=>1])}',
-    multiple: false,
-    allowedExtensions: ['jpg', 'jpeg', 'png'],
-    sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
-    onComplete: function(id, fileName, responseJSON) {
-      // Update all the avatars on the current page
-      $(".projectAvatar40x40 img").attr('src', responseJSON.url);
-      $(".qq-upload-button").css({
-        'background-image' : 'url(' + responseJSON.url + ')'
-      });
-    }
-  });
+
 });
 //]]>
 </script>
@@ -387,10 +373,26 @@ $(document).ready(function() {
     formSelector : '#delete form',
     onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
     submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
-    successMsg : 'Deleted!',
+    //successMsg : 'Deleted!',
   });
 
-
+  //
+  // The project avatar uploader
+  //
+	var uploader = new qq.FileUploader({
+    element: document.getElementById('avatarUploader'),
+    action: '{UrlManager::getForAjaxAvatarUpload(['p'=>1])}',
+    multiple: false,
+    allowedExtensions: ['jpg', 'jpeg', 'png'],
+    sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
+    onComplete: function(id, fileName, responseJSON) {
+      // Update all the avatars on the current page
+      $(".projectAvatar40x40 img").attr('src', responseJSON.url);
+      $(".qq-upload-button").css({
+        'background-image' : 'url(' + responseJSON.url + ')'
+      });
+    }
+  });
 
 
 
