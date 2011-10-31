@@ -34,6 +34,11 @@
  */
 class UrlManager
 {
+  static public function getForAjaxAuthentication()
+  {
+    return CINTIENT_BASE_URL . '/ajax/authentication/';
+  }
+
   static public function getForAjaxAvatarUpload(Array $params = array())
   {
     return CINTIENT_BASE_URL . '/ajax/avatar-upload/?' .  http_build_query($params);

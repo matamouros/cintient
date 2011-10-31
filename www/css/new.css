@@ -5,6 +5,7 @@
 	http://cintient/project/css/new.css
 	http://cintient/settings/css/new.css
 	http://cintient/project/history/css/new.css
+	http://cintient/project/edit/css/new.css
 */
 
 /* @group Top Bar */
@@ -183,7 +184,34 @@ body
   padding-left: 19px;
 }
       
+#alertPane
+{
+  z-index: 1000;
+  position: absolute;
+  width: 100%;
+  line-height: 1.6em;
+  font-size: 1.2em;
+}
+
+.alert-message
+{
+  margin-bottom: 2px;
+          box-shadow: 0px 1px 4px #111;
+     -moz-box-shadow: #111 0px 1px 4px;
+  -webkit-box-shadow: #111 0px 1px 4px;
+}
+
+.alert-message a.close
+{
+  float: left;
+  margin-right: 15px;
+}
+
 /* @end */
+
+
+
+
 
 /* @group Dashboard */
 
@@ -339,21 +367,64 @@ body
 
 /* @end */
 
+/* @group Project edit */
+
+#projectEdit .projectAvatar40x40
+{
+  float: left;
+  margin-right: 14px;
+}
+
+#projectEdit #general #avatarUploader
+{
+  float: left;
+  margin-left:18px;
+  clear: right;
+}
+
+#projectEdit #general #avatarUploader + .help-inline
+{
+  /* Some hard fixes for the help-inline of the project avatar */
+  float: left;
+  clear: both;
+  margin-top: 4px;
+  margin-left: 145px;
+}
+
+#projectEdit #delete h3
+{
+  padding-left: 15px;
+}
+
+#projectEdit #notifications form .input
+{
+  margin-left: 0px;
+  margin-top: 5px;
+}
+
+/* @end */
+
+
+
+
+
+
 /* @group Settings */
 
 #settings #avatarUploader
 {
-  clear: both;
-  display: inline;
-  
+  float: left;
+  margin-left:18px;
+  clear: right;
 }
 
 #settings #avatarUploader + .help-inline
 {
+  /* Some hard fixes for the help-inline of the project avatar */
   float: left;
   clear: both;
-  padding-top: 4px;
-  padding-left: 0px;
+  margin-top: 4px;
+  margin-left: 145px;
 }
 
 /* @end */

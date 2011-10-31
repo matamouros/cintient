@@ -55,14 +55,14 @@ level=1}
             <label for="scmUsername">Username for SCM access</label>
             <div class="input">
               <input class="span6" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}">
-              <span class="help-inline">This field is optional.</span>
+              <span class="help-block">This field is optional.</span>
             </div>
           </div>
           <div class="clearfix">
             <label for="scmPassword">Password for SCM access</label>
             <div class="input">
               <input class="span6" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
-              <span class="help-inline">This field is optional.</span>
+              <span class="help-block">This field is optional.</span>
             </div>
           </div>
           <div class="actions">

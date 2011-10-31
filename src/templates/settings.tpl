@@ -31,7 +31,7 @@
 
     <div class="pill-content">
       <div class="active" id="general">
-        <form action class="form-stacked" id="generalForm">
+        <form action class="form" id="generalForm">
           <fieldset>
             <div class="clearfix">
               <label for="title">Your avatar</label>
@@ -41,7 +41,7 @@
                   <p>Please enable JavaScript to use file uploader.</p>
                 </noscript>
               </div>
-              <span class="help-inline">Click image to change it</span>
+              <span class="help-inline">Click image to change it.</span>
             </div>
           </fieldset>
         </form>

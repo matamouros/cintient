@@ -41,6 +41,33 @@ class AjaxManager
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
 
+  static public function authentication()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (isset($GLOBALS['user']) && $GLOBALS['user'] instanceof User) {
+      $msg = "User '{$GLOBALS['user']->getUsername()}' authenticated. Stand by...";
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => true,
+          'error' => $msg,
+        )
+      );
+      exit;
+    } else {
+      $msg = "User '{$_POST['authenticationForm']['username']['value']}' failed to authenticate. Please try again.";
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+  }
+
   static public function avatarUpload()
   {
     if (!isset($_GET['qqfile'])) {
@@ -186,7 +213,7 @@ class AjaxManager
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
-    if (!isset($_REQUEST['projectId'])) {
+    if (!isset($_REQUEST['pid'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(
@@ -197,7 +224,7 @@ class AjaxManager
       );
       exit;
     }
-    if (!(($project = Project::getById($GLOBALS['user'], $_REQUEST['projectId'], Access::READ)) instanceof Project)) {
+    if (!(($project = Project::getById($GLOBALS['user'], $_REQUEST['pid'], Access::READ)) instanceof Project)) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(

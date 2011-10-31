@@ -18,132 +18,151 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{*$menuLinks="<span id=\"exclusivePaneLinks\"><a href=\"#\" class=\"deploymentBuilderPane\">deployment</a> | <a href=\"#\" class=\"integrationBuilderPane\">integration</a>"*}
-{$menuLinks="<a href=\"#\" class=\"integrationBuilderPane\">integration</a>"}
-{$defaultPane="#deploymentBuilderPane"}
-{if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"scmPane\">scm</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a>"}
-  {$defaultPane="#generalPane"}
+{include file='includes/header.inc.tpl'
+  subSectionId="projectEdit"
+  subSectionTitle=$globals_project->getTitle()
+  subSectionDescription="Edit project"
+	subSectionImg=$globals_project->getAvatarUrl()
+  jsIncludes=['js/lib/avataruploader.js',
+              'js/lib/bootstrap/bootstrap-tabs.js']
+  cssIncludes=['css/lib/avataruploader.css']}
+
+    <ul class="tabs">
+{if $globals_project->userHasAccessLevel($globals_user, Access::READ) || $globals_user->hasCos(UserCos::ROOT)}
+{* The links appear for READ access. But submitting should only be allowed for WRITE *}
+      <li><a href="#integration">Integration builder</a></li>
+      <li class="active"><a href="#general">General</a></li>
+      <li><a href="#scm">SCM</a></li>
+      <li><a href="#notifications">Notifications</a></li>
 {/if}
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"#\" class=\"usersPane\">users</a> | <a href=\"#\" class=\"deletePane\">delete</a>"}
-  {*$defaultPane="#generalPane"*}
-  {$defaultPane="#generalPane"}
+      <li><a href="#users">Users</a></li>
+      <li><a href="#delete">Delete</a></li>
 {/if}
-{include file='includes/header.inc.tpl'
-  subSectionTitle="Edit project"
-  menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
-  backLink="{UrlManager::getForProjectView()}"
-  jsIncludes=['js/lib/avataruploader.js']}
-    <div id="paneContainer">
-      <div id="generalPane" class="exclusivePane">
-      <form>
-        <div class="projectEditContainer container" id="generalForm">
-          <div class="label">Project avatar <span class="fineprintLabel">(click image to change it)</span></div>
-          <div id="avatarUploader">
-            <noscript>
-              <p>Please enable JavaScript to use file uploader.</p>
-            </noscript>
-          </div>
-          <div class="label">Project title</div>
-          <div class="textfieldContainer" style="width: 404px;">
-            <input class="textfield" style="width: 400px" type="text" name="title" value="{$globals_project->getTitle()}">
-          </div>
-          <div class="label">A build label</div>
-          <div class="textfieldContainer" style="width: 364px;">
-            <input class="textfield" style="width: 360px;" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}">
-          </div>
-          <div class="label">A small description</div>
-          <div class="textareaContainer">
-            <textarea class="textarea" name="description">{$globals_project->getDescription()}</textarea>
-          </div>
-        </div>
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  Cintient.initGenericForm({
-    formSelector : '#generalPane .projectEditContainer',
-    submitButtonAppendTo : '#generalPane',
-    submitUrl: '{URLManager::getForAjaxProjectEditGeneral()}',
-  });
-});
-</script>
-      </form>
+    </ul>
+
+    <div class="pill-content">
+      <div id="general" class="active">
+        <form action class="form" id="generalForm">
+          <fieldset>
+            <div class="clearfix">
+              <label for="avatarUploader">Project avatar</label>
+              <div id="avatarUploader">
+                <noscript>
+                  {* TODO: Use simple upload form *}
+                  <p>Please enable JavaScript to use file uploader.</p>
+                </noscript>
+              </div>
+              <span class="help-inline">Click image to change it.</span>
+            </div>
+            <div class="clearfix">
+              <label for="title">Project title</label>
+              <div class="input">
+                <input class="span7" type="text" name="title" value="{$globals_project->getTitle()}">
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="buildLabel" class="tooltip" title="This will be used to name the release package files.">A build label</label>
+              <div class="input">
+                <input class="span6" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}">
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="description">A small description</label>
+              <div class="input">
+                <textarea class="xxlarge" rows="3" name="description">{$globals_project->getDescription()}</textarea>
+              </div>
+            </div>
+            <div class="actions">
+              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            </div>
+          </fieldset>
+        </form>
       </div>
-      <div id="notificationsPane" class="exclusivePane">
-        <div class="projectEditContainer container" id="notificationsForm">
+
+      <div id="notifications">
+        <form action class="form" id="notificationsForm">
+          <fieldset>
 {$projectUser=Project_User::getByUser($globals_project, $globals_user)}
 {$notifications=$projectUser->getNotifications()}
 {$notifications->getView()}
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  Cintient.initGenericForm({
-    formSelector : '#notificationsPane .projectEditContainer',
-    submitButtonAppendTo : '#notificationsPane',
-    submitUrl: '{URLManager::getForAjaxProjectNotificationsSave()}',
-  });
-});
-</script>
-        </div>
-      </div>
-      <div id="scmPane" class="exclusivePane">
-        <form>
-        <div class="projectEditContainer container" id="scmForm">
-          <div class="label">The SCM connector</div>
-          <div class="dropdownContainer">
-            <select class="dropdown" name="scmConnectorType">
-{foreach from=$project_availableConnectors item=connector}
-              <option value="{$connector}"{if $globals_project->getScmConnectorType()==$connector} selected{/if}>{$connector|capitalize}
-{/foreach}
-            </select>
+          </fieldset>
+          <div class="actions">
+            <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
           </div>
-          <div class="label">The SCM remote repository</div>
-          <div class="textfieldContainer" style="width: 556px;">
-            <input class="textfield" style="width: 550px;" type="text" name="scmRemoteRepository" value="{$globals_project->getScmRemoteRepository()}">
-          </div>
-          <div class="label">Username for SCM access</div>
-          <div class="textfieldContainer" style="width: 304px;">
-            <input class="textfield" style="width: 300px;" type="text" name="scmUsername" value="{$globals_project->getScmUsername()}">
-          </div>
-          <div class="label">Password for SCM access</div>
-          <div class="textfieldContainer" style="width: 304px;">
-            <input class="textfield" style="width: 300px;" type="text" name="scmPassword" value="{$globals_project->getScmPassword()}">
-          </div>
-        </div>
         </form>
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  Cintient.initGenericForm({
-    formSelector : '#scmPane .projectEditContainer',
-    submitButtonAppendTo : '#scmPane',
-    submitUrl: '{URLManager::getForAjaxProjectEditScm()}',
-  });
-});
-</script>
       </div>
-      <div id="deletePane" class="exclusivePane">
-        <div class="projectEditContainer container">
-          <div class="label">Do you really want to delete <span class="emphasis">{$globals_project->getTitle()}</span>? This action is irreversible.</div>
-          <input type="hidden" value="{$globals_project->getId()}" name="pid">
-        </div>
+
+      <div id="scm">
+        <form action class="form" id="scmForm">
+          <fieldset>
+            <div class="clearfix">
+              <label for="scmConnectorType">The SCM connector</label>
+              <div class="input">
+                <select class="span2" name="scmConnectorType">
+{foreach from=$project_availableConnectors item=connector}
+                  <option value="{$connector}"{if $globals_project->getScmConnectorType()==$connector} selected{/if}>{$connector|capitalize}
+{/foreach}
+                </select>
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="scmRemoteRepository">The SCM remote repository</label>
+              <div class="input">
+                <input class="span10" type="text" name="scmRemoteRepository" value="{$globals_project->getScmRemoteRepository()}">
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="scmUsername">Username for SCM access</label>
+              <div class="input">
+                <input class="span6" type="text" name="scmUsername" value="{$globals_project->getScmUsername()}">
+                <span class="help-block">This field is optional.</span>
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="scmPassword">Password for SCM access</label>
+              <div class="input">
+                <input class="span6" type="text" name="scmPassword" value="{$globals_project->getScmPassword()}">
+                <span class="help-block">This field is optional.</span>
+              </div>
+            </div>
+            <div class="actions">
+              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            </div>
+      	  </fieldset>
+        </form>
       </div>
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  Cintient.initGenericForm({
-    formSelector : '#deletePane',
-    onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
-    submitButtonAppendTo : '#deletePane .projectEditContainer',
-    submitButtonText : 'Yes, I want to delete this project!',
-    submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
-    successMsg : 'Deleted!',
-  });
-});
-</script>
+
+      <div id="delete">
+        <form action class="form" id="deleteForm">
+          <fieldset>
+            <div class="clearfix error">
+              <h3>Do you really want to delete {$globals_project->getTitle()}? This action is irreversible.</h3>
+              {*<label id="pid" class="span3">Check this if you agree</label>*}
+              <div class="input">
+                <ul class="inputs-list">
+                  <li>
+                    <label>
+                      <input type="checkbox" id="pid" name="pid" value="{$globals_project->getId()}">
+                      <span>I understand this action is irreversible.</span>
+                    </label>
+                  </li>
+                </ul>
+                <span class="help-block">
+                  <strong>Note:</strong> to delete the project, check this and then click the red button.
+                </span>
+              </div>
+              {*<input type="hidden" value="{$globals_project->getId()}" name="pid">*}
+            </div>
+            <div class="actions">
+              <button class="btn danger disabled" id="deleteBtn" disabled="disabled">Yes, I really want to delete this project!</button>&nbsp;<button class="btn" id="cancelBtn">Cancel</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
-      <div id="usersPane" class="exclusivePane">
+      <div id="users">
         <div id="addUserPane" class="projectEditContainer container">
           <div class="label">Add an existing user <div class="fineprintLabel">(specify name or username)</div></div>
           <div class="textfieldContainer" style="width: 254px;">
@@ -288,6 +307,8 @@ $(document).ready(function() {
     allowedExtensions: ['jpg', 'jpeg', 'png'],
     sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
     onComplete: function(id, fileName, responseJSON) {
+      // Update all the avatars on the current page
+      $(".projectAvatar40x40 img").attr('src', responseJSON.url);
       $(".qq-upload-button").css({
         'background-image' : 'url(' + responseJSON.url + ')'
       });
@@ -336,20 +357,48 @@ $(document).ready(function() {
         </div>
       </div>
 {/if}
-      <div id="deploymentBuilderPane" class="exclusivePane">
-        <div class="projectEditContainer container">
-        </div>
-      </div>
-      <div id="integrationBuilderPane" class="exclusivePane">
-        <div class="projectEditContainer container">
+      <div id="integration">
+        <form action class="form" id="integrationForm">
+          <fieldset>
 {include file='includes/builderEditor.inc.tpl'}
-        </div>
+          </fieldset>
+        </form>
       </div>
+
     </div>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  Cintient.initExclusivePanes('{$defaultPane}');
+  Cintient.initSectionProjectEdit();
+
+  Cintient.initGenericForm({
+    formSelector : '#general form',
+    submitUrl: '{URLManager::getForAjaxProjectEditGeneral()}',
+  });
+  Cintient.initGenericForm({
+    formSelector : '#notifications form',
+    submitUrl: '{URLManager::getForAjaxProjectNotificationsSave()}',
+  });
+  Cintient.initGenericForm({
+    formSelector : '#scm form',
+    submitUrl: '{URLManager::getForAjaxProjectEditScm()}',
+  });
+  Cintient.initGenericForm({
+    formSelector : '#delete form',
+    onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
+    submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
+    successMsg : 'Deleted!',
+  });
+
+
+
+
+
+
+
+
+
+
 
   //
   // For the access level panes

@@ -27,6 +27,67 @@
  * @author Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  */
 var Cintient = {
+  /** Enum for Bootstrap alert types */
+  ALERT : {
+    ERROR : 'error',
+    INFO : 'info',
+    SUCCESS : 'success',
+    WARNING : 'warning'
+  },
+  
+  /**
+   * This is a small bare basics alert framework for handling alerts of
+   * different severity levels. Higher severity levels have higher auto
+   * dismiss timeouts, whereas errors are sticky, i.e., have to be
+   * manually dismissed.
+   * 
+   * Usage (see "var options" for allowed parameters):
+   * Cintient.alert({});
+   */
+  alert: function()
+  {
+    var options = $.extend({
+      alertSelector : '#alertPane',
+      autoDismissTimeout : 0,
+      maxActiveAlerts : 3,
+      message : 'Hello world!',
+      type : this.ALERT.INFO,
+    }, arguments[0] || {});
+    //
+    // DOM element creation (alert is now a reference to it)
+    //
+    var alert = $('<div class="alert-message fade in ' + options.type + '"><a class="close" href="#">×</a>' + options.message + '</div>');
+    //
+    // Remove older alerts (yes, regardless of severity level)
+    //
+    if ($(options.alertSelector + ' .alert-message').length >= options.maxActiveAlerts) {
+      $(options.alertSelector + ' .alert-message').first().slideUp(300);
+      setTimeout(function() {
+        $(options.alertSelector + ' .alert-message').first().remove();
+      }, 300);
+    }
+    $(options.alertSelector).append(alert);
+    alert.alert(); // Bootstrap requirement
+    //
+    // Errors are sticky, all others have growing auto dismiss timeouts
+    //
+    if (options.type == this.ALERT.SUCCESS) {
+      options.autoDismissTimeout = 5000;
+    } else if (options.type == this.ALERT.INFO) {
+      options.autoDismissTimeout = 10000;
+    } else if (options.type == this.ALERT.WARNING) {
+      options.autoDismissTimeout = 30000;
+    }
+    if (options.autoDismissTimeout > 0) {
+      setTimeout(function () {
+        alert.slideUp(300);
+        setTimeout(function() {
+          alert.remove();
+        }, 300);
+      }, options.autoDismissTimeout);
+    }
+  },
+    
   /**
    * Creates a button, styles it and returns it. Whomever calls this,
    * must then be responsible for appending it to the DOM tree.
@@ -61,6 +122,11 @@ var Cintient = {
     );
     $(button).html("<div>" + text + "</div>");
     return button;
+  },
+  
+  initSectionAuthentication: function ()
+  {
+    $('#authentication #authenticationHide').fadeIn(300);
   },
   
   initSectionBuildHistory: function()
@@ -124,7 +190,7 @@ var Cintient = {
           
           $.ajax({
             url: options.submitUrl,
-            data: { projectId : $(this).attr('id') },
+            data: { pid : $(this).attr('id') },
             type: 'GET',
             cache: true,
             dataType: 'html',
@@ -196,6 +262,26 @@ var Cintient = {
     $('.topbar').dropdown();
   },
   
+  initSectionProjectEdit: function ()
+  {
+    this._setupTabs();
+    
+    //
+    // Toggle the delete button on confirmation
+    //
+    $('#projectEdit #delete #pid').change(function () {
+      if (this.checked) {
+        $('#projectEdit #delete #deleteBtn')
+          .prop('disabled', false)
+          .removeClass('disabled');
+      } else {
+        $('#projectEdit #delete #deleteBtn')
+          .prop('disabled', true)
+          .addClass('disabled');
+      }
+    });
+  },
+  
   initSectionSettings: function ()
   {
     this._setupTabs();    
@@ -219,7 +305,29 @@ var Cintient = {
       formSelector : 'form',
       onSuccessRedirectUrl : null,
       onSuccessRedirectTimer : 3000, // milliseconds
-      successMsg : 'Saved.'
+      type : 'POST',
+      
+      /** A callback for an unknown response */
+      cbUnknownResponse : function() {
+        Cintient.alert({
+          message : 'An unknown error occurred. Sorry about that...',
+          type : Cintient.ALERT.ERROR
+        });
+      },
+      
+      cbFailedResponse : function(msg) {
+        Cintient.alert({
+          message : msg + '',
+          type : Cintient.ALERT.INFO // Default normally failed as INFO severity
+        });
+      },
+      
+      cbSuccessResponse : function(msg) {
+        Cintient.alert({
+          message : msg + '',
+          type : Cintient.ALERT.SUCCESS
+        });
+      },
     }, arguments[0] || {});
     
     //
@@ -244,7 +352,9 @@ var Cintient = {
             var that = this;
             data[$(this).attr('id')] = function() {
               var x = {};
-              $(':input', that).each( function() {
+              // Applying these two filters is currently the best way I
+              // can think of to leave out buttons
+              $(':input', that).filter(':not(:submit)').filter(':not(:button)').each( function() {
                 x[this.name] = { type: this.type, value: this.value };
               });
               return x;
@@ -252,16 +362,16 @@ var Cintient = {
           });
           return data;
         }(),
-        type: 'POST',
+        type: options.type,
         cache: false,
         dataType: 'json',
         success: function(data, textStatus, XMLHttpRequest) {
           if (data == null || data.success == null) {
-            $.jGrowl('An unknown error occurred. Yeah, it seems we have those too... :-(', { header: "Warning", sticky: true });
+            options.cbUnknownResponse();
           } else if (!data.success) {
-            $.jGrowl(data.error + '', { header: "Warning", sticky: true });
+            options.cbFailedResponse(data.error);
           } else {
-            $.jGrowl(options.successMsg);
+            options.cbSuccessResponse(data.error);
             if (options.onSuccessRedirectUrl !== null) {
               setTimeout(function () {
                 window.location.replace(options.onSuccessRedirectUrl);
@@ -270,8 +380,7 @@ var Cintient = {
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
-          $.jGrowl('An unknown error occurred. Yeah, it seems we have those too...', { header: "Warning", sticky: true });
-          alert(errorThrown);
+          options.cbUnknownResponse();
         }
       });
     });

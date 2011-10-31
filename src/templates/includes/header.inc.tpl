@@ -32,10 +32,10 @@
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
   {*<link rel="stylesheet" href="css/global.css" />*}
   <link rel="stylesheet" href="css/lib/bootstrap.css" />
-  <link rel="stylesheet" href="css/new.css" />
 {foreach $cssIncludes as $cssInclude}
   <link rel="stylesheet" href="{$cssInclude}" />
 {/foreach}
+  <link rel="stylesheet" href="css/new.css" />
   <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
@@ -47,6 +47,7 @@
   <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="js/cintient.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap/bootstrap-alerts.js"></script>
   <script type="text/javascript" src="js/lib/bootstrap/bootstrap-dropdown.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
@@ -60,12 +61,12 @@ $(document).ready(function() {
   </script>
 </head>
 <body>
-{if $globals_user instanceof User}
   <div class="topbar">
     <div class="fill">
       <div class="container">
         <div id="topbarLeft">
-          <div id="logoLettering"><a href="{UrlManager::getForDashboard()}"><div id="cintientLettering" style="display: none;">Cintient</div></a></div>{* <img src="imgs/redhalo_45.jpg" height="25">*}
+          <div id="logoLettering">{if $globals_user instanceof User}<a href="{UrlManager::getForDashboard()}">{/if}<div id="cintientLettering" style="display: none;">Cintient</div>{if $globals_user instanceof User}</a>{/if}</div>
+{if $globals_user instanceof User}
           <div>
             <ul class="nav">
               <li class="dropdown">
@@ -86,43 +87,12 @@ $(document).ready(function() {
             <div id="username">{$globals_user->getUsername()}</div>
             <div id="links"><a href="{UrlManager::getForSettings()}">Settings</a> | <a href="{UrlManager::getForLogout()}">Logout</a></div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-{elseif $globals_subSection == 'registration'}
-  <div class="topbar">
-    <div class="fill">
-      <div class="container">
-        <div id="topbarLeft">
-          <ul class="nav">
-            <li id="historyBack"><a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
-            <li id="sectionName">{$subSectionTitle}</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-{else}
-  <div id="splashHeader" class="container">
-    <header>
-      <hgroup>
-        <h1>Cintient</h1>
-        <img src="imgs/redhalo.jpg" width="195" height="130">
-      </hgroup>
-    </header>
-  </div>
-<script type="text/javascript">
-// <![CDATA[
-$('#splashHeader h1').hide();
-$('#splashHeader img').hide();
-$(document).ready(function() {
-	$('#splashHeader h1').fadeIn(300);
-  $('#splashHeader img').fadeIn(300);
-});
-// ]]>
-</script>
 {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="alertPane"></div>
   <div class="container">
     <div class="content" id="{$subSectionId}">
       <div class="page-header">
