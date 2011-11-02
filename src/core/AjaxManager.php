@@ -46,7 +46,7 @@ class AjaxManager
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
     if (isset($GLOBALS['user']) && $GLOBALS['user'] instanceof User) {
-      $msg = "User '{$GLOBALS['user']->getUsername()}' authenticated. Stand by...";
+      $msg = "User '{$GLOBALS['user']->getUsername()}' authenticated, taking you to your dashboard. Stand by...";
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(
         array(
@@ -298,11 +298,12 @@ class AjaxManager
       exit;
     }
 
-    if (!isset($_GET['change']) ||
-        !($params = explode('_', $_GET['change'])) ||
+    if (!isset($_POST['change']) ||
+        !($params = explode('_', $_POST['change'])) ||
         count($params) != 2 ||
-        Access::getDescription($params[1]) === false) {
-      SystemEvent::raise(SystemEvent::INFO, "Invalid request parameters. " . (isset($_GET['change'])?"[PARAMS={$_GET['change']}]":""), __METHOD__);
+        Access::getDescription($params[1]) === false)
+    {
+      SystemEvent::raise(SystemEvent::INFO, "Invalid request parameters. " . (isset($_POST['change'])?"[PARAMS={$_POST['change']}]":""), __METHOD__);
       echo json_encode(
         array(
           'success' => false,
@@ -384,20 +385,25 @@ class AjaxManager
 
     $GLOBALS['project']->addToUsers($user);
     $accessLevels = Access::getList();
+
     $html = <<<EOT
-            <li id="{$user->getUsername()}" style="display: none;">
-              <div class="user">
-                <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
-                <div class="username">{$user->getUsername()}</div>
+            <li id="{$user->getUsername()}">
+              <div class="avatar40"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
+              <div class="username"><h3>{$user->getUsername()}</h3></div>
+              <div class="actionItems">
 EOT;
     if (!$GLOBALS['project']->userHasAccessLevel($user, Access::OWNER)) {
       $removeLink = UrlManager::getForAjaxProjectRemoveUser($user->getUsername());
       $html .= <<<EOT
-                <div class="remove"><a class="{$user->getUsername()}" href="{$removeLink}">remove</a></div>
-                <div class="accessLevelPane">
-                  <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
-                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
-                    <ul>
+                <div class="remove"><a class="{$user->getUsername()} btn danger" href="{$removeLink}">Remove</a></div>
+                <div class="access"><a class="{$user->getUsername()} btn" href="#">Access</a></div>
+                <div class="popover-wrapper">
+                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPopover popover above">
+                    <div class="arrow"></div>
+                    <div class="inner">
+                      <h3 class="title">Access level</h3>
+                      <div class="content">
+                        <ul class="inputs-list">
 EOT;
       foreach ($accessLevels as $accessLevel => $accessName) {
         if ($accessLevel !== 0) {
@@ -407,18 +413,23 @@ EOT;
           }
           $accessName = ucfirst($accessName);
           $html .= <<<EOT
-                      <li><input class="accessLevelPaneLevelsCheckbox" type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel" id="{$accessLevel}"{$checked} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
+                          <li>
+                            <input type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel_{$user->getUsername()}" id="{$accessLevel}"{$checked} />
+                            <span>{$accessName}</span>
+                          </li>
 EOT;
         }
       }
       $html .= "
-                    </ul>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>";
     } else {
       $html .= '
-                <div class="remove">Owner <span class="fineprintLabel">(no changes allowed)</span></div>';
-    }
+                <div class="noChanges">Owner (no changes allowed)</div>';
+		}
     $html .= "
               </div>
             </li>";
@@ -762,8 +773,10 @@ EOT;
 
   static public function project_delete()
   {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
     $postVars = array();
-    foreach ($_POST['deletePane'] as $name => $value) {
+    foreach ($_POST['deleteForm'] as $name => $value) {
       if (isset($value['value'])) {
         $postVars[$name] = $value['value'];
       }
@@ -812,11 +825,12 @@ EOT;
       unset($GLOBALS['project']);
       unset($_SESSION['projectId']);
       session_write_close();
-      $msg = 'Project deleted.';
+      $msg = 'Project deleted, taking you back to your dashboard. Stand by...';
       SystemEvent::raise(SystemEvent::INFO, "Project deleted. [PID={$postVars['pid']}] [USER={$GLOBALS['user']->getUsername()}]", __METHOD__);
       echo json_encode(
         array(
-          'success' => true
+          'success' => true,
+          'error' => $msg,
         )
       );
       exit;
@@ -1070,7 +1084,7 @@ EOT;
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
     if (!isset($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
-        !isset($_GET['username'])) {
+        !isset($_POST['username'])) {
       $msg = 'Invalid request';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
       echo json_encode(
@@ -1093,9 +1107,9 @@ EOT;
       exit;
     }
 
-    $user = User::getByUsername($_GET['username']);
+    $user = User::getByUsername($_POST['username']);
     if (!($user instanceof User)) {
-      SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_GET['username']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::INFO, "Username not found. [USERNAME={$_POST['username']}]", __METHOD__);
       echo json_encode(
         array(
           'success' => false,
@@ -1123,6 +1137,80 @@ EOT;
       array(
         'success' => $GLOBALS['project']->removeFromUsers($user),
         'username' => $user->getUsername(),
+      )
+    );
+    exit;
+  }
+
+  static public function registration()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    //
+    // Check for validity
+    //
+    if (empty($_POST['registrationForm']['name']['value']) ||
+        empty($_POST['registrationForm']['email']['value']) ||
+        empty($_POST['registrationForm']['username']['value']) ||
+        empty($_POST['registrationForm']['password']['value']) ||
+        empty($_POST['registrationForm']['password2']['value'])
+    ) {
+      SystemEvent::raise(SystemEvent::DEBUG, "User registration failed, required attributes were empty.", __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => 'Please fill in all input fields.',
+        )
+      );
+      exit;
+
+    } else if ($_POST['registrationForm']['password']['value'] != $_POST['registrationForm']['password2']['value']) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Passwords don't match.", __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => "The passwords don't match.",
+        )
+      );
+      exit;
+
+    } else {
+      $user = User::getByUsername($_POST['registrationForm']['username']['value']);
+      if ($user instanceof User) {
+        SystemEvent::raise(SystemEvent::DEBUG, "Username already taken.", __METHOD__);
+        echo json_encode(
+          array(
+            'success' => false,
+            'error' => 'The username you provided is already taken.',
+          )
+        );
+        exit;
+      }
+      $user = null;
+      unset($user);
+    }
+    //
+    // Everything ok, let's register the new user
+    //
+    $user = new User();
+    $user->setEmail($_POST['registrationForm']['email']['value']);
+    //$user->setNotificationEmails($_POST['registrationForm']['email']['value']);
+    $user->setName($_POST['registrationForm']['name']['value']);
+    $user->setUsername($_POST['registrationForm']['username']['value']);
+    $user->setCos(UserCos::USER);
+    $user->init();
+    $user->setPassword($_POST['registrationForm']['password']['value']);
+    //
+    // Log the user in
+    //
+    /*
+    Auth::authenticate();
+    */
+    SystemEvent::raise(SystemEvent::INFO, "New user created. [USERNAME={$user->getUsername()}]", __METHOD__);
+    echo json_encode(
+      array (
+        'success' => true,
+        'error' => 'Registration was successful, taking you to the login prompt. Stand by...',
       )
     );
     exit;

@@ -34,7 +34,7 @@
 #topbarRight
 {
   float: right;
-  width: 200px;
+  width: 230px;
 }
 
 #topbarRight #user #avatar
@@ -52,7 +52,7 @@
   float: left;
   margin-left: 10px;
   line-height: .9em; /* helps regulate the proximity of the links below */
-  padding-right: 130px; /* to force the user links below this element */
+  width: 190px; /* to force the user links below this element, since clear: right doesn't seem to cut it... */
   font-size: 12pt;
   color: rgb(230,230,230);
 }
@@ -65,17 +65,12 @@
   font-size: .8em;
 }
 
-/* Just the actual lettering, not including positioning */
-#cintientLettering
+#topbarLeft, #topbarLeft .menuLinks
 {
-  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
-  font-size: 18pt;
-  letter-spacing: 2px;
+  float: left;
 }
 
-/* These are specific to the lettering on the topbar */
-#topbarLeft #cintientLettering
-{
+#topbarLeft #cintientLettering { /* These are specific to the lettering on the topbar */
   color: rgb(230,230,230);
   float: left;
   margin-top: 8px;
@@ -149,13 +144,21 @@ body
   padding-top: 37px; /* container below topbar */
 }
 
+.container > footer
+{
+  margin-top: 10px;
+  padding-bottom: 40px;
+  float: left;
+  width: 100%;
+}
+
 .container > footer, p
 {
+  line-height: 1.2em;
   text-align: center; /* center align it with the container */
 }
 
-
-.content { /* The white background content wrapper */
+.mainContent { /* The white background content wrapper */
   background-color: #fff;
   padding: 20px;
   margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
@@ -165,6 +168,8 @@ body
   -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
      -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
           box-shadow: 0 1px 2px rgba(0,0,0,.15);
+  float: left;
+  width: 100%;
 }
       
 .page-header { /* Page header tweaks */
@@ -207,6 +212,63 @@ body
   margin-right: 15px;
 }
 
+/* ========================= */
+
+.closingX
+{
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+  width: 10px;
+  height: 10px;
+  color: #fff;
+  background-color: rgb(170,170,170);
+  display: block;
+top: 0px;
+right: 0px;
+height: 0;
+width: 10px;
+padding: 10px 0 0 0;
+overflow: hidden;
+background: black none;
+border: 0.04545454545455px solid white;
+-moz-border-radius: 18px;
+-webkit-border-radius: 18px;
+border-radius: 10px;
+color: white;
+cursor: pointer;
+-moz-user-select: none;
+-webkit-user-select: none;
+user-select: none;
+}
+
+.closingX::before
+{
+  content: "×D7";
+  width: 9px;
+  font-size: 10pt;
+  display: block;
+  line-height: 1px;
+}
+
+.fake-lightbox {
+  width: 200px;
+  height: 40px;
+  padding: 15px;
+  position: relative; /*Important for the position of the close box*/
+  margin: 25px auto;
+  box-shadow: 0 2px 12px #333;
+  -ms-box-shadow: 0 2px 12px #333;
+  -moz-box-shadow: 0 2px 12px #333;
+  -webkit-box-shadow: 0 2px 12px #333;
+  border-radius: 8px;
+  -ms-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: 1px solid #666;
+}
+/* ========================= */
+
 /* @end */
 
 
@@ -239,6 +301,9 @@ body
   -webkit-transition: all 0.15s ease-in-out;
   min-height: 111px; /* Try to give all projects an even height */
   padding-bottom: 10px;
+  -webkit-border-radius: 4px;
+	 -moz-border-radius: 4px;
+    	  border-radius: 4px;
 }
 
 #dashboard li.project a
@@ -402,6 +467,148 @@ body
   margin-top: 5px;
 }
 
+#projectEdit #searchResultsPopover
+{
+  position: relative;
+  margin-left: 434px;
+  margin-top: -17px;
+  float: left;
+}
+
+#projectEdit #searchResultsPopover .right .arrow
+{
+  /* Override Bootstrap, make the little arrow tip always point to the search input, regardless of search results size */
+  top: 50px;
+}
+
+#projectEdit #searchResultsPopover ul
+{
+  margin-left: 0px;
+}
+
+#projectEdit #searchResultsPopover .content ul .help-block
+{
+  /* neatly place the help-block text before the first search result */
+  margin-top: -6px;
+  margin-bottom: 8px;
+}
+
+#projectEdit #searchResultsPopover .content ul h3
+{
+  /* username right beside the avatar, floats don't seem to work for this popover */
+  margin-top: -40px;
+  margin-left: 50px;
+}
+
+#projectEdit #searchResultsPopover .content ul li:not(:first-child)
+{
+  /* Some nice spacing on the search results items, so that hovering looks nicer */
+  padding: 6px;
+}
+#projectEdit #searchResultsPopover .content ul li:hover:not(:first-child)
+{
+  /* don't hover on the help-block */
+  background-color: #eee;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  cursor: pointer; /* for that small padding are between the li and a */
+}
+#projectEdit #searchResultsPopover .content ul a:hover
+{
+  text-decoration: none;
+}
+
+
+
+#projectEdit #userList
+{
+  width: 480px;
+}
+#projectEdit #userList ul li
+{
+  margin-bottom: 2px;
+  float: left;
+  width: 100%;
+  padding: 10px;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+#projectEdit #userList ul li:hover
+{
+  background-color: #F8F8F8;
+}
+#projectEdit #userList .avatar40
+{
+  float: left;
+  margin-right: 10px;
+}
+#projectEdit #userList .username
+{
+  float: left;
+  padding-top: 2px;
+}
+#projectEdit #userList .actionItems
+{
+  float: right;
+  margin-top: 8px;
+}
+#projectEdit #userList .actionItems .noChanges
+{
+  margin-top: 6px;
+}
+#projectEdit #userList .actionItems .remove, #projectEdit #userList .actionItems .access
+{
+  float: right;
+  margin-left: 6px;
+}
+#projectEdit #userList .popover-wrapper
+{
+  position: relative;
+  margin-left: -81px;
+  top: -122px;
+}
+#projectEdit #userList .accessLevelPopover .inner
+{
+  width: auto;
+}
+#projectEdit #userList .accessLevelPopover .content
+{
+  float: left;
+}
+#projectEdit #userList .accessLevelPopover .content ul
+{
+  margin: 0px;
+  padding: 0px;
+  float: left;
+}
+#projectEdit #userList .accessLevelPopover .content ul li
+{
+  float: left;
+  width: 30px;
+  padding: 10px;
+  text-align: center;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+#projectEdit #userList .accessLevelPopover .content ul li:hover
+{
+  cursor: pointer;
+  background-color: #eee;
+}
+/*
+#projectEdit #userList .actionItems form ul li
+{
+  margin: 0px;
+  padding: 2px;
+  padding-left: 12px;
+}
+#projectEdit #userList .actionItems form
+{
+
+}
+*/
 /* @end */
 
 
@@ -429,7 +636,7 @@ body
 
 /* @end */
 
-.projectAvatar40x40
+.projectAvatar40x40, .avatar40
 {
   width: 40px;
   height: 40px;
@@ -449,6 +656,14 @@ body
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
      -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+#cintientLettering
+{
+  /* Just the actual lettering, not including positioning */
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  font-size: 18pt;
+  letter-spacing: 2px;
 }
 
 .log { /* Based on the log view on Travis-ci.org */
@@ -471,3 +686,13 @@ body
    -khtml-border-radius: 4px;
           border-radius: 4px;
 }
+
+/*
+
+border-color: rgba(82, 168, 236, 0.8);
+-webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+-moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+*/

@@ -114,6 +114,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/project/remove-user/';
   }
 
+  static public function getForAjaxRegistration()
+  {
+    return CINTIENT_BASE_URL . '/ajax/registration/';
+  }
+
   static public function getForAjaxSearchUser()
   {
     return CINTIENT_BASE_URL . '/ajax/search/user/';

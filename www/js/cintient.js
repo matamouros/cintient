@@ -56,18 +56,19 @@ var Cintient = {
     //
     // DOM element creation (alert is now a reference to it)
     //
-    var alert = $('<div class="alert-message fade in ' + options.type + '"><a class="close" href="#">×</a>' + options.message + '</div>');
+    var alert = $('<div class="alert-message fade in ' + options.type + '" style="display:none;"><a class="close" href="#">×</a>' + options.message + '</div>');
     //
     // Remove older alerts (yes, regardless of severity level)
     //
     if ($(options.alertSelector + ' .alert-message').length >= options.maxActiveAlerts) {
-      $(options.alertSelector + ' .alert-message').first().slideUp(300);
+      $(options.alertSelector + ' .alert-message').first().slideUp(200);
       setTimeout(function() {
         $(options.alertSelector + ' .alert-message').first().remove();
-      }, 300);
+      }, 200);
     }
     $(options.alertSelector).append(alert);
-    alert.alert(); // Bootstrap requirement
+    $(alert).slideDown(100);
+    $(options.alertSelector).alert(); // Currently only for providing close on the little x
     //
     // Errors are sticky, all others have growing auto dismiss timeouts
     //
@@ -80,12 +81,51 @@ var Cintient = {
     }
     if (options.autoDismissTimeout > 0) {
       setTimeout(function () {
-        alert.slideUp(300);
+        alert.slideUp(400);
         setTimeout(function() {
           alert.remove();
-        }, 300);
+        }, 400);
       }, options.autoDismissTimeout);
     }
+  },
+  
+  /**
+   * Method for a vanilla unknown error alert
+   */
+  alertUnknown : function()
+  {
+    Cintient.alert({
+      message : 'An unknown error occurred. Sorry about that...',
+      type : Cintient.ALERT.ERROR
+    });
+  },
+  
+  /**
+   * Method for a vanilla failed error alert
+   */
+  alertFailed : function(msg)
+  {
+    if (msg.length == 0) {
+      msg = 'Failed!';
+    }
+    Cintient.alert({
+      message : msg + '',
+      type : Cintient.ALERT.INFO // Default normally failed as INFO severity
+    });
+  },
+  
+  /**
+   * Method for a vanilla success error alert
+   */
+  alertSuccess : function(msg)
+  {
+    if (msg.length == 0) {
+      msg = 'Success!';
+    }
+    Cintient.alert({
+      message : msg + '',
+      type : Cintient.ALERT.SUCCESS
+    });
   },
     
   /**
@@ -199,21 +239,21 @@ var Cintient = {
               // documentation:
               // http://api.jquery.com/load/
               if (textStatus == 'success' || textStatus == 'notmodified') {
-                var activeId = $('.pill-content .active').attr('id'); // Fetch the currently active id before it goes away
+                var activeId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
                 $('#dashboard #dashboardProject').html(data); // Update the HTML (replace it)
                 $('ul.tabs > li.active').removeClass('active'); // Throw away the HTML forced active tab
-                $('.pill-content .active').removeClass('active'); // Throw away the HTML forced active content
+                $('.tab-content .active').removeClass('active'); // Throw away the HTML forced active content
                 $('ul.tabs > li a[href="#' + activeId + '"]').parent().addClass('active'); // Honor the previously user active tab
-                $('.pill-content #' + activeId).addClass('active'); // Honor the previously user active content
+                $('.tab-content #' + activeId).addClass('active'); // Honor the previously user active content
                 $('.tabs').tabs(); // Init the Bootstrap tabs
                 $("#log table").tablesorter({ sortList: [[0,1]] }); // Init the project log table sorter, sort the first column, DESC
                 $('#dashboard #dashboardProject').fadeIn(300); // Show it all
               } else {
-                $.jGrowl('An unknown error occurred. Yeah, it seems we have those too... :-(', { header: "Warning", sticky: true });
+                alertUnknown();
               }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
-              $.jGrowl('An unknown error occurred. Yeah, it seems we have those too...', { header: "Warning", sticky: true });
+              alertUnknown();
             }
           });
         }
@@ -223,7 +263,6 @@ var Cintient = {
         function() {
           // Don't highlight the active project
           if (activeProjectId != $(this).attr('id')) {
-
             hover($(this));
           }
         },
@@ -264,7 +303,13 @@ var Cintient = {
   
   initSectionProjectEdit: function ()
   {
+    var options = $.extend({}, arguments[0] || {});
+    
     this._setupTabs();
+    
+    /*
+    =========================== Delete tab ============================ 
+    */
     
     //
     // Toggle the project delete button on confirmation
@@ -279,6 +324,206 @@ var Cintient = {
           .prop('disabled', true)
           .addClass('disabled');
       }
+    });
+    
+    /*
+    ===================== Users tab - remove users ==================== 
+    */
+    $('#userList ul li .remove a').live('click', function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: $(this).attr('href'),
+        // The username is recorded in the class attribute, as the first,
+        // class - hence the split()
+        data: { username: $(this).attr('class').split(' ')[0] },
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (data == null || data.success == null || !data.success) {
+            Cintient.alertUnknown();
+          } else {
+            slideUpTime = 150;
+            $('#userList ul li#' + data.username).slideUp(slideUpTime);
+            setTimeout(
+              function() {
+                $('#userList ul li#' + data.username).remove();
+              },
+              slideUpTime
+            );
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          Cintient.alertUnknown();
+        }
+      });
+    });
+    
+    /*
+    =================== Users tab - search/add users ================== 
+    */
+    
+    //
+    // Disable the form's default submit action, so that the tab's contents
+    // don't go away when ENTER is pressed in the search input
+    //
+    $('#usersForm').submit(function() {
+      return false;
+    });
+
+    timerId = null;
+    userTermVal = null;
+    searchUserPaneActive = false;
+    $('#searchUserTextfield').keyup(function(e) {
+      userTermVal = $(this).val();
+      if (userTermVal.length > 1) {
+        var triggerListRefresh = function()
+        {
+          $('#searchResultsPopover .content ul li').remove();
+          $('#searchResultsPopover .content ul').append('<li class="spinningIcon"><img src="imgs/loading-3.gif" /></li>');
+          $('#searchResultsPopover .popover').fadeIn(150);
+          searchUserPaneActive = true;
+          $.ajax({
+            url: options.userSearchSubmitUrl,
+            data: { userTerm: userTermVal },
+            type: 'GET',
+            cache: false,
+            dataType: 'json',
+            success: function(data, textStatus, XMLHttpRequest) {
+              $('#searchResultsPopover .content ul li').remove();
+              if (data == null || data.success == null) {
+                Cintient.alertUnknown();
+                $('#searchResultsPopover .content ul').append('<li>Problems fetching users.</li>');
+              } else if (!data.success) {
+                $('#searchResultsPopover .content ul').append('<li>Problems fetching users.</li>');
+              } else {
+                if (data.result.length == 0) {
+                  $('#searchResultsPopover .content ul').append('<li>No users found.</li>');
+                } else {
+                  found = 0
+                  $('#searchResultsPopover .content ul').append('<li><span class="help-block">Click a user to add him to the project.</span></li>');
+                  for (i = 0; i < data.result.length; i++) {
+                    if ($('ul#userList li#' + data.result[i].username).length == 0) {
+                      $('#searchResultsPopover .content ul').append('<li><a href="#" class="'+data.result[i].username+'"><img class="avatar40" src="'+data.result[i].avatar+'"/><h3>'+data.result[i].username+'</h3></a></li>');
+                      found++;
+                    }
+                  };
+                  if (found == 0) {
+                    $('#searchResultsPopover .content ul').append('<li>No more users found.</li>');
+                  }
+                }
+              }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              $('#searchResultsPopover .content ul li').remove();
+              $('#searchResultsPopover .content ul').append('<li>Problems fetching users.</li>');
+            }
+          });
+        };
+        if (timerId !== null) {
+          clearTimeout(timerId); // Clear previous timers on queue
+        }
+        if (e.which == 13) { // Imediatelly send request, if ENTER was depressed
+          triggerListRefresh();
+        } else {
+          timerId = setTimeout(triggerListRefresh, 1000);
+        }
+      }
+    });
+    // Close the popover on click anywhere on the page
+    $(document).click(function(){
+      if (searchUserPaneActive) {
+        $('#searchResultsPopover .popover').fadeOut(50);
+        searchUserPaneActive = false;
+      }
+    });
+
+    //
+    // Add select widget user to the project list of users
+    //
+    $('#searchResultsPopover .content > ul li:not(:first-child)').live('click', function() {
+      $.ajax({
+        url: options.addUserSubmitUrl,
+        data: { username: $('a', this).attr('class') },
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (data == null || data.success == null) {
+            Cintient.alertUnknown();
+          } else if (!data.success) {
+            $('#userList > ul').append('<li>Problems adding user.</li>');
+          } else {
+            $('#userList > ul').append(data.html);
+            $('#userList > ul li:last-child').slideDown(150);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          Cintient.alertUnknown();
+        }
+      });
+    });   
+    
+    /*
+    ===================== Users tab - access level ==================== 
+    */
+    
+    //
+    // Bind the click link events to their corresponding panes
+    //
+    var activePopover = null;
+    $('.actionItems .access a', $('#userList')).live('click', function(e) {
+      if (activePopover != null) {
+        activePopover.fadeOut(50);
+      }
+      // The username is recorded in the class attribute, as the first,
+      // class - hence the split()
+      var newActivePopover = $('#userList #accessLevelPaneLevels_' + $(this).attr('class').split(' ')[0]);
+      if ($(activePopover).prop('id') != $(newActivePopover).prop('id')) {
+        activePopover = newActivePopover;
+        activePopover.fadeIn(50);
+      } else {
+        // No new popover is showing up, reset the flag
+        activePopover = null;
+      }
+      e.stopPropagation();
+    });
+    // Close any menus on click anywhere on the page
+    $(document).click( function(e){
+      if ($(e.target).attr('class') != 'accessLevelPaneLevels' &&
+          $(e.target).attr('class') != 'accessLevelPaneLevelsCheckbox' &&
+          $(e.target).attr('class') != 'labelCheckbox' ) {
+        if (e.isPropagationStopped()) { return; }
+        if (activePopover != null) {
+          activePopover.fadeOut(100);
+          activePopover = null;
+        }
+      }
+    });
+    //
+    // Setup auto save for access level pane changes
+    //
+    $('.accessLevelPopover .content input').live('click', function() {
+      $.ajax({
+        url: options.accessLevelPopoverSubmitUrl,
+        data: { change: $(this).attr('value') },
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, XMLHttpRequest) {
+          if (data == null || data.success == null) {
+            Cintient.alertUnknown();
+          } else if (!data.success) {
+            Cintient.alertFailed(data.error);
+          } else {
+            Cintient.alertSuccess(data.error);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          Cintient.alertUnknown();
+        }
+      });
+      $('.accessLevelPopover').fadeOut(300);
+      activePopover = null;
     });
   },
   
@@ -307,27 +552,22 @@ var Cintient = {
       onSuccessRedirectTimer : 3000, // milliseconds
       type : 'POST',
       
-      /** A callback for an unknown response */
+      /**
+       * We provide the following as attributes so that initGenericForm
+       * calls can provide their own alert handlers.
+       */
       cbUnknownResponse : function() {
-        Cintient.alert({
-          message : 'An unknown error occurred. Sorry about that...',
-          type : Cintient.ALERT.ERROR
-        });
+        Cintient.alertUnknown();
       },
       
       cbFailedResponse : function(msg) {
-        Cintient.alert({
-          message : msg + '',
-          type : Cintient.ALERT.INFO // Default normally failed as INFO severity
-        });
+        Cintient.alertFailed(msg);
       },
       
       cbSuccessResponse : function(msg) {
-        Cintient.alert({
-          message : msg + '',
-          type : Cintient.ALERT.SUCCESS
-        });
+        Cintient.alertSuccess(msg);
       },
+      
     }, arguments[0] || {});
     
     //

@@ -85,6 +85,6 @@ $(document).ready(function() {
 // ]]>
 </script>
 {else}
-    <div>You don't have any projects, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>
+    <div>You don't have any projects yet, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>
 {/if}
 {include file='includes/footer.inc.tpl'}

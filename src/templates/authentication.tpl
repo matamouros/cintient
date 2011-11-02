@@ -20,7 +20,7 @@
 *}{include file='includes/header.inc.tpl'
 subSectionTitle="Authentication"
 subSectionId='authentication'
-subSectionDescription="Log in with your username and password"}
+subSectionDescription="log in with your username and password"}
     <div id="authenticationHide" style="display:none;">
       <form action class="form" id="authenticationForm">
         <fieldset>
@@ -37,7 +37,7 @@ subSectionDescription="Log in with your username and password"}
             </div>
           </div>
           <div class="actions">
-            <input type="submit" class="btn primary" value="Go!">{if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}&nbsp;<button class="btn">Register<a href="{UrlManager::getForRegistration()}"></a></button>{/if}
+            <input type="submit" class="btn primary" value="Go!">{if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}&nbsp;<a href="{UrlManager::getForRegistration()}" class="btn">Register</a>{/if}
           </div>
         </fieldset>
       </form>

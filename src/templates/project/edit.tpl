@@ -20,14 +20,14 @@
 *}{include file='includes/header.inc.tpl'
 subSectionId="projectEdit"
 subSectionTitle=$globals_project->getTitle()
-subSectionDescription="Edit project"
+subSectionDescription="edit project"
 subSectionImg=$globals_project->getAvatarUrl()
 cssIncludes=['css/lib/avataruploader.css']
 jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
             'js/lib/avataruploader.js',
             'js/lib/bootstrap/bootstrap-tabs.js']}
 {* Holy shit... You cannot add jquery-ui jsInclude after the bootstrap-tabs
-   one, or else tabs won't work... *}
+   one, or else tabs simply won't work... *}
 
     <ul class="tabs">
 {if $globals_project->userHasAccessLevel($globals_user, Access::READ) || $globals_user->hasCos(UserCos::ROOT)}
@@ -42,7 +42,12 @@ jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
       <li><a href="#delete">Delete</a></li>
 {/if}
     </ul>
-
+<style type="text/css">
+.qq-upload-button
+{
+  background-image: url({$globals_project->getAvatarUrl()});
+}
+</style>
     <div class="tab-content">
       <div id="general" class="active">
         <form action class="form" id="generalForm">
@@ -165,176 +170,66 @@ jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
 
 {if $globals_project->userHasAccessLevel($globals_user, Access::OWNER) || $globals_user->hasCos(UserCos::ROOT)}
       <div id="users">
-        <div id="addUserPane" class="projectEditContainer container">
-          <div class="label">Add an existing user <div class="fineprintLabel">(specify name or username)</div></div>
-          <div class="textfieldContainer" style="width: 254px;">
-            <input class="textfield" style="width: 250px;" type="search" id="searchUserTextfield" />
+        <div id="usersPane">
+          <div id="searchResultsPopover" class="popover-wrapper">
+            <div class="popover right fade in">
+              <div class="arrow"></div>
+              <div class="inner">
+                <h3 class="title">Search results</h3>
+                <div class="content">
+                  <ul><li></li></ul>
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="searchUserPane" class="popupWidget">
-            <ul>
-              <li></li>
-            </ul>
-          </div>
+          <form action class="form" id="usersForm">
+            <fieldset>
+              <div class="clearfix">
+                <label for="search">Add an existing user to the project</label>
+                <div class="input">
+                  <input class="span5" type="search" name="search" id="searchUserTextfield" />
+                  <span class="help-block">Specify name or username.</span>
+                </div>
+              </div>
+            </fieldset>
+          </form>
         </div>
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-  timerId = null;
-  userTermVal = null;
-  searchUserPaneActive = false;
-  $('#searchUserTextfield').keyup(function(e) {
-    userTermVal = $(this).val();
-    if (userTermVal.length > 1) {
-      triggerListRefresh = function() {
-        //
-        // TODO: Setup a spinning loading icon
-        //
-        $('#searchUserPane ul li').remove();
-        $('#searchUserPane ul').append('<li class="spinningIcon"><img src="imgs/loading-3.gif" /></li>');
-        $.ajax({
-          url: '{UrlManager::getForAjaxSearchUser()}',
-          data: { userTerm: userTermVal },
-          type: 'GET',
-          cache: false,
-          dataType: 'json',
-          success: function(data, textStatus, XMLHttpRequest) {
-            $('#searchUserPane ul li').remove();
-            if (!data.success) {
-              $('#searchUserPane ul').append('<li>Problems fetching users.</li>');
-            } else {
-              if (data.result.length == 0) {
-                $('#searchUserPane ul').append('<li>No users found.</li>');
-              } else {
-                found = 0
-                for (i = 0; i < data.result.length; i++) {
-                  if ($('ul#userList li#' + data.result[i].username).length == 0) {
-                    $('#searchUserPane ul').append('<a href="#" class="'+data.result[i].username+'"><li><img class="avatar25" src="'+data.result[i].avatar+'"/><span class="username">'+data.result[i].username+'</span></li></a>');
-                    found++;
-                  }
-                };
-                if (found == 0) {
-                  $('#searchUserPane ul').append('<li>No more users found.</li>');
-                }
-              }
-            }
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert(errorThrown);
-          }
-        });
-        $('#searchUserPane').fadeIn(150);
-        searchUserPaneActive = true;
-      };
-      if (timerId !== null) {
-        clearTimeout(timerId); // Clear previous timers on queue
-      }
-      if (e.which == 13) { // Imediatelly send request, if ENTER was depressed
-        triggerListRefresh();
-      } else {
-        timerId = setTimeout(triggerListRefresh, 1000);
-      }
-    }
-  });
-  //Close any menus on click anywhere on the page
-  $(document).click(function(){
-    if (searchUserPaneActive) {
-      $('#searchUserPane').fadeOut(50);
-      searchUserPaneActive = false;
-    }
-  });
 
-  //
-  // Add select widget user to the project list of users
-  //
-  $('#searchUserPane ul a').live('click', function() {
-    $.ajax({
-      url: '{UrlManager::getForAjaxProjectAddUser()}',
-      data: { username: $(this).attr('class') },
-      type: 'GET',
-      cache: false,
-      dataType: 'json',
-      success: function(data, textStatus, XMLHttpRequest) {
-        if (!data.success) {
-          $('ul#userList').append('<li>Problems adding user.</li>');
-        } else {
-          $('ul#userList').append(data.html);
-          $('ul#userList li:last-child').slideDown(150);
-        }
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert(errorThrown);
-      }
-    });
-  });
-
-  //
-  // Remove user
-  //
-  $('ul#userList .remove a').live('click', function(e) {
-    e.preventDefault();
-    $.ajax({
-      url: $(this).attr('href'),
-      data: { username: $(this).attr('class') },
-      type: 'GET',
-      cache: false,
-      dataType: 'json',
-      success: function(data, textStatus, XMLHttpRequest) {
-        if (!data.success) {
-          //TODO: treat this properly
-          console.log('error');
-        } else {
-          slideUpTime = 150;
-          $('ul#userList li#' + data.username).slideUp(slideUpTime);
-          setTimeout(
-            function() {
-              $('ul#userList li#' + data.username).remove();
-            },
-            slideUpTime
-          );
-        }
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert(errorThrown);
-      }
-    });
-  });
-
-
-});
-//]]>
-</script>
-<style type="text/css">
-.qq-upload-button
-{
-  background-image: url({$globals_project->getAvatarUrl()});
-}
-</style>
-        <div class="projectEditContainer container">
-          <ul id="userList">
+        <div id="userList">
+          <ul>
 {$accessLevels=Access::getList()}
 {foreach from=$globals_project->getUsers() item=projectUser}
 {$userAccessLevel=$projectUser->getAccess()}
 {$user=$projectUser->getPtrUser()}
             <li id="{$user->getUsername()}">
-              <div class="user">
-                <div class="avatar"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
-                <div class="username">{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()}<span class="fineprintLabel"> (this is you!){/if}</div>
+              <div class="avatar40"><img src="{$user->getAvatarUrl()}" width="40" height="40"></div>
+              <div class="username"><h3>{$user->getUsername()}{if $user->getUsername()==$globals_user->getUsername()} <small>(this is you!)</small></h3>{/if}</div>
+              <div class="actionItems">
 {if !$globals_project->userHasAccessLevel($user, Access::OWNER)}
-                <div class="remove"><a class="{$user->getUsername()}" href="{UrlManager::getForAjaxProjectRemoveUser()}">remove</a></div>
-                <div class="accessLevelPane">
-                  <div class="accessLevelPaneTitle"><a href="#" class="{$user->getUsername()}">access level</a></div>
-                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPaneLevels">
-                    <ul>
+                <div class="remove"><a class="{$user->getUsername()} btn danger" href="{UrlManager::getForAjaxProjectRemoveUser()}">Remove</a></div>
+                <div class="access"><a class="{$user->getUsername()} btn" href="#">Access</a></div>
+                <div class="popover-wrapper">
+                  <div id="accessLevelPaneLevels_{$user->getUsername()}" class="accessLevelPopover popover above">
+                    <div class="arrow"></div>
+                    <div class="inner">
+                      <h3 class="title">Access level</h3>
+                      <div class="content">
+                        <ul class="inputs-list">
 {foreach $accessLevels as $accessLevel => $accessName}
   {if $accessLevel !== 0} {* Don't show the NONE value access level *}
-                      <li><input class="accessLevelPaneLevelsCheckbox" type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel" id="{$accessLevel}" {if $userAccessLevel == $accessLevel} checked{/if} /><label for="{$accessLevel}" class="labelCheckbox">{$accessName|capitalize}<div class="fineprintLabel" style="display: none;">{Access::getDescription($accessLevel)}</div></label></li>
+                          <li>
+                            <input type="radio" value="{$user->getUsername()}_{$accessLevel}" name="accessLevel_{$user->getUsername()}" id="{$accessLevel}"{if $userAccessLevel == $accessLevel} checked{/if} />
+                            <span>{$accessName|capitalize}</span>
+                          </li>
   {/if}
 {/foreach}
-                    </ul>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
 {else}
-                <div class="remove">Owner <span class="fineprintLabel">(no changes allowed)</span></div>
+                <div class="noChanges">Owner (no changes allowed)</div>
 {/if}
               </div>
             </li>
@@ -355,8 +250,17 @@ $(document).ready(function() {
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  Cintient.initSectionProjectEdit();
-
+  //
+  // More complex stuff inside the init specific method
+  //
+  Cintient.initSectionProjectEdit({
+    accessLevelPopoverSubmitUrl : '{UrlManager::getForAjaxProjectAccessLevelChange()}',
+    userSearchSubmitUrl : '{UrlManager::getForAjaxSearchUser()}',
+    addUserSubmitUrl : '{UrlManager::getForAjaxProjectAddUser()}',
+  });
+  //
+  // Generic forms can use initGenericForm()
+  //
   Cintient.initGenericForm({
     formSelector : '#general form',
     submitUrl: '{URLManager::getForAjaxProjectEditGeneral()}',
@@ -373,15 +277,13 @@ $(document).ready(function() {
     formSelector : '#delete form',
     onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
     submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
-    //successMsg : 'Deleted!',
   });
-
   //
   // The project avatar uploader
   //
 	var uploader = new qq.FileUploader({
     element: document.getElementById('avatarUploader'),
-    action: '{UrlManager::getForAjaxAvatarUpload(['p'=>1])}',
+    action: "{UrlManager::getForAjaxAvatarUpload(['p'=>1])}",
     multiple: false,
     allowedExtensions: ['jpg', 'jpeg', 'png'],
     sizeLimit: {$smarty.const.CINTIENT_AVATAR_MAX_SIZE},
@@ -392,65 +294,6 @@ $(document).ready(function() {
         'background-image' : 'url(' + responseJSON.url + ')'
       });
     }
-  });
-
-
-
-
-
-
-
-
-
-  //
-  // For the access level panes
-  //
-  // Bind the click link events to their corresponding panes
-  var cintientActivePane = null;
-  $('.accessLevelPane .accessLevelPaneTitle a', $('#userList')).live('click', function(e) {
-    if (cintientActivePane == null) {
-      cintientActivePane = $('#usersPane .accessLevelPane #accessLevelPaneLevels_' + $(this).attr('class'));
-      cintientActivePane.slideDown(100);
-    } else {
-      cintientActivePane.slideUp(100);
-      cintientActivePane = null;
-    }
-    e.stopPropagation();
-  });
-  // Close any menus on click anywhere on the page
-  $(document).click( function(e){
-    if ($(e.target).attr('class') != 'accessLevelPaneLevels' &&
-        $(e.target).attr('class') != 'accessLevelPaneLevelsCheckbox' &&
-        $(e.target).attr('class') != 'labelCheckbox' ) {
-      if (e.isPropagationStopped()) { return; }
-      if (cintientActivePane != null) {
-        cintientActivePane.slideUp(100);
-        cintientActivePane = null;
-      }
-    }
-  });
-  //
-  // Setup auto save for access level pane changes
-  //
-  $('.accessLevelPane input.accessLevelPaneLevelsCheckbox').live('click', function() {
-    $.ajax({
-      url: '{UrlManager::getForAjaxProjectAccessLevelChange()}',
-      data: { change: $(this).attr('value') },
-      type: 'GET',
-      cache: false,
-      dataType: 'json',
-      success: function(data, textStatus, XMLHttpRequest) {
-        if (!data.success) {
-          //TODO: treat this properly
-          console.log('error');
-        }
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert(errorThrown);
-      }
-    });
-    $('.accessLevelPane .accessLevelPaneLevels').fadeOut(300);
-    cintientActivePane = null;
   });
 });
 //]]>

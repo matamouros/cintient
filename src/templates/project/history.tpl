@@ -33,7 +33,7 @@
 {/foreach}
 {include file='includes/header.inc.tpl'
 	subSectionId="projectBuildHistory"
-  subSectionDescription="Build history"
+  subSectionDescription="build history"
 	subSectionTitle=$globals_project->getTitle()
   subSectionImg=$globals_project->getAvatarUrl()
   backLink="{UrlManager::getForProjectView()}"

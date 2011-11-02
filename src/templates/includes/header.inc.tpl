@@ -62,7 +62,7 @@ $(document).ready(function() {
         <div id="topbarLeft">
           <div id="logoLettering">{if $globals_user instanceof User}<a href="{UrlManager::getForDashboard()}">{/if}<div id="cintientLettering" style="display: none;">Cintient</div>{if $globals_user instanceof User}</a>{/if}</div>
 {if $globals_user instanceof User}
-          <div>
+          <div class="menuLinks">
             <ul class="nav">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle">{$subSectionTitle}</a>
@@ -89,7 +89,7 @@ $(document).ready(function() {
   </div>
   <div id="alertPane"></div>
   <div class="container">
-    <div class="content" id="{$subSectionId}">
+    <div class="mainContent" id="{$subSectionId}">
       <div class="page-header">
         {if !empty($subSectionImg)}<div class="projectAvatar40x40"><img src="{$subSectionImg}" width="40" height="40"></div>{/if}
         <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>
