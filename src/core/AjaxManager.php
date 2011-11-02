@@ -471,9 +471,9 @@ EOT;
       );
       exit;
     }
-    $GLOBALS['project']->log("A building was triggered.");
+    $GLOBALS['project']->log("A building was triggered.", $GLOBALS['user']->getUsername());
     if (!$GLOBALS['project']->build(true)) {
-      $GLOBALS['project']->log("Build failed!");
+      $GLOBALS['project']->log("Build failed!", $GLOBALS['user']->getUsername());
       echo json_encode(
         array(
           'success' => true,
@@ -481,7 +481,7 @@ EOT;
         )
       );
     } else {
-      $GLOBALS['project']->log("Build successful.");
+      $GLOBALS['project']->log("Build successful.", $GLOBALS['user']->getUsername());
       echo json_encode(
         array(
           'success' => true,
@@ -537,7 +537,7 @@ EOT;
 
     $element = $class::create();
     $GLOBALS['project']->addToIntegrationBuilder($element);
-    $GLOBALS['project']->log("Integration builder changed, element added.");
+    $GLOBALS['project']->log("Integration builder changed, element added.", $GLOBALS['user']->getUsername());
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element added.", __METHOD__);
 
     echo $element->toHtml();
@@ -588,6 +588,7 @@ EOT;
     }
 
     $GLOBALS['project']->removeFromIntegrationBuilder($element);
+    $this->log("Integration builder changed, element removed.", $GLOBALS['user']->getUsername());
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
     echo json_encode(
@@ -710,7 +711,7 @@ EOT;
       }
     }
 
-    $GLOBALS['project']->log("Integration builder changed.");
+    $GLOBALS['project']->log("Integration builder changed.", $GLOBALS['user']->getUsername());
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element properly edited.", __METHOD__);
     echo json_encode(
@@ -760,7 +761,7 @@ EOT;
     $parent = $GLOBALS['project']->getIntegrationBuilder()->getParent($_REQUEST['sortedElements'][0]);
     $parent->setTasks($parent->sortElements($_REQUEST['sortedElements']));
 
-    $GLOBALS['project']->log("Integration builder changed, reordered tasks.");
+    $GLOBALS['project']->log("Integration builder changed, reordered tasks.", $GLOBALS['user']->getUsername());
 
     SystemEvent::raise(SystemEvent::DEBUG, "Project tasks reordered.", __METHOD__);
     echo json_encode(
@@ -885,8 +886,8 @@ EOT;
     $project->setBuildLabel($postVars['buildLabel']['value']);
     $project->setDescription($postVars['description']['value']);
     $GLOBALS['project'] = $project;
-    $msg = "Project general settings edited by user {$GLOBALS['user']->getUsername()}.";
-    $GLOBALS['project']->log($msg);
+    $msg = "Project general settings edited.";
+    $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
     SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
     echo json_encode(
       array(
@@ -948,8 +949,8 @@ EOT;
       $project->resetScmConnector();
     }
     $GLOBALS['project'] = $project;
-    $msg = "Project SCM settings edited by user {$GLOBALS['user']->getUsername()}.";
-    $GLOBALS['project']->log($msg);
+    $msg = "Project SCM settings edited.";
+    $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
     SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
     echo json_encode(
       array(
@@ -1014,7 +1015,7 @@ EOT;
         exit;
       }
       $GLOBALS['project'] = $project;
-      $GLOBALS['project']->log("Project created.");
+      $GLOBALS['project']->log("Project created.", $GLOBALS['user']->getUsername());
       echo json_encode(
         array(
           'success' => true
@@ -1069,7 +1070,7 @@ EOT;
     }
     $projectUser->setNotifications(new NotificationSettings($GLOBALS['project'], $GLOBALS['user'], $newNotificationSettings));
 
-    $GLOBALS['project']->log("Notification settings changed for user {$GLOBALS['user']->getUsername()}.");
+    $GLOBALS['project']->log("Notification settings changed.", $GLOBALS['user']->getUsername());
     SystemEvent::raise(SystemEvent::DEBUG, "Project notification settings changed for user {$GLOBALS['user']->getUsername()}.", __METHOD__);
     echo json_encode(
       array(

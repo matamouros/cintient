@@ -71,9 +71,10 @@
                   <tbody>
 {foreach from=$project_log item=log}
                     <tr>
-                      <td>{$log->getDate()|date_format:"%b %e, %Y - %R"}</td>
+                      {*<td>{$log->getDate()|date_format:"%b %e, %Y - %R"}</td>*}
+                      <td>{$log->getDate()|date_format:"%Y/%m/%d - %H:%M:%S"}</td>
                       <td>{$log->getMessage()}</td>
-                      <td>{if $log->getUsername() == ''}Cintient{else}$log->getUsername(){/if}</td>
+                      <td>{if $log->getUsername() == ''}system{else}{$log->getUsername()}{/if}</td>
                     </tr>
 {/foreach}
                   </tbody>

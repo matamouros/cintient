@@ -461,6 +461,11 @@ user-select: none;
   padding-left: 15px;
 }
 
+#projectEdit #delete form li label
+{
+  cursor: pointer;
+}
+
 #projectEdit #notifications form .input
 {
   margin-left: 0px;
