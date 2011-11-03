@@ -33,8 +33,9 @@
                 </div>
                 <div class="row">
                   <div class="span2">Latest build:</div>
-                  <div class="span6">#{$project_build->getId()}</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
                 </div>
+{if $project_build instanceof Project_Build}
                 <div class="row">
                   <div class="span2">Commit:</div>
                   <div class="span6">{$project_build->getScmRevision()}</div>
@@ -43,6 +44,7 @@
                   <div class="span2">Finished:</div>
                   <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')}</div>
                 </div>
+{/if}
                 {*<div class="row">
                   <div class="span2">Duration:</div>
                   <div class="span3">3 min 56 sec</div>
@@ -71,7 +73,6 @@
                   <tbody>
 {foreach from=$project_log item=log}
                     <tr>
-                      {*<td>{$log->getDate()|date_format:"%b %e, %Y - %R"}</td>*}
                       <td>{$log->getDate()|date_format:"%Y/%m/%d - %H:%M:%S"}</td>
                       <td>{$log->getMessage()}</td>
                       <td>{if $log->getUsername() == ''}system{else}{$log->getUsername()}{/if}</td>

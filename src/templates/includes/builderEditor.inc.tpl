@@ -19,13 +19,14 @@
 
 *}
 
-          <div class="builderElementsAvailable">
+          <div class="row">
+            <div class="span4" id="builderElementsAvailable">
 {function name=builderElement depth=0 context=''}
 {if is_array($element)}
 {if $depth!=0}
-              <li>
-                <h1>{key($element)}</h1>
-                <ul class="builderElementDepth_{$depth}">
+                <li>
+                  <h1>{key($element)}</h1>
+                  <ul class="builderElementDepth_{$depth}">
 {$element=current($element)}
 {/if}
 {foreach $element as $key => $value}
@@ -35,65 +36,92 @@
 {builderElement element=[$key => $value] depth=$depth+1 context=$context}
 {$context=$originalContext}
 {else}
-                  <li><a href="#" class="{$context}">{$value}</a></li>
+                    <li><a href="#" class="{$context}">{$value}</a></li>
 {/if}
 {/foreach}
 {if $depth!=0}
-                </ul>
-              </li>
+                  </ul>
+                </li>
 {/if}
 {else}
-              <li><a href="#" class="{$context}">{$element}</a></li>
+                <li><a href="#" class="{$context}">{$element}</a></li>
 {/if}
 {/function}
-            <ul class="builderElementDepth_0">
+              <ul class="builderElementDepth_0">
 {TemplateManager::providerAvailableBuilderElements()}
 {builderElement element=$providerAvailableBuilderElements_elements}
-            </ul>
-          </div>
+              </ul>
+            </div>
 
-          <ul id="sortable" class="builderElementsChosen">
+            <div class="span12" id="builderElementsChosen">
+              <ul id="sortable">
 {$globals_project->getIntegrationBuilder()->toHtml()}
-          </ul>
+              </ul>
+            </div>
+          </div>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
 	//
   // Set up elements animation
   //
-  $('.builderElementTitle p.title').live('click', function() {
-    if ($(this).parent('.builderElementTitle').next().is(':visible')) {
-      $(this).parent('.builderElementTitle').next().fadeOut(110);
+  $('.builderElement .title').live('click', function() {
+    //
+    // Show/hide the contents of the builder element
+    //
+    if ($('+ .content', this).is(':visible')) {
+      $('+ .content', this).fadeOut(100);
+      //
+      // This CSS is a small ugly trick to have the title pane's bottom
+      // corners rounded when the content is hidden.
+      //
+      $(this).css({
+        "-webkit-border-bottom-left-radius" : "4px",
+        "-webkit-border-bottom-right-radius" : "4px",
+        "-moz-border-radius-bottomleft" : "4px",
+        "-moz-border-radius-bottomright" : "4px",
+        "border-bottom-left-radius" : "4px",
+        "border-bottom-right-radius" : "4px",
+      });
     } else {
-    	$(this).parent('.builderElementTitle').next().fadeIn(200);
+      $('+ .content', this).fadeIn(50);
+      $(this).css({
+        "-webkit-border-bottom-left-radius" : "0px",
+        "-webkit-border-bottom-right-radius" : "0px",
+        "-moz-border-radius-bottomleft" : "0px",
+        "-moz-border-radius-bottomright" : "0px",
+        "border-bottom-left-radius" : "0px",
+        "border-bottom-right-radius" : "0px",
+      });
     }
     return false;
-  }).parent('.builderElementTitle').next().hide();
+  });
   //
 	// Show save links on change
   //
-  $('.builderElementForm input').live('change keyup', function(e) {
+  $('.builderElement input').live('change keyup', function(e) {
     // TODO: in case of keyup event, only activate save in case something
     // was written (prevent tab, cursor, etc). Better yet, only in case
     // the value has become different from the original.
-    $(this).parents('.builderElement').find('.builderElementTitle a.submit').fadeIn(100);
+    $('.builderElementActionItems a.submit', $(this).parents('.builderElement')).fadeIn(100);
   });
   //
 	// Register click events for save links
   //
-  $('.builderElementTitle a.submit').live('click', function(e) {
+  $('.builderElementActionItems a.submit').live('click', function(e) {
     e.preventDefault();
+    e.stopPropagation();
     var that = this;
     var data = function() {
       var x = {};
-      $(that).parents('.builderElement').find('.builderElementForm input').each( function() {
+      $('.content input', $(that).parents('.builderElement')).each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
-      $(that).parents('.builderElement').find('.builderElementForm textarea').each( function() {
+      $('.content textarea', $(that).parents('.builderElement')).each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
-      x['internalId'] = { type: 'hidden', value: $(that).parents('.builderElement').attr('id') };
-      $(that).parents('.builderElement').find('.builderElementForm input:radio[name=type]:checked').each( function() {
+      x['internalId'] = { type: 'hidden', value: $(that).parents('.builderElement').prop('id') };
+      $('.content input:radio[name=type]:checked', $(that).parents('.builderElement')).each( function() {
     	  x['type'] = { type: 'radio', value: $(this).val() }; // This overwrites the previous input iteration with the correct value for type
       });
       return x;
@@ -105,17 +133,17 @@ $(document).ready(function() {
       cache: false,
       dataType: 'json',
       success: function(data, textStatus, XMLHttpRequest) {
-        if (!data.success) {
-          //TODO: treat this properly
-          alert('error');
+        if (data == null || data.success == null) {
+          Cintient.cbUnknownResponse();
+        } else if (!data.success) {
+          options.cbFailedResponse(data.error);
         } else {
-          $(that).fadeOut(300);
-          $.jGrowl($(that).parents('.builderElementTitle').find('.title').text() + " builder element saved.");
-          //alert('ok');
+          $(that).fadeOut(500);
+          options.cbSuccessResponse($('.title', $(that).parents('.builderElement')).text() + " builder element saved.");
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert(errorThrown);
+        options.cbUnknownResponse();
       }
     });
   });

@@ -77,39 +77,34 @@ class Build_BuilderElement_Task_Php_PhpCodeSniffer extends Build_BuilderElement
   // TODO
   public function toAnt() {}
 
-  public function toHtml()
+  public function toHtml(Array $_ = array(), Array $__ = array())
   {
-    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $o = $this;
-    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      $o->getHtmlTitle(array('title' => 'PhpCodeSniffer'));
-      h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        $o->toHtmlFailOnError();
-        // File extensions, textfield
-        h::div(array('class' => 'label'), 'Allowed file extensions <span class="fineprintLabel">(no dots, and space separated)</span>');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'fileExtensions', 'value' => $o->getFileExtensions()));
-        });
-        // Files, textfield
-        h::div(array('class' => 'label'), 'Files or dirs to include <span class="fineprintLabel">(space separated)</span>');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'files', 'value' => $o->getFiles()));
-        });
-        // Standard, textfield
-        h::div(array('class' => 'label'), 'Standard');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'standard', 'value' => $o->getStandard()));
-        });
-        // Sniffs, textfield
-        h::div(array('class' => 'label'), 'Limited to these sniffs <span class="fineprintLabel">(must be in chosen standard)</span>');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'sniffs', 'value' => $o->getSniffs()));
-        });
-      });
-    });
+    $callbacks = array(
+      'getHtmlFailOnError' => array(),
+    	'getHtmlInputText' => array(
+    		'name' => 'fileExtensions',
+    		'label' => 'Allowed file extensions',
+    		'value' => $this->getFileExtensions(),
+    		'help' => 'No dots, and space separated.'
+    	),
+    	'getHtmlInputText' => array(
+    		'name' => 'files',
+    		'label' => 'Files or dirs to include',
+    		'value' => $this->getFiles(),
+    		'help' => 'Space separated.'
+      ),
+    	'getHtmlInputText' => array('name' => 'standard', 'value' => $this->getStandard()),
+    	'getHtmlInputText' => array(
+    		'name' => 'sniffs',
+        'label' => 'Limited to these sniffs',
+        'value' => $this->getSniffs(),
+    		'help' => 'Must be in chosen standard.'
+      ),
+    );
+    parent::toHtml(array('title' => 'PhpCodeSniffer'), $callbacks);
   }
 
   // TODO

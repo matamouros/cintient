@@ -77,37 +77,17 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml()
+  public function toHtml(Array $_ = array(), Array $__ = array())
   {
-    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $o = $this;
-    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      $o->getHtmlTitle(array('title' => 'Echo'));
-      h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Message, textfield
-        h::div(array('class' => 'label'), 'Message');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'message', 'value' => $o->getMessage()));
-        });
-        // File, textfield
-        h::div(array('class' => 'label'), 'File');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
-        });
-        // Append, checkbox
-        h::div(array('class' => 'label'), 'Append?');
-        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'append',);
-          if ($o->getAppend()) {
-            $params['checked'] = 'checked';
-          }
-          h::input($params);
-        });
-      });
-    });
+    $callbacks = array(
+      'getHtmlInputText' => array('name' => 'message', 'value' => $this->getMessage()),
+      'getHtmlInputText' => array('name' => 'file', 'value' => $this->getFile()),
+      'getHtmlInputCheckbox' => array('name' => 'append', 'value' => $this->getAppend(), 'checked' => $this->getAppend()),
+    );
+    parent::toHtml(array('title' => 'Echo'), $callbacks);
   }
 
   public function toPhing()

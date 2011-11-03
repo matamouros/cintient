@@ -106,11 +106,10 @@ class Build_BuilderElement_Target extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml()
+  public function toHtml(Array $_ = array(), Array $__ = array())
   {
-    parent::toHtml();
     //
-    // TODO: no support yet for targets, go straight for tasks within
+    // TODO: no support yet for targets, go straight for the tasks within
     //
     if ($this->getTasks()) {
       $tasks = $this->getTasks();

@@ -69,25 +69,207 @@ class Build_BuilderElement extends Framework_BaseObject
     }, $str);
   }
 
-	/**
-   * Helper function for centralizing all Builder Element's title HTML
-   *
-   * @param Array $params
+  /**
+   * Utility method for centralizing the Fail On Error attribute, that
+   * will be pretty much used by every build element.
    */
-  public function getHtmlTitle(Array $params = array())
+  public function getHtmlFailOnError()
+  {
+    $params = array(
+      'help' => 'Check this if you wish the integration builder to immediately stop when this task generates an error.',
+      'label' => 'Fail on error?',
+      'name' => 'failOnError',
+      'value' => $this->getFailOnError(),
+    );
+    $this->getHtmlInputCheckbox($params);
+  }
+
+  /**
+	 * This centralizes all input type checkbox to-HTML necessities.
+   *
+   * @param array $params This array expects three parameters:
+   * . name - the form element's name
+   * . label (optional) - human readable description
+   * . value (optional) - the value
+   * . help (optional)
+   * . checked - different than false for checked or empty for not
+   */
+  public function getHtmlInputCheckbox(Array $params = array())
   {
     $o = $this;
-    h::div(array('class' => 'builderElementTitle'), function() use ($o, $params) {
-      h::p(array('class' => 'title'), $params['title']);
-      h::ul(array('class' => 'options'), function() use ($o) {
-        if ($o->isEditable()) {
-          h::li(function() {h::a('save', '#', array('class' => 'submit'));});
+    if (empty($params['label'])) {
+      $params['label'] = ucfirst($params['name']);
+    }
+    h::div(array('class' => 'clearfix'), function () use ($params) {
+      h::label($params['label']);
+      h::div(array('class' => 'input'), function () use ($params) {
+        h::ul(array('class' => 'inputs-list'), function () use ($params) {
+          h::li(function () use ($params) {
+            h::label(function () use ($params) {
+              $inputParams = array('type' => 'checkbox', 'name' => $params['name'], 'value' => $params['value']);
+              if (!empty($params['checked'])) {
+                $inputParams['checked'] = 'checked';
+              }
+              h::input($inputParams);
+              //h::span('');
+              if (!empty($params['help'])) {
+                h::span(array('class' => 'help-block'), $params['help']);
+              }
+            });
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * This centralizes all input type radio to-HTML necessities.
+   *
+   * @param array $params This array expects three parameters:
+   * . name - the form element's name
+   * . label (optional) - human readable description
+   * . values - a 0-based indexed array of arrays with the following keys:
+   *   -> help (optional) - the help block to append to a radio option
+   *   -> label - the label for a radio option
+   *   -> value - the value for a radio option
+   *   -> checked - different than false for checked or empty for not
+   */
+  public function getHtmlInputRadio(Array $params = array())
+  {
+    h::div(array('class' => 'clearfix'), function () use ($params) {
+      h::label((isset($params['label'])?$params['label']:''));
+      h::div(array('class' => 'input'), function () use ($params) {
+        h::ul(array('class' => 'inputs-list'), function () use ($params) {
+          foreach ($params['values'] as $values) {
+            h::li(function () use ($params, $values) {
+              h::label(function () use ($params, $values) {
+                $inputParams = array('type' => 'radio', 'name' => $params['name'], 'value' => $values['value']);
+                if (!empty($values['checked'])) {
+                  $inputParams['checked'] = 'checked';
+                }
+                h::input($inputParams);
+                h::span($values['label']);
+                if (!empty($values['help'])) {
+                  h::span(array('class' => 'help-block'), $values['help']);
+                }
+              });
+            });
+          }
+        });
+      });
+    });
+  }
+
+  /**
+   * This centralizes all input type text to-HTML necessities.
+   *
+   * @param array $params This array expects three parameters:
+   * . name - the form element's name
+   * . label (optional) - human readable description
+   * . value (optional) - the value
+   * . help (optional) - the help block to append to the text input
+   * . size (options) - the Bootstrap CSS size of the input (e.g., span5)
+   */
+  public function getHtmlInputText(Array $params = array())
+  {
+    if (empty($params['label'])) {
+      $params['label'] = ucfirst($params['name']);
+    }
+    h::div(array('class' => 'clearfix'), function() use ($params) {
+      h::label(array('for' => $params['name']), $params['label']);
+      h::div(array('class' => 'input'), function() use ($params) {
+        if (empty($params['size'])) {
+          $params['size'] = 'span6';
         }
-        if ($o->isDeletable()) {
-          h::li(function() {h::a('delete', '#', array('class' => 'delete'));});
+        h::input(array('class' => $params['size'], 'type' => 'text', 'name' => $params['name'], 'value' => $params['value']));
+        if (!empty($params['help'])) {
+          h::span(array('class' => 'help-block'), $params['help']);
         }
       });
     });
+  }
+
+  /**
+   * This centralizes all input type textarea to-HTML necessities.
+   *
+   * @param array $params This array expects three parameters:
+   * . name - the form element's name
+   * . label (optional) - human readable description
+   * . value (optional) - the value
+   * . help (optional) - the help block to append to the text input
+   * . size (optional) - the Bootstrap CSS size of the textarea (e.g., xxlarge)
+   * . rows (optional) - number of rows
+   */
+  public function getHtmlInputTextarea(Array $params = array())
+  {
+    if (empty($params['label'])) {
+      $params['label'] = ucfirst($params['name']);
+    }
+    h::div(array('class' => 'clearfix'), function() use ($params) {
+      h::label(array('for' => $params['name']), $params['label']);
+      h::div(array('class' => 'input'), function() use ($params) {
+        if (empty($params['size'])) {
+          $params['size'] = 'xlarge';
+        }
+        $rows = '3';
+        if (!empty($params['rows'])) {
+          $rows = $params['rows'];
+        }
+        h::textarea(array('class' => $params['size'], 'name' => $params['name'], 'value' => $params['value'], 'rows' => $rows));
+        if (!empty($params['help'])) {
+          h::span(array('class' => 'help-block'), $params['help']);
+        }
+      });
+    });
+  }
+
+  /**
+  *
+  */
+  public function toHtml(Array $params = array(), Array $innerCallbacks = array())
+  {
+    require_once 'lib/lib.htmlgen.php';
+    $o = $this;
+    //h::li(function () use ($o, $params, $innerCallbacks) {
+      h::li(array('class' => 'popover builderElement', 'id' => $o->getInternalId()), function() use ($o, $params, $innerCallbacks) {
+        h::div(array('class' => 'inner'), function () use ($o, $params, $innerCallbacks) {
+          h::h5(array('class' => 'title'), function () use ($o, $params) {
+            h::div(array('class' => 'actualTitle'), $params['title']);
+            h::div(array('class' => 'builderElementActionItems'), function() use ($o) {
+              if ($o->isEditable()) {
+                h::a('save', '#', array('class' => 'submit btn'));
+              }
+              if ($o->isDeletable()) {
+                h::a('delete', '#', array('class' => 'delete btn danger'));
+              }
+            });
+          });
+          h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
+            h::div(array('class' => 'form-stacked'), function () use ($o, $innerCallbacks) {
+              foreach ($innerCallbacks as $cb => $args) {
+                //
+                // Filesets are special cases, because we might need to
+                // iterate on more than one (in the future)
+                //
+                if ($cb == 'getFilesets') {
+                  if ($o->getFilesets()) {
+                    $filesets = $o->getFilesets();
+                    foreach ($filesets as $fileset) {
+                      $fileset->toHtml();
+                    }
+                  }
+                  //
+                  // Normal to-HTML callbacks
+                  //
+                } else {
+                  call_user_func(array($o, $cb), $args);
+                }
+              }
+            });
+          });
+        });
+      });
+    //});
   }
 
   public function getElement($id)
@@ -289,34 +471,5 @@ class Build_BuilderElement extends Framework_BaseObject
       }
     }
     return $elements;
-  }
-
-  /**
-   * Abstract the external lib call, so that we only have to require it
-   * here. It will still get called from each builder element, but the
-   * actual require code is only written once here.
-   */
-  public function toHtml()
-  {
-    require_once 'lib/lib.htmlgen.php';
-  }
-
-  /**
-   * Utility method for centralizing the Fail On Error attribute, that
-   * will be pretty much used by every build element.
-   */
-  public function toHtmlFailOnError()
-  {
-    $o = $this;
-    h::div(array('class' => 'label tooltip',
-                 'title' => 'Check this if you wish the integration'
-                          . ' builder to immediately stop when this task generates an error.'), 'Fail on error?');
-    h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-      $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnError',);
-      if ($o->getFailOnError()) {
-        $params['checked'] = 'checked';
-      }
-      h::input($params);
-    });
   }
 }
