@@ -86,9 +86,20 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
     }
     $callbacks = array(
       'getHtmlFailOnError' => array(),
-      'getHtmlInputText' => array('name' => 'file', 'value' => $this->getFile()),
-    	'getHtmlInputText' => array('name' => 'toFile', 'label' => 'Destination file', 'value' => $this->getToFile()),
-    	'getHtmlInputText' => array('name' => 'toDir', 'label' => 'Destination dir', 'value' => $this->getToDir()),
+      'getHtmlInputText' => array(
+      	'name' => 'file',
+      	'value' => $this->getFile(),
+      ),
+    	'getHtmlInputText' => array(
+    	  'name' => 'toFile',
+    	  'label' => 'Destination file',
+    	  'value' => $this->getToFile(),
+    	),
+    	'getHtmlInputText' => array(
+    		'name' => 'toDir',
+    		'label' => 'Destination dir',
+    		'value' => $this->getToDir(),
+    	),
     	'getFilesets' => array(),
     );
     parent::toHtml(array('title' => 'Copy'), $callbacks);

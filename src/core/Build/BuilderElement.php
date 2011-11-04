@@ -100,7 +100,12 @@ class Build_BuilderElement extends Framework_BaseObject
     if (empty($params['label'])) {
       $params['label'] = ucfirst($params['name']);
     }
-    h::div(array('class' => 'clearfix'), function () use ($params) {
+    $inputDivParams = array('class' => 'clearfix');
+    if (!empty($params['help'])) {
+      $inputDivParams['title'] = $params['help'];
+      $inputDivParams['class'] .= ' tooltip';
+    }
+    h::div($inputDivParams, function () use ($params) {
       h::label($params['label']);
       h::div(array('class' => 'input'), function () use ($params) {
         h::ul(array('class' => 'inputs-list'), function () use ($params) {
@@ -112,9 +117,9 @@ class Build_BuilderElement extends Framework_BaseObject
               }
               h::input($inputParams);
               //h::span('');
-              if (!empty($params['help'])) {
+              /*if (!empty($params['help'])) {
                 h::span(array('class' => 'help-block'), $params['help']);
-              }
+              }*/
             });
           });
         });
@@ -136,7 +141,12 @@ class Build_BuilderElement extends Framework_BaseObject
    */
   public function getHtmlInputRadio(Array $params = array())
   {
-    h::div(array('class' => 'clearfix'), function () use ($params) {
+    $inputDivParams = array('class' => 'clearfix');
+    if (!empty($params['help'])) {
+      $inputDivParams['title'] = $params['help'];
+      $inputDivParams['class'] .= ' tooltip';
+    }
+    h::div($inputDivParams, function () use ($params) {
       h::label((isset($params['label'])?$params['label']:''));
       h::div(array('class' => 'input'), function () use ($params) {
         h::ul(array('class' => 'inputs-list'), function () use ($params) {
@@ -149,9 +159,9 @@ class Build_BuilderElement extends Framework_BaseObject
                 }
                 h::input($inputParams);
                 h::span($values['label']);
-                if (!empty($values['help'])) {
+                /*if (!empty($values['help'])) {
                   h::span(array('class' => 'help-block'), $values['help']);
-                }
+                }*/
               });
             });
           }
@@ -175,16 +185,21 @@ class Build_BuilderElement extends Framework_BaseObject
     if (empty($params['label'])) {
       $params['label'] = ucfirst($params['name']);
     }
-    h::div(array('class' => 'clearfix'), function() use ($params) {
+    $inputDivParams = array('class' => 'clearfix');
+    if (!empty($params['help'])) {
+      $inputDivParams['title'] = $params['help'];
+      $inputDivParams['class'] .= ' tooltip';
+    }
+    h::div($inputDivParams, function() use ($params) {
       h::label(array('for' => $params['name']), $params['label']);
       h::div(array('class' => 'input'), function() use ($params) {
         if (empty($params['size'])) {
-          $params['size'] = 'span6';
+          $params['size'] = 'span4';
         }
         h::input(array('class' => $params['size'], 'type' => 'text', 'name' => $params['name'], 'value' => $params['value']));
-        if (!empty($params['help'])) {
+        /*if (!empty($params['help'])) {
           h::span(array('class' => 'help-block'), $params['help']);
-        }
+        }*/
       });
     });
   }
@@ -233,38 +248,44 @@ class Build_BuilderElement extends Framework_BaseObject
     //h::li(function () use ($o, $params, $innerCallbacks) {
       h::li(array('class' => 'popover builderElement', 'id' => $o->getInternalId()), function() use ($o, $params, $innerCallbacks) {
         h::div(array('class' => 'inner'), function () use ($o, $params, $innerCallbacks) {
-          h::h5(array('class' => 'title'), function () use ($o, $params) {
+          h::h3(array('class' => 'title'), function () use ($o, $params) {
             h::div(array('class' => 'actualTitle'), $params['title']);
-            h::div(array('class' => 'builderElementActionItems'), function() use ($o) {
+            /*h::div(array('class' => 'builderElementActionItems'), function() use ($o) {
               if ($o->isEditable()) {
                 h::a('save', '#', array('class' => 'submit btn'));
               }
               if ($o->isDeletable()) {
                 h::a('delete', '#', array('class' => 'delete btn danger'));
               }
-            });
+            });*/
           });
           h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
-            h::div(array('class' => 'form-stacked'), function () use ($o, $innerCallbacks) {
-              foreach ($innerCallbacks as $cb => $args) {
-                //
-                // Filesets are special cases, because we might need to
-                // iterate on more than one (in the future)
-                //
-                if ($cb == 'getFilesets') {
-                  if ($o->getFilesets()) {
-                    $filesets = $o->getFilesets();
-                    foreach ($filesets as $fileset) {
-                      $fileset->toHtml();
+            h::form(array('class' => 'form'), function () use ($o, $innerCallbacks) {
+              h::fieldset(function () use ($o, $innerCallbacks) {
+                foreach ($innerCallbacks as $cb => $args) {
+                  //
+                  // Filesets are special cases, because we might need to
+                  // iterate on more than one (in the future)
+                  //
+                  if ($cb == 'getFilesets') {
+                    if ($o->getFilesets()) {
+                      $filesets = $o->getFilesets();
+                      foreach ($filesets as $fileset) {
+                        $fileset->toHtml();
+                      }
                     }
+                    //
+                    // Normal to-HTML callbacks
+                    //
+                  } else {
+                    call_user_func(array($o, $cb), $args);
                   }
-                  //
-                  // Normal to-HTML callbacks
-                  //
-                } else {
-                  call_user_func(array($o, $cb), $args);
                 }
-              }
+                h::div(array('class' => 'actions'), function () {
+                  h::input(array('type' => 'submit', 'class' => 'btn primary', 'value' => 'Save'));
+                  h::button(array('class' => 'btn'), 'Delete');
+                });
+              });
             });
           });
         });

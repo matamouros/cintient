@@ -239,11 +239,11 @@ jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
       </div>
 {/if}
       <div id="integration">
-        <form action class="form" id="integrationForm">
+        {*<form action class="form" id="integrationForm">*}
           <fieldset>
 {include file='includes/builderEditor.inc.tpl'}
           </fieldset>
-        </form>
+        {*</form>*}
       </div>
 
     </div>

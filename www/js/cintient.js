@@ -299,6 +299,7 @@ var Cintient = {
   {
     $('#cintientLettering').fadeIn(500);
     $('.topbar').dropdown();
+    $('.tooltip').tipTip();
   },
   
   initSectionProjectEdit: function ()

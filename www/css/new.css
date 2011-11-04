@@ -212,6 +212,23 @@ body
   margin-right: 15px;
 }
 
+.smoothHoverSmall
+{
+/* for small items, a quicker transition plays nicer with your eyes */
+          transition: all 0.08s ease-in-out;
+     -moz-transition: all 0.08s ease-in-out;
+  -webkit-transition: all 0.08s ease-in-out;
+}
+
+.smoothHoverSmall:hover
+{
+  background-color: #eee;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+	      border-radius: 4px;
+  cursor: pointer;
+}
+
 /* ========================= */
 
 .closingX
@@ -343,11 +360,6 @@ user-select: none;
      with visibility or display - it seems sparkline.js doesn't play well
      with that. */
   color: transparent;
-}
-
-#dashboard .leftRow
-{
-  /*margin-left: 8px;*/ /* Less space than default between left bar content and left container margin */
 }
 
 #dashboard .projectRevision
@@ -615,34 +627,64 @@ user-select: none;
 }
 */
 
+#projectEdit #builderElementsAvailable ul
+{
+  margin-left: 0px;
+  padding-right: 10px;
+}
+#projectEdit #builderElementsAvailable ul li
+{
+  margin-bottom: 4px;
+  margin-right: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 1em;
+  float: left;
+}
+#projectEdit #builderElementsAvailable ul li a:hover
+{
+  text-decoration: none;
+}
+#projectEdit #builderElementsAvailable ul li.groupName
+{
+  clear: left;
+  background-color: #F8F8F8;
+    -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+	      border-radius: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+#projectEdit #builderElementsChosen
+{
+  padding: 0px;
+}
+
 #projectEdit #builderElementsChosen .builderElement
 {
   display: inline;
   position: relative;
 }
 
-#projectEdit #builderElementsChosen > ul
+#projectEdit #builderElementsChosen .popover
 {
-  margin-top: 0px;
-  margin-bottom: 0px;
+  padding: 0px;
+  padding-bottom: 8px;
+  float: left;
+  clear: both;
 }
-
-#projectEdit #builderElementsChosen > ul > li
-{
-  margin-bottom: 0px;
-  margin-top: 0px;
-  padding-top: 0px;
-}
-
 #projectEdit #builderElementsChosen .builderElement .inner
 {
-  width: 376px;
+  width: 400px;
 }
 
-#projectEdit #builderElementsChosen .builderElement .form-stacked
+#projectEdit #builderElementsChosen .builderElement form fieldset
 {
-  padding-left: 4px;
-  padding-bottom: 0px;
+  padding-top: 0px;
+  margin: 0px;
 }
 
 #projectEdit #builderElementsChosen .builderElement .title h3

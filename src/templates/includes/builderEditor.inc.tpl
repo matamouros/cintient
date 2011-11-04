@@ -20,40 +20,74 @@
 *}
 
           <div class="row">
-            <div class="span4" id="builderElementsAvailable">
+            <div class="span5 leftRow" id="builderElementsAvailable">
 {function name=builderElement depth=0 context=''}
-{if is_array($element)}
-{if $depth!=0}
-                <li>
-                  <h1>{key($element)}</h1>
-                  <ul class="builderElementDepth_{$depth}">
-{$element=current($element)}
-{/if}
-{foreach $element as $key => $value}
-{if is_array($value)}
-{$originalContext=$context}
-{$context="{$context}_$key"}
-{builderElement element=[$key => $value] depth=$depth+1 context=$context}
-{$context=$originalContext}
-{else}
-                    <li><a href="#" class="{$context}">{$value}</a></li>
-{/if}
-{/foreach}
-{if $depth!=0}
-                  </ul>
-                </li>
-{/if}
-{else}
+  {if is_array($element)}
+    {if $depth!=0}
+    {$key=key($element)}
+                {*<li>*}
+                  <li class="groupName">{if $key == 'Task'}Generic{elseif $key == 'Type'}Types{else}{$key}{/if}</li>
+                  {*<ul class="builderElementDepth_{$depth}">*}
+      {$element=current($element)}
+    {/if}
+    {foreach $element as $key => $value}
+      {if is_array($value)}
+        {$originalContext=$context}
+        {$context="{$context}_$key"}
+        {builderElement element=[$key => $value] depth=$depth+1 context=$context}
+        {$context=$originalContext}
+      {else}
+                    <li class="task smoothHoverSmall"><a href="#" class="{$context}">{$value}</a></li>
+      {/if}
+    {/foreach}
+    {if $depth!=0}
+                  {*</ul>
+                </li>*}
+    {/if}
+  {else}
                 <li><a href="#" class="{$context}">{$element}</a></li>
-{/if}
+  {/if}
 {/function}
               <ul class="builderElementDepth_0">
 {TemplateManager::providerAvailableBuilderElements()}
 {builderElement element=$providerAvailableBuilderElements_elements}
               </ul>
+
+{*
+{function name=builderElement depth=0 context=''}
+  {if is_array($element)}
+    {if $depth!=0}
+                <li>
+                  <h1>{key($element)}</h1>
+                  <ul class="builderElementDepth_{$depth}">
+      {$element=current($element)}
+    {/if}
+    {foreach $element as $key => $value}
+      {if is_array($value)}
+        {$originalContext=$context}
+        {$context="{$context}_$key"}
+        {builderElement element=[$key => $value] depth=$depth+1 context=$context}
+        {$context=$originalContext}
+      {else}
+                    <li><a href="#" class="{$context}">{$value}</a></li>
+      {/if}
+    {/foreach}
+    {if $depth!=0}
+                  </ul>
+                </li>
+    {/if}
+  {else}
+                <li><a href="#" class="{$context}">{$element}</a></li>
+  {/if}
+{/function}
+              <ul class="builderElementDepth_0">
+{TemplateManager::providerAvailableBuilderElements()}
+{builderElement element=$providerAvailableBuilderElements_elements}
+              </ul>
+*}
             </div>
 
-            <div class="span12" id="builderElementsChosen">
+            <div class="span11 rightRow" id="builderElementsChosen">
               <ul id="sortable">
 {$globals_project->getIntegrationBuilder()->toHtml()}
               </ul>
