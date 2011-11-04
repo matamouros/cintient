@@ -212,20 +212,37 @@ body
   margin-right: 15px;
 }
 
+.activeElement
+{
+  background-color: rgba(0, 67, 138, 0.1);
+}
+
+.smoothHover
+{
+/* for small items, a quicker transition plays nicer with your eyes */
+          transition: all 0.15s ease-in-out;
+     -moz-transition: all 0.15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+	      border-radius: 4px;
+}
+
 .smoothHoverSmall
 {
 /* for small items, a quicker transition plays nicer with your eyes */
           transition: all 0.08s ease-in-out;
      -moz-transition: all 0.08s ease-in-out;
   -webkit-transition: all 0.08s ease-in-out;
-}
-
-.smoothHoverSmall:hover
-{
-  background-color: #eee;
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
 	      border-radius: 4px;
+}
+
+.smoothHover:hover, .smoothHoverSmall:hover
+{
+  background-color: #eee;
+  /*background-color: #F8F8F8;*/
   cursor: pointer;
 }
 
@@ -311,12 +328,14 @@ user-select: none;
 #dashboard li.project
 {
   clear: both;
+  margin-bottom: 1px; /* Nice small white space between project highlights */
   padding: 15px 10px 0px 10px; /* to beautify the on-hover highlight */
   margin-right: 7px; /* to beautify the on-hover highlight */
           transition: all 0.15s ease-in-out;
      -moz-transition: all 0.15s ease-in-out;
   -webkit-transition: all 0.15s ease-in-out;
-  min-height: 111px; /* Try to give all projects an even height */
+  /*min-height: 111px;*/ /* Try to give all projects an even height */
+  height: 111px;
   padding-bottom: 10px;
   -webkit-border-radius: 4px;
 	 -moz-border-radius: 4px;
@@ -484,6 +503,13 @@ user-select: none;
   margin-top: 5px;
 }
 
+/* @end */
+
+
+
+
+/* @group Project edit - users */
+
 #projectEdit #searchResultsPopover
 {
   position: relative;
@@ -627,6 +653,15 @@ user-select: none;
 }
 */
 
+/* @end */
+
+
+
+
+
+
+/* @group Project edit - integration */
+
 #projectEdit #builderElementsAvailable ul
 {
   margin-left: 0px;
@@ -650,12 +685,14 @@ user-select: none;
 #projectEdit #builderElementsAvailable ul li.groupName
 {
   clear: left;
-  background-color: #F8F8F8;
-    -webkit-border-radius: 4px;
+  -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
 	      border-radius: 4px;
   padding-left: 6px;
   padding-right: 6px;
+  padding-top: 1px;
+  margin-right: 0px;
+  margin-left: -2px;
 }
 
 #projectEdit #builderElementsChosen
@@ -663,35 +700,83 @@ user-select: none;
   padding: 0px;
 }
 
-#projectEdit #builderElementsChosen .builderElement
+#projectEdit #builderElementsChosen > ul > li
 {
-  display: inline;
-  position: relative;
+  height: 36px;
+  padding-bottom: 6px;
+  width: 200px; /* so that on popover open, the YY scrollbar doesn't show up */
 }
+
+#projectEdit #builderElementsChosen .builderElementLine
+{
+  width: 200px;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+	      border-radius: 4px;
+  padding: 2px 8px 2px 8px;
+}
+
+/*
+#projectEdit #builderElementsChosen .builderElementLine .builderElementActionItems
+{
+  float: right;
+  padding-top: 5px;
+  display: none;
+}*/
 
 #projectEdit #builderElementsChosen .popover
 {
-  padding: 0px;
-  padding-bottom: 8px;
-  float: left;
-  clear: both;
+  position: relative;
+  clear: none;
+  top: -174px;
+  left: 220px;
 }
-#projectEdit #builderElementsChosen .builderElement .inner
+
+#projectEdit #builderElementsChosen .popover .arrow
+{
+  top: 0px;
+  margin-top: 150px;
+}
+
+#projectEdit #builderElementsChosen .builderElementPopover .inner
 {
   width: 400px;
 }
 
-#projectEdit #builderElementsChosen .builderElement form fieldset
+
+
+/*
+
+#projectEdit #builderElementsChosen .popover
+{
+  display: block;
+  padding: 0px;
+  padding-bottom: 8px;
+  float: left;
+  position: relative;
+  top: 20px;
+  left: 300px;
+  z-index: 1000;
+}
+
+
+
+#projectEdit #builderElementsChosen .builderElementPopover .inner
+{
+  width: 400px;
+}
+
+#projectEdit #builderElementsChosen .builderElementPopover form fieldset
 {
   padding-top: 0px;
   margin: 0px;
 }
 
-#projectEdit #builderElementsChosen .builderElement .title h3
+#projectEdit #builderElementsChosen .builderElementPopover .title h3
 {
   float: left;
 }
-#projectEdit #builderElementsChosen .builderElement .title
+#projectEdit #builderElementsChosen .builderElementPopover .title
 {
   cursor: pointer;
    -webkit-border-bottom-left-radius : 4px;
@@ -701,24 +786,30 @@ user-select: none;
            border-bottom-left-radius : 4px;
           border-bottom-right-radius : 4px;
 }
-#projectEdit #builderElementsChosen .builderElement .title .builderElementActionItems
+
+#projectEdit #builderElementsChosen
+{
+  width: 400px;
+}
+
+#projectEdit #builderElementsChosen .builderElementActionItems
 {
   float: right;
   margin-top: -21px;
   margin-right: -13px;
 }
 
-#projectEdit #builderElementsChosen .builderElement .title .builderElementActionItems a.submit
+#projectEdit #builderElementsChosen .builderElementActionItems a.submit
 {
   display: none;
 }
 
-#projectEdit #builderElementsChosen .builderElement .content
+#projectEdit #builderElementsChosen .builderElementPopover .content
 {
   display: none;
   padding-bottom: 4px;
 }
-
+*/
 /* @end */
 
 

@@ -246,44 +246,51 @@ class Build_BuilderElement extends Framework_BaseObject
     require_once 'lib/lib.htmlgen.php';
     $o = $this;
     //h::li(function () use ($o, $params, $innerCallbacks) {
-      h::li(array('class' => 'popover builderElement', 'id' => $o->getInternalId()), function() use ($o, $params, $innerCallbacks) {
-        h::div(array('class' => 'inner'), function () use ($o, $params, $innerCallbacks) {
-          h::h3(array('class' => 'title'), function () use ($o, $params) {
-            h::div(array('class' => 'actualTitle'), $params['title']);
-            /*h::div(array('class' => 'builderElementActionItems'), function() use ($o) {
-              if ($o->isEditable()) {
-                h::a('save', '#', array('class' => 'submit btn'));
-              }
-              if ($o->isDeletable()) {
-                h::a('delete', '#', array('class' => 'delete btn danger'));
-              }
-            });*/
-          });
-          h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
-            h::form(array('class' => 'form'), function () use ($o, $innerCallbacks) {
-              h::fieldset(function () use ($o, $innerCallbacks) {
-                foreach ($innerCallbacks as $cb => $args) {
-                  //
-                  // Filesets are special cases, because we might need to
-                  // iterate on more than one (in the future)
-                  //
-                  if ($cb == 'getFilesets') {
-                    if ($o->getFilesets()) {
-                      $filesets = $o->getFilesets();
-                      foreach ($filesets as $fileset) {
-                        $fileset->toHtml();
+      h::li(array('id' => $o->getInternalId()), function () use ($o, $params, $innerCallbacks) {
+        h::div(array('class' => 'builderElementLine'), function () use ($o, $params) {
+          h::h3($params['title']);
+          /*
+          h::div(array('class' => 'builderElementActionItems'), function() use ($o) {
+            if ($o->isEditable()) {
+              h::a('Details', '#', array('class' => 'btn details'));
+            }
+            if ($o->isDeletable()) {
+              h::a('Delete', '#', array('class' => 'delete btn danger'));
+            }
+          });*/
+        });
+        h::div(array('class' => 'popover builderElementPopover right'), function() use ($o, $params, $innerCallbacks) {
+          h::div(array('class' => 'arrow'));
+          h::div(array('class' => 'inner'), function () use ($o, $params, $innerCallbacks) {
+            h::h3(array('class' => 'title'), function () use ($o, $params) {
+              h::div(array('class' => 'actualTitle'), 'Details for ' . $params['title']);
+            });
+            h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
+              h::form(array('class' => 'form', 'action' => ''), function () use ($o, $innerCallbacks) {
+                h::fieldset(function () use ($o, $innerCallbacks) {
+                  foreach ($innerCallbacks as $cb => $args) {
+                    //
+                    // Filesets are special cases, because we might need to
+                    // iterate on more than one (in the future)
+                    //
+                    if ($cb == 'getFilesets') {
+                      if ($o->getFilesets()) {
+                        $filesets = $o->getFilesets();
+                        foreach ($filesets as $fileset) {
+                          $fileset->toHtml();
+                        }
                       }
+                      //
+                      // Normal to-HTML callbacks
+                      //
+                    } else {
+                      call_user_func(array($o, $cb), $args);
                     }
-                    //
-                    // Normal to-HTML callbacks
-                    //
-                  } else {
-                    call_user_func(array($o, $cb), $args);
                   }
-                }
-                h::div(array('class' => 'actions'), function () {
-                  h::input(array('type' => 'submit', 'class' => 'btn primary', 'value' => 'Save'));
-                  h::button(array('class' => 'btn'), 'Delete');
+                  h::div(array('class' => 'actions'), function () {
+                    h::input(array('type' => 'submit', 'class' => 'btn primary', 'value' => 'Nothing to save', 'disabled' => 'disabled'));
+                    h::button(array('class' => 'btn delete'), 'Delete');
+                  });
                 });
               });
             });

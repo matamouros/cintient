@@ -588,7 +588,7 @@ EOT;
     }
 
     $GLOBALS['project']->removeFromIntegrationBuilder($element);
-    $this->log("Integration builder changed, element removed.", $GLOBALS['user']->getUsername());
+    $GLOBALS['project']->log("Integration builder changed, element removed.", $GLOBALS['user']->getUsername());
 
     SystemEvent::raise(SystemEvent::DEBUG, "Builder element removed.", __METHOD__);
     echo json_encode(

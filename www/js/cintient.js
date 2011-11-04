@@ -127,6 +127,29 @@ var Cintient = {
       type : Cintient.ALERT.SUCCESS
     });
   },
+  
+  activateListItem : function (elem)
+  {
+    elem.css({
+      "background-color" : "rgba(0, 67, 138, 0.1)" // Active color is stronger than hover
+    });
+  },
+  
+  deactivateListItem :function (elem)
+  {
+    elem.css({
+      "cursor" : "default",
+      "background-color" : "#fff",
+    });
+  },
+  
+  hoverListItem : function (elem)
+  {
+    elem.css({
+      "cursor" : "pointer",
+      "background-color" : "#eee"//"rgb(248, 248, 248)"
+    });
+  },
     
   /**
    * Creates a button, styles it and returns it. Whomever calls this,
@@ -177,32 +200,10 @@ var Cintient = {
   initSectionDashboard: function ()
   {
     var options = $.extend({}, arguments[0] || {});
-    
-    function activate(elem)
-    {
-      elem.css({
-        "background-color" : "rgba(0, 67, 138, 0.1)" // Active color is stronger than hover
-      });
-    }
-    
-    function deactivate(elem)
-    {
-      elem.css({
-        "cursor" : "default",
-        "background-color" : "#fff",
-      });
-    }
-    
-    function hover(elem)
-    {
-      elem.css({
-        "cursor" : "pointer",
-        "background-color" : "rgb(248, 248, 248)"
-      });
-    }
+    var that = this;
     
     // Activate the default project
-    activate($('#dashboard li.project#' + activeProjectId));
+    this.activateListItem($('#dashboard li.project#' + activeProjectId));
     
     //
     // Stop propagation on a few special zones
@@ -220,8 +221,8 @@ var Cintient = {
         // Engage only if an unactive project was clicked
         //
         if ($(this).attr('id') != activeProjectId) {
-          activate($(this)); // Visual clues: promptly activate the clicked project
-          deactivate($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
+          that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
+          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
           activeProjectId = $(this).attr('id'); // Update the active project
           
           // Promptly hide the content
@@ -263,13 +264,13 @@ var Cintient = {
         function() {
           // Don't highlight the active project
           if (activeProjectId != $(this).attr('id')) {
-            hover($(this));
+            that.hoverListItem($(this));
           }
         },
         function() {
           // Don't un-highlight the active project
           if (activeProjectId != $(this).attr('id')) {
-            deactivate($(this));
+            that.deactivateListItem($(this));
           }
         }
       )
@@ -318,11 +319,11 @@ var Cintient = {
     $('#projectEdit #delete #pid').change(function () {
       if (this.checked) {
         $('#projectEdit #delete #deleteBtn')
-          .prop('disabled', false)
+          .prop('disabled', '')
           .removeClass('disabled');
       } else {
         $('#projectEdit #delete #deleteBtn')
-          .prop('disabled', true)
+          .prop('disabled', 'disabled')
           .addClass('disabled');
       }
     });

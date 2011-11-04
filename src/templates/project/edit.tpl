@@ -23,7 +23,7 @@ subSectionTitle=$globals_project->getTitle()
 subSectionDescription="edit project"
 subSectionImg=$globals_project->getAvatarUrl()
 cssIncludes=['css/lib/avataruploader.css']
-jsIncludes=['js/lib/jquery-ui-1.8.12.custom.min.js',
+jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
             'js/lib/avataruploader.js',
             'js/lib/bootstrap/bootstrap-tabs.js']}
 {* Holy shit... You cannot add jquery-ui jsInclude after the bootstrap-tabs
