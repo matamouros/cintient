@@ -249,7 +249,7 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     	'help' => 'Enabling this will automatically exclude files and directories that match the following: *~, #*#, .#*, %*%, ._*, CVS, CVS/**, .cvsignore, SCCS, SCCS/**, vssver.scc, .svn, .svn/**, .DS_Store, .git, .git/**, .gitattributes, .gitignore, .gitmodules, .hg, .hg/**, .hgignore, .hgsub, .hgsubstate, .hgtags, .bzr, .bzr/**, .bzrignore.',
       'label' => 'Default excludes?',
       'name' => 'defaultExcludes',
-      'value' => $this->getDefaultExcludes(),
+      'value' => '',
       'checked' => $this->getDefaultExcludes(),
     ));
 

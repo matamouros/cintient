@@ -96,8 +96,8 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
       array(
       	'cb' => 'getHtmlInputCheckbox',
       	'name' => 'append',
-      	'value' => $this->getAppend(),
-      	'checked' => $this->getAppend()
+      	'value' => '',
+      	'checked' => ($this->getAppend()?'checked':''),
       ),
     );
     parent::toHtml(array('title' => 'Echo'), $callbacks);

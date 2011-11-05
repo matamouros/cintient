@@ -96,7 +96,7 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
     	  'cb' => 'getHtmlInputCheckbox',
     		'name' => 'includeEmptyDirs',
     		'label' => 'Include empty dirs?',
-    		'value' => $this->getIncludeEmptyDirs(),
+    		'value' => '',
     		'checked' => $this->getIncludeEmptyDirs()
     	),
     	array('cb' => 'getFilesets'),

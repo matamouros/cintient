@@ -623,7 +623,6 @@ EOT;
 
     */
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
-    SystemEvent::raise(SystemEvent::DEBUG, print_r($_REQUEST, true), __METHOD__);
 
     if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||
         empty($_REQUEST['internalId'])) {
