@@ -85,22 +85,25 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-      'getHtmlInputText' => array(
+      array('cb' => 'getHtmlFailOnError'),
+      array(
+        'cb' => 'getHtmlInputText',
       	'name' => 'file',
       	'value' => $this->getFile(),
       ),
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     	  'name' => 'toFile',
     	  'label' => 'Destination file',
     	  'value' => $this->getToFile(),
     	),
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'toDir',
     		'label' => 'Destination dir',
     		'value' => $this->getToDir(),
     	),
-    	'getFilesets' => array(),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'Copy'), $callbacks);
   }

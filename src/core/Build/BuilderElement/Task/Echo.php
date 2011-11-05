@@ -83,9 +83,22 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlInputText' => array('name' => 'message', 'value' => $this->getMessage()),
-      'getHtmlInputText' => array('name' => 'file', 'value' => $this->getFile()),
-      'getHtmlInputCheckbox' => array('name' => 'append', 'value' => $this->getAppend(), 'checked' => $this->getAppend()),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'message',
+      	'value' => $this->getMessage()
+      ),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'file',
+      	'value' => $this->getFile()
+      ),
+      array(
+      	'cb' => 'getHtmlInputCheckbox',
+      	'name' => 'append',
+      	'value' => $this->getAppend(),
+      	'checked' => $this->getAppend()
+      ),
     );
     parent::toHtml(array('title' => 'Echo'), $callbacks);
   }

@@ -83,21 +83,28 @@ class Build_BuilderElement_Task_Php_PhpCodeSniffer extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getHtmlInputText' => array(
+      array('cb' => 'getHtmlFailOnError'),
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'fileExtensions',
     		'label' => 'Allowed file extensions',
     		'value' => $this->getFileExtensions(),
     		'help' => 'No dots, and space separated.'
     	),
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'files',
     		'label' => 'Files or dirs to include',
     		'value' => $this->getFiles(),
     		'help' => 'Space separated.'
       ),
-    	'getHtmlInputText' => array('name' => 'standard', 'value' => $this->getStandard()),
-    	'getHtmlInputText' => array(
+    	array(
+    		'cb' => 'getHtmlInputText',
+    		'name' => 'standard',
+    		'value' => $this->getStandard()
+      ),
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'sniffs',
         'label' => 'Limited to these sniffs',
         'value' => $this->getSniffs(),

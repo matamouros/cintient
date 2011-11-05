@@ -77,7 +77,8 @@ class Build_BuilderElement_Type_Properties extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-    	'getHtmlInputTextarea' => array(
+    	array(
+    	  'cb' => 'getHtmlInputTextarea',
     		'name' => 'text',
     		'label' => 'Key=value pairs',
     		'value' => $this->getText(),

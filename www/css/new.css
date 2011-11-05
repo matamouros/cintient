@@ -246,6 +246,23 @@ body
   cursor: pointer;
 }
 
+footer
+{
+  margin-top: 0px;
+  padding-top: 10px;
+}
+footer p, footer #installationStats
+{
+  /*letter-spacing: .20em;*/
+  font-family: Syncopate, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  text-align: center;
+  clear: both;
+  font-size: 7pt;
+  line-height: 1.2em;
+  color: #555;
+  text-shadow: white 1px 1px 1px;
+}
+
 /* ========================= */
 
 .closingX
@@ -700,6 +717,11 @@ user-select: none;
   padding: 0px;
 }
 
+#projectEdit #builderElementsChosen ul
+{
+  margin-left: 19px;
+}
+
 #projectEdit #builderElementsChosen > ul > li
 {
   height: 36px;
@@ -729,7 +751,7 @@ user-select: none;
   position: relative;
   clear: none;
   top: -174px;
-  left: 220px;
+  left: 228px;
 }
 
 #projectEdit #builderElementsChosen .popover .arrow
@@ -740,10 +762,18 @@ user-select: none;
 
 #projectEdit #builderElementsChosen .builderElementPopover .inner
 {
-  width: 400px;
+  width: 408px;
 }
 
+#projectEdit #builderElementsChosen fieldset
+{
+  padding-top: 10px;
+}
 
+#projectEdit #builderElementsChosen .clearfix:not(:last-child)
+{
+  margin-bottom: 10px;
+}
 
 /*
 

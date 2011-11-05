@@ -268,12 +268,12 @@ class Build_BuilderElement extends Framework_BaseObject
             h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
               h::form(array('class' => 'form', 'action' => ''), function () use ($o, $innerCallbacks) {
                 h::fieldset(function () use ($o, $innerCallbacks) {
-                  foreach ($innerCallbacks as $cb => $args) {
+                  foreach ($innerCallbacks as $cb) {
                     //
                     // Filesets are special cases, because we might need to
                     // iterate on more than one (in the future)
                     //
-                    if ($cb == 'getFilesets') {
+                    if ($cb['cb'] == 'getFilesets') {
                       if ($o->getFilesets()) {
                         $filesets = $o->getFilesets();
                         foreach ($filesets as $fileset) {
@@ -284,12 +284,12 @@ class Build_BuilderElement extends Framework_BaseObject
                       // Normal to-HTML callbacks
                       //
                     } else {
-                      call_user_func(array($o, $cb), $args);
+                      call_user_func(array($o, $cb['cb']), $cb);
                     }
                   }
                   h::div(array('class' => 'actions'), function () {
                     h::input(array('type' => 'submit', 'class' => 'btn primary', 'value' => 'Nothing to save', 'disabled' => 'disabled'));
-                    h::button(array('class' => 'btn delete'), 'Delete');
+                    h::button(array('class' => 'btn delete danger'), 'Delete');
                   });
                 });
               });

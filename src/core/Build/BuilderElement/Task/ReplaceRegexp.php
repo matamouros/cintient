@@ -114,29 +114,36 @@ class Build_BuilderElement_Task_ReplaceRegexp extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
+      array('cb' => 'getHtmlFailOnError'),
       // Match, textfield
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'match',
     		'value' => html_entity_decode($this->getMatch(), ENT_QUOTES),
     		'help' => 'The regular expression pattern to match in the file(s), PCRE compatible. Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.',
       ),
       // Replace, textfield
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'replace',
     		'value' => html_entity_decode($this->getReplace(), ENT_QUOTES),
     		'help' => 'The substitution pattern to place in the file(s). Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.',
       ),
       // Flags, textfield
-    	'getHtmlInputText' => array(
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'flags',
     		'value' => $this->getFlags(),
      		'help' => 'The flags of the regexp engine. For the integration builder use PHP PCRE: g (global), i (case insensitive), m (multiline) and s (singleline).',
       ),
       // File, textfield
-      'getHtmlInputText' => array('name' => 'file', 'value' => $this->getFile()),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'file',
+      	'value' => $this->getFile()
+      ),
       // Filesets
-    	'getFilesets' => array(),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'ReplaceRegexp'), $callbacks);
   }

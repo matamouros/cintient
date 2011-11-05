@@ -89,8 +89,8 @@ class Build_BuilderElement_Task_Perl_PerlSyntax extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getFilesets' => array(),
+      array('cb' => 'getHtmlFailOnError'),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'PerlSyntax'), $callbacks);
   }

@@ -84,26 +84,29 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getHtmlInputCheckbox' => array(
+      array('cb' => 'getHtmlFailOnError'),
+    	array(
+    	  'cb' => 'getHtmlInputCheckbox',
     		'name' => 'failOnFailure',
     		'label' => 'Fail on failure?',
     		'value' => $this->getFailOnFailure(),
     		'checked' => $this->getFailOnFailure(),
       ),
-    	'getHtmlInputCheckbox' => array(
+    	array(
+    	  'cb' => 'getHtmlInputCheckbox',
     		'name' => 'failOnIncomplete',
     		'label' => 'Fail on incomplete?',
     		'value' => $this->getFailOnIncomplete(),
     		'checked' => $this->getFailOnIncomplete(),
       ),
-    	'getHtmlInputCheckbox' => array(
+    	array(
+    	  'cb' => 'getHtmlInputCheckbox',
     		'name' => 'failOnSkipped',
     		'label' => 'Fail on skipped?',
     		'value' => $this->getFailOnSkipped(),
     		'checked' => $this->getFailOnSkipped(),
       ),
-    	'getFilesets' => array(),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'PhpUnit'), $callbacks);
   }

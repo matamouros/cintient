@@ -90,9 +90,14 @@ class Build_BuilderElement_Task_Filesystem_Chown extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-        'getHtmlFailOnError' => array(),
-        'getHtmlInputText' => array('name' => 'user', 'value' => $this->getUser(), 'help' => 'or user.group.'),
-      	'getFilesets' => array(),
+        array('cb' => 'getHtmlFailOnError'),
+        array(
+        	'cb' => 'getHtmlInputText',
+        	'name' => 'user',
+        	'value' => $this->getUser(),
+        	'help' => 'Or user.group.'
+        ),
+      	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'Chown'), $callbacks);
   }

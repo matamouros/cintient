@@ -117,20 +117,23 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getHtmlInputText' => array(
+      array('cb' => 'getHtmlFailOnError'),
+    	array(
+    	  'cb' => 'getHtmlInputText',
     		'name' => 'includeDirs',
     		'label' => 'Include dirs',
     		'value' => $this->getIncludeDirs(),
     		'help' => 'Space separated.',
       ),
-      'getHtmlInputText' => array(
+      array(
+        'cb' => 'getHtmlInputText',
     		'name' => 'excludeDirs',
     		'label' => 'Exclude dirs',
     		'value' => $this->getExcludeDirs(),
     		'help' => 'Space separated.',
       ),
-      'getHtmlInputText' => array(
+      array(
+        'cb' => 'getHtmlInputText',
     		'name' => 'excludePackages',
     		'label' => 'Exclude packages',
     		'value' => $this->getExcludePackages(),

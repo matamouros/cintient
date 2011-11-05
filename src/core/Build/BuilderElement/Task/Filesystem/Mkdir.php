@@ -72,7 +72,11 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-    	'getHtmlInputText' => array('name' => 'dir', 'value' => $this->getDir()),
+    	array(
+    		'cb' => 'getHtmlInputText',
+    		'name' => 'dir',
+    		'value' => $this->getDir()
+      ),
     );
     parent::toHtml(array('title' => 'Mkdir'), $callbacks);
   }

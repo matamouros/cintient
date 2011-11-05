@@ -91,9 +91,14 @@ class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-      'getHtmlInputText' => array('name' => 'mode', 'value' => $this->getMode(), 'help' => 'e.g., 755, 644, 640, etc.'),
-    	'getFilesets' => array(),
+      array('cb' => 'getHtmlFailOnError'),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'mode',
+      	'value' => $this->getMode(),
+      	'help' => 'e.g., 755, 644, 640, etc.'
+      ),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'Chmod'), $callbacks);
   }

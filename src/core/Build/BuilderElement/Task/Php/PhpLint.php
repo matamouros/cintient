@@ -89,8 +89,8 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getFilesets' => array(),
+      array('cb' => 'getHtmlFailOnError'),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'PhpLint'), $callbacks);
   }

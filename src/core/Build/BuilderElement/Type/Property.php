@@ -76,8 +76,16 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlInputText' => array('name' => 'name', 'value' => $this->getName()),
-      'getHtmlInputText' => array('name' => 'value', 'value' => $this->getValue()),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'name',
+      	'value' => $this->getName()
+      ),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'value',
+      	'value' => $this->getValue()
+      ),
     );
     parent::toHtml(array('title' => 'Property'), $callbacks);
   }

@@ -91,14 +91,15 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlFailOnError' => array(),
-    	'getHtmlInputCheckbox' => array(
+      array('cb' => 'getHtmlFailOnError'),
+    	array(
+    	  'cb' => 'getHtmlInputCheckbox',
     		'name' => 'includeEmptyDirs',
     		'label' => 'Include empty dirs?',
     		'value' => $this->getIncludeEmptyDirs(),
     		'checked' => $this->getIncludeEmptyDirs()
     	),
-    	'getFilesets' => array(),
+    	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'Delete'), $callbacks);
   }

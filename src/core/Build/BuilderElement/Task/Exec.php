@@ -119,10 +119,30 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      'getHtmlInputText' => array('name' => 'executable', 'value' => $this->getExecutable()),
-      'getHtmlInputText' => array('name' => 'args', 'value' => $this->getArgs(), 'help' => 'Space separated.'),
-    	'getHtmlInputText' => array('name' => 'basedir', 'label' => 'Base dir', 'value' => $this->getBaseDir()),
-    	'getHtmlInputText' => array('name' => 'outputProperty', 'label' => 'Output property', 'value' => $this->getOutputProperty()),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'executable',
+      	'value' => $this->getExecutable()
+      ),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'args',
+      	'value' => $this->getArgs(),
+      	'help' => 'Space separated.'
+      ),
+    	array(
+    		'cb' => 'getHtmlInputText',
+    		'name' => 'basedir',
+    		'label' =>
+    		'Base dir',
+    		'value' => $this->getBaseDir()
+    	),
+    	array(
+    		'cb' => 'getHtmlInputText',
+    		'name' => 'outputProperty',
+    		'label' => 'Output property',
+    		'value' => $this->getOutputProperty()
+    	),
     );
     parent::toHtml(array('title' => 'Exec'), $callbacks);
   }
