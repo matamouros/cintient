@@ -151,6 +151,7 @@ $(document).ready(function() {
         } else {
           $('input:submit', that).prop('value', 'Saved!');
           $('input:submit', that).prop('disabled', 'disabled');
+          $('input:submit', that).removeClass('primary');
           Cintient.alertSuccess($('.builderElementLine h3', $(that).parents('li')).text() + " builder element saved.");
         }
       },
@@ -182,6 +183,7 @@ $(document).ready(function() {
     }
     $('input:submit', this).prop('value', 'Save changes');
     $('input:submit', this).prop('disabled', '');
+    $('input:submit', this).addClass('primary');
   });
   //
 	// Set up delete links

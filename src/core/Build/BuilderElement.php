@@ -288,7 +288,7 @@ class Build_BuilderElement extends Framework_BaseObject
                     }
                   }
                   h::div(array('class' => 'actions'), function () {
-                    h::input(array('type' => 'submit', 'class' => 'btn primary', 'value' => 'Nothing to save', 'disabled' => 'disabled'));
+                    h::input(array('type' => 'submit', 'class' => 'btn', 'value' => 'Nothing to save', 'disabled' => 'disabled'));
                     h::button(array('class' => 'btn delete danger'), 'Delete');
                   });
                 });
