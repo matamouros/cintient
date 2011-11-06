@@ -27,10 +27,17 @@
       .find('> .dropdown-menu > .active')
       .removeClass('active')
 
-    element.addClass('active')
+		// matamouros: following is a small patch to make tabs in Cintient
+		// fadeIn() on their first click (fadeIn was only happening on a
+		// second click.
+		// element.addClass('active')
+    element
+      .fadeIn(300)
+      .addClass('active')
 
     if ( element.parent('.dropdown-menu') ) {
       element.closest('li.dropdown').addClass('active')
+      
     }
   }
 

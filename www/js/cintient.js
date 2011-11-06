@@ -35,6 +35,33 @@ var Cintient = {
     WARNING : 'warning'
   },
   
+  addConfirmationToButton: function (e)
+  {
+    /*
+    e.preventDefault();
+    e.stopPropagation();
+    var oldValue = $(this).prop('value');
+    $(this).prop('value', 'Sure?');
+    $(this).addClass('danger'); // Bootstrap .danger
+    $(this).off('click');
+    $(this).on('click', function () {
+      
+    });
+    
+    
+    $('form').on('click', 'a.confirm, input.confirm, button.confirm', function () {
+      e.preventDefault();
+      e.stopPropagation();
+      var oldValue = $(this).prop('value');
+      $(this).prop('value', 'Sure?');
+      $(this).addClass('danger'); // Bootstrap .danger
+      $(this).off('click');
+      $(this).on('click', function () {
+        
+      });
+    });*/
+  },
+  
   /**
    * This is a small bare basics alert framework for handling alerts of
    * different severity levels. Higher severity levels have higher auto
@@ -301,6 +328,14 @@ var Cintient = {
     $('#cintientLettering').fadeIn(500);
     $('.topbar').dropdown();
     $('.tooltip').tipTip();
+    $('#logoDropdown').hover(
+      function () {
+        $('#logoDropdown .dropdownArrow').css({ 'visibility' : 'visible' });
+      },
+      function () {
+        $('#logoDropdown .dropdownArrow').css({ 'visibility' : 'hidden' });
+      }
+    );
   },
   
   initSectionProjectEdit: function ()
@@ -644,9 +679,11 @@ var Cintient = {
     // Tabs for the projects
     //
     $('.tabs').tabs();
-    $('.tabs').bind('change', function (e) {
+    $('.mainContent').on('change', '.tabs', function (e) {
       $($(e.relatedTarget).attr('href')).hide(); // previous tab
-      $($(e.target).attr('href')).fadeIn(300); // activated tab
+      //$($(e.target).attr('href')).fadeIn(300); // activated tab
+      // This fadeIn() is directly patched into bootstrap-tabs.js, so
+      // that we have fadeIn() behaviour from click 1.
     });
   }
 };
