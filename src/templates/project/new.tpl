@@ -66,7 +66,7 @@ level=1}
             </div>
           </div>
           <div class="actions">
-            <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            <input type="submit" class="btn primary" value="Save changes">&nbsp;<a href="{UrlManager::getForDashboard()}" class="btn">Cancel</a>
           </div>
         </fieldset>
       </form>

@@ -54,7 +54,7 @@ subSectionDescription="create a new user"}
           </div>
         </div>
         <div class="actions">
-          <input type="submit" class="btn primary" value="Go!">&nbsp;<button type="reset" class="btn">Cancel</button>
+          <input type="submit" class="btn primary" value="Go!">&nbsp;<a href="{UrlManager::getForAuthentication()}" class="btn">Cancel</a>
         </div>
       </fieldset>
     </form>
