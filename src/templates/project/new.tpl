@@ -19,8 +19,7 @@
 
 *}{include file='includes/header.inc.tpl'
 subSectionTitle="New project"
-subSectionId="projectNew"
-level=1}
+subSectionId="projectNew"}
       <form action class="form" id="newProjectContainer">
         <fieldset>
           <div class="clearfix">

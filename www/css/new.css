@@ -87,6 +87,15 @@ ul.dropdown-menu
   padding-right: 10px;
 }
 
+#sectionContent
+{
+  /* This selector is mainly for FF to behave */
+  float: left;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
 /* @end */
 
 

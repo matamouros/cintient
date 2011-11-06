@@ -110,3 +110,4 @@ $(document).ready(function() {
         {if !empty($subSectionImg)}<div class="projectAvatar40x40"><img src="{$subSectionImg}" width="40" height="40"></div>{/if}
         <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>{if !empty($subSectionInclude)}<div id="subSectionInclude">{include file=$subSectionInclude}</div>{/if}
       </div>
+      <div id="sectionContent">{* This div makes sure the following is nicely wrapped in a properly float left container. FF was having issues *}

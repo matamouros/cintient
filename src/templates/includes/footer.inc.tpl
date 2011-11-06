@@ -18,6 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
+      </div>
     </div>
     <footer>
       <p>Cintient is free software distributed under the GNU General Public License version 3 or later terms.</p>

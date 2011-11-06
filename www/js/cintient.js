@@ -216,7 +216,7 @@ var Cintient = {
   
   initSectionAuthentication: function ()
   {
-    $('#authentication #authenticationHide').fadeIn(300);
+    $('#authentication form').fadeIn(300);
   },
   
   initSectionBuildHistory: function()

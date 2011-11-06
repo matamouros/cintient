@@ -21,27 +21,25 @@
 subSectionTitle="Authentication"
 subSectionId='authentication'
 subSectionDescription="log in with your username and password"}
-    <div id="authenticationHide" style="display:none;">
-      <form action class="form" id="authenticationForm">
-        <fieldset>
-          <div class="clearfix">
-            <label for="username">Username</label>
-            <div class="input">
-              <input class="span3" type="text" name="username" />
-            </div>
+    <form action class="form" id="authenticationForm" style="display:none;">
+      <fieldset>
+        <div class="clearfix">
+          <label for="username">Username</label>
+          <div class="input">
+            <input class="span3" type="text" name="username" />
           </div>
-          <div class="clearfix">
-            <label for="password">Password</label>
-            <div class="input">
-              <input class="span3" type="password" name="password" />
-            </div>
+        </div>
+        <div class="clearfix">
+          <label for="password">Password</label>
+          <div class="input">
+            <input class="span3" type="password" name="password" />
           </div>
-          <div class="actions">
-            <input type="submit" class="btn primary" value="Go!">{if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}&nbsp;<a href="{UrlManager::getForRegistration()}" class="btn">Register</a>{/if}
-          </div>
-        </fieldset>
-      </form>
-    </div>
+        </div>
+        <div class="actions">
+          <input type="submit" class="btn primary" value="Go!" />{if $globals_settings[SystemSettings::ALLOW_USER_REGISTRATION]}&nbsp;<a href="{UrlManager::getForRegistration()}" class="btn">Register</a>{/if}
+        </div>
+      </fieldset>
+    </form>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
