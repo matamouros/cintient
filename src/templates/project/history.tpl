@@ -24,75 +24,45 @@
 {capture name="specialTaskLink"}{/capture}
 {capture name="specialTaskPane"}{/capture}
 {$specialTaskPanes=array()}
-{$menuLinks="<span id=\"projectSectionsLinks\"><a href=\"#\" class=\"rawOutput\">raw</a>"}
 {foreach $project_specialTasks as $task}
   {include file="includes/specialTask/$task.inc.tpl"}
-  {$specialTaskLink=$smarty.capture.specialTaskLink}
+  {$specialTaskLink[]=$smarty.capture.specialTaskLink}
   {* We should be using capture append for specialTaskPane, but apparently *}
   {* it always only holds the last value... Come back to this later.       *}
   {$specialTaskPanes[]=$smarty.capture.specialTaskPane}
-  {$menuLinks="$menuLinks | $specialTaskLink"}
 {/foreach}
-{$menuLinks="$menuLinks</span>"}
 {include file='includes/header.inc.tpl'
-  subSectionTitle="Build history"
-  menuLinks=$menuLinks
+	subSectionId="projectBuildHistory"
+  subSectionDescription="build history"
+	subSectionTitle=$globals_project->getTitle()
+  subSectionImg=$globals_project->getAvatarUrl()
+  subSectionInclude="includes/buildList.inc.tpl"
   backLink="{UrlManager::getForProjectView()}"
-	jsIncludes=['js/lib/highcharts-2.1.6.js', 'js/lib/cintientHighcharts.theme.js', 'js/cintientHighcharts.js']} {* TODO: Make it load only on PHPUnit presence *}
-{$project_latestBuild=""}
+	jsIncludes=['js/lib/highcharts-2.1.6.js',
+              'js/lib/cintientHighcharts.theme.js',
+              'js/cintientHighcharts.js',
+							'js/lib/bootstrap/bootstrap-tabs.js']}
 {if !empty($project_buildList)}
-  {$project_latestBuild=$project_buildList.0}
-{/if}
-{include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_latestBuild}
-{if !empty($project_buildList)}
-<script type="text/javascript">
-// <![CDATA[
-$(document).ready(function() {
-	// Show the passed resultPane, hiding all others
-	activeResultPane = null; // Needs to be global so that the project header build list knows where to change to if another build is chosen
-	function showBuildResultPane(resultPane) {
-		if (activeResultPane === null || $(activeResultPane).attr('id') !== $(resultPane).attr('id')) {
-			// Hide the previous pane
-      $(activeResultPane).hide(50);
-			// Reset the previous link
-      $('#projectSectionsLinks a.' + $(activeResultPane).attr('id')).css({
-        "color" : "rgb(255,40,0)",
-        "font-weight" : "bold",
-        "text-decoration" : "none",
-        "text-shadow" : "#303030 1px 1px 1px"
-      });
-			// Highlight the active link
-			$('#projectSectionsLinks a.' + $(resultPane).attr('id')).css({
-				"color" : "rgb(255,60,0)",
-			  "text-shadow" : "0px 0px 6px rgba(255,40,0,1)",
-			  "text-decoration" : "none"
-      });
-		  // Show the current pane
-  	  resultPane.fadeIn(300);
 
-  	  activeResultPane = resultPane;
-		}
-  }
-	// Bind the click link events to their corresponding panes
-	$('#projectSectionsLinks a').each(function() {
-		$(this).click(function() {
-			showBuildResultPane($('#projectViewContainer').find('#' + $(this).attr('class')));
-    });
-  });
-	// Promptly show the default pane
-  defaultPane = '#rawOutput';
-  if (window.location.hash != '' && $('#projectViewContainer ' + window.location.hash).length>0) {
-    defaultPane = window.location.hash;
-  }
-	showBuildResultPane($('#projectViewContainer ' + defaultPane));
-});
-//]]>
-</script>
-    <div id="projectViewContainer">
-      <div id="rawOutput" class="buildResultPane rawText">{$project_build->getOutput()|raw2html}</div>
+    <ul class="tabs">
+      <li class="active"><a href="#rawOutput">Raw output</a></li>
+{foreach $specialTaskLink as $link}
+      {$link}
+{/foreach}
+    </ul>
+
+    <div class="tab-content">
+      <div class="active" id="rawOutput"><div class="log">{$project_build->getOutput()|raw2html}</div></div>
 {foreach $specialTaskPanes as $taskPane}
 {$taskPane}
 {/foreach}
     </div>
 {/if}
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initSectionBuildHistory();
+});
+// ]]>
+</script>
 {include file='includes/footer.inc.tpl'}

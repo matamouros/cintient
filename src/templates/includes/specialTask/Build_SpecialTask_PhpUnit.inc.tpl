@@ -1,6 +1,6 @@
-{capture name="specialTaskLink"}<a href="#" class="junitReport">unit</a> | <a href="#" class="coverageReport">coverage</a>{/capture}
+{capture name="specialTaskLink"}<li><a href="#junitReport">Unit tests</a></li><li><a href="#coverageReport">Code coverage</a></li>{/capture}
 {capture name="specialTaskPane"}
-      <div id="junitReport" class="buildResultPane">
+      <div id="junitReport">
 {if !empty($project_buildJunit)}
 {$testChartsJs=[]}
 {$testChartsHtml=[]}
@@ -48,17 +48,16 @@
       linearGradient: [0, 0, 0, {$height}],
       stops: [
         [0.16, '#fff'],
-        [0.6, '#ddd'],
-        [0.9, '#bbb']
+        [0.9, '#eee']
       ]
     }
   });
   {/capture}
   {capture append="testChartsHtml"}
-<div id="chartUnitTests{$classTest->getName()}Container" class="unitTestsChart"></div>
+          <li><div id="chartUnitTests{$classTest->getName()}Container" class="chart"></div></li>
   {/capture}
 {/foreach}
-{foreach $testChartsHtml as $html}{$html}{/foreach}
+<ul class="media-grid">{foreach $testChartsHtml as $html}{$html}{/foreach}</ul>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
@@ -70,9 +69,9 @@ $(document).ready(function() {
 The unit tests chart could not be generated. Please check the raw output of the build for problems, e.g., a PHP Fatal error.
 {/if}
       </div>
-      <div id="coverageReport" class="buildResultPane">
+      <div id="coverageReport">
 {if !empty($project_buildJunit)}
-<iframe id="ccFrame" src="{UrlManager::getForAsset('index.html', ['bid' => $project_build->getId(), 'cc' => true])}" width="800" height="500" seamless></iframe>
+<iframe id="ccFrame" src="{UrlManager::getForAsset('index.html', ['bid' => $project_build->getId(), 'cc' => true])}" width="930" height="800" seamless></iframe>
 {else}
 Due to a build error, the unit tests chart could not be generated. Please check the raw output of the build for problems, such as a PHP Fatal error.
 {/if}

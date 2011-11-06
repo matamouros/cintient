@@ -174,7 +174,6 @@ class Project extends Framework_DatabaseObjectAbstract
   {
     $newBuilder = $this->getIntegrationBuilder()->deleteElement($element->getInternalId());
     $this->setIntegrationBuilder($newBuilder);
-    $this->log("Integration builder changed, element removed.");
     //
     // If it's a special task, unregister it with the project
     //
@@ -660,11 +659,12 @@ EOT;
    *
    * @param string $msg
    */
-  public function log($msg)
+  public function log($msg, $username = null, $type = 0)
   {
     $projectLog = new Project_Log($this);
-    $projectLog->setType(0);
+    $projectLog->setType($type);
     $projectLog->setMessage($msg);
+    $projectLog->setUsername($username);
   }
 
   public function touchDateCheckedForChanges()

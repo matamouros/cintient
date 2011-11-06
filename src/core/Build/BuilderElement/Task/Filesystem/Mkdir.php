@@ -66,23 +66,19 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml()
+  public function toHtml(Array $_ = array(), Array $__ = array())
   {
-    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $o = $this;
-    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
-      $o->getHtmlTitle(array('title' => 'Mkdir'));
-      h::div(array('class' => 'builderElementForm'), function() use ($o) {
-        // Dir, textfield
-        h::div(array('class' => 'label'), 'Dir');
-        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
-        });
-      });
-    });
+    $callbacks = array(
+    	array(
+    		'cb' => 'getHtmlInputText',
+    		'name' => 'dir',
+    		'value' => $this->getDir()
+      ),
+    );
+    parent::toHtml(array('title' => 'Mkdir'), $callbacks);
   }
 
   public function toPhing()

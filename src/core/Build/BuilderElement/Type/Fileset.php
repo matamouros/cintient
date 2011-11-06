@@ -138,6 +138,21 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     return $this->_include;
   }
 
+  public function isTypeBoth()
+  {
+    return ($this->getType() == Build_BuilderElement_Type_Fileset::BOTH);
+  }
+
+  public function isTypeDir()
+  {
+    return ($this->getType() == Build_BuilderElement_Type_Fileset::DIR);
+  }
+
+  public function isTypeFile()
+  {
+    return ($this->getType() == Build_BuilderElement_Type_Fileset::FILE);
+  }
+
   /**
    * Setter. Makes sure <code>$dir</code> always ends in a valid
    * <code>DIRECTORY_SEPARATOR</code> token.
@@ -193,83 +208,81 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
     return $ret;
   }
 
-  public function toHtml()
+  public function toHtml(Array $_ = array(), Array $__ = array())
   {
-    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    h::hr();
-    $o = $this;
-    // Type, radio button
-    h::ul(array('class' => 'radioContainer'), function() use ($o) {
-      h::li(function() use ($o) {
-        h::div(array('class' => 'label tooltip',
-                     'title' => 'Check this if you ONLY want to match files.'), 'Files only');
-        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::FILE);
-        if ($o->getType() == Build_BuilderElement_Type_Fileset::FILE) {
-          $params['checked'] = 'checked';
-        }
-        h::input($params);
-      });
-      h::li(function() use ($o) {
-        h::div(array('class' => 'label tooltip',
-                     'title' => 'Check this if you ONLY want to match directories.'), 'Dirs only');
-        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::DIR);
-        if ($o->getType() == Build_BuilderElement_Type_Fileset::DIR) {
-          $params['checked'] = 'checked';
-        }
-        h::input($params);
-      });
+    //
+    // Filesets are always part of a builder element, thus they provide
+    // direct-to-HTML output instead of callbacks into the parent
+    //
 
-      h::li(function() use ($o) {
-        h::div(array('class' => 'label tooltip',
-                     'title' => 'Check this if you want to match BOTH files and directories.'), 'Both');
-        $params = array('class' => 'radio', 'type' => 'radio', 'name' => 'type', 'value' => Build_BuilderElement_Type_Fileset::BOTH);
-        if ($o->getType() == Build_BuilderElement_Type_Fileset::BOTH) {
-          $params['checked'] = 'checked';
-        }
-        h::input($params);
-      });
-    });
+    // HR
 
-    // Default excludes, checkbox
-    h::div(array('class' => 'label tooltip',
-                 'title' => 'Enabling this will automatically exclude files and directories that match the following: *~, #*#, .#*, %*%, ._*, CVS, CVS/**, .cvsignore, SCCS, SCCS/**, vssver.scc, .svn, .svn/**, .DS_Store, .git, .git/**, .gitattributes, .gitignore, .gitmodules, .hg, .hg/**, .hgignore, .hgsub, .hgsubstate, .hgtags, .bzr, .bzr/**, .bzrignore.'), 'Default excludes?');
-    h::div(array('class' => 'checkboxContainer'), function() use ($o) {
-      $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'defaultExcludes',);
-      if ($o->getDefaultExcludes()) {
-        $params['checked'] = 'checked';
-      }
-      h::input($params);
-    });
-    // Dir, textfield
-    h::div(array('class' => 'label tooltip',
-                 'title' => 'The base directory on which to execute the task.'), 'Base dir');
-    h::div(array('class' => 'textfieldContainer'), function() use ($o) {
-      //h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => (substr($o->getDir(), strlen($GLOBALS['project']->getScmLocalWorkingCopy())))));
-      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'dir', 'value' => $o->getDir()));
-    });
+    parent::getHtmlInputRadio(array (
+      'name' => 'type',
+      'label' => 'Type',
+      'values' => array (
+        array (
+          'help' => 'Check this if you ONLY want to match files.',
+          'label' => 'Files only',
+          'value' => Build_BuilderElement_Type_Fileset::FILE,
+          'checked' => ($this->isTypeFile()?true:false),
+        ),
+        array (
+          'help' => 'Check this if you ONLY want to match directories.',
+          'label' => 'Dirs only',
+          'value' => Build_BuilderElement_Type_Fileset::DIR,
+          'checked' => ($this->isTypeDir()?true:false),
+        ),
+        array (
+          'help' => 'Check this if you want to match BOTH files and directories.',
+          'label' => 'Both',
+          'value' => Build_BuilderElement_Type_Fileset::BOTH,
+          'checked' => ($this->isTypeBoth()?true:false),
+        ),
+      ),
+    ));
+
+    parent::getHtmlInputCheckbox(array (
+    	'help' => 'Enabling this will automatically exclude files and directories that match the following: *~, #*#, .#*, %*%, ._*, CVS, CVS/**, .cvsignore, SCCS, SCCS/**, vssver.scc, .svn, .svn/**, .DS_Store, .git, .git/**, .gitattributes, .gitignore, .gitmodules, .hg, .hg/**, .hgignore, .hgsub, .hgsubstate, .hgtags, .bzr, .bzr/**, .bzrignore.',
+      'label' => 'Default excludes?',
+      'name' => 'defaultExcludes',
+      'value' => '',
+      'checked' => $this->getDefaultExcludes(),
+    ));
+
+    parent::getHtmlInputText(array(
+      'name' => 'dir',
+      'label' => 'Base dir',
+      'value' => $this->getDir(),
+      'help' => 'The base directory on which to execute the task.',
+    ));
+
+    // Includes
     $includesLine = '';
-    if ($o->getInclude()) {
-      $includes = $o->getInclude();
+    if ($this->getInclude()) {
+      $includes = $this->getInclude();
       foreach ($includes as $include) {
         $includesLine .= $include . ', ';
       }
       // TODO: Oh god... Seriously do this better:
       if (!empty($includesLine)) {
-        $includesLine = substr($includesLine, 0, strlen($includesLine)-2); // Oh god 2x...
+        $includesLine = substr($includesLine, 0, strlen($includesLine)-2); // Oh god ^2...
       }
     }
-    // Includes, textfield
-    h::div(array('class' => 'label tooltip',
-                 'title' => 'Comma separated. All files and/or dirs that match this WILL BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.'), 'Files/dirs to include');
-    h::div(array('class' => 'textfieldContainer'), function() use ($o, $includesLine) {
-      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'include', 'value' => $includesLine));
-    });
+    parent::getHtmlInputText(array(
+      'name' => 'include',
+      'label' => 'Files/dirs to include',
+      'value' => $includesLine,
+      'help' => 'Comma separated. All files and/or dirs that match this WILL BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.',
+    ));
+
+    // Excludes
     $excludesLine = '';
-    if ($o->getExclude()) {
-      $excludes = $o->getExclude();
+    if ($this->getExclude()) {
+      $excludes = $this->getExclude();
       foreach ($excludes as $exclude) {
         $excludesLine .= $exclude . ', ';
       }
@@ -278,12 +291,12 @@ class Build_BuilderElement_Type_Fileset extends Build_BuilderElement
         $excludesLine = substr($excludesLine, 0, strlen($excludesLine)-2); // Oh god...
       }
     }
-    // Excludes, textfield
-    h::div(array('class' => 'label tooltip',
-                 'title' => 'Comma separated. All files and/or dirs that match this WILL NOT BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.'), 'Files/dirs to exclude');
-    h::div(array('class' => 'textfieldContainer'), function() use ($o, $excludesLine) {
-      h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'exclude', 'value' => $excludesLine));
-    });
+    parent::getHtmlInputText(array(
+      'name' => 'exclude',
+      'label' => 'Files/dirs to exclude',
+      'value' => $excludesLine,
+      'help' => 'Comma separated. All files and/or dirs that match this WILL NOT BE considered. Please check http://ant.apache.org/manual/Types/patternset.html for more details.',
+    ));
   }
 
   public function toPhing()
