@@ -59,6 +59,9 @@ Installer.prototype = {
       }
     }, arguments[0] || {});
     this._steps = $('.'+this.options.elemsClasses.step);
+    if (window.location.hash.match(/step/)) {
+      this.options.curStepIndex = parseInt(window.location.hash.slice(5));
+    }
     this._run();
   },
   
@@ -287,6 +290,7 @@ Installer.prototype = {
     e.preventDefault();
     var self = e.data.self;
     var curStep = self._steps[self.options.curStepIndex];
+    window.location.hash = '#step' + self.options.curStepIndex;
     // Hide this and show previous
     $(curStep).fadeOut(100, function () {
       self.options.curStepIndex--;
@@ -304,6 +308,7 @@ Installer.prototype = {
     var self = e.data.self;
     var curStep = self._steps[self.options.curStepIndex];
     self.options.curStepIndex++; // Increment the step
+    window.location.hash = '#step' + self.options.curStepIndex;
     if (self._steps.length != self.options.curStepIndex) {
       $(curStep).fadeOut(100, function() {
         // Update the breadcrumbs
