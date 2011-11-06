@@ -166,6 +166,7 @@ if (!empty($GLOBALS['section'])) {
     #endif
     TemplateManager::$GLOBALS['templateMethod']();
     $GLOBALS['smarty']->assign('globals_settings', $GLOBALS['settings']);
+    $GLOBALS['smarty']->assign('globals_section', $GLOBALS['section']);
     $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
     $GLOBALS['smarty']->assign('globals_user', $GLOBALS['user']);
     $GLOBALS['smarty']->assign('globals_project', $GLOBALS['project']);

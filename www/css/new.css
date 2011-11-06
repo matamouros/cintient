@@ -31,13 +31,7 @@
   text-shadow: #000 1px 1px 0px;
 }
 
-#topbarRight
-{
-  float: right;
-  width: 230px;
-}
-
-#topbarRight #user #avatar
+img#avatarImg
 {
   float: left;
   width: 30px;
@@ -45,91 +39,59 @@
           box-shadow: 1px 1px 1px #111;
      -moz-box-shadow: #111 1px 1px 1px;
   -webkit-box-shadow: #111 1px 1px 1px;
+  margin-top: -9px;
+  margin-right: 8px;
 }
 
-#topbarRight #user #username
+#logoLettering
 {
-  float: left;
-  margin-left: 10px;
-  line-height: .9em; /* helps regulate the proximity of the links below */
-  width: 190px; /* to force the user links below this element, since clear: right doesn't seem to cut it... */
-  font-size: 12pt;
   color: rgb(230,230,230);
+  text-shadow: #000 1px 1px 1px;
+  clear: none;
+  float: left;
+  width: 120px;
+  margin-top: -3px;
+  margin-left: -16px;
+  padding-left: 8px;
 }
 
-#topbarRight #user #links
+#logoDropdown.dropdown-toggle:after
 {
-  float: left;
-  margin-left: 11px;
-  padding-top: 1px;
-  font-size: .8em;
+  /* Disable Bootstrap's ::after dropdown arrow, so that we can have our own exactly the same, but manipulatable through JS (::after content is not in the DOM, hence cannot be manipulated) */
+  display: none;
 }
-
-#topbarLeft, #topbarLeft .menuLinks
+#logoDropdown .dropdownArrow
 {
-  float: left;
+  visibility: hidden;
 }
 
-#topbarLeft #cintientLettering { /* These are specific to the lettering on the topbar */
-  color: rgb(230,230,230);
-  float: left;
-  margin-top: 8px;
-  float: left;
-  text-shadow: #000 1px 1px 0px;
-}
-
-#topbarLeft #logoLettering
+ul.nav, ul.secondary-nav
 {
-  float: left;
-  width: 150px;
-}
-
-#topbarLeft ul.nav
-{
-  float: left;
-  margin-right: 0px;
-}
-
-/* This is both the menu and the link that opened it */
-#topbarLeft ul.nav .dropdown
-{
-  /* Bigger font just for the main dropdown */
   font-size: 1.26em;
 }
 
-/* This is just the menu, not including the link that opened it */
-#topbarLeft ul.dropdown-menu
+ul.dropdown-menu
 {
+  /* This is just the menu, not including the link that opened it */
   margin-top: -5px; /* place the menu dropdown the pixel right after the bar */
 }
 
-#topbarLeft ul.dropdown-menu > li
+.topbar .menuLinks > ul > li > a
 {
-  /* space between menu items */
-  padding-top: 4px;
-}
-
-#topbarLeft ul.dropdown-menu > li:last-child
-{
-  padding-bottom: 4px;
-}
-
-#topbarLeft ul.sectionLinks
-{
-  padding-top: 1px;
-  padding-left: 10px;
-}
-
-#topbarLeft ul.sectionLinks > li
-{
-  height: 34px;
-  margin-top: -3px;
-  padding-top: 3px;
+  height: 25px;
   float: left;
-  /*border-left: 1px solid #999;*/
+  padding: 0px;
+  margin-top: -2px;
+  padding-top: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 /* @end */
+
+
+
+
 
 
 /* @group Defaults */
@@ -178,6 +140,15 @@ body
   margin: -20px -20px 20px;
 }
 
+.label.success
+{
+  background-color: rgb(124,196,0);
+}
+.label.important
+{
+  background-color: rgb(255,40,0);
+}
+
 .leftRow
 {
   border-right: 1px solid #EEE;
@@ -211,6 +182,8 @@ body
   float: left;
   margin-right: 15px;
 }
+
+
 
 .activeElement
 {
@@ -261,6 +234,78 @@ footer p, footer #installationStats
   line-height: 1.2em;
   color: #555;
   text-shadow: white 1px 1px 1px;
+}
+
+.page-header
+{
+  clear: both;
+  float: left;
+  width: 100%;
+}
+.page-header h1
+{
+  float: left;
+}
+.page-header h1 small
+{
+  /*color: gray;*/
+  text-shadow: white 1px 1px 1px;
+}
+.page-header .label
+{
+  text-shadow: none;
+}
+
+#subSectionInclude
+{
+  clear: right;
+  float: right;
+  margin-top: 16px;
+  font-size: 1em;
+  text-shadow: white 1px 1px 1px;
+  color: gray;
+}
+#subSectionInclude .label
+{
+  margin-right: 2px;
+}
+
+.dropdownArrow
+{
+  /* Copied from Bootstrap's own ::after */
+  width: 0;
+  height: 0;
+  display: inline-block;
+  text-indent: -99999px;
+  vertical-align: top;
+  margin-top: 8px;
+  margin-left: 4px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid white;
+  filter: alpha(opacity=50);
+  -khtml-opacity: 0.5;
+  -moz-opacity: 0.5;
+  opacity: 0.5;
+  content: "&darr;";
+}
+
+.dropdownArrowDark
+{
+  width: 0;
+  height: 0;
+  display: inline-block;
+  text-indent: -99999px;
+  vertical-align: top;
+  margin-top: 8px;
+  margin-left: 4px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid gray;
+  -khtml-opacity: 0.7;
+  -moz-opacity: 0.7;
+  opacity: 0.7;
+  content: "&darr;";
 }
 
 /* ========================= */
@@ -424,15 +469,6 @@ user-select: none;
   margin-right: 10px;
 }
 
-#dashboard .success
-{
-  background-color: rgb(124,196,0);
-}
-#dashboard .important
-{
-  background-color: rgb(255,40,0);
-}
-
 #dashboard #log table
 {
   float: left;
@@ -478,7 +514,129 @@ user-select: none;
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
+#subSectionInclude .dropdownArrowDark
+{
+  margin-right: 6px;
+  margin-top: 7px;
+}
+
+#buildListDropdownLink
+{
+  cursor: pointer;
+}
+
+
+#buildListDropdownLink:hover
+{
+  position: relative;
+  top: -3px;
+  left: 3px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-shadow: 1px 1px 1px #555;
+  -webkit-box-shadow: #555 1px 1px 1px;
+  -moz-box-shadow: #555 1px 1px 1px;
+  padding: 2px 2px 0px 2px;
+}
+
+#buildList.popover
+{
+  position: absolute;
+  top: 96px;
+  left: 620px;
+}
+
+#buildList.popover a
+{
+  text-decoration: none;
+  color: inherit;
+  margin: 0px;
+  padding: 0px;
+}
+
+#buildList.popover h5
+{
+  float: left;
+  clear: none;
+}
+
+#buildList.popover .row:hover:not(.date)
+{
+  background-color: #eee;
+          transition: all 0.08s ease-in-out;
+     -moz-transition: all 0.08s ease-in-out;
+  -webkit-transition: all 0.08s ease-in-out;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+	      border-radius: 4px;
+}
+#buildList.popover .content
+{
+padding: 4px;
+}
+#buildList.popover .inner
+{
+  width: auto;
+}
+#buildList.popover .tablex
+{
+  margin-left: 20px;
+}
+#buildList.popover .row
+{
+
+}
+#buildList.popover h5
+{
+  float: left;
+  clear: none;
+  margin-bottom: -10px;
+}
+
+#buildList.popover .row
+{
+  padding: 1px 0px 1px 0px;
+}
+
+#buildList.popover .row:last-child
+{
+  margin-bottom: 6px;
+}
+/*
+#buildList.popover .inner
+{
+  width: 326px;
+}
+
+#buildList.popover .tablex
+{
+  padding-left: 18px; 
+}
+
+#buildList.popover .date
+{
+  margin-bottom: -8px;
+}
+
+
+#buildList.popover .date:not(:first-child)
+{
+  margin-top: 0px;
+}
+
+#buildList.popover .row:not(.date)
+{
+  margin-bottom: 1px;
+}
+*/
 /* @end */
+
+
+
+
+
 
 /* @group Project edit */
 
@@ -889,7 +1047,7 @@ user-select: none;
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-#cintientLettering
+.cintientLettering
 {
   /* Just the actual lettering, not including positioning */
   font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;

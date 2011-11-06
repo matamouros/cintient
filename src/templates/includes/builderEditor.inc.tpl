@@ -263,45 +263,44 @@ $(document).ready(function() {
 
   // Enable sorting
   builderElementsChosen.sortable(
-    {
-      axis: 'y',
-      cursor: 'move',
-      //cursorAt: 'top',
-      disabled: false,
-      distance: 20,
-      //items: '.builderElement',
-      opacity: 0.6,
-      //placeholder: 'ui-state-highlight',
-      //revert: 100,
-      scroll: true,
-      stop: function(event, ui) {
-    	  var newSort = builderElementsChosen.sortable('toArray');
-        if (newSort.join('') != initialSort.join('')) { // is toString() equally ubiquous?
-        	$.ajax({
-    	      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSortElements()}',
-    	      data: { sortedElements: newSort },
-    	      type: 'POST',
-    	      cache: false,
-    	      dataType: 'json',
-    	      success: function(data, textStatus, XMLHttpRequest) {
-    	        if (data == null || data.success == null) {
-    	          Cintient.alertUnknown();
-    	        } else if (!data.success) {
-    	          Cintient.alertFailed(data.error);
-    	        } else {
-    	          initialSort = newSort;
-    	          Cintient.alertSuccess('Successfully rearranged the order of your builder elements.');
-    	        }
-    	      },
-    	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-    	        Cintient.alertUnknown();
-    	      }
-    	    });
-        }
-     	},
-      tolerance: 'pointer',
-    }
-  );
+  {
+    axis: 'y',
+    cursor: 'move',
+    //cursorAt: 'top',
+    disabled: false,
+    distance: 20,
+    //items: '.builderElement',
+    opacity: 0.6,
+    //placeholder: 'ui-state-highlight',
+    //revert: 100,
+    scroll: true,
+    stop: function(event, ui) {
+  	  var newSort = builderElementsChosen.sortable('toArray');
+      if (newSort.join('') != initialSort.join('')) { // is toString() equally ubiquous?
+      	$.ajax({
+  	      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSortElements()}',
+  	      data: { sortedElements: newSort },
+  	      type: 'POST',
+  	      cache: false,
+  	      dataType: 'json',
+  	      success: function(data, textStatus, XMLHttpRequest) {
+  	        if (data == null || data.success == null) {
+  	          Cintient.alertUnknown();
+  	        } else if (!data.success) {
+  	          Cintient.alertFailed(data.error);
+  	        } else {
+  	          initialSort = newSort;
+  	          Cintient.alertSuccess('Successfully rearranged the order of your builder elements.');
+  	        }
+  	      },
+  	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+  	        Cintient.alertUnknown();
+  	      }
+  	    });
+      }
+   	},
+    tolerance: 'pointer',
+  });
 
   // Get initial sort in order to detect changes
   initialSort = builderElementsChosen.sortable('toArray');

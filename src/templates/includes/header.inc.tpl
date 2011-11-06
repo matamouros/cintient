@@ -59,31 +59,47 @@ $(document).ready(function() {
   <div class="topbar">
     <div class="fill">
       <div class="container">
-        <div id="topbarLeft">
-          <div id="logoLettering">{if $globals_user instanceof User}<a href="{UrlManager::getForDashboard()}">{/if}<div id="cintientLettering" style="display: none;">Cintient</div>{if $globals_user instanceof User}</a>{/if}</div>
-{if $globals_user instanceof User}
-          <div class="menuLinks">
-            <ul class="nav">
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle">{$subSectionTitle}</a>
-                <ul class="dropdown-menu">
-                  <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
-                  <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
-                  {if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if}
-                </ul>
-              </li>
+        <ul class="nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" id="logoDropdown"><div class="cintientLettering" id="logoLettering">Cintient</div><span class="dropdownArrow">&darr;</span></a>
+            <ul class="dropdown-menu">
+              {if $globals_user instanceof User}
+              <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
+              <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
+              {*if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if*}
+              <li class="divider"></li>
+              {/if}
+              <li><a href="#">About</a></li>
             </ul>
-        		  {if !empty($menuLinks)}<ul class="sectionLinks">{$menuLinks}</ul>{/if}
-          </div>
-        </div>
-        <div id="topbarRight">{* Bootstrap uses ul.secondary-nav to implement this right aligned nav... *}
-          <div id="user">
-            <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"></div>
-            <div id="username">{$globals_user->getUsername()}</div>
-            <div id="links"><a href="{UrlManager::getForSettings()}">Settings</a> | <a href="{UrlManager::getForLogout()}">Logout</a></div>
-          </div>
+          </li>
+        </ul>
+{if $globals_user instanceof User}
+        <div class="menuLinks">
+          <ul class="nav">
+            <li{if $globals_subSection == 'dashboard'} class="active"{/if}><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
+{if $globals_section == 'project' && $globals_subSection != 'new'}
+            <li class="dropdown active">
+              <a class="dropdown-toggle" href="#">{$globals_project->getTitle()}</a>
+              <ul class="dropdown-menu">
+                <li{if $globals_subSection == 'history'} class="active"{/if}><a href="{UrlManager::getForProjectBuildHistory()}">Build history</a></li>
+                <li{if $globals_subSection == 'edit'} class="active"{/if}><a href="{UrlManager::getForProjectEdit()}">Edit</a></li>
+              </ul>
+            </li>
 {/if}
+          </ul>
+      		  {if !empty($menuLinks)}<ul class="sectionLinks">{$menuLinks}</ul>{/if}
+          <ul class="secondary-nav">
+            <li class="dropdown{if $globals_subSection == 'settings'} active{/if}">
+              <a href="#" class="dropdown-toggle"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"> {$globals_user->getUsername()}</a>
+              <ul class="dropdown-menu">
+                <li{if $globals_subSection == 'settings'} class="active"{/if}><a href="{UrlManager::getForSettings()}">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="{UrlManager::getForLogout()}">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
+{/if}
       </div>
     </div>
   </div>
@@ -92,5 +108,5 @@ $(document).ready(function() {
     <div class="mainContent" id="{$subSectionId}">
       <div class="page-header">
         {if !empty($subSectionImg)}<div class="projectAvatar40x40"><img src="{$subSectionImg}" width="40" height="40"></div>{/if}
-        <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>
+        <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>{if !empty($subSectionInclude)}<div id="subSectionInclude">{include file=$subSectionInclude}</div>{/if}
       </div>
