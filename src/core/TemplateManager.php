@@ -633,7 +633,25 @@ EOT;
    */
   static public function dashboard()
   {
-    $GLOBALS['smarty']->assign('dashboard_projectList', Project::getList($GLOBALS['user'], Access::READ));
+    //
+    // Small "hack" to always have a project in GLOBALS, even before
+    // one is actively clicked and visited. This allows a default project
+    // (tipically the first one) to already be selected in the dashboard
+    // and the respective project menu item filled.
+    //
+    // This does take into account that if $GLOBALS['project'] gets here
+    // empty, it's because the webHandler couldn't populate it.
+    //
+    // This probably isn't the best thing to do, since we're initializing
+    // variables here that will be used throughout the system. If anything
+    // changes on the webHandler, don't forget to reflect that here also.
+    //
+    $projects = Project::getList($GLOBALS['user'], Access::READ);
+    if (!($GLOBALS['project'] instanceof Project) && !empty($projects) && $projects[0] instanceof Project) {
+      $GLOBALS['project'] = $projects[0];
+      $_SESSION['projectId'] = $projects[0]->getId();
+    }
+    $GLOBALS['smarty']->assign('dashboard_projectList', $projects);
   }
 
   static public function install()

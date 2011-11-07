@@ -67,16 +67,17 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
           </ul>
           </div>
           <div class="span11 rightRow" id="dashboardProject">
+{* $globals_project must be guaranteed to always exist with a project *}
 {include file='includes/dashboardProject.inc.tpl'
-project = $dashboard_projectList.0
-project_buildStats = Project_Build::getStats($dashboard_projectList.0, $globals_user)
-project_build = Project_Build::getLatest($dashboard_projectList.0, $globals_user)
-project_log = Project_Log::getList($dashboard_projectList.0, $globals_user)}
+project = $globals_project
+project_buildStats = Project_Build::getStats($globals_project, $globals_user)
+project_build = Project_Build::getLatest($globals_project, $globals_user)
+project_log = Project_Log::getList($globals_project, $globals_user)}
           </div>
         </div>
 <script type="text/javascript">
 // <![CDATA[
-activeProjectId = {$dashboard_projectList.0->getId()};
+activeProjectId = {$globals_project->getId()};
 $(document).ready(function() {
   Cintient.initSectionDashboard({
     submitUrl : '{UrlManager::getForAjaxDashboardProject()}'

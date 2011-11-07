@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="css/font_orbitron.css" />
   <link rel="stylesheet" href="css/font_syncopate.css" />
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
-  <link rel="stylesheet" href="css/lib/bootstrap.css" />
+  <link rel="stylesheet" href="css/lib/bootstrap-1.3.0.min.css" />
 {foreach $cssIncludes as $cssInclude}
   <link rel="stylesheet" href="{$cssInclude}" />
 {/foreach}
@@ -77,9 +77,10 @@ $(document).ready(function() {
         <div class="menuLinks">
           <ul class="nav">
             <li{if $globals_subSection == 'dashboard'} class="active"{/if}><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
-{if $globals_section == 'project' && $globals_subSection != 'new'}
-            <li class="dropdown active">
-              <a class="dropdown-toggle" href="#">{$globals_project->getTitle()}</a>
+{*if $globals_section == 'project' && $globals_subSection != 'new'*}
+{if $globals_project instanceof Project}
+            <li class="dropdown{if $globals_section == 'project'} active{/if}">
+              <a class="dropdown-toggle" href="#" id="activeProjectTitle">{$globals_project->getTitle()}</a>
               <ul class="dropdown-menu">
                 <li{if $globals_subSection == 'history'} class="active"{/if}><a href="{UrlManager::getForProjectBuildHistory()}">Build history</a></li>
                 <li{if $globals_subSection == 'edit'} class="active"{/if}><a href="{UrlManager::getForProjectEdit()}">Edit</a></li>

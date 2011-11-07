@@ -251,10 +251,13 @@ var Cintient = {
           that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
           that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
           activeProjectId = $(this).attr('id'); // Update the active project
-          
+          activeTabId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
+
           // Promptly hide the content
           // TODO: show a waiting indicator
           $('#dashboard #dashboardProject').hide();
+          $('#dashboard #dashboardProject').html('<div class="loading"><img src="imgs/loading-3.gif" /></div>');
+          $('#dashboard #dashboardProject').show();
           
           $.ajax({
             url: options.submitUrl,
@@ -267,15 +270,20 @@ var Cintient = {
               // documentation:
               // http://api.jquery.com/load/
               if (textStatus == 'success' || textStatus == 'notmodified') {
-                var activeId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
                 $('#dashboard #dashboardProject').html(data); // Update the HTML (replace it)
                 $('ul.tabs > li.active').removeClass('active'); // Throw away the HTML forced active tab
                 $('.tab-content .active').removeClass('active'); // Throw away the HTML forced active content
-                $('ul.tabs > li a[href="#' + activeId + '"]').parent().addClass('active'); // Honor the previously user active tab
-                $('.tab-content #' + activeId).addClass('active'); // Honor the previously user active content
+                $('ul.tabs > li a[href="#' + activeTabId + '"]').parent().addClass('active'); // Honor the previously user active tab
+                $('.tab-content #' + activeTabId).addClass('active'); // Honor the previously user active content
                 $('.tabs').tabs(); // Init the Bootstrap tabs
                 $("#log table").tablesorter({ sortList: [[0,1]] }); // Init the project log table sorter, sort the first column, DESC
                 $('#dashboard #dashboardProject').fadeIn(300); // Show it all
+                //
+                // Change the active project in the menu
+                //
+                $('#activeProjectTitle').hide();
+                $('#activeProjectTitle').text($('#dashboardProject ul.tabs').prop('id'));
+                $('#activeProjectTitle').fadeIn(300);
               } else {
                 alertUnknown();
               }

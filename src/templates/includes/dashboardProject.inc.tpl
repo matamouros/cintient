@@ -18,7 +18,7 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-            <ul class="tabs">
+            <ul class="tabs" id="{$project->getTitle()}">
               <li class="active"><a href="#general">General</a></li>
               <li><a href="#charts">Charts</a></li>
               <li><a href="#log">Log</a></li>

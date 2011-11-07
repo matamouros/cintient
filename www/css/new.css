@@ -317,6 +317,16 @@ footer p, footer #installationStats
   content: "&darr;";
 }
 
+/* Bootstrap 1.4.0 style tables  */
+table
+{
+  border: none;
+}
+table th + th, table td + td
+{
+  border-left: none;
+}
+
 /* ========================= */
 
 .closingX
@@ -543,10 +553,10 @@ user-select: none;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  box-shadow: 1px 1px 1px #555;
-  -webkit-box-shadow: #555 1px 1px 1px;
-  -moz-box-shadow: #555 1px 1px 1px;
+  border: 1px solid #eee;
+  box-shadow: 1px 1px 1px #aaa;
+  -webkit-box-shadow: #aaa 1px 1px 0px;
+  -moz-box-shadow: #aaa 1px 1px 0px;
   padding: 2px 2px 0px 2px;
 }
 
