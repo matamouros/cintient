@@ -26,7 +26,7 @@ subSectionDescription="create a new user"}
         <div class="clearfix">
           <label for="name">Name</label>
           <div class="input">
-            <input class="span5" type="text" name="name" />
+            <input class="span5 autofocus" type="text" name="name" autofocus />
           </div>
         </div>
         <div class="clearfix">

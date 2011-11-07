@@ -26,7 +26,7 @@ subSectionDescription="log in with your username and password"}
         <div class="clearfix">
           <label for="username">Username</label>
           <div class="input">
-            <input class="span3" type="text" name="username" />
+            <input class="span3 autofocus" type="text" name="username" autofocus />
           </div>
         </div>
         <div class="clearfix">

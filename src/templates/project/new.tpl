@@ -25,13 +25,13 @@ subSectionId="projectNew"}
           <div class="clearfix">
             <label for="title">Project title</label>
             <div class="input">
-              <input class="span7" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}">
+              <input class="span7 autofocus" type="text" name="title" value="{if isset($formData['title'])}{$formData['title']}{/if}" autofocus />
             </div>
           </div>
           <div class="clearfix">
             <label for="buildLabel" class="tooltip" title="This will be used to name the release package files.">A build label</label>
             <div class="input">
-              <input class="span6" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}">
+              <input class="span6" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}" />
             </div>
           </div>
           <div class="clearfix">
@@ -47,20 +47,20 @@ subSectionId="projectNew"}
           <div class="clearfix">
             <label for="scmRemoteRepository">The SCM remote repository</label>
             <div class="input">
-              <input class="span10" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}">
+              <input class="span10" type="text" name="scmRemoteRepository" value="{if isset($formData['scmRemoteRepository'])}{$formData['scmRemoteRepository']}{/if}" />
             </div>
           </div>
           <div class="clearfix">
             <label for="scmUsername">Username for SCM access</label>
             <div class="input">
-              <input class="span6" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}">
+              <input class="span6" type="text" name="scmUsername" value="{if isset($formData['scmUsername'])}{$formData['scmUsername']}{/if}" />
               <span class="help-block">This field is optional.</span>
             </div>
           </div>
           <div class="clearfix">
             <label for="scmPassword">Password for SCM access</label>
             <div class="input">
-              <input class="span6" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}">
+              <input class="span6" type="text" name="scmPassword" value="{if isset($formData['scmPassword'])}{$formData['scmPassword']}{/if}" />
               <span class="help-block">This field is optional.</span>
             </div>
           </div>

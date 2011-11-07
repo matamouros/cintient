@@ -335,7 +335,13 @@ var Cintient = {
   {
     $('#cintientLettering').fadeIn(500);
     $('.topbar').dropdown();
+    //
+    // Init tipTip tooltips
+    //
     $('.tooltip').tipTip();
+    //
+    // The dropdown arrow in the logo
+    //
     $('#logoDropdown').hover(
       function () {
         $('#logoDropdown .dropdownArrow').css({ 'visibility' : 'visible' });
@@ -344,6 +350,12 @@ var Cintient = {
         $('#logoDropdown .dropdownArrow').css({ 'visibility' : 'hidden' });
       }
     );
+    //
+    // Setup any autofocus, in case the browser doesn't support it
+    //
+    if (!('autofocus' in document.createElement('input'))) {
+      $('.autofocus').focus();
+    }
   },
   
   initSectionProjectEdit: function ()
