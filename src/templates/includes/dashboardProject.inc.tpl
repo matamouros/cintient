@@ -18,42 +18,75 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{$menuLinks="<a href=\"{UrlManager::getForProjectBuildHistory()}\">build history</a>"}
-{if $globals_project->userHasAccessLevel($globals_user, Access::WRITE) || $globals_user->hasCos(UserCos::ROOT)}
-  {$menuLinks="$menuLinks | <a href=\"{UrlManager::getForProjectEdit()}\">edit</a>"}
-{/if}
-{include file='includes/header.inc.tpl'
-  subSectionTitle="Project"
-  menuLinks=$menuLinks
-  jsIncludes=['js/lib/highcharts-2.1.6.js', 'js/lib/cintientHighcharts.theme.js']}
-{include file='includes/projectHeader.inc.tpl' project=$globals_project project_latestBuild=$project_latestBuild}
+            <ul class="tabs" id="{$project->getTitle()}">
+              <li class="active"><a href="#general">General</a></li>
+              <li><a href="#charts">Charts</a></li>
+              <li><a href="#log">Log</a></li>
+              <li><a href="#releases">Releases</a></li>
+            </ul>
 
-<div class="whiteBoard">
-<div id="projectLog">
+            <div class="tab-content">
+              <div class="active" id="general">
+                <div class="row">
+                  <div class="span2">Current status:</div>
+                  <div class="span6"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span></div>
+                </div>
+                <div class="row">
+                  <div class="span2">Latest build:</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
+                </div>
+{if $project_build instanceof Project_Build}
+                <div class="row">
+                  <div class="span2">Commit:</div>
+                  <div class="span6">{$project_build->getScmRevision()}</div>
+                </div>
+                <div class="row">
+                  <div class="span2">Finished:</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')}</div>
+                </div>
+{/if}
+                {*<div class="row">
+                  <div class="span2">Duration:</div>
+                  <div class="span3">3 min 56 sec</div>
+                </div>*}
+              </div>
+              <div id="charts">
+                <ul class="media-grid">
+                  <li>
+                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
+                  </li>
+                  <li>
+                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
+                  </li>
+                </ul>
+              </div>
+              <div id="log">
 {if !empty($project_log)}
-<table>
-  <tbody>
+                <table class="zebra-striped">
+                  <thead>
+                    <tr>
+                      <th class="header yellow headerSortDown">Datetime</th>
+                      <th class="header blue">Message</th>
+                      <th class="header green">User</th>
+                    </tr>
+                  </thead>
+                  <tbody>
 {foreach from=$project_log item=log}
-{$currentDate=$log->getDate()|date_format:"%b %e, %Y"}
-{if $currentDate != $lastDate}
-    <tr>
-      <th colspan="3">{$currentDate}</th>
-    </tr>
-{/if}
-    <tr>
-      <td>{$log->getDate()|date_format:"%R"}</td>
-      <td>{$log->getMessage()}</td>
-      <td>{$log->getUsername()}</td>
-    </tr>
-{$lastDate=$log->getDate()|date_format:"%b %e, %Y"}
+                    <tr>
+                      <td>{$log->getDate()|date_format:"%Y/%m/%d - %H:%M:%S"}</td>
+                      <td>{$log->getMessage()}</td>
+                      <td>{if $log->getUsername() == ''}system{else}{$log->getUsername()}{/if}</td>
+                    </tr>
 {/foreach}
-  </tbody>
-</table>
+                  </tbody>
+                </table>
 {/if}
-</div>
-</div>
+              </div>
+              <div id="releases">
+                Soon!
+              </div>
+            </div>
 
-{if !empty($project_build)}
 <script type="text/javascript">
 // <![CDATA[
 var chartBuildOutcomes;
@@ -191,6 +224,7 @@ $(document).ready(function() {
         type: 'scatter',
         name: 'Ok',
         color: 'rgba(124,196,0, .4)',
+        //color: 'rgba(70,165,70,.4)',
         data: [
 {foreach from=$project_buildStats.buildTimeline.ok item=ok}
 {if !$ok@first}
@@ -203,6 +237,7 @@ $(document).ready(function() {
       {
         name: 'Failed',
         color: 'rgba(255,40,0, .4)',
+        //color: 'rgba(196,60,53,.4)',
         data: [
 {foreach from=$project_buildStats.buildTimeline.failed item=failed}
 {if !$failed@first}
@@ -220,8 +255,3 @@ $(document).ready(function() {
 
 // ]]>
 </script>
-<div id="chartBuildOutcomesContainer" style="display: none;"></div>
-<div id="chartBuildTimelineContainer" style="display: none;"></div>
-{/if}
-
-{include file='includes/footer.inc.tpl'}

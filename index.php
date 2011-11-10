@@ -191,7 +191,7 @@ function appWorkDir($dir)
 
 function htaccessFile($dir)
 {
-  $msg[0] = "Enable write permissions in this dir.";
+  $msg[0] = "You cannot change the dir, just enable write permissions there.";
   $msg[1] = "Ready.";
   $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess', 'a+');
   if ($fd === false) {
@@ -206,7 +206,7 @@ function htaccessFile($dir)
 function configurationDir($dir)
 {
   global $defaults;
-  $msg[0] = "Enable write permissions in this dir.";
+  $msg[0] = "You cannot change the dir, just enable write permissions there.";
   $msg[1] = "Ready.";
   // Must be able to read the sample file provided and either create the
   // unexisting new one, or backup an existing one and change the original
@@ -253,7 +253,7 @@ if (!empty($_GET['c'])) {
   // Extract all sent inputs into key/value pairs
   //
   $get = array();
-  foreach ($_GET as $key => $value) {
+  foreach ($_POST as $key => $value) {
     // TODO: filter everything
     if ($key != '_' && $key != 's') {
       if ($key == 'appWorkDir' && substr($value, -1) != DIRECTORY_SEPARATOR) {
@@ -389,7 +389,7 @@ if (!empty($_GET['c'])) {
   }
 
   $ok = true;
-  $msg = "Use 'root' and the password you provided to login. Please refresh this page when you are ready.";
+  $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
   SystemEvent::raise(1024, "Installation successful.", "Installer");
   sendResponse($ok, $msg);
 }
@@ -409,6 +409,11 @@ $greetings = array(
   "Shall we play a game?",
   "Wouldn't you prefer a nice game of chess?",
   "Greetings, Professor Falken.",
+  "I've seen things you people wouldn't believe.",
+  "Do... or do not. There is no try.",
+  "Live long and prosper.",
+  "The beginning is a very delicate time.",
+  "Tell me of your homeworld, Usul.",
 );
 ?>
 <!DOCTYPE html>
@@ -416,169 +421,197 @@ $greetings = array(
 <head>
   <meta charset="UTF-8" />
   <title>Cintient Installation</title>
+  <link rel="stylesheet" href="www/css/reset.css" />
   <link rel="stylesheet" href="www/css/font_anonymouspro.css" />
   <link rel="stylesheet" href="www/css/font_orbitron.css" />
   <link rel="stylesheet" href="www/css/font_syncopate.css" />
-  <link rel="stylesheet" href="www/css/global.css" />
+  <link rel="stylesheet" href="www/css/lib/bootstrap-1.3.0.min.css" />
+  <link rel="stylesheet" href="www/css/cintient.css">
   <link rel="stylesheet" href="www/css/installer.css" />
   <link rel="icon" href="www/favicon.ico">
   <!--[if lt IE 9]>
   <script src="www/js/lib/html5.js"></script>
   <![endif]-->
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="www/js/lib/jquery-1.6.js"></script>
+  <script type="text/javascript" src="www/js/lib/jquery-1.7.min.js"></script>
+  <script type="text/javascript" src="www/js/lib/bootstrap/bootstrap-alerts.js"></script>
+  <script type="text/javascript" src="www/js/cintient.js"></script>
   <script type="text/javascript" src="www/js/installer.js"></script>
 </head>
-<body id="installer">
-  <div id="splashHeader" class="container">
-    <header>
-      <hgroup>
-        <h1 style="display: none;">Cintient</h1>
-        <img style="display: none;" src="www/imgs/redhalo.jpg" width="195" height="130">
-      </hgroup>
-    </header>
+<body>
+
+  <div id="welcomeScreen" title="Welcome screen" class="nodisplay">
+    <div class="cintientLettering">Cintient</div>
     <div class="greetings" style="display: none;"><?php echo $greetings[rand(0, count($greetings)-1)]; ?></div>
   </div>
-  <div id="header" class="containerTopLevel">
-    <div id="userHeader" class="container">
-      <header>
-        <hgroup>
-          <h1 id="logo" style="display: none;">Cintient <img src="www/imgs/redhalo_45.jpg" height="25"></h1>
-        </hgroup>
-      </header>
-    </div>
-  </div>
 
-  <div id="menu" class="containerTopLevel">
-    <div id="mainMenu" style="display: none;">
-      <ul>
-        <li id="historyBack">
-          <span class="step-1">&#8226;</span><span class="step-2 ghosted">&#8226;</span><span class="step-3 ghosted">&#8226;</span>
-        </li>
-        <li id="sectionName"></li>
-      </ul>
+  <div id="installer" class="nodisplay">
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <ul class="nav">
+            <li><div class="cintientLettering" id="logoLettering">Cintient</div></li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="containerTopLevel">
 
-    <div id="step-1" class="installerStep noDisplay container">
-      <div class="stepTitle" style="display: none;">Minimum requirements</div>
-      <div>
-        <ul class="item">
+    <div id="alertPane"></div>
+
+    <div class="container">
+      <div class="mainContent">
+        <div class="page-header">
+          <h1></h1>
+        </div>
+        <div id="sectionContent">
+
+          <div id="step-0" class="installerStep" title="Minimum requirements">
+            <form action class="form-stacked">
+              <fieldset>
 <?php
 list ($ok, $msg) = phpInstallationVersion();
 ?>
-          <li id="phpInstallationVersion">
-            <div class="label">PHP 5.3.x</div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
+                <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
+                  <label for="phpInstallationVersion">PHP 5.3.x</label>
+                  <div id="phpInstallationVersion" class="input">
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                </div>
 <?php
 list ($ok, $msg) = phpWithSqlite();
 ?>
-          <li id="phpWithSqlite">
-            <div class="label">PHP with SQLite3 2.5.x</div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
+                <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
+                  <label for="phpWithSqlite">PHP with SQLite3 2.5.x</label>
+                  <div id="phpWithSqlite" class="input">
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                </div>
 <?php
 list ($ok, $msg) = apacheModRewrite();
 ?>
-          <li id="apacheModRewrite">
-            <div class="label">Apache mod_rewrite</div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-        </ul>
-      </div>
-    </div>
+                <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
+                  <label for="apacheModRewrite">Apache mod_rewrite</label>
+                  <div id="apacheModRewrite" class="input">
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                </div>
+                <div class="actions"><span id="actionNext"></span></div>
+              </fieldset>
+            </form>
+          </div>
 
-    <div id="step-2" class="installerStep noDisplay container">
-      <div class="stepTitle" style="display: none;">Basic setup</div>
-      <div>
-        <ul class="item">
+
+          <div id="step-1" class="installerStep" title="Basic setup">
+            <form action class="form-stacked">
+              <fieldset>
 <?php
 list ($ok, $msg) = baseUrl($defaults['baseUrl']);
 ?>
-          <li class="inputCheckOnChange" id="baseUrl">
-            <div class="label">Base URL where Cintient will run from</div>
-            <div class="fineprintLabel">(Cintient tried to guess it. If you are not sure, just go with its suggestion)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" type="text" name="baseUrl" value="<?php echo $defaults['baseUrl']; ?>" style="width: 450px;" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
+                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="baseUrl">
+                  <label for="baseUrl">Base URL where Cintient will run from</label>
+                  <div class="input">
+                    <input class="span6" type="text" name="baseUrl" value="<?php echo $defaults['baseUrl']; ?>" />
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                  <!--div class="help-block">Cintient tried to guess it. If you are not sure, just go with its suggestion.</div-->
+                </div>
 <?php
 list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
 ?>
-          <li class="inputCheckOnChange" id="appWorkDir">
-            <div class="label">Work files dir</div>
-            <div class="fineprintLabel">(place for working files and databases, independent from the installation dir)</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" style="width: 450px;" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
+                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="appWorkDir">
+                  <label for="appWorkDir">Work files dir</label>
+                  <div class="input">
+                    <input class="span6" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" />
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                  <!--div class="help-block">Place for working files and databases, independent from the installation dir.</div-->
+                </div>
 <?php
 list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
 ?>
-          <li class="inputCheckOnChange" id="htaccessFile">
-            <div class="label">.htaccess</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
+                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="htaccessFile">
+                  <label for="htaccessFile">.htaccess</label>
+                  <div class="input">
+                    <input class="span6" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" disabled="disabled" />
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                </div>
 <?php
 list ($ok, $msg) = configurationDir($defaults['configurationDir']);
 ?>
-          <li class="inputCheckOnChange" id="configurationDir">
-            <div class="label">Configuration dir</div>
-            <div class="textfieldContainer" style="width: 456px;"><input class="textfield" disabled="disabled" style="width: 450px;" type="text" name="configurationDir" value="<?php echo $defaults['configurationDir']; ?>" /></div>
-            <div class="result <?php echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-        </ul>
+                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="configurationDir">
+                  <label for="configurationDir">Configuration dir</label>
+                  <div class="input">
+                    <input class="span6" type="text" name="configurationDir" value="<?php echo $defaults['configurationDir']; ?>" disabled="disabled" />
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                </div>
+                <div class="actions"><span id="actionNext"></span></div>
+              </fieldset>
+            </form>
+          </div>
+
+          <div id="step-2" class="installerStep" title="Administration account">
+            <form action class="form-stacked">
+              <fieldset>
+                <div class="item clearfix inputCheckOnChange fail" id="email">
+                  <label for="email">Email</label>
+                  <!--div class="fineprintLabel">(for administration notifications)</div-->
+                  <div class="input">
+                    <input class="span6" type="text" name="email" value="" />
+                    <span class="help-block">Email field is empty or invalid.</span>
+                  </div>
+                </div>
+                <div class="item clearfix inputCheckOnChange fail" id="password">
+                  <label for="password">Password</label>
+                  <div class="input">
+                    <input class="span6" type="password" name="password" value="" />
+                  </div>
+                  <label for="passwordr">Re-type password</label>
+                  <div class="input">
+                    <input class="span6" type="password" name="passwordr" value="" />
+                    <span class="help-block">Passwords are empty.</span>
+                  </div>
+                </div>
+                <div class="actions"><span id="actionNext"></span></div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
       </div>
+
+      <footer>
+        <p>Cintient is free software distributed under the GNU General Public License version 3 or later terms.</p>
+      </footer>
     </div>
-
-    <div id="step-3" class="installerStep noDisplay container">
-      <div class="stepTitle" style="display: none;">Administration account</div>
-      <div>
-        <ul class="item">
-          <li class="inputCheckOnChange" id="email">
-            <div class="label">Email</div>
-            <div class="fineprintLabel">(for administration notifications)</div>
-            <div class="textfieldContainer" style="width: 306px;"><input class="textfield" style="width: 300px;" type="email" name="email" value="" /></div>
-            <div class="result <?php $ok = false; $msg = 'Email field is empty/invalid'; echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-          <li class="inputCheckOnChange" id="password">
-            <div class="label">Password</div>
-            <div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" name="password" value="" /></div>
-            <div class="fineprintLabel">(and again here, to make sure you remember what you typed above)</div>
-            <div class="textfieldContainer" style="width: 206px;"><input class="textfield" style="width: 200px;" type="password" name="passwordr" value="" /></div>
-            <div class="result <?php $ok = false; $msg = "Passwords don't match"; echo ($ok ? 'success' : 'error'); ?>"><?php echo $msg; ?></div>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div id="actionButtons" class="container"></div>
-
-    <div id="done" class="noDisplay container"></div>
-
   </div>
+
+  <div id="finished" class="nodisplay">
+    <h1>Almost there, just a few more seconds...</h1>
+    <div><img src="www/imgs/loading-3.gif" /></div>
+  </div>
+
 <script type="text/javascript">
 // <![CDATA[
 //inputLocalCheckOnChange validation function
 function inputCheckOnChangeEmail()
 {
-  var input = $("#step-3 .item #email input").val();
-  var msg = ['Email field is empty/invalid', 'Ready.'];
+  var input = $("#step-2 #email input").val();
+  var msg = ['Email field is empty or invalid', 'Ready.'];
   var ok = (input.length > 1);
   return {ok: ok, msg: msg[Number(ok)]}; // TODO: check email better
 }
 //inputLocalCheckOnPassword validation function
 function inputCheckOnChangePassword()
 {
-  var input1 = $("#step-3 .item #password input[name=password]").val();
-  var input2 = $("#step-3 .item #password input[name=passwordr]").val();
-  var msg = ["Passwords don't match", 'Ready.'];
+  var input1 = $('#step-2 #password input[name="password"]').val();
+  var input2 = $('#step-2 #password input[name="passwordr"]').val();
+  var msg = ["Passwords are empty or don't match.", 'Ready.'];
   var ok = (input1.length > 0 && input1 == input2);
   return {ok: ok, msg: msg[Number(ok)]};
 }
 $(document).ready(function() {
-  new Installer({step:0});
+  CintientInstaller.init();
 });
 // ]]>
 </script>

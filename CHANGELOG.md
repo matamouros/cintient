@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2011-11-10 cintient-1.0.0-beta-1
+-----------------------------
+ *  CHANGED: Major UI refactoring.
+ *  CHANGED: Several other improvements and fixes.
+
 2011-10-02 cintient-0-alpha-8
 -----------------------------
  *  FIXED: Major bugfixing and improvements.

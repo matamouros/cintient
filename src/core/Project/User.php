@@ -47,7 +47,7 @@ class Project_User extends Framework_DatabaseObjectAbstract
     parent::__construct();
     $this->_ptrProject = $project;
     $this->_ptrUser = $user;
-    $this->_access = $access;
+    $this->_access = (is_null($access) ? Access::DEFAULT_USER_ACCESS_LEVEL_TO_PROJECT : $access);
     $this->_notifications = new NotificationSettings($project, $user);
   }
 

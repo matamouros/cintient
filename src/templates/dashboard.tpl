@@ -18,82 +18,74 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
-  subSectionTitle="Dashboard"
-  menuLinks="<a href=\"{UrlManager::getForProjectNew()}\">new project</a>"}
-    <script type="text/javascript" src="js/lib/jquery.sparkline.min.js"></script>
+subSectionTitle="Dashboard"
+subSectionDescription="your projects at a glance"
+subSectionId="dashboard"
+jsIncludes=['js/lib/jquery.sparkline.min.js',
+            'js/lib/bootstrap/bootstrap-tabs.js',
+            'js/lib/highcharts-2.1.6.js',
+            'js/lib/cintientHighcharts.theme.js',
+						'js/lib/jquery.tablesorter.min.js']}
 {if !empty($dashboard_projectList)}
-    <div id="projectListContainer" class="container">
-      <ul>
+    <div class="row">
+      <div class="span5 leftRow">
+        <ul id="projectList">
 {foreach $dashboard_projectList as $project}
+
 {$dashboard_latestBuild=Project_Build::getLatest($project, $globals_user)}
-      <li class="projectDraggableContainer container">
-        <a href="{UrlManager::getForProjectView($project)}" class="projectLink">
-        <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
-        <div class="projectStatusContainer"><div class="projectStatus projectStatus{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Working{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}"><div class="projectStatusWaiting" {if $project->getStatus()==Project::STATUS_BUILDING}style="display:block;"{/if}></div></div></div>
-        <div class="projectDetails">
-          <div class="projectTitle">{$project->getTitle()}</div>
-          <div class="projectStats">{if !empty($dashboard_latestBuild)}Latest: #{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}, on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}.{else}This project hasn't been built yet.{/if}</div>
-          {if !empty($dashboard_latestBuild)}<div class="projectStats">Current version: {$dashboard_latestBuild->getLabel()}</div>{/if}
-          {*<div class="projectStats">Production version: 1.0.9</div>*}
-        </div>
+          <li class="project" id="{$project->getId()}">
+            <ul>
+              <li>
+                <div class="col1">
+                  <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
+                </div>
+                <div class="col2">
+                <span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span>
+                  <h3 class="projectTitle"><a href="{UrlManager::getForProjectEdit(['pid' => $project->getId()])}">{$project->getTitle()}</a></h3>
+                </div>
+              </li>
+        			{if !empty($dashboard_latestBuild)}<li class="projectRevision"><a href="{UrlManager::getForProjectBuildHistory(['pid' => $project->getId()])}">#{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}</a></li>{/if}
+              <li class="builtOn">{if !empty($dashboard_latestBuild)}Built on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}{else}This project hasn't been built yet{/if}</li>
+          		{*if !empty($dashboard_latestBuild)}<li>Current version: {$dashboard_latestBuild->getLabel()}.</li>{/if*}
 {if !empty($dashboard_latestBuild)}
-        <div class="sparkline">
+              <li class="sparkline">
 {$dashboard_buildList=Project_Build::getList($project, $globals_user, Access::READ, ['sort' => Sort::DATE_DESC])}
 {$dashboard_buildList=array_reverse($dashboard_buildList)}
 {$count=count($dashboard_buildList)}
-          <div class="sparklineTitle">last {if $count!=1}{$count}{/if} build{if $count!=1}s{/if}</div>
-          <div id="sparklineBuilds{$project->getId()}" class="sparklineBuilds" style="display: hidden;">
+          			{*Last {if $count!=1}{$count}{/if} build{if $count!=1}s{/if}:*}
+                <div id="sparklineBuilds{$project->getId()}" class="sparklineBuilds">
 {foreach $dashboard_buildList as $build}
   {if !$build@first}, {/if}
   {if $build->isOk()}1{else}-1{/if}
 {/foreach}
+                </div>
+              </li>
+{/if}
+            </ul>
+          </li>
+{/foreach}
+          </ul>
+          </div>
+          <div class="span11 rightRow" id="dashboardProject">
+{* $globals_project must be guaranteed to always exist with a project *}
+{include file='includes/dashboardProject.inc.tpl'
+project = $globals_project
+project_buildStats = Project_Build::getStats($globals_project, $globals_user)
+project_build = Project_Build::getLatest($globals_project, $globals_user)
+project_log = Project_Log::getList($globals_project, $globals_user)}
           </div>
         </div>
-{/if}
-        </a>
-      </li>
-{/foreach}
-      </ul>
-    </div>
 <script type="text/javascript">
 // <![CDATA[
+activeProjectId = {$globals_project->getId()};
 $(document).ready(function() {
-  $('.projectDraggableContainer').each( function() {
-  	$(this).click(function() {
-  		window.location = $(this).find('a').attr('href');
-    });
-  	$(this).hover(
-  		function() {
-        $(this).css({
-      	  "cursor" : "pointer",
-      	  "border" : "2px solid rgb(255,40,0)",
-      	  "box-shadow" : "0px 0px 40px rgb(255,40,0)",
-          "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 40px",
-          "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 30px"
-        });
-      },
-      function() {
-      	$(this).css({
-      	  "cursor" : "default",
-      	  "border" : "2px solid #999",
-      	  "box-shadow" : "2px 2px 10px #111",
-      	  "-webkit-box-shadow" : "#111 2px 2px 10px",
-      	  "-moz-box-shadow" : "#111 2px 2px 10px"
-        });
-      });
-  });
-  //
-  // The sparklines
-  //
-  $('.sparklineBuilds').sparkline('html', {
-    type: 'tristate',
-    posBarColor: 'rgb(124,196,0)',
-    negBarColor: 'rgb(255,40,0)'
+  Cintient.initSectionDashboard({
+    submitUrl : '{UrlManager::getForAjaxDashboardProject()}'
   });
 });
 // ]]>
 </script>
 {else}
-    <div class="messageInfo container">You don't have any projects, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>
+    <div>You don't have any projects yet, but you can always <a href="{UrlManager::getForProjectNew()}">create a new one</a>.</div>
 {/if}
 {include file='includes/footer.inc.tpl'}

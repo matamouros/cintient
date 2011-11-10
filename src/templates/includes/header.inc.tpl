@@ -23,105 +23,92 @@
   <meta charset="UTF-8" />
   <meta property="url" content="{*SERVER_NAME*}">
   <title>Cintient</title>
+  <link rel="stylesheet" href="css/reset.css" />
   <link rel="stylesheet" href="css/font_anonymouspro.css" />
   <link rel="stylesheet" href="css/font_orbitron.css" />
   <link rel="stylesheet" href="css/font_syncopate.css" />
-  <link rel="stylesheet" href="css/avataruploader.css" />
-  <link rel="stylesheet" href="js/lib/jgrowl/jquery.jgrowl.css" />
   <link rel="stylesheet" href="js/lib/tipTipv13/tipTip.css" />
-  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/lib/bootstrap-1.3.0.min.css" />
+{foreach $cssIncludes as $cssInclude}
+  <link rel="stylesheet" href="{$cssInclude}" />
+{/foreach}
+  <link rel="stylesheet" href="css/cintient.css" />
   <link rel="icon" href="favicon.ico">
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
   <![endif]-->
   <link rel='index' title='Cintient' href='{*SERVER_NAME*}' />
   <meta name="generator" content="Cintient Engine" />
-  <script type="text/javascript" src="js/lib/jquery-1.6.4.min.js"></script>
-  <script type="text/javascript" src="js/lib/jquery-ui-1.8.12.custom.min.js"></script>
-  <script type="text/javascript" src="js/lib/jgrowl/jquery.jgrowl_minimized.js"></script>
+  <script type="text/javascript" src="js/lib/jquery-1.7.min.js"></script>
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
-  <script type="text/javascript" src="js/cintient.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap/bootstrap-alerts.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap/bootstrap-dropdown.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
+  <script type="text/javascript" src="js/cintient.js"></script>
+  <script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  Cintient.initSectionHeader();
+});
+// ]]>
+  </script>
 </head>
 <body>
-  <div id="header" class="containerTopLevel">
+  <div class="topbar">
+    <div class="fill">
+      <div class="container">
+        <ul class="nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" id="logoDropdown"><div class="cintientLettering" id="logoLettering">Cintient</div><span class="dropdownArrow">&darr;</span></a>
+            <ul class="dropdown-menu">
+              {if $globals_user instanceof User}
+              <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
+              <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
+              {*if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if*}
+              <li class="divider"></li>
+              {/if}
+              <li><a href="#">About</a></li>
+            </ul>
+          </li>
+        </ul>
 {if $globals_user instanceof User}
-    <div id="userHeader" class="container">
-      <header>
-        <hgroup>
-          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
-          <nav>
-            <div id="user">
-              <div id="avatar"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="40" height="40"></div>
-              <div id="username">{$globals_user->getUsername()}</div>
-              <div id="links">{if $globals_user->hasCos(UserCos::ROOT)}<a href="{UrlManager::getForDashboard()}">admin</a> | {/if}<a href="{UrlManager::getForSettings()}">settings</a> | <a href="{UrlManager::getForLogout()}">logout</a></div>
-            </div>
-          </nav>
-        </hgroup>
-      </header>
-    </div>
-  </div>
-  <div id="menu" class="containerTopLevel">
-    <nav id="mainMenu">
-      <ul>
-        <li id="historyBack">{if !empty($backLink)}<a href="{UrlManager::getForDashboard()}">&#8226;</a><a href="{$backLink}">&#8226;</a>&#8226;{elseif $globals_subSection == 'dashboard'}&#8226;<span class="ghosted">&#8226;&#8226;</span>{else}<a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span>{/if}</li>
-        <li id="sectionName">{$subSectionTitle}</li>
-        {if !empty($menuLinks)}<li class="sectionTopOptions">{$menuLinks}</li>{/if}
-      </ul>
-    </nav>
-<script type="text/javascript">
-// <![CDATA[
-$('#logo').hide();
-$(document).ready(function() {
-  $('#logo').show(200);
-});
-// ]]>
-</script>
-{elseif $globals_subSection == 'registration'}
-    <div id="userHeader" class="container">
-      <header>
-        <hgroup>
-          <h1 id="logo">Cintient <img src="imgs/redhalo_45.jpg" height="25"></h1>
-        </hgroup>
-      </header>
-    </div>
-  </div>
-  <div id="menu" class="containerTopLevel">
-    <nav id="mainMenu">
-      <ul>
-        <li id="historyBack"><a href="{UrlManager::getForDashboard()}">&#8226;</a>&#8226;<span class="ghosted">&#8226;</span></li>
-        <li id="sectionName">{$subSectionTitle}</li>
-      </ul>
-    </nav>
-<script type="text/javascript">
-// <![CDATA[
-$('#logo').hide();
-$(document).ready(function() {
-  $('#logo').show(200);
-});
-// ]]>
-</script>
-{else}
-    <div id="splashHeader" class="container">
-      <header>
-        <hgroup>
-          <h1>Cintient</h1>
-          <img src="imgs/redhalo.jpg" width="195" height="130">
-        </hgroup>
-      </header>
-    </div>
-<script type="text/javascript">
-// <![CDATA[
-$('#splashHeader h1').hide();
-$('#splashHeader img').hide();
-$(document).ready(function() {
-	$('#splashHeader h1').fadeIn(300);
-  $('#splashHeader img').fadeIn(300);
-});
-// ]]>
-</script>
+        <div class="menuLinks">
+          <ul class="nav">
+            <li{if $globals_subSection == 'dashboard'} class="active"{/if}><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
+{*if $globals_section == 'project' && $globals_subSection != 'new'*}
+{if $globals_project instanceof Project}
+            <li class="dropdown{if $globals_section == 'project'} active{/if}">
+              <a class="dropdown-toggle" href="#" id="activeProjectTitle">{$globals_project->getTitle()}</a>
+              <ul class="dropdown-menu">
+                <li{if $globals_subSection == 'history'} class="active"{/if}><a href="{UrlManager::getForProjectBuildHistory()}">Build history</a></li>
+                <li{if $globals_subSection == 'edit'} class="active"{/if}><a href="{UrlManager::getForProjectEdit()}">Edit</a></li>
+              </ul>
+            </li>
 {/if}
+          </ul>
+      		  {if !empty($menuLinks)}<ul class="sectionLinks">{$menuLinks}</ul>{/if}
+          <ul class="secondary-nav">
+            <li class="dropdown{if $globals_subSection == 'settings'} active{/if}">
+              <a href="#" class="dropdown-toggle"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"> {$globals_user->getUsername()}</a>
+              <ul class="dropdown-menu">
+                <li{if $globals_subSection == 'settings'} class="active"{/if}><a href="{UrlManager::getForSettings()}">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="{UrlManager::getForLogout()}">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+{/if}
+      </div>
+    </div>
   </div>
-  <div id="main" class="containerTopLevel">
+  <div id="alertPane"></div>
+  <div class="container">
+    <div class="mainContent" id="{$subSectionId}">
+      <div class="page-header">
+        {if !empty($subSectionImg)}<div class="projectAvatar40x40"><img src="{$subSectionImg}" width="40" height="40"></div>{/if}
+        <h1>{$subSectionTitle} <small>{$subSectionDescription}</small></h1>{if !empty($subSectionInclude)}<div id="subSectionInclude">{include file=$subSectionInclude}</div>{/if}
+      </div>
+      <div id="sectionContent">{* This div makes sure the following is nicely wrapped in a properly float left container. FF was having issues *}

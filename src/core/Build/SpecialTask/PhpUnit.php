@@ -121,9 +121,9 @@ class Build_SpecialTask_PhpUnit extends Framework_DatabaseObjectAbstract impleme
             $newDestHtml .= <<<EOT
 body {
   background: #FBFBFB; /* non-CSS3 */
-  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
-  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.9, #eee)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #eee 90%); /* for firefox 3.6+ */
 }
 EOT;
           }
