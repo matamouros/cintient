@@ -39,7 +39,7 @@ CintientHighcharts.prototype = {
     var chart;
     chart = new Highcharts.Chart({
       chart: {
-        width: 780,
+        width: 750,
         height: data.height,
         renderTo: data.renderTo,
         defaultSeriesType: 'bar',

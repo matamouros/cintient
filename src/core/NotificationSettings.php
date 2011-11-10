@@ -134,22 +134,27 @@ class NotificationSettings extends Framework_BaseObject
   {
     require_once 'lib/lib.htmlgen.php';
     $o = $this;
-    h::table(array('id' => 'projectEditNotifications'), function () use ($o) {
-      h::tr(function () use ($o) {
-        h::th('');
-        foreach ($o->getSettings() as $handler => $_) {
-          h::th(substr($handler, strpos($handler, '_')+1)); // Strip the Notification_ part from the class name
-        }
-      });
-      $first = current($o->getSettings());
-      foreach ($first as $event => $checked) {
-        h::tr(function () use ($o, $event, $checked) {
-          h::td(NotificationSettings::$eventDescriptions[$event]);
-          foreach ($o->getSettings() as $handler => $settings) {
-            h::td(function () use ($o, $event, $handler, $settings) {
-              h::div(array('class' => 'checkboxContainer'), function() use ($o, $event, $handler, $settings) {
+
+    h::div(array('class' => 'row'), function () use ($o) {
+      foreach ($o->getSettings() as $handler => $_) {
+        h::div(array('class' => 'span2 offset3'), function() use ($handler) {
+          h::h4(substr($handler, strpos($handler, '_')+1)); // Strip the Notification_ part from the class name
+        });
+      }
+    });
+
+    $first = current($o->getSettings());
+    foreach ($first as $event => $checked) {
+      h::div(array('class' => 'row'), function () use ($o, $event) {
+        h::div(array('class' => 'span3'), function () use ($event) {
+          h::label(NotificationSettings::$eventDescriptions[$event]);
+        });
+        foreach ($o->getSettings() as $handler => $settings) {
+          h::div(array('class' => 'span2'), function () use ($o, $event, $handler, $settings) {
+            //h::div(array('class' => 'clearfix'), function() use ($o, $event, $handler, $settings) {
+              h::div(array('class' => 'input'), function() use ($o, $event, $handler, $settings) {
                 $params = array(
-                  // Strip the Notification_ part from the class name
+                // Strip the Notification_ part from the class name
                 	'name' => $event . '_' . substr($handler, strpos($handler, '_')+1),
                 	'type' => 'checkbox',
                 );
@@ -158,18 +163,16 @@ class NotificationSettings extends Framework_BaseObject
                 }
                 // If the user's settings don't have this handler configured,
                 // then ghost out these per project settings.
-                if (!(($handlerObj = $o->getPtrUser()->getActiveNotificationHandler($handler)) instanceof NotificationHandlerAbstract) ||
-                      $handlerObj->isEmpty())
-                {
+                if (!(($handlerObj = $o->getPtrUser()->getActiveNotificationHandler($handler)) instanceof NotificationHandlerAbstract) || $handlerObj->isEmpty()) {
                   $params['disabled'] = 'disabled';
                 }
                 h::input($params);
               });
-            });
-          }
-        });
-      }
-    });
+            //});
+          });
+        }
+      });
+    }
   }
 
   /**

@@ -5,19 +5,31 @@
 
 Highcharts.theme = {
   colors: ['rgb(124,196,0)', 'rgb(255,40,0)'],
+  //colors: ['#46A546', '#C43C35'],
   chart: {
-    width: 370,
-    height: 270,
+    //width: 360,
+    //width: 590,
+    //height: 260,
+    width: 290,
+    height: 260,
     /*backgroundColor: '#303030',*/
-    backgroundColor: {
+    /*backgroundColor: 'whiteSmoke',*/
+    /*backgroundColor: {
       linearGradient: [0, 0, 0, 270],
       stops: [
         [0.16, '#fff'],
         [0.6, '#ddd'],
         [0.9, '#bbb']
       ]
+    },*/
+    backgroundColor: {
+      linearGradient: [0, 0, 0, 260],
+      stops: [
+        [0.16, '#fff'],
+        [0.9, '#eee']
+      ]
     },
-    borderWidth: 2,
+    borderWidth: 0,
     borderRadius: 0,
     borderColor: '#878787',
     plotBackgroundColor: null,
