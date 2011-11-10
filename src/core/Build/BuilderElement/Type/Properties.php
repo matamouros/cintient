@@ -71,21 +71,23 @@ class Build_BuilderElement_Type_Properties extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-    	array(
-    	  'cb' => 'getHtmlInputTextarea',
-    		'name' => 'text',
-    		'label' => 'Key=value pairs',
-    		'value' => $this->getText(),
-    		'help' => 'Lines started with semi-colons [;] are comments.',
-      ),
-    );
-    parent::toHtml(array('title' => 'Properties'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Properties'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Name, textfield
+        h::div(array('class' => 'label'), 'Key=value pairs <span class="fineprintLabel">(Lines started with ; are comments)</span>');
+        h::div(array('class' => 'textareaContainer'), function() use ($o) {
+          h::textarea(array('name' => 'text'), $o->getText());
+        });
+      });
+    });
   }
 
   public function toPhing()

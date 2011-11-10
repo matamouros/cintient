@@ -85,23 +85,35 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-    	array(
-    	  'cb' => 'getHtmlInputCheckbox',
-    		'name' => 'includeEmptyDirs',
-    		'label' => 'Include empty dirs?',
-    		'value' => '',
-    		'checked' => $this->getIncludeEmptyDirs()
-    	),
-    	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'Delete'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Delete'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // Fail on error, checkbox
+        h::div(array('class' => 'label'), 'Include empty dirs?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'includeEmptyDirs',);
+          if ($o->getIncludeEmptyDirs()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+      });
+    });
   }
 
   public function toPhing()

@@ -70,24 +70,28 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array(
-      	'cb' => 'getHtmlInputText',
-      	'name' => 'name',
-      	'value' => $this->getName()
-      ),
-      array(
-      	'cb' => 'getHtmlInputText',
-      	'name' => 'value',
-      	'value' => $this->getValue()
-      ),
-    );
-    parent::toHtml(array('title' => 'Property'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Property'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        // Name, textfield
+        h::div(array('class' => 'label'), 'Name');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'name', 'value' => $o->getName()));
+        });
+        // Value, textfield
+        h::div(array('class' => 'label'), 'Value');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'value', 'value' => $o->getValue()));
+        });
+      });
+    });
   }
 
   public function toPhing()

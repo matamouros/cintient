@@ -633,25 +633,7 @@ EOT;
    */
   static public function dashboard()
   {
-    //
-    // Small "hack" to always have a project in GLOBALS, even before
-    // one is actively clicked and visited. This allows a default project
-    // (tipically the first one) to already be selected in the dashboard
-    // and the respective project menu item filled.
-    //
-    // This does take into account that if $GLOBALS['project'] gets here
-    // empty, it's because the webHandler couldn't populate it.
-    //
-    // This probably isn't the best thing to do, since we're initializing
-    // variables here that will be used throughout the system. If anything
-    // changes on the webHandler, don't forget to reflect that here also.
-    //
-    $projects = Project::getList($GLOBALS['user'], Access::READ);
-    if (!($GLOBALS['project'] instanceof Project) && !empty($projects) && $projects[0] instanceof Project) {
-      $GLOBALS['project'] = $projects[0];
-      $_SESSION['projectId'] = $projects[0]->getId();
-    }
-    $GLOBALS['smarty']->assign('dashboard_projectList', $projects);
+    $GLOBALS['smarty']->assign('dashboard_projectList', Project::getList($GLOBALS['user'], Access::READ));
   }
 
   static public function install()
@@ -931,7 +913,63 @@ EOT;
 
   static public function registration()
   {
-
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      //
+      // Check for validity
+      //
+      $error = false;
+      if (!isset($_POST['name']) ||
+           empty($_POST['name']) ||
+          !isset($_POST['email']) ||
+           empty($_POST['email']) ||
+          !isset($_POST['username']) ||
+           empty($_POST['username']) ||
+          !isset($_POST['password']) ||
+           empty($_POST['password']) ||
+          !isset($_POST['password2']) ||
+           empty($_POST['password2']) ||
+           $_POST['password'] != $_POST['password2']
+      ) {
+        SystemEvent::raise(SystemEvent::DEBUG, "User registration failed, required attributes were empty.", __METHOD__);
+        $error = true;
+      } else {
+        $user = User::getByUsername($_POST['username']);
+        if ($user instanceof User) {
+          SystemEvent::raise(SystemEvent::DEBUG, "Username already taken.", __METHOD__);
+          $error = true;
+        }
+        $user = null;
+        unset($user);
+      }
+      if ($error) {
+        //
+        // TODO: Error notification!!!
+        //
+        $formData = array();
+        $formData['name'] = $_POST['name'];
+        $formData['email'] = $_POST['email'];
+        $formData['username'] = $_POST['username'];
+        $GLOBALS['smarty']->assign('formData', $formData);
+      } else {
+        //
+        // Everything ok, let's register the new user
+        //
+        $user = new User();
+        $user->setEmail($_POST['email']);
+        $user->setNotificationEmails($_POST['email']);
+        $user->setName($_POST['name']);
+        $user->setUsername($_POST['username']);
+        $user->setCos(UserCos::USER);
+        $user->init();
+        $user->setPassword($_POST['password']);
+        //
+        // Log the user in
+        //
+        Auth::authenticate();
+        Redirector::redirectToUri(UrlManager::getForDashboard());
+        exit;
+      }
+    }
   }
 
   static public function settings()

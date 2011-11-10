@@ -78,37 +78,53 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
   // TODO
   public function toAnt() {}
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-    	array(
-    	  'cb' => 'getHtmlInputCheckbox',
-    		'name' => 'failOnFailure',
-    		'label' => 'Fail on failure?',
-    		'value' => '',
-    		'checked' => $this->getFailOnFailure(),
-      ),
-    	array(
-    	  'cb' => 'getHtmlInputCheckbox',
-    		'name' => 'failOnIncomplete',
-    		'label' => 'Fail on incomplete?',
-    		'value' => '',
-    		'checked' => $this->getFailOnIncomplete(),
-      ),
-    	array(
-    	  'cb' => 'getHtmlInputCheckbox',
-    		'name' => 'failOnSkipped',
-    		'label' => 'Fail on skipped?',
-    		'value' => '',
-    		'checked' => $this->getFailOnSkipped(),
-      ),
-    	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'PhpUnit'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'PhpUnit'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // Fail on failure, checkbox
+        h::div(array('class' => 'label'), 'Fail on failure?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnFailure',);
+          if ($o->getFailOnFailure()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Fail on incomplete, checkbox
+        h::div(array('class' => 'label'), 'Fail on incomplete?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnIncomplete',);
+          if ($o->getFailOnIncomplete()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        // Fail on skipped, checkbox
+        h::div(array('class' => 'label'), 'Fail on skipped?');
+        h::div(array('class' => 'checkboxContainer'), function() use ($o) {
+          $params = array('class' => 'checkbox', 'type' => 'checkbox', 'name' => 'failOnSkipped',);
+          if ($o->getFailOnSkipped()) {
+            $params['checked'] = 'checked';
+          }
+          h::input($params);
+        });
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+        // TODO: Add HTML button for adding new fileset.
+      });
+    });
   }
 
   // TODO

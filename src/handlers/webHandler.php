@@ -73,7 +73,6 @@ $GLOBALS['templateFile'] = null;
 $GLOBALS['templateMethod'] = null;
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
 $GLOBALS['project'] = ((!empty($_SESSION['projectId']) || !empty($_GET['pid'])) && !empty($GLOBALS['user']) ? Project::getById($GLOBALS['user'], (!empty($_GET['pid'])?$_GET['pid']:$_SESSION['projectId'])) : null);
-$_SESSION['projectId'] = ($GLOBALS['project'] instanceof Project ? $GLOBALS['project']->getId() : null);
 //
 // Smarty
 //
@@ -123,21 +122,21 @@ if (preg_match('/^\/(?:([\w-]+)\/(?:([\w-]+)\/)?)?$/', $GLOBALS['uri'], $matches
 |* | AUTHENTICATION                                                 | *|
 \* +----------------------------------------------------------------+ */
 
-if ((!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) &&
-  ($GLOBALS['subSection'] != 'registration' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION]))
-{
-  SystemEvent::raise(SystemEvent::INFO, "Authentication required. [URI={$GLOBALS['uri']}]", "webHandler");
-  //
-  // Special case of template logic here, because the URI will get overwritten
-  // right after it. Somewhere, a cute small kitten died a horrible death.
-  //
-  if (strlen($GLOBALS['uri']) > 1) { // Don't redirect the root URI (/)
+if (!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
+  if ((!Auth::authenticate() || !($GLOBALS['user'] instanceof User)) &&
+      $GLOBALS['subSection'] != 'install' &&
+     ($GLOBALS['subSection'] != 'registration' || !$GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])
+) {
+    //
+    // Special case of template logic here, because the URI will get overwritten
+    // right after it. Somewhere, a cute small kitten died a horrible death.
+    //
     $GLOBALS['smarty']->assign('authentication_redirectUri', urlencode($GLOBALS['uri']));
+    $GLOBALS['section'] = 'default';
+    $GLOBALS['subSection'] = 'authentication';
+    $GLOBALS['user'] = null;
+    $_SESSION['userId'] = null;
   }
-  $GLOBALS['section'] = 'default';
-  $GLOBALS['subSection'] = 'authentication';
-  $GLOBALS['user'] = null;
-  $_SESSION['userId'] = null;
 }
 
 
@@ -166,7 +165,6 @@ if (!empty($GLOBALS['section'])) {
     #endif
     TemplateManager::$GLOBALS['templateMethod']();
     $GLOBALS['smarty']->assign('globals_settings', $GLOBALS['settings']);
-    $GLOBALS['smarty']->assign('globals_section', $GLOBALS['section']);
     $GLOBALS['smarty']->assign('globals_subSection', $GLOBALS['subSection']);
     $GLOBALS['smarty']->assign('globals_user', $GLOBALS['user']);
     $GLOBALS['smarty']->assign('globals_project', $GLOBALS['project']);

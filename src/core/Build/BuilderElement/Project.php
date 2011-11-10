@@ -113,9 +113,9 @@ class Build_BuilderElement_Project extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $params = array(), Array $innerCallbacks = array())
+  public function toHtml()
   {
-    require_once 'lib/lib.htmlgen.php';
+    parent::toHtml();
     h::set_indent_pattern('  ');
     $o = $this;
     /*

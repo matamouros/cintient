@@ -50,27 +50,25 @@ class Notification_Notifo extends NotificationHandlerAbstract
   public function getView()
   {
     $o = $this;
-    h::div(array('class' => 'clearfix'), function() use ($o) {
-      h::label(array('for' => 'username'), 'API Username');
-      h::div(array('class' => 'input'), function() use ($o) {
-        h::input(array(
-          'class' => 'span4',
-          'type'  => 'text',
-          'name'  => 'username',
-          'value' => $o->getUsername(),
-        ));
-      });
+    h::div(array('class' => 'label'), 'API Username');
+    h::div(array('class' => 'textfieldContainer', 'style' => 'width: 204px;'), function() use ($o) {
+      h::input(array(
+        'class' => 'textfield',
+        'style' => 'width: 200px;',
+        'type'  => 'text',
+        'name'  => 'username',
+        'value' => $o->getUsername(),
+      ));
     });
-    h::div(array('class' => 'clearfix'), function() use ($o) {
-      h::label(array('for' => 'key'), 'API Secret');
-      h::div(array('class' => 'input'), function() use ($o) {
-        h::input(array(
-          'class' => 'span4',
-          'type'  => 'text',
-          'name'  => 'key',
-          'value' => $o->getKey(),
-        ));
-      });
+    h::div(array('class' => 'label'), 'API Secret');
+    h::div(array('class' => 'textfieldContainer', 'style' => 'width: 454px;'), function() use ($o) {
+      h::input(array(
+        'class' => 'textfield',
+        'style' => 'width: 450px;',
+        'type'  => 'text',
+        'name'  => 'key',
+        'value' => $o->getKey(),
+      ));
     });
   }
 

@@ -108,44 +108,52 @@ class Build_BuilderElement_Task_ReplaceRegexp extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-      // Match, textfield
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    		'name' => 'match',
-    		'value' => html_entity_decode($this->getMatch(), ENT_QUOTES),
-    		'help' => 'The regular expression pattern to match in the file(s), PCRE compatible. Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.',
-      ),
-      // Replace, textfield
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    		'name' => 'replace',
-    		'value' => html_entity_decode($this->getReplace(), ENT_QUOTES),
-    		'help' => 'The substitution pattern to place in the file(s). Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.',
-      ),
-      // Flags, textfield
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    		'name' => 'flags',
-    		'value' => $this->getFlags(),
-     		'help' => 'The flags of the regexp engine. For the integration builder use PHP PCRE: g (global), i (case insensitive), m (multiline) and s (singleline).',
-      ),
-      // File, textfield
-      array(
-      	'cb' => 'getHtmlInputText',
-      	'name' => 'file',
-      	'value' => $this->getFile()
-      ),
-      // Filesets
-    	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'ReplaceRegexp'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'ReplaceRegexp'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // Match, textfield
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'The regular expression pattern to match in the file(s), PCRE compatible.'
+                              . ' Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.'), 'Match');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'match', 'value' => html_entity_decode($o->getMatch(), ENT_QUOTES)));
+        });
+        // Replace, textfield
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'The substitution pattern to place in the file(s)'
+                              . ' Regexes should be PHP PCRE for the integration builder or any other for the deployment builder.'), 'Replace');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'replace', 'value' => html_entity_decode($o->getReplace(), ENT_QUOTES)));
+        });
+        SystemEvent::raise(SystemEvent::ALERT, print_r($o, true), __METHOD__);
+        // Flags, textfield
+        h::div(array('class' => 'label tooltip',
+                     'title' => 'The flags of the regexp engine. For the integration builder use PHP PCRE: g (global), i (case insensitive), m (multiline) and s (singleline).'), 'Flags');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'flags', 'value' => $o->getFlags()));
+        });
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+      });
+    });
   }
 
   public function toPhing()

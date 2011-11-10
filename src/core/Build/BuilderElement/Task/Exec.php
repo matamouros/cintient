@@ -113,38 +113,39 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array(
-      	'cb' => 'getHtmlInputText',
-      	'name' => 'executable',
-      	'value' => $this->getExecutable()
-      ),
-      array(
-      	'cb' => 'getHtmlInputText',
-      	'name' => 'args',
-      	'value' => $this->getArgs(),
-      	'help' => 'Space separated.'
-      ),
-    	array(
-    		'cb' => 'getHtmlInputText',
-    		'name' => 'basedir',
-    		'label' =>
-    		'Base dir',
-    		'value' => $this->getBaseDir()
-    	),
-    	array(
-    		'cb' => 'getHtmlInputText',
-    		'name' => 'outputProperty',
-    		'label' => 'Output property',
-    		'value' => $this->getOutputProperty()
-    	),
-    );
-    parent::toHtml(array('title' => 'Exec'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Exec'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // Executable, textfield
+        h::div(array('class' => 'label'), 'Executable');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'executable', 'value' => $o->getExecutable()));
+        });
+        // Args, textfield
+        h::div(array('class' => 'label'), 'Args <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'args', 'value' => $o->getArgs()));
+        });
+        // Dir, textfield
+        h::div(array('class' => 'label'), 'Base dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'basedir', 'value' => $o->getBaseDir()));
+        });
+        // Output property, textfield
+        h::div(array('class' => 'label'), 'Output property');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'outputProperty', 'value' => $o->getOutputProperty()));
+        });
+      });
+    });
   }
 
   public function toPhing()

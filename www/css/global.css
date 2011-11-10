@@ -1,0 +1,1654 @@
+/* @override 
+	http://cintient/css/global.css
+	http://cintient/project/css/global.css
+	http://cintient/project/history/css/global.css
+	http://cintient/settings/css/global.css
+	http://cintient/project/edit/css/global.css
+	http://cintient/dashboard/css/global.css
+	http://cintient/project/new/css/global.css
+*/
+
+/*
+ * 
+ *  Cintient, Continuous Integration made simple.
+ *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *
+ *  This file is part of Cintient.
+ *
+ *  Cintient is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Cintient is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cintient. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
+
+/* @group Reset */
+/*
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.2.0
+build: 2676
+*/
+
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
+/* My own */
+a{text-decoration:none;}
+/* @end */
+
+/* @group Generic stuff */
+/* +----------------------------------------------------------------+ *\
+|* | GENERIC STUFF                                                  | *|
+\* +----------------------------------------------------------------+ */
+
+.dropdownTriangle {
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid rgb(255,40,0);
+  /*text-shadow: 0px 0px 6px rgba(255,40,0,1);*/
+}
+
+.highchart
+{
+  float: left;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  font-size: 8pt;
+  font-weight: normal;
+  text-decoration: none;
+  text-shadow: #fff 1px 1px 1px;
+  font-variant: normal;
+}
+
+a
+{
+  color: rgb(255,40,0);
+  font-weight: bold;
+  text-decoration: none;
+  font-variant: small-caps;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+}
+
+a:hover
+{
+  color: rgb(255,60,0);
+  text-shadow: 0px 0px 6px rgba(255,40,0,1);
+  text-decoration: none;
+}
+
+#header
+{
+  margin-top: 10px;
+}
+
+#main
+{
+  margin-top: 10px;
+}
+
+#menu
+{
+  font-size: 1.04em;
+  height: 20px;
+  margin-top: 35px;
+  margin-bottom: 40px;
+  clear: both;
+}
+
+#mainMenu #historyBack
+{
+  font-size: .9em;
+  font-weight: bold;
+  vertical-align: text-top;
+  letter-spacing: .4em;
+}
+
+.ghosted
+{
+  opacity: .3;
+}
+
+#mainMenu ul
+{
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  float: left;
+  -webkit-border-radius: 6px 6px 6px 6px;
+  -moz-border-radius: 6px 6px 6px 6px;
+  border-radius: 6px 6px 6px 6px;
+}
+
+#mainMenu #sectionName
+{
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+#mainMenu ul li
+{
+  height: 20px;
+  font-variant: small-caps;
+  font-size: 1.1m;
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  border-right: 1px solid #333;
+  border-left: 1px solid #bbb;
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+  float: left;
+  margin: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 4px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #555));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+}
+
+#mainMenu ul li:first-child
+{
+  border-left: 1px solid #bbb;
+  -webkit-border-radius: 6px 0px 0px 6px;
+  -moz-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+  padding-right: 5px;
+  width: 46px;
+}
+
+#mainMenu ul li:last-child
+{
+  border-right: 1px solid #bbb;
+  -webkit-border-radius: 0px 6px 6px 0px;
+  -moz-border-radius: 0px 6px 6px 0px;
+  border-radius: 0px 6px 6px 0px;
+}
+
+/*
+#mainMenu ul li
+{
+  font-variant: small-caps;
+  font-size: 1.1m;
+  color: #555;
+  text-shadow: #fff 1px 1px 1px;
+  border-right: 1px solid #aaa;
+  border-left: 1px solid #fff;
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+  float: left;
+  margin: 0;
+  padding-left: 9px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 4px;
+  background: #FBFBFB;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd));
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%);
+}
+*/
+
+#mainMenu .sectionTopOptions
+{
+  
+}
+
+.containerTopLevel
+{
+  width: 800px;
+  margin: auto auto auto auto;
+}
+
+.container
+{
+  margin: auto auto auto auto;
+}
+
+html
+{
+  background: #303030;
+  font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  color: #999;
+  text-shadow: black 0px 1px 1px;
+  font-size: 12pt;
+  overflow-y: scroll;
+}
+
+.popupWidget
+{
+  font-size: 12pt;
+  display: none;
+  border: 1px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  float: left;
+  padding: 6px;
+  padding-bottom:4px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #444));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  position: absolute;
+}
+
+.popupWidget li
+{
+  margin: 0;
+  padding: 2px 10px 2px 2px;
+}
+
+hr
+{
+  /* http://jasonmillerdesign.com/Programming/Style_HR_Horizontal_Rule_with_CSS */
+  font-size: 1px;
+  line-height: 0;
+  overflow: visible;
+  display: block;
+  position: relative;
+  padding: 0;
+  margin: 8px auto;
+  width: 90%;
+  clear: both;
+  border: none;
+  border-top: 1px solid #AAA;
+  border-bottom: 1px solid #FFF;
+  font-size: 1px;
+  line-height: 0;
+  overflow: visible;
+}
+
+.tooltip
+{
+  cursor: help;
+}
+
+.emphasis
+{
+  color: rgb(255,40,0);
+  text-decoration: none;
+}
+
+/* @end */
+
+/* @group Forms */
+/* +----------------------------------------------------------------+ *\
+|* | FORMS                                                          | *|
+\* +----------------------------------------------------------------+ */
+
+.dropdownContainer
+{
+  margin-bottom: 15px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 6px;
+  width: auto;
+}
+
+.dropdown
+{
+  font-size: 1.1em;
+  border: 0px solid #fff;
+  width: auto;
+  color: #555;
+  padding-left: 0;
+  margin-left: 0;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  /*outline: none;*/
+}
+
+.fineprintLabel
+{
+  font-size: .7em;
+  text-indent: 2px;
+  color: #888;
+  padding-bottom: 4px;
+}
+
+#loginContainer
+{
+  width: 316px;
+  margin-bottom: 50px;
+}
+
+.loginTextfieldContainer
+{
+  margin-bottom: 20px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 6px;
+  width: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.loginTextfield
+{
+  font-size: 1.8em;
+  border: 0px solid #fff;
+  width: 300px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+  outline: none;
+}
+
+.loginLabel
+{
+  letter-spacing: 3px;
+  font-family: Orbitron;
+  font-size: 1.1em;
+}
+
+#loginSubmitButton
+{
+  float: right;
+  font-family: Orbitron;
+}
+
+.textfieldContainer
+{
+  margin-bottom: 20px;
+  padding: 0px;
+  padding-right: 5px;
+  width: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.textfield
+{
+  font-size: 1.1em;
+  border: 0px solid #fff;
+  width: 300px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  outline: none;
+}
+
+.textareaContainer
+{
+  margin-bottom: 20px;
+  padding: 0;
+  padding-right: 3px;
+  width: 556px;
+  height: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.textarea, textarea
+{
+  font-size: 1em;
+  border: 0px solid #fff;
+  width: 550px !important;
+  height: 55px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  outline: none;
+}
+
+.label
+{
+  /*letter-spacing: .10em;
+  font-family: Orbitron;*/
+  /*font-size: 1.1em;*/
+  font-size: 14pt;
+}
+
+.labelCheckbox
+{
+  /*letter-spacing: .10em;
+  font-family: Orbitron;*/
+  font-size: 1.1em;
+  float: left;
+}
+
+#submitButton, .submitButton
+{
+  float: right;
+}
+
+.optionLink
+{
+  float: right;
+  margin-right: 10px;
+}
+
+button
+{
+  color: #555;
+  font-size: 13pt;
+  width: auto;
+  height: auto;
+  border: 2px solid #999;
+  padding-left: 10px;
+  padding-right: 10px;
+  -webkit-border-radius: 7px 7px 7px 7px;
+  -moz-border-radius: 7px 7px 7px 7px;
+  border-radius: 7px 7px 7px 7px;
+  box-shadow: 2px 2px 20px #111;
+  -webkit-box-shadow: #111 2px 2px 20px;
+  -moz-box-shadow: #111 2px 2px 15px;
+  /*background: rgb(230,230,230);*/
+  /*background: rgb(124,196,0);*/
+  /*background: rgb(255,40,0);*/
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  /*transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;*/
+  cursor: pointer;
+  float: left;
+  margin-right: 10px;
+  margin-top: 20px;
+  padding-top: 3px;
+}
+
+button.smaller
+{
+  font-size: 7pt;
+  margin-top: 26px;
+}
+
+button.inactive
+{
+  opacity: .2;
+  cursor: default;
+}
+
+/* @end */
+
+/* @group Headers/Footers */
+/* +----------------------------------------------------------------+ *\
+|* | HEADERS/FOOTERS                                                | *|
+\* +----------------------------------------------------------------+ */
+
+#footer
+{
+  /*letter-spacing: .20em;*/
+  font-family: Syncopate, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  text-align: center;
+  clear: both;
+  padding-top: 30px;
+  font-size: .46em;
+  line-height: 1.7em;
+}
+
+#footer #installationStats
+{
+  padding-bottom: 10px;
+}
+
+#headerLogo
+{
+  float: left;
+}
+
+#splashHeader header h1
+{
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  letter-spacing: 4px;
+  font-size: 70pt;
+  font-size: 6em;
+  width: auto;
+  color: rgb(230,230,230);
+  text-shadow: black 0px 3px 5px;
+}
+
+#splashHeader
+{
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+#userHeader
+{
+  margin-bottom: 10px;
+  clear: both;
+  height: 40px;
+}
+
+#userHeader header h1
+{
+  font-family: Orbitron, "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  /*font-size: 1.6em;*/
+  font-size: 24pt;
+  letter-spacing: 2px;
+  color: rgb(230,230,230);
+  width: 550px;
+  float: left;
+  margin-top: 10px;
+}
+
+#userHeader nav
+{
+  float: right;
+  width: 250px;
+}
+
+#userHeader nav #user #avatar
+{
+  float: left;
+  width: 40px;
+  height: 40px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+#userHeader nav #user #username
+{
+  padding-left: 50px;
+  line-height: .5em;
+  padding-top: 7px;
+  padding-bottom: 5px;
+  font-size: 1.2em;
+}
+
+#userHeader nav #user #links
+{
+  clear: none;
+  padding-left: 52px;
+  padding-top: 0px;
+  font-size: .8em;
+}
+
+/* @end */
+
+
+/* @group Other stuff */
+/* +----------------------------------------------------------------+ *\
+|* | OTHER STUFF                                                    | *|
+\* +----------------------------------------------------------------+ */
+
+#sectionMenu
+{
+  text-align: right;
+  padding-right: 3px;
+  padding-top: 10px;
+}
+
+/* @end */
+
+
+/* @group Project dashboard */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT DASHBOARD                                              | *|
+\* +----------------------------------------------------------------+ */
+
+.sparkline
+{
+  float: left;
+  margin-left: 60px;
+  margin-top: 3px;
+}
+
+#sparklineBuilds
+{
+  
+}
+
+.sparklineTitle
+{
+  font-variant: small-caps;
+  font-size: 9pt;
+}
+
+.projectAvatar40x40
+{
+  float: left;
+  width: 40px;
+  height: 40px;
+  margin-top: 1px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+#statusContainer
+{
+  height: 35px;
+  float: left;
+  /*width: 33px;*/
+  width: 45px;
+  padding-top: 6px;
+  padding-left: 2px;
+}
+
+#statusContainer .status
+{
+  width: 30px;
+  height: 30px;
+  -webkit-border-radius: 15px 15px 15px 15px;
+  -moz-border-radius: 15px 15px 15px 15px;
+  border-radius: 15px 15px 15px 15px;
+}
+
+.projectDetails
+{
+  float: left;
+  width: 290px;
+}
+
+.projectTitle
+{
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.projectStats
+{
+  font-size: .6em;
+  width: auto;
+}
+
+.projectStatusContainer
+{
+  float: left;
+  width: 45px;
+  margin-top: 5px;
+  margin-left: 2px;
+}
+
+.projectStatus
+{
+  float: left;
+  margin-top: 2px;
+  width: 30px;
+  height: 30px;
+  -webkit-border-radius: 15px 15px 15px 15px;
+  -moz-border-radius: 15px 15px 15px 15px;
+  border-radius: 15px 15px 15px 15px;
+}
+
+.projectStatusOk
+{
+  float: left;
+  margin-left: 7px;
+  background: rgb(124,196,0); /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7CC400', endColorstr='#7A964B'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#7CC400), to(#7A964B)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #7CC400, #7A964B); /* for firefox 3.6+ */
+  box-shadow: 0px 0px 6px rgb(124,196,0);
+  -webkit-box-shadow: rgb(124,196,0) 0px 0px 6px;
+  -moz-box-shadow: rgb(124,196,0) 0px 0px 6px;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  color: #aaefad;
+}
+
+.projectStatusFailed
+{
+  float: left;
+  margin-left: 7px;
+  background: rgb(255,40,0); /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF2800', endColorstr='#B35D4D'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#FF2800), to(#B35D4D)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #FF2800, #B35D4D); /* for firefox 3.6+ */
+  box-shadow: 0px 0px 6px rgb(255,40,0);
+  -webkit-box-shadow: rgb(255,40,0) 0px 0px 6px;
+  -moz-box-shadow: rgb(255,40,0) 0px 0px 6px;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+}
+
+.projectStatusWorking
+{
+  float: left;
+  margin-left: 7px;
+  background: rgb(240,240,240); /* non-CSS3 */
+  /*filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f3f3', endColorstr='silver'); */
+  /*background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(silver)); */
+  /*background: -moz-linear-gradient(top, #f3f3f3, silver); */
+  box-shadow: 0px 0px 4px rrgb(255,255,255);
+  -webkit-box-shadow: rgb(255,255,255) 0px 0px 4px;
+  -moz-box-shadow: rgb(255,255,255) 0px 0px 4px;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  color: #f3f3f3;
+}
+
+.projectStatusUninitialized
+{
+  float: left;
+  margin-left: 7px;
+  background: #fdfa85;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcea5d', endColorstr='#fdfa85'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#fcea5d), to(#fdfa85)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fcea5d, #fdfa85); /* for firefox 3.6+ */
+  box-shadow: 0px 1px 7px rgb(254,253,0);
+  -webkit-box-shadow: rgb(254,253,0) 0px 1px 7px;
+  -moz-box-shadow: rgb(254,253,0) 0px 1px 7px;
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+}
+
+.projectStatusWaiting
+{
+  display: none;
+  background-image: url('imgs/loading.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 24px;
+  height: 24px;
+  margin-left:3px;
+  margin-top:3px;
+  transition: all 0.5s ease-in-out;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+}
+
+
+/* @end */
+
+
+/* @group Project edit */
+
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT EDIT                                                   | *|
+\* +----------------------------------------------------------------+ */
+
+#addUserPane #searchUserPane
+{
+  display: none;
+  margin-left: 237px;
+  margin-top: 37px;
+}
+
+#addUserPane #searchUserPane ul
+{
+  width: 190px;
+  overflow: hidden;
+}
+
+#addUserPane #searchUserPane li.spinningIcon
+{
+  text-align: center;  
+}
+
+#addUserPane > .label
+{
+  margin-right: 15px;
+  float: left;
+}
+
+#addUserPane .textfieldContainer
+{
+  float: left;
+  margin-top: 3px;
+  margin-left: 29px;
+}
+.projectEditContainer #userList > li
+{
+  clear: both;
+  padding-top: 10px;
+}
+
+.projectEditContainer #userList > li .user .remove
+{
+  float: right;
+  margin-top: 12px;
+}
+
+.projectEditContainer .accessLevelPane
+{
+  margin-right: 15px;
+  float: right;
+  margin-top: 12px;
+  margin-left: 20px;
+}
+
+.projectEditContainer .accessLevelPaneLevels li:first-child
+{
+
+}
+
+.projectEditContainer .accessLevelPaneLevels li
+{
+
+}
+
+.projectEditContainer .accessLevelPaneLevels li input
+{
+  margin-right: 7px;
+  margin-top: 2px;
+}
+
+.projectEditContainer .accessLevelPaneLevels .labelCheckbox
+{
+
+  font-size: .9em;
+}
+
+.projectEditContainer .accessLevelPaneLevels .fineprintLabel
+{
+  clear: left;
+  font-size: .56em;
+  margin-left: 23px;
+  text-indent: 0;
+}
+
+.projectEditContainer .accessLevelPaneLevels input[type=radio]
+{
+  clear: left;
+  float: left;
+  margin-top: 1px;
+  margin-right: 5px;
+  margin-bottom: 6px;
+}
+
+.projectEditContainer .accessLevelPaneLevels
+{
+  display: none;
+  border: 1px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  float: left;
+  width: 85px;
+  padding-left: 6px;
+  padding-bottom:4px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #444));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  position: absolute;
+}
+
+.projectEditContainer .accessLevelPaneLevels li
+{
+  margin-bottom: 6px;
+}
+
+.exclusivePane
+{
+  display: none;
+  float: left;
+}
+
+.projectEditContainer
+{
+  width: auto;
+}
+
+.projectEditContainer .user .avatar
+{
+  width: 40px;
+  height: 40px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+.projectEditContainer .user .avatar
+{
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+.projectEditContainer .user .username
+{
+  float: left;
+  margin-top: 12px;
+  margin-left: 10px;
+}
+
+#addUserPane
+{
+  padding-bottom: 15px;
+}
+
+.avatar25
+{
+  width: 25px;
+  height: 25px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+#usersPane #addUserPane #searchUserPane .username
+{
+  padding-left: 6px;
+  vertical-align: 5px;
+}
+
+.projectEditContainer .builderElementsAvailable
+{
+  width: auto;
+  float: left;
+  margin-left: 10px;
+}
+
+.projectEditContainer .builderElementsAvailable h1
+{
+  text-decoration: underline;
+}
+
+.projectEditContainer .builderElementsAvailable li
+{
+  margin: 1px;
+  list-style-type: disc;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_0
+{
+  margin-left: 15px;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_1
+{
+  margin-left: 15px;
+}
+
+.projectEditContainer .builderElementsAvailable .builderElementDepth_2
+{
+  margin-left: 15px;
+}
+
+.projectEditContainer .builderElementsChosen
+{
+  width: auto;
+  float: left;
+  margin-left: 50px;
+}
+
+.projectEditContainer .builderElementsChosen #submitButton
+{
+  clear: both;
+}
+
+#projectEditNotifications td
+{
+  padding: 4px 2px 6px 2px;
+}
+
+#projectEditNotifications .checkboxContainer
+{
+  text-align: center;
+}
+
+#projectEditNotifications th
+{
+  text-decoration: underline;
+}
+
+/* @end */
+
+
+/* @group Project Header */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT HEADER                                                 | *|
+\* +----------------------------------------------------------------+ */
+
+#buildList
+{
+  font-size: 9pt;
+  margin: 42px 0 0 170px;
+  padding: 0 0 3px 0;
+  float: left;
+  clear: none;
+  z-index: 1000;
+  /*height: 250px;
+  width: 160px;
+  overflow-y: auto;*/
+}
+
+#buildList table
+{
+  margin: 0;
+  padding: 0;
+}
+
+#buildListDropdownLink
+{
+  /* don't allow any interruption on hover between text and triangle */
+  float: left;
+  padding: 1px;
+}
+
+#buildListDropdownLink:hover
+{
+  position: relative;
+  top: -1px;
+  left: -1px;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
+  border-right: 1px solid #333;
+  border-left: 1px solid #444;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #333;
+  box-shadow: 1px 1px 2px #111;
+  -webkit-box-shadow: #111 1px 1px 2px;
+  -moz-box-shadow: #111 1px 1px 2px;
+}
+
+#buildList table th
+{
+  padding: 6px 0px 2px 5px;
+  font-weight: bold;
+}
+
+#buildList table td
+{
+  padding: 2px 4px 2px 8px;
+}
+
+#buildList table td:last-child
+{
+  padding-right: 8px;
+}
+
+#buildList dt
+{
+  padding: 1px 4px 1px 4px;
+  background-color: #000;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
+  font-weight: normal;
+  text-decoration: none;
+  text-shadow: #444 1px 1px 1px;
+}
+
+#buildList dt.buildOk
+{
+  background: rgb(124,196,0); /* non-CSS3 */
+  color: #fff;
+}
+
+#buildList dt.buildFail
+{
+  background: rgb(255,40,0); /* non-CSS3 */
+  color: #fff;
+}
+
+#projectHeader .dropdownTriangle
+{
+  float: left;
+  margin: 6px 0 0 4px;
+  clear: right;
+}
+
+#projectHeader
+{
+  float: left;
+  margin-bottom: 30px;
+}
+
+#projectHeader .avatar
+{
+  float: left;
+  width: 90px;
+  height: 90px;
+  margin-top: 1px;
+  box-shadow: 1px 1px 3px #111;
+  -webkit-box-shadow: #111 1px 1px 3px;
+  -moz-box-shadow: #111 1px 1px 3px;
+  border: 1px solid #fff;
+}
+
+#projectHeader .title
+{
+  font-size: 1.1em;
+  margin-bottom: 1px;
+  width: 670px;
+  overflow: none;
+  float: left;
+  margin-top: 2px;
+}
+
+#projectHeader .details
+{
+  font-size: .76em;
+  margin-left: 1px;
+  float: left;
+  clear: none;
+}
+
+
+/* @end */
+
+
+/* @group Project page */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT PAGE                                                   | *|
+\* +----------------------------------------------------------------+ */
+
+#projectLog
+{
+  float: left;
+}
+
+.whiteBoard table
+{
+  display: none;
+  float: left;
+  font-size: 9pt;
+  border: 1px solid #fff;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  color: #555;
+  font-weight: normal;
+  text-decoration: none;
+  text-shadow: #fff 1px 1px 1px;
+  font-variant: normal;
+  border-right: 1px solid #333;
+  border-left: 1px solid #bbb;
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+}
+
+.whiteBoard table th
+{
+  border-top: 1px dotted #999;
+  padding: 3px 0px 2px 4px;
+  font-weight: bold;
+  /*
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #555));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  */
+}
+
+.whiteBoard table td
+{
+  padding: 1px 4px 2px 5px;
+}
+
+.whiteBoard table td:last-child
+{
+  padding-right: 6px;
+}
+
+/* @end */
+
+
+
+/* @group Project history */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECT HISTORY                                                | *|
+\* +----------------------------------------------------------------+ */
+
+.unitTestsChart
+{
+  float: left;
+  margin-bottom: 20px;
+}
+
+/* @end */
+
+
+
+/* @group Builder Elements */
+/* +----------------------------------------------------------------+ *\
+|* | BUILDER ELEMENTS                                               | *|
+\* +----------------------------------------------------------------+ */
+
+.builderElement
+{
+  border: 1px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  background: #999;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#555555');
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #999), color-stop(0.6, #666), color-stop(0.9, #444));
+  background: -moz-linear-gradient(top, #999 16%, #666 60%, #555 90%);
+  color: #fff;
+  text-shadow: #303030 1px 1px 1px;
+  /*position: absolute;*/
+  font-size: 10pt;
+  margin-bottom: 10px;
+  width: 314px;
+  padding-top: 7px;
+  padding-bottom: 1px;
+  padding-left: 10px;
+  padding-right: 12px;
+  clear: both;
+  float: left;
+}
+
+.builderElement .builderElementForm
+{
+  float: left;
+}
+
+.builderElement .builderElementTitle
+{
+  font-size: 11pt;
+  margin-bottom: 2px;
+  float: left;
+  width: 100%;
+}
+
+.builderElement .builderElementTitle a.submit
+{
+  display: none;
+  margin-right: 14px;
+}
+
+.builderElement .builderElementTitle p.title
+{
+  float: left;
+  margin-bottom: 10px;
+  text-decoration: underline;
+  cursor: pointer;
+  float: left;
+}
+
+.builderElement .builderElementTitle ul
+{
+  float: right;
+  margin-bottom: 10px;
+}
+
+.builderElement .builderElementTitle li
+{
+  float: left;
+}
+
+.builderElement .builderElementTitle li p.pipe
+{
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.builderElement .label
+{
+  font-size: 10pt;
+  width: auto;
+  float: left;
+  margin-right: 6px;
+  clear: left;
+}
+
+.builderElement .fineprintLabel
+{
+  color: white;
+}
+
+.builderElement .checkboxContainer
+{
+  font-size: 12pt;
+  float: left;
+  margin-bottom: 10px;
+}
+
+.builderElement .textfieldContainer
+{
+  font-size: 10pt;
+  margin-bottom: 8px;
+  float: left;
+}
+
+.builderElement .labelRadio
+{
+  float: left;
+}
+
+.builderElement .radioContainer
+{
+  clear: both;
+  float: left;
+  margin-bottom: 15px;
+}
+
+.builderElement .radioContainer li
+{
+  float: left;
+  margin-right: 20px;
+}
+
+.builderElement .textareaContainer
+{
+  float: left;
+  padding: 0;
+  padding-right: 3px;
+  width: 307px;
+  height: auto;
+  background: #FBFBFB;
+  border: 2px solid #999;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+.builderElement textarea
+{
+  font-size: 10pt;
+  font-family: "Anonymous Pro", "Andale Mono", Arial;
+  font-weight: normal;
+  float: left;
+  border: 0px solid #fff;
+  width: 300px;
+  height: 150px;
+  color: #555;
+  padding-left: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  outline: none;
+}
+
+.builderElement .textfield
+{
+  width: 300px;
+}
+
+
+/* @end */
+
+/* @group Projects */
+/* +----------------------------------------------------------------+ *\
+|* | PROJECTS                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+#projectListContainer
+{
+  text-align: left;
+  text-shadow: none;
+  color: #555;
+  padding-top: 30px;
+}
+
+.projectDraggableContainer
+{
+  margin-bottom: 20px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 600px;
+  height: 44px;
+  border: 2px solid #999;
+  -webkit-border-radius: 16px 16px 16px 16px;
+  -moz-border-radius: 16px 16px 16px 16px;
+  border-radius: 16px 16px 16px 16px;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  /*background: rgb(230,230,230);*/
+  /*background: rgb(124,196,0);*/
+  /*background: rgb(255,40,0);*/
+  background: #FBFBFB; /* non-CSS3 */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.16, #fff), color-stop(0.6, #ddd), color-stop(0.9, #bbb)); /* for webkit browsers */
+  background: -moz-linear-gradient(top, #fff 16%, #ddd 60%, #bbb 90%); /* for firefox 3.6+ */
+  transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+}
+
+.projectDraggableContainer .projectLink
+{
+  color: #555;
+  font-weight: normal;
+  text-decoration: none;
+  /*text-shadow: none;*/
+  text-shadow: #fff 1px 1px 1px;
+  margin: 0;
+  width: 600px;
+  height: 44px;
+  font-variant: normal;
+}
+
+#projectViewContainer
+{
+  float: left;
+}
+
+.rawText
+{
+  font-size: 8pt;
+  font-family: "Anonymous Pro", "Andale Mono";
+  font-weight: normal;
+  white-space: nowrap;
+  /*overflow: scroll;
+  width: 800px;*/
+}
+
+#projectViewContainer #junitReport
+{
+  margin: 0; 
+}
+
+#projectViewContainer #junitReport .classTest
+{
+  margin-bottom: 8px;
+}
+
+#projectViewContainer #junitReport .chart img
+{
+  /*-webkit-border-radius: 16px 16px 16px 16px;*/
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+#projectViewContainer #junitReport .chart:not(:last-of-type)
+{
+  margin-bottom: 30px;
+}
+
+#projectViewContainer .buildResultPane
+{
+  display: none;
+}
+
+#projectViewContainer #quality #jdependChart
+{
+  float: left;
+  margin-bottom: 10px;
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  background-color: white;
+}
+
+#projectViewContainer #quality #overviewChart
+{
+  float: left;
+  margin-left: 8px;
+  margin-bottom: 10px;
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+  background-color: white;
+}
+
+#projectSectionsLinks
+{
+  /*
+  width: 100%;
+  float: left;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 1.04em;
+  */
+}
+
+#projectSectionsLinks ul
+{
+  /*
+  float: left;
+  text-align: center;
+  */
+}
+
+#projectSectionsLinks li
+{
+  /*
+  float: left;
+  margin-left: 20px;
+  margin-right: 20px;
+  */
+}
+
+#projectEditContainer
+{
+  width: 600px;
+  margin-bottom: 80px;
+}
+
+#newProjectContainer
+{
+  margin-bottom: 80px;
+}
+
+article#project .avatar
+{
+  font-size: .8em;
+}
+
+#ccFrame
+{
+  /*-webkit-border-radius: 16px 16px 16px 16px;*/
+  border: 2px solid #999;
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+
+/* @end */
+
+
+/* @group Settings */
+/* +----------------------------------------------------------------+ *\
+|* | SETTINGS                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+#settingsContainer
+{
+  /*width: 400px;*/
+  margin-bottom: 80px;
+}
+
+.settingsNode
+{
+  clear: both;
+  margin-bottom: 15px;
+}
+
+#avatarUploader
+{
+  /* Because no matter what I can't make the li that owns this, respect its own CSS */
+  margin-bottom: 60px;
+}
+
+#notificationsPane .title
+{
+  font-size: 14pt;
+  margin-bottom: 10px;
+}
+
+/* @end */
+
+
+/* @group Messages */
+/* +----------------------------------------------------------------+ *\
+|* | MESSAGES                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+.messageInfo
+{
+  font-size: 12pt;
+}
+/* @end */
+
+
+/* @group Overrides */
+/* +----------------------------------------------------------------+ *\
+|* | OVERRIDES                                                       | *|
+\* +----------------------------------------------------------------+ */
+
+#tiptip_content
+{
+  box-shadow: 2px 2px 10px #111;
+  -webkit-box-shadow: #111 2px 2px 10px;
+  -moz-box-shadow: #111 2px 2px 10px;
+}
+/* @end */

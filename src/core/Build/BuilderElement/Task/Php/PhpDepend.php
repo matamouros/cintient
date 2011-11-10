@@ -111,36 +111,34 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
   // TODO
   public function toAnt() {}
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    		'name' => 'includeDirs',
-    		'label' => 'Include dirs',
-    		'value' => $this->getIncludeDirs(),
-    		'help' => 'Space separated.',
-      ),
-      array(
-        'cb' => 'getHtmlInputText',
-    		'name' => 'excludeDirs',
-    		'label' => 'Exclude dirs',
-    		'value' => $this->getExcludeDirs(),
-    		'help' => 'Space separated.',
-      ),
-      array(
-        'cb' => 'getHtmlInputText',
-    		'name' => 'excludePackages',
-    		'label' => 'Exclude packages',
-    		'value' => $this->getExcludePackages(),
-    		'help' => 'Space separated.',
-      ),
-    );
-    parent::toHtml(array('title' => 'PhpDepend'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $this->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'PhpDepend'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // Include Dirs, textfield
+        h::div(array('class' => 'label'), 'Include dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'includeDirs', 'value' => $o->getIncludeDirs()));
+        });
+        // Exclude Dirs, textfield
+        h::div(array('class' => 'label'), 'Exclude dirs <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludeDirs', 'value' => $o->getExcludeDirs()));
+        });
+        // Exclude packages, textfield
+        h::div(array('class' => 'label'), 'Exclude packages <span class="fineprintLabel">(space separated)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'excludePackages', 'value' => $o->getExcludePackages()));
+        });
+      });
+    });
   }
 
   // TODO

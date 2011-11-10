@@ -79,33 +79,41 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
     $this->_toDir = $dir;
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-      array(
-        'cb' => 'getHtmlInputText',
-      	'name' => 'file',
-      	'value' => $this->getFile(),
-      ),
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    	  'name' => 'toFile',
-    	  'label' => 'Destination file',
-    	  'value' => $this->getToFile(),
-    	),
-    	array(
-    	  'cb' => 'getHtmlInputText',
-    		'name' => 'toDir',
-    		'label' => 'Destination dir',
-    		'value' => $this->getToDir(),
-    	),
-    	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'Copy'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Copy'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });
+        // To file, textfield
+        h::div(array('class' => 'label'), 'Destination file');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'toFile', 'value' => $o->getToFile()));
+        });
+        // To dir, textfield
+        h::div(array('class' => 'label'), 'Destination dir');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'toDir', 'value' => $o->getToDir()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+      });
+    });
   }
 
   public function toPhing()

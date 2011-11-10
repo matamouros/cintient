@@ -84,22 +84,37 @@ class Build_BuilderElement_Task_Filesystem_Chown extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-        array('cb' => 'getHtmlFailOnError'),
-        array(
-        	'cb' => 'getHtmlInputText',
-        	'name' => 'user',
-        	'value' => $this->getUser(),
-        	'help' => 'Or user.group.'
-        ),
-      	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'Chown'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $o->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'Chown'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        /*
+        // File, textfield
+        h::div(array('class' => 'label'), 'File');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'file', 'value' => $o->getFile()));
+        });*/
+        // User, textfield
+        h::div(array('class' => 'label'), 'User <span class="fineprintLabel">(or user.group)</span>');
+        h::div(array('class' => 'textfieldContainer'), function() use ($o) {
+          h::input(array('class' => 'textfield', 'type' => 'text', 'name' => 'user', 'value' => $o->getUser()));
+        });
+        // Filesets
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+      });
+    });
   }
 
   public function toPhing()

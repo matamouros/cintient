@@ -39,16 +39,14 @@ class Auth_Local implements AuthInterface
   static public function authenticate()
   {
     $userId = false;
-    if ($_SERVER['REQUEST_METHOD'] != 'POST' || !isset($_POST['authenticationForm']['username']) || !isset($_POST['authenticationForm']['password'])) {
+    if ($_SERVER['REQUEST_METHOD'] != 'POST' || !isset($_POST['username']) || !isset($_POST['password'])) {
       return null;
     }
-    $username = $_POST['authenticationForm']['username']['value'];
-    $password = $_POST['authenticationForm']['password']['value'];
     $sql = 'SELECT u.id FROM user u, userauth ua'
          . ' WHERE u.username=?'
          . ' AND ua.password=?'
          . ' AND u.id=ua.userid';
-    $values = array($username, hash('sha256', PASSWORD_SALT . $password));
+    $values = array($_POST['username'], hash('sha256', PASSWORD_SALT . $_POST['password']));
     $rs = Database::query($sql, $values);
     if ($rs->nextRow()) {
       return $rs->getId();

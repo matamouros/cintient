@@ -17,58 +17,45 @@
     You should have received a copy of the GNU General Public License
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
-*}{include file='includes/header.inc.tpl'
-  subSectionId="settings"
+*}{$defaultPane="#generalPane"}
+{$menuLinks="<a href=\"#\" class=\"generalPane\">general</a> | <a href=\"#\" class=\"notificationsPane\">notifications</a>"}
+{include file='includes/header.inc.tpl'
   subSectionTitle="Settings"
-  jsIncludes=['js/lib/avataruploader.js',
-              'js/lib/bootstrap/bootstrap-tabs.js']
-  cssIncludes=['css/lib/avataruploader.css']}
-
-    <ul class="tabs">
-      <li class="active"><a href="#general">General</a></li>
-      <li><a href="#notifications">Notifications</a></li>
-    </ul>
-
-    <div class="tab-content">
-      <div class="active" id="general">
-        <form action class="form" id="generalForm">
-          <fieldset>
-            <div class="clearfix">
-              <label for="title">Your avatar</label>
-              <div id="avatarUploader">
-                <noscript>
-                  {* TODO: Use simple upload form *}
-                  <p>Please enable JavaScript to use file uploader.</p>
-                </noscript>
-              </div>
-              <span class="help-inline">Click image to change it.</span>
+  menuLinks="<span id=\"exclusivePaneLinks\">$menuLinks</span>"
+  jsIncludes=['js/lib/avataruploader.js']}
+    <div id="paneContainer">
+      <div id="generalPane" class="exclusivePane">
+        <ul>
+          <li class="settingsNode">
+            <div class="label">Your avatar <span class="fineprintLabel">(click image to change it)</span></div>
+            <div id="avatarUploader">
+              <noscript>
+                {* TODO: Use simple upload form *}
+                <p>Please enable JavaScript to use file uploader.</p>
+              </noscript>
             </div>
-          </fieldset>
-        </form>
+          </li>
+        </ul>
       </div>
-      <div id="notifications">
-        <form action class="form" id="notificationsForm">
-          <fieldset>
+      <div id="notificationsPane" class="exclusivePane">
 {foreach $globals_user->getNotifications() as $notification}
-            <div id="{$notification->getHandler()}" class="notificationHandler">{* Required to diferentiate between possible future handlers *}
-              <h3>{substr($notification->getHandler(), 13)}</h3>
+        <div id="{$notification->getHandler()}" class="projectEditContainer container">
+          <div class="title">{substr($notification->getHandler(), 13)} notifications</div>
 {$notification->getView()}
-            </div>
-{* TODO: separate notification handlers with CSS border line *}
+        </div>
+{if !$notification@last}
+        <hr />
+{/if}
 {/foreach}
-            <div class="actions">
-              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
-            </div>
-          </fieldset>
-        </form>
       </div>
     </div>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  Cintient.initSectionSettings();
+  Cintient.initExclusivePanes('{$defaultPane}');
   Cintient.initGenericForm({
-    formSelector : 'form#notificationsForm .notificationHandler',
+    formSelector : '#notificationsPane .projectEditContainer',
+    submitButtonAppendTo : '#notificationsPane',
     submitUrl: '{URLManager::getForAjaxSettingsNotificationsSave()}',
   });
 });

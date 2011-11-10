@@ -39,7 +39,7 @@ class ScmConnector
   static public function delete(array $params = array())
   {
     if (isset($params['local']) && !empty($params['local'])) {
-      $ret = Framework_Filesystem::removeDir($params['local']);
+      $ret = unlink($params['local']);
     }
     #if DEBUG
     if ($ret) {

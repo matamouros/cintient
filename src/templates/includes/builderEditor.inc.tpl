@@ -19,120 +19,81 @@
 
 *}
 
-          <div class="row">
-            <div class="span5 leftRow" id="builderElementsAvailable">
+          <div class="builderElementsAvailable">
 {function name=builderElement depth=0 context=''}
-  {if is_array($element)}
-    {if $depth!=0}
-    {$key=key($element)}
-                {*<li>*}
-                  <li class="groupName"><span class="label">{if $key == 'Task'}Generic{elseif $key == 'Type'}Types{else}{$key}{/if}</span></li>
-                  {*<ul class="builderElementDepth_{$depth}">*}
-      {$element=current($element)}
-    {/if}
-    {foreach $element as $key => $value}
-      {if is_array($value)}
-        {$originalContext=$context}
-        {$context="{$context}_$key"}
-        {builderElement element=[$key => $value] depth=$depth+1 context=$context}
-        {$context=$originalContext}
-      {else}
-                    <li class="task smoothHoverSmall"><a href="#" class="{$context}">{$value}</a></li>
-      {/if}
-    {/foreach}
-    {if $depth!=0}
-                  {*</ul>
-                </li>*}
-    {/if}
-  {else}
-                <li><a href="#" class="{$context}">{$element}</a></li>
-  {/if}
+{if is_array($element)}
+{if $depth!=0}
+              <li>
+                <h1>{key($element)}</h1>
+                <ul class="builderElementDepth_{$depth}">
+{$element=current($element)}
+{/if}
+{foreach $element as $key => $value}
+{if is_array($value)}
+{$originalContext=$context}
+{$context="{$context}_$key"}
+{builderElement element=[$key => $value] depth=$depth+1 context=$context}
+{$context=$originalContext}
+{else}
+                  <li><a href="#" class="{$context}">{$value}</a></li>
+{/if}
+{/foreach}
+{if $depth!=0}
+                </ul>
+              </li>
+{/if}
+{else}
+              <li><a href="#" class="{$context}">{$element}</a></li>
+{/if}
 {/function}
-              <ul class="builderElementDepth_0">
+            <ul class="builderElementDepth_0">
 {TemplateManager::providerAvailableBuilderElements()}
 {builderElement element=$providerAvailableBuilderElements_elements}
-              </ul>
-
-            </div>
-
-            <div class="span11 rightRow" id="builderElementsChosen">
-              <ul id="sortable">
-{$globals_project->getIntegrationBuilder()->toHtml()}
-              </ul>
-            </div>
+            </ul>
           </div>
+
+          <ul id="sortable" class="builderElementsChosen">
+{$globals_project->getIntegrationBuilder()->toHtml()}
+          </ul>
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
+	//
+  // Set up elements animation
   //
-  // Setup the details popovers
-  //
-  var activeTaskId = null
-  $('.builderElementLine')
-    .live('click', function (e) {
-      // Un-highlight any active tasks
-      if (activeTaskId != $(this).parent().prop('id')) {
-        $('#' + activeTaskId + ' .builderElementPopover').hide();
-        Cintient.deactivateListItem($('.builderElementLine', '#' + activeTaskId));
-        activeTaskId = null;
-      }
-      if ($('+ .builderElementPopover', this).is(':visible')) {
-        $('+ .builderElementPopover', this).hide();
-        //Cintient.deactivateListItem($(this)); // redundant if we call hoverListItem()
-        Cintient.hoverListItem($(this)); // it was clicking on, so it should be left hovered on
-        activeTaskId = null;
-      } else {
-        Cintient.activateListItem($(this));
-        $('+ .builderElementPopover', this).fadeIn(50);
-        activeTaskId = $(this).parent().prop('id');
-      }
-      e.stopPropagation(); // So that it doesn't propagate into the document click handler below and closes the popover right after it opens
-    })
-    .live('hover', function (e) {
-      if (e.type == 'mouseenter') {
-        // Don't highlight the active item
-        if (activeTaskId != $(this).parent().prop('id')) {
-          Cintient.hoverListItem($(this));
-        }
-      } else if (e.type == 'mouseleave') {
-        // Don't un-highlight the active item
-        if (activeTaskId != $(this).parent().prop('id')) {
-          Cintient.deactivateListItem($(this));
-        }
-      }
-    })
-  ;
-
-  //
-  // Close the popover on click anywhere on the page
-  //
-  $('.builderElementPopover').live('click', function (e) {
-    // clicks inside the builder element don't close it.
-    e.stopPropagation();
-  });
-  $(document).click(function() {
-    if (activeTaskId != null) {
-      $('#' + activeTaskId + ' .builderElementPopover').hide();
-      Cintient.deactivateListItem($('#' + activeTaskId + ' .builderElementLine'));
-      activeTaskId = false;
+  $('.builderElementTitle p.title').live('click', function() {
+    if ($(this).parent('.builderElementTitle').next().is(':visible')) {
+      $(this).parent('.builderElementTitle').next().fadeOut(110);
+    } else {
+    	$(this).parent('.builderElementTitle').next().fadeIn(200);
     }
+    return false;
+  }).parent('.builderElementTitle').next().hide();
+  //
+	// Show save links on change
+  //
+  $('.builderElementForm input').live('change keyup', function(e) {
+    // TODO: in case of keyup event, only activate save in case something
+    // was written (prevent tab, cursor, etc). Better yet, only in case
+    // the value has become different from the original.
+    $(this).parents('.builderElement').find('.builderElementTitle a.submit').fadeIn(100);
   });
-
   //
 	// Register click events for save links
   //
-  $('#integration .builderElementPopover form').live('submit', function(e) {
+  $('.builderElementTitle a.submit').live('click', function(e) {
+    e.preventDefault();
     var that = this;
     var data = function() {
       var x = {};
-      $('input', $(that)).each( function() {
+      $(that).parents('.builderElement').find('.builderElementForm input').each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
-      $('textarea', $(that)).each( function() {
+      $(that).parents('.builderElement').find('.builderElementForm textarea').each( function() {
         x[this.name] = { type: this.type, value: this.value };
       });
-      x['internalId'] = { type: 'hidden', value: $(that).parents('li').prop('id') };
-      $('input:radio[name=type]:checked', $(that)).each( function() {
+      x['internalId'] = { type: 'hidden', value: $(that).parents('.builderElement').attr('id') };
+      $(that).parents('.builderElement').find('.builderElementForm input:radio[name=type]:checked').each( function() {
     	  x['type'] = { type: 'radio', value: $(this).val() }; // This overwrites the previous input iteration with the correct value for type
       });
       return x;
@@ -144,114 +105,67 @@ $(document).ready(function() {
       cache: false,
       dataType: 'json',
       success: function(data, textStatus, XMLHttpRequest) {
-        if (data == null || data.success == null) {
-          Cintient.alertUnknown();
-        } else if (!data.success) {
-          Cintient.alertFailed(data.error);
+        if (!data.success) {
+          //TODO: treat this properly
+          alert('error');
         } else {
-          $('input:submit', that).prop('value', 'Saved!');
-          $('input:submit', that).prop('disabled', 'disabled');
-          $('input:submit', that).removeClass('primary');
-          Cintient.alertSuccess($('.builderElementLine h3', $(that).parents('li')).text() + " builder element saved.");
+          $(that).fadeOut(300);
+          $.jGrowl($(that).parents('.builderElementTitle').find('.title').text() + " builder element saved.");
+          //alert('ok');
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        Cintient.alertUnknown();
+        alert(errorThrown);
       }
     });
-    return false;
-  });
-
-  //
-  // Show save links on change
-  //
-  $('#integration .builderElementPopover form').live('change keyup', function(e) {
-    // TODO: This is a poor man's change detection system. Instead do a proper
-    // hash of all inputs and check them for changes on keyup and change
-    if (e.which == 9 || // TAB
-       (e.which >=37 && e.which <=40) || // Cursor keys
-       e.which == 16 || // SHIFT
-       e.which == 91 || // Left Cmd
-       e.which == 93 || // Right Cmd
-       e.which == 18 || // Option (Alt)
-       e.which == 17 || // CTRL
-       e.which == 20 || // CAPS-LOCK
-       e.which == 27 || // ESC
-       e.which == 13) // Enter
-    {
-      return false;
-    }
-    $('input:submit', this).prop('value', 'Save changes');
-    $('input:submit', this).prop('disabled', '');
-    $('input:submit', this).addClass('primary');
   });
   //
-	// Set up delete links
+	// Set up remove links
   //
-  $('#integration .builderElementPopover form button.delete').live('click', function(e) {
+  $('.builderElementTitle a.delete').live('click', function(e) {
+    e.preventDefault();
     var that = this;
     $.ajax({
       url: '{UrlManager::getForAjaxProjectIntegrationBuilderDeleteElement()}',
-      data: { internalId: $(this).parents('li').prop('id') },
+      data: { internalId: $(this).parents('.builderElement').attr('id') },
       type: 'POST',
       cache: false,
       dataType: 'json',
       success: function(data, textStatus, XMLHttpRequest) {
-        if (data == null || data.success == null) {
-          Cintient.alertUnknown();
-        } else if (!data.success) {
-          Cintient.alertFailed(data.error);
+        if (!data.success) {
+          //TODO: treat this properly
+          alert('error');
         } else {
-          $(that).parents('li').fadeOut(500);
-          setTimeout(
-            function() {
-              $(that).parents('li').remove();
-            },
-            450 // Slightly faster than the fadeOut, so that the next items get pulled up before the element fades first
-          );
-          Cintient.alertSuccess($('.builderElementLine h3', $(that).parents('li')).text() + " builder element deleted.");
+        	$(that).parents('.builderElement').fadeOut(350);
+        	setTimeout(
+    		    function() {
+    		    	$(that).parents('.builderElement').remove();
+    		    },
+    		    300 // Slightly faster than the fadeOut, so that the next items get pulled up before the element fades first
+    		  );
         }
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        Cintient.alertUnknown();
+        alert(errorThrown);
       }
     });
-    // Apparently form submit is being triggered by this handler (?),
-    // so this should stop that (since e.stopPropagation() doesn't quite
-    // work with live(). 1.7's on() method should also right this wrong
-    return false;
   });
-
   //
   // Set up add links
   //
-  $('#builderElementsAvailable li.task').click(function(e) {
-    // We're catching the li instead of the a, so that we can also click
-    // in all the element, not should the text itself.
+  $('.builderElementsAvailable a').click(function(e) {
     e.preventDefault();
     $.ajax({
       url: '{UrlManager::getForAjaxProjectIntegrationBuilderAddElement()}',
-      data: { task: $('a', this).text(), parent: $('a', this).attr('class') },
+      data: { task: $(this).text(), parent: $(this).attr('class') },
       type: 'POST',
       cache: false,
       dataType: 'html',
       success: function(data, textStatus, XMLHttpRequest) {
-        if (data == null) {
-          Cintient.alertUnknown();
-        } else {
-          $('#builderElementsChosen > ul').append(data);
-          //Cintient.activateListItem($('#builderElementsChosen > ul > li:last .builderElementLine'));
-          // According to:
-          // http://api.jquery.com/animate/
-          // ... the background-color cannot be animated unless the jQuery.Color()
-          // plugin is used. This stays here as a reminder.
-          /*$('.builderElementLine', $('#builderElementsChosen > ul > li:last')).animate({
-            backgroundColor : '#fff'
-          }, 5000);*/
-        }
+        $('.builderElementsChosen').append(data);
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        Cintient.alertUnknown();
+        alert(errorThrown);
       }
     });
   });
@@ -263,44 +177,43 @@ $(document).ready(function() {
 
   // Enable sorting
   builderElementsChosen.sortable(
-  {
-    axis: 'y',
-    cursor: 'move',
-    //cursorAt: 'top',
-    disabled: false,
-    distance: 20,
-    //items: '.builderElement',
-    opacity: 0.6,
-    //placeholder: 'ui-state-highlight',
-    //revert: 100,
-    scroll: true,
-    stop: function(event, ui) {
-  	  var newSort = builderElementsChosen.sortable('toArray');
-      if (newSort.join('') != initialSort.join('')) { // is toString() equally ubiquous?
-      	$.ajax({
-  	      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSortElements()}',
-  	      data: { sortedElements: newSort },
-  	      type: 'POST',
-  	      cache: false,
-  	      dataType: 'json',
-  	      success: function(data, textStatus, XMLHttpRequest) {
-  	        if (data == null || data.success == null) {
-  	          Cintient.alertUnknown();
-  	        } else if (!data.success) {
-  	          Cintient.alertFailed(data.error);
-  	        } else {
-  	          initialSort = newSort;
-  	          Cintient.alertSuccess('Successfully rearranged the order of your builder elements.');
-  	        }
-  	      },
-  	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-  	        Cintient.alertUnknown();
-  	      }
-  	    });
-      }
-   	},
-    tolerance: 'pointer',
-  });
+    {
+      axis: 'y',
+      cursor: 'move',
+      //cursorAt: 'top',
+      disabled: false,
+      distance: 20,
+      //items: '.builderElement',
+      opacity: 0.6,
+      //placeholder: 'ui-state-highlight',
+      //revert: 100,
+      scroll: true,
+      stop: function(event, ui) {
+    	  var newSort = builderElementsChosen.sortable('toArray');
+        if (newSort.join('') != initialSort.join('')) { // is toString() equally ubiquous?
+        	$.ajax({
+    	      url: '{UrlManager::getForAjaxProjectIntegrationBuilderSortElements()}',
+    	      data: { sortedElements: newSort },
+    	      type: 'POST',
+    	      cache: false,
+    	      dataType: 'json',
+    	      success: function(data, textStatus, XMLHttpRequest) {
+    	        if (!data.success) {
+    	          //TODO: treat this properly
+    	          alert('error');
+    	        } else {
+    	          //alert('ok');
+    	        }
+    	      },
+    	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+    	        alert(errorThrown);
+    	      }
+    	    });
+        }
+     	},
+      tolerance: 'pointer',
+    }
+  );
 
   // Get initial sort in order to detect changes
   initialSort = builderElementsChosen.sortable('toArray');

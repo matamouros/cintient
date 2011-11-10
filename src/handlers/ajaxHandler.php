@@ -50,14 +50,14 @@ SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 $currentUrl = 'http://' . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?');
 $GLOBALS['uri'] = substr($currentUrl, strlen(CINTIENT_BASE_URL));
 
-SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "ajaxHandler");
+SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "AjaxHandler");
 $GLOBALS['ajaxMethod'] = null;
 $GLOBALS['section'] = null;
 $GLOBALS['subSection'] = null;
 session_start();
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
-$GLOBALS['project'] = ((!empty($_SESSION['projectId']) || !empty($_REQUEST['pid'])) && !empty($GLOBALS['user']) ? Project::getById($GLOBALS['user'], (!empty($_REQUEST['pid'])?$_REQUEST['pid']:$_SESSION['projectId'])) : null);
-$_SESSION['projectId'] = ($GLOBALS['project'] instanceof Project ? $GLOBALS['project']->getId() : null);
+$GLOBALS['project'] = (isset($_SESSION['projectId']) ? Project::getById($GLOBALS['user'], $_SESSION['projectId']) : null);
+session_write_close();
 
 
 
@@ -85,16 +85,10 @@ if (preg_match('/^\/ajax\/([\w-]+)(?:\/([\w-]+))?\/$/', $GLOBALS['uri'], $matche
 \* +----------------------------------------------------------------+ */
 
 if (!isset($GLOBALS['user']) || !($GLOBALS['user'] instanceof User)) {
-  if ((!Auth::authenticate() || !($GLOBALS['user'] instanceof User)) &&
-      ($GLOBALS['subSection'] != 'authentication' &&
-      ($GLOBALS['subSection'] != 'registration' || $GLOBALS['settings'][SystemSettings::ALLOW_USER_REGISTRATION])))
-  {
-    SystemEvent::raise(SystemEvent::INFO, "Authentication is required on all ajax requests. [URI={$GLOBALS['uri']}]", "ajaxHandler");
-    // TODO: send error here
-    exit;
-  }
+  SystemEvent::raise(SystemEvent::INFO, "Authentication is required on all ajax requests. [URI={$GLOBALS['uri']}]", "AjaxHandler");
+  // TODO: send error here
+  exit;
 }
-session_write_close();
 
 
 
@@ -119,13 +113,13 @@ if (!empty($GLOBALS['section'])) {
   }
   if (method_exists('AjaxManager', $GLOBALS['ajaxMethod'])) {
     #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Routing to known ajax function. [FUNCTION=AjaxManager::{$GLOBALS['ajaxMethod']}] [URI={$GLOBALS['uri']}]", "ajaxHandler");
+    SystemEvent::raise(SystemEvent::DEBUG, "Routing to known ajax function. [FUNCTION=AjaxManager::{$GLOBALS['ajaxMethod']}] [URI={$GLOBALS['uri']}]", "AjaxHandler");
     #endif
     AjaxManager::$GLOBALS['ajaxMethod']();
     exit;
   }
   #if DEBUG
-  SystemEvent::raise(SystemEvent::DEBUG, "Unknown ajax function. [FUNCTION=AjaxManager::{$GLOBALS['ajaxMethod']}] [URI={$GLOBALS['uri']}]", "ajaxHandler");
+  SystemEvent::raise(SystemEvent::DEBUG, "Unknown ajax function. [FUNCTION=AjaxManager::{$GLOBALS['ajaxMethod']}] [URI={$GLOBALS['uri']}]", "AjaxHandler");
   #endif
 }
 

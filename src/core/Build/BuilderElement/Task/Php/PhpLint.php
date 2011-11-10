@@ -83,16 +83,26 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
     return $xml->flush();
   }
 
-  public function toHtml(Array $_ = array(), Array $__ = array())
+  public function toHtml()
   {
+    parent::toHtml();
     if (!$this->isVisible()) {
       return true;
     }
-    $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
-    	array('cb' => 'getFilesets'),
-    );
-    parent::toHtml(array('title' => 'PhpLint'), $callbacks);
+    $o = $this;
+    h::li(array('class' => 'builderElement', 'id' => $this->getInternalId()), function() use ($o) {
+      $o->getHtmlTitle(array('title' => 'PhpLint'));
+      h::div(array('class' => 'builderElementForm'), function() use ($o) {
+        $o->toHtmlFailOnError();
+        if ($o->getFilesets()) {
+          $filesets = $o->getFilesets();
+          foreach ($filesets as $fileset) {
+            $fileset->toHtml();
+          }
+        }
+        // TODO: Add HTML button for adding new fileset.
+      });
+    });
   }
 
   public function toPhing()
