@@ -57,6 +57,8 @@
 {$taskPane}
 {/foreach}
     </div>
+{else}
+    <div>This project has never been built. Come back later.</div>
 {/if}
 <script type="text/javascript">
 // <![CDATA[

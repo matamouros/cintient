@@ -545,6 +545,7 @@ var Cintient = {
       e.stopPropagation();
     });
     // Close any menus on click anywhere on the page
+    //TODO: This is old pre-Bootstrap UI JS.
     $(document).click( function(e){
       if ($(e.target).attr('class') != 'accessLevelPaneLevels' &&
           $(e.target).attr('class') != 'accessLevelPaneLevelsCheckbox' &&

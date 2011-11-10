@@ -115,6 +115,12 @@ body
   padding-top: 37px; /* container below topbar */
 }
 
+.container
+{
+  /* Trick to make all positions within this container relative to this container */
+  position: relative;
+}
+
 .container > footer
 {
   margin-top: 10px;
@@ -563,8 +569,8 @@ user-select: none;
 #buildList.popover
 {
   position: absolute;
-  top: 96px;
-  left: 620px;
+  top: 60px;
+  left: 590px;
 }
 
 #buildList.popover a

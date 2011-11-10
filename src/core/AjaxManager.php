@@ -594,6 +594,7 @@ EOT;
     echo json_encode(
       array(
       	'success' => true,
+      	'error' =>
       )
     );
     exit;
@@ -1017,7 +1018,8 @@ EOT;
       $GLOBALS['project']->log("Project created.", $GLOBALS['user']->getUsername());
       echo json_encode(
         array(
-          'success' => true
+          'success' => true,
+          'error' => 'Project successfully created!',
         )
       );
       exit;
@@ -1299,6 +1301,7 @@ EOT;
     echo json_encode(
       array(
   			'success' => true,
+  			'error' => 'Notification settings successfully changed.',
       )
     );
     exit;

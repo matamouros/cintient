@@ -30,8 +30,8 @@
 // Nothing works until the installation file is out of the way.
 //
 if (file_exists(dirname(__FILE__) . '/../../index.php')) {
-  //include dirname(__FILE__) . '/../../index.php';
-  //exit;
+  include dirname(__FILE__) . '/../../index.php';
+  exit;
 }
 //
 // Proxy layer compatibility hack, if there is one.
