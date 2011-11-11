@@ -460,11 +460,13 @@ class Project extends Framework_DatabaseObjectAbstract
       'username' => $this->getScmUsername(),
       'password' => $this->getScmPassword(),
     );
-    if (!ScmConnector::checkout($params)) {
+    /*if (!ScmConnector::checkout($params)) {
       $this->setStatus(self::STATUS_UNINITIALIZED);
       return false;
     }
     $this->setStatus(self::STATUS_UNBUILT);
+    */
+    $this->setStatus(self::STATUS_UNINITIALIZED);
     return true;
   }
 

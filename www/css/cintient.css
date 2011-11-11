@@ -6,6 +6,7 @@
 	http://cintient/settings/css/new.css
 	http://cintient/project/history/css/new.css
 	http://cintient/project/edit/css/new.css
+	http://cintient/project/history/css/cintient.css
 */
 
 /* @group Top Bar */
@@ -129,7 +130,7 @@ body
   width: 100%;
 }
 
-.container > footer, p
+.container > footer p
 {
   line-height: 1.2em;
   text-align: center; /* center align it with the container */
@@ -389,6 +390,15 @@ user-select: none;
   border: 1px solid #666;
 }
 /* ========================= */
+
+.modal-backdrop, .modal-backdrop.fade.in
+{
+  /* An override for the default opacity of the Bootstrap modals */
+  filter: alpha(opacity=40);
+  -khtml-opacity: 0.4;
+  -moz-opacity: 0.4;
+  opacity: 0.4;
+}
 
 /* @end */
 

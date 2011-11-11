@@ -388,6 +388,15 @@ if (!empty($_GET['c'])) {
     sendResponse($ok, $msg);
   }
 
+  //
+  // Set a special cookie "one-time" cookie so that right after the
+  // installation we can show a message. This is just temporary until
+  // system-user messages are implemented. This cookie will be imediately
+  // erased by webHandler, after a GLOBAL flag is set. Right now a modal
+  // is being shown in header.inc.tpl and this cookie is there removed.
+  //
+  setcookie('cintientInstalled', time());
+
   $ok = true;
   $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
   SystemEvent::raise(1024, "Installation successful.", "Installer");

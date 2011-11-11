@@ -594,7 +594,7 @@ EOT;
     echo json_encode(
       array(
       	'success' => true,
-      	'error' =>
+      	'error' => 'Removed builder element.',
       )
     );
     exit;
@@ -1019,7 +1019,7 @@ EOT;
       echo json_encode(
         array(
           'success' => true,
-          'error' => 'Project successfully created!',
+          'error' => 'Project successfully created, taking you back to your dashboard. Stand by...',
         )
       );
       exit;
