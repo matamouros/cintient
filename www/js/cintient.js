@@ -269,6 +269,15 @@ var Cintient = {
           }
           activeProjectId = $(this).attr('id'); // Update the active project
           activeTabId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
+          //
+          // The source of a very likely huge future bug... Sometimes the
+          // activeTabId fetching comes out undefined, not really sure
+          // why at this time. Always having a default tab to activate
+          // is right now the best course of action to take.
+          //
+          if (typeof activeTabId == 'undefined') {
+            activeTabId = 'latest';
+          }
 
           // Promptly hide the content
           // TODO: show a waiting indicator
