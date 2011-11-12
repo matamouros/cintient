@@ -146,7 +146,7 @@ var Cintient = {
    */
   alertSuccess : function(msg)
   {
-    if (msg.length == 0) {
+    if (typeof msg == 'undefined' || msg.length == 0) {
       msg = 'Success!';
     }
     Cintient.alert({
@@ -231,6 +231,7 @@ var Cintient = {
     
     // Activate the default project
     this.activateListItem($('#dashboard li.project#' + activeProjectId));
+    $('.build', '#dashboard li.project#' + activeProjectId).fadeIn(100);
     
     //
     // Stop propagation on a few special zones
@@ -238,6 +239,17 @@ var Cintient = {
     $('#dashboard li.project a').click(function (e) {
       e.stopPropagation();
     });
+    
+    $('#dashboard li.project .build').hover(
+      function () {
+        $(this).addClass('danger');
+        $(this).removeClass('disabled');
+      },
+      function () {
+        $(this).addClass('disabled');
+        $(this).removeClass('danger');
+      }
+    );
     
     //
     // Hover & click on the project list
@@ -249,7 +261,12 @@ var Cintient = {
         //
         if ($(this).attr('id') != activeProjectId) {
           that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
-          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
+          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project
+          $('.build', '#dashboard li.project#' + activeProjectId).fadeOut(50);
+          // Only show the build button if not already building
+          if (!$('.loading', this).is(':visible')) {
+            $('.build', this).fadeIn(100);
+          }
           activeProjectId = $(this).attr('id'); // Update the active project
           activeTabId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
 
@@ -294,18 +311,24 @@ var Cintient = {
           });
         }
         //e.preventDefault(); // Prevents any real link clicked inside the project to work
+        e.stopPropagation();
       })
       .hover(
         function() {
           // Don't highlight the active project
           if (activeProjectId != $(this).attr('id')) {
             that.hoverListItem($(this));
+            // Only if not already building
+            if (!$('.loading', this).is(':visible')) {
+              $('.build', this).fadeIn(100);
+            }
           }
         },
         function() {
           // Don't un-highlight the active project
           if (activeProjectId != $(this).attr('id')) {
             that.deactivateListItem($(this));
+            $('.build', this).fadeOut(50);
           }
         }
       )

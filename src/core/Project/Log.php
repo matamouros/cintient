@@ -77,10 +77,6 @@ class Project_Log extends Framework_DatabaseObjectAbstract
       }
       SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
-
-    if (!Database::beginTransaction()) {
-      return false;
-    }
     $sql = 'INSERT INTO projectlog' . $this->getPtrProject()->getId()
          . ' (type, message, username)'
          . ' VALUES (?,?,?)';
@@ -90,16 +86,11 @@ class Project_Log extends Framework_DatabaseObjectAbstract
       $this->getUsername(),
     );
     if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
-      Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
       return false;
     }
     $this->setId($id);
 
-    if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project log might not have been saved. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
-      return false;
-    }
     #if DEBUG
     SystemEvent::raise(SystemEvent::DEBUG, "Saved project log. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
     #endif

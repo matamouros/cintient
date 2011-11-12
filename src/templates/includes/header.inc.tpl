@@ -107,7 +107,7 @@ $(document).ready(function() {
   </div>
   <div id="alertPane"></div>
 {if !empty($smarty.cookies.cintientInstalled)}
-{setcookie('cintientInstalled', '', time()-3600)}
+<!-- {setcookie('cintientInstalled', '', time()-3600)} -->
   <div id="modalPane" class="modal hide fade textLeft clearfix">
     <div class="modal-header">
       <a href="#" class="close">×</a>

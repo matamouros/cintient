@@ -7,6 +7,7 @@
 	http://cintient/project/history/css/new.css
 	http://cintient/project/edit/css/new.css
 	http://cintient/project/history/css/cintient.css
+	http://cintient/css/cintient.css
 */
 
 /* @group Top Bar */
@@ -476,6 +477,26 @@ user-select: none;
      with visibility or display - it seems sparkline.js doesn't play well
      with that. */
   color: transparent;
+  float: left;
+}
+
+#dashboard .build
+{
+  height: 20px;
+  padding-top: 3px;
+}
+
+#dashboard .build, #dashboard .build + .loading
+{
+  float: right;
+  margin-top: 0px;
+  display: none;
+}
+
+#dashboard .build + .loading
+{
+  margin-top: 3px;
+  margin-right: 15px;
 }
 
 #dashboard .projectRevision

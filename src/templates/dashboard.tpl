@@ -40,8 +40,12 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
                   <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
                 </div>
                 <div class="col2">
-                <span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span>
+                  <div class="projectStatus"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span></div>
                   <h3 class="projectTitle"><a href="{UrlManager::getForProjectEdit(['pid' => $project->getId()])}">{$project->getTitle()}</a></h3>
+                </div>
+                <div class="col3">
+                  <button class="disabled build btn small">Build</button>
+                  <div class="loading"><img src="imgs/loading-3.gif" /></div>
                 </div>
               </li>
         			{if !empty($dashboard_latestBuild)}<li class="projectRevision"><a href="{UrlManager::getForProjectBuildHistory(['pid' => $project->getId()])}">#{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}</a></li>{/if}
@@ -82,6 +86,95 @@ $(document).ready(function() {
   Cintient.initSectionDashboard({
     submitUrl : '{UrlManager::getForAjaxDashboardProject()}'
   });
+{if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}
+  projectLastKnownStatus = {$globals_project->getStatus()};
+  updateProjectStatus(projectLastKnownStatus);
+
+  function hideLoading(pid)
+  {
+    $('#' + pid + ' .col3 .loading').hide();
+    if (activeProjectId == pid) {
+      $('#' + pid + ' .col3 button').fadeIn(300);
+    }
+  }
+
+  function showLoading(pid)
+  {
+    $('#' + pid + ' .col3 button').hide();
+    $('#' + pid + ' .col3 .loading').fadeIn(300);
+  }
+
+  function forceBuild(e, pid)
+  {
+    $('li#' + pid).trigger('click');
+    showLoading(pid);
+    updateProjectStatus(pid, {Project::STATUS_BUILDING});
+    e.stopPropagation();
+    //
+    // XHR trigger the build
+    //
+    $.ajax({
+      url: '{UrlManager::getForAjaxProjectBuild()}',
+      data: { pid: pid },
+      cache: false,
+      dataType: 'json',
+
+      success: function(data, textStatus, XMLHttpRequest) {
+        if (data == null || data.success == null) {
+          Cintient.alertUnknown();
+          data = {
+            success: false,
+            projectStatus: projectLastKnownStatus
+          };
+        } else if (!data.success) {
+          Cintient.alertFailed(data.error);
+        }
+        hideLoading(pid);
+        updateProjectStatus(pid, data.projectStatus);
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        hideLoading(pid);
+      }
+    });
+
+  }
+
+  function updateProjectStatus(pid, toStatus)
+  {
+    switch (toStatus) {
+    case {Project::STATUS_OK}:
+      projectLastKnownStatus = toStatus;
+      $('#' + pid + ' .projectStatus').hide();
+      $('#' + pid + ' .projectStatus span')
+        .removeClass('notice warning important')
+        .addClass('success')
+        .text('ok');
+      $('#' + pid + ' .projectStatus').fadeIn(300);
+      break;
+    case {Project::STATUS_BUILDING}:
+      $('#' + pid + ' .projectStatus').hide();
+      $('#' + pid + ' .projectStatus span')
+        .removeClass('success warning important')
+        .addClass('notice')
+        .text('building');
+      $('#' + pid + ' .projectStatus').fadeIn(300);
+      break;
+    default:
+      projectLastKnownStatus = toStatus;
+      $('#' + pid + ' .projectStatus').hide();
+      $('#' + pid + ' .projectStatus span')
+        .removeClass('success notice warning')
+        .addClass('important')
+        .text('failed');
+      $('#' + pid + ' .projectStatus').fadeIn(300);
+      break;
+    }
+  }
+
+  $('#dashboard li.project .build').on('click', function (e) {
+    forceBuild(e, $(this).parents('li.project').prop('id'));
+  });
+{/if}
 });
 // ]]>
 </script>

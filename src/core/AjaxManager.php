@@ -455,6 +455,7 @@ EOT;
         array(
           'success' => false,
           'error' => $msg,
+      		'projectStatus' => $GLOBALS['project']->getStatus(),
         )
       );
       exit;
