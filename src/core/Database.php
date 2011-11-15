@@ -22,7 +22,14 @@
  */
 
 /**
- * Database class.
+ * Database class, specifically tailored to use SQLite - if any other
+ * engine is used we will need to add another layer of abstraction. This
+ * was designed having in mind that SQLite locks at the database level
+ * and that pretty much every method call can fail immediately due to
+ * database locking. A mechanism for retrying on these circumstances was
+ * implemented, and then the busyTimeout() call on the singleton call
+ * completely solved all locking error symptoms. But even as it is, the
+ * retry mechanisms will remain.
  *
  * @package     Framework
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
@@ -45,15 +52,16 @@ class Database
     static $instance;
     if (!($instance instanceof SQLite3)) {
       $instance = new SQLite3(CINTIENT_DATABASE_FILE);
-      #if DEBUG
       SystemEvent::raise(SystemEvent::DEBUG, 'New connection opened.', __METHOD__);
-      #endif
       if (!($instance instanceof SQLite3)) {
         SystemEvent::raise(SystemEvent::ERROR, "Error connecting to the database.", __METHOD__);
         $instance = null;
         unset($instance);
-        return false;
+        //return false;
+        die("Error connecting to the database.");
       }
+      // Apparently doesn't work...
+      $instance->busyTimeout(10000); // Set a busy timeout for 1.5 secs
     }
     return $instance;
   }
@@ -68,30 +76,34 @@ class Database
   static public function execute($query, $values=null)
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
-    }
+    $result = false;
+    $retries = 0;
     $starttime = microtime(true);
-    if (empty($values)) {
-      if ($db->exec($query) === false) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error executing query. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
-        return false;
+    do {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
       }
-    } else {
-      if (!$stmt = self::_prepareAndBindValues($query, $values)) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error binding parameters. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-        return false;
+      if (empty($values)) {
+        if (($result = $db->exec($query)) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error executing query. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
+        }
+      } else {
+        // empty($stmt) is to make sure self::_prepareAndBindValues()
+        // only runs the first time around
+        if (empty($stmt) && !$stmt = self::_prepareAndBindValues($query, $values)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error binding parameters. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        } else if (($result = @$stmt->execute()) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error executing statement. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        }
       }
-      if ($stmt->execute() === false) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error executing statement. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-        return false;
-      }
-    }
+      $retries++;
+      // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    } while (!$result && ($db->lastErrorCode() == 5 || $db->lastErrorCode() == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES);
+
     $proctime = microtime(true)-$starttime;
-    #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, 'Executed. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-    #endif
-    return true;
+    SystemEvent::raise(SystemEvent::DEBUG, "Executed. [TIME=".sprintf('%.5f',$proctime)."] [SQL={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    return (bool)$result;
   }
 
   /**
@@ -115,30 +127,34 @@ class Database
   static public function insert($query, $values=null)
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
-    }
+    $result = false;
+    $retries = 0;
     $starttime = microtime(true);
-    if (empty($values)) {
-      if ($db->exec($query) === false) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error inserting query. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
-        return false;
+    do {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
       }
-    } else {
-      if (!$stmt = self::_prepareAndBindValues($query, $values)) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error binding parameters. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-        return false;
+      if (empty($values)) {
+        if (($result = $db->exec($query)) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error inserting query. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
+        }
+      } else {
+        // empty($stmt) is to make sure self::_prepareAndBindValues()
+        // only runs the first time around
+        if (empty($stmt) && !$stmt = self::_prepareAndBindValues($query, $values)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error binding parameters. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        } else if (($result = @$stmt->execute()) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error executing statement. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        }
       }
-      if ($stmt->execute() === false) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error inserting statement. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-        return false;
-      }
-    }
+      $retries++;
+      // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    } while (!$result && ($db->lastErrorCode() == 5 || $db->lastErrorCode() == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES);
+
     $proctime = microtime(true)-$starttime;
-    #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, 'Inserted. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-    #endif
-    return $db->lastInsertRowID();
+    SystemEvent::raise(SystemEvent::DEBUG, "Inserted. [TIME=".sprintf('%.5f',$proctime)."] [SQL={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    return ($result === false ? false : $db->lastInsertRowID());
   }
 
   /**
@@ -160,32 +176,37 @@ class Database
   static public function query($query, $values = null)
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
-    }
+    $result = false;
+    $retries = 0;
     $starttime = microtime(true);
-    $rs = false;
-    if (empty($values)) {
-      $ret = $db->query($query);
-    } else {
-      if (!empty($values)) {
-        $tmp = implode(' | ',$values);
+    do {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
       }
-      if (!$stmt = self::_prepareAndBindValues($query, $values)) {
-        SystemEvent::raise(SystemEvent::ERROR, 'Error binding parameters. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.$tmp.']':''), __METHOD__);
-        return false;
+      if (empty($values)) {
+        if (($result = $db->exec($query)) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error executing query. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        }
+      } else {
+        // empty($stmt) is to make sure self::_prepareAndBindValues()
+        // only runs the first time around
+        if (empty($stmt) && !$stmt = self::_prepareAndBindValues($query, $values)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error binding parameters. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        } else if (($result = @$stmt->execute()) === false) {
+          SystemEvent::raise(SystemEvent::ERROR, "Error executing statement. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        }
       }
-      $ret = $stmt->execute();
-    }
+      $retries++;
+      // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    } while (!$result && ($db->lastErrorCode() == 5 || $db->lastErrorCode() == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES);
+
     $proctime = microtime(true)-$starttime;
-    $tmp = '';
-    if (!$rs = new Resultset($ret)) {
-      SystemEvent::raise(SystemEvent::ERROR, 'Error querying. [ERRNO='.$db->lastErrorCode().'] [ERRMSG='.$db->lastErrorMsg().'] [QUERY='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+    if (!$result || (!$rs = new Resultset($result))) {
+      SystemEvent::raise(SystemEvent::ERROR, "Error querying. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
       return false;
     }
-    #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, 'Queried. [TIME='.sprintf('%.5f',$proctime).'] [SQL='.$query.']'.(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
-    #endif
+    SystemEvent::raise(SystemEvent::DEBUG, "Queried. [TIME=".sprintf('%.5f',$proctime)."] [SQL={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
     return $rs;
   }
 
@@ -250,64 +271,81 @@ class Database
   static public function beginTransaction()
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
+    $retries = 0;
+    $errorCode = 5; // Just so we can enter the while loop.
+    $query = "BEGIN TRANSACTION";
+    // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    while (!self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
+      }
+      if (!(self::$_transacting = (bool)@$db->exec($query))) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not begin transaction.", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Transaction started.", __METHOD__);
+      }
+      $retries++;
+      $errorCode = $db->lastErrorCode();
     }
-    if (self::$_transacting) {
-      SystemEvent::raise(SystemEvent::ERROR, "Can't begin transaction, there's one pending.", __METHOD__);
-      return false;
+    if ($retries == 0) {
+      SystemEvent::raise(SystemEvent::NOTICE, "Can't begin transaction, there's one pending.", __METHOD__);
     }
-    $sql = "BEGIN TRANSACTION";
-    if (!$db->exec($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not begin transaction.", __METHOD__);
-      return false;
-    } else {
-      self::$_transacting = true;
-      SystemEvent::raise(SystemEvent::DEBUG, "Transaction started.", __METHOD__);
-      return true;
-    }
+    return (bool)self::$_transacting;
   }
 
   static public function endTransaction()
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
+    $retries = 0;
+    $errorCode = 5; // Just so we can enter the while loop.
+    $query = "END TRANSACTION";
+    // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    while (self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
+      }
+      if (!@$db->exec($query)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not commit transaction.", __METHOD__);
+      } else {
+        self::$_transacting = false;
+        SystemEvent::raise(SystemEvent::DEBUG, "Transaction commited.", __METHOD__);
+      }
+      $retries++;
+      $errorCode = $db->lastErrorCode();
     }
-    if (!self::$_transacting) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't end transaction, there wasn't one pending.", __METHOD__);
-      return false;
+    if ($retries == 0) {
+      SystemEvent::raise(SystemEvent::NOTICE, "Couldn't end transaction, there wasn't one pending.", __METHOD__);
     }
-    $sql = "END TRANSACTION";
-    if (!$db->exec($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not commit transaction.", __METHOD__);
-      return false;
-    } else {
-      self::$_transacting = false;
-      SystemEvent::raise(SystemEvent::DEBUG, "Transaction commited.", __METHOD__);
-      return true;
-    }
+    return !self::$_transacting;
   }
 
   static public function rollbackTransaction()
   {
     $db = self::_singleton();
-    if (!$db) {
-      return false;
+    $retries = 0;
+    $errorCode = 5; // Just so we can enter the while loop.
+    $query = "ROLLBACK TRANSACTION";
+    // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
+    while (self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+      if ($retries > 0) {
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        sleep(1);
+      }
+      if (!$db->exec($query)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Couldn't rollback transaction.", __METHOD__);
+      } else {
+        self::$_transacting = false;
+        SystemEvent::raise(SystemEvent::DEBUG, "Transaction rolled back.", __METHOD__);
+      }
+      $retries++;
+      $errorCode = $db->lastErrorCode();
     }
-    if (!self::$_transacting) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't rollback transaction, there wasn't one pending.", __METHOD__);
-      return false;
+    if ($retries == 0) {
+      SystemEvent::raise(SystemEvent::NOTICE, "Couldn't rollback transaction, there wasn't one pending.", __METHOD__);
     }
-    $sql = "ROLLBACK TRANSACTION";
-    if (!$db->exec($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Couldn't rollback transaction.", __METHOD__);
-      return false;
-    } else {
-      self::$_transacting = false;
-      SystemEvent::raise(SystemEvent::ERROR, "Transaction rolledback.", __METHOD__);
-      return true;
-    }
+    return !self::$_transacting;
   }
 
   static private function _prepareAndBindValues(&$query, &$values)
@@ -344,8 +382,14 @@ class Database
       //TODO: error and abort
       return false;
     }
-    $stmt = $db->prepare($query);
+    $retries = 0;
+    while (!(($stmt = @$db->prepare($query)) instanceof SQLite3Stmt) && ($db->lastErrorCode() == 5 || $db->lastErrorCode() == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+      SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+      sleep(1);
+      $retries++;
+    }
     if (!($stmt instanceof SQLite3Stmt)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not prepare statement. [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
       return false;
     }
     //
@@ -361,7 +405,8 @@ class Database
         $type = SQLITE3_FLOAT;
       }
       if (!$stmt->bindValue(':' . $i, $values[$i], $type)) {
-        return false;
+        SystemEvent::raise(SystemEvent::ERROR, "Could not bind value. [QUERY={$query}] [VALUE={$values[$i]}] [TYPE=".print_r($type, true)."]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        //return false;
       }
     }
     return $stmt;

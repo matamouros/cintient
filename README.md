@@ -22,8 +22,8 @@ users. These are some of the features:
  *  easy one-time setup of the application (1 minute)
  *  visual edition for builder tasks, i.e., no messing around with Ant
     XML sources for configuring builds
- *  Notifo.com push notifications on your desktop and mobile (using the
-    free user account)
+ *  Web-based push notifications (currently supports the now deprecated
+    Notifo.com, but it's easily extendable to others)
  *  PHP syntax checking tasks
  *  PHPUnit integration for unit testing
  *  PHPDepend for quality metrics

@@ -109,6 +109,10 @@ define('CHART_JUNIT_DEFAULT_WIDTH', 790);
 // Set the include path
 set_include_path(get_include_path() . PATH_SEPARATOR . CINTIENT_INSTALL_DIR);
 
+//
+// SQL
+//
+define('CINTIENT_SQL_BUSY_RETRIES', 5);
 
 //
 // PHP_Depend

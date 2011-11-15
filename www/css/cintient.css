@@ -530,6 +530,12 @@ user-select: none;
   float: left;
 }
 
+#dashboardProject .loading
+{
+  /* Align this loading indicator with the one of the first project on the list at the left */
+  margin-top: 18px;
+}
+
 /* @end */
 
 /* @group Project build history */

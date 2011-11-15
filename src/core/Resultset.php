@@ -47,7 +47,7 @@ class Resultset
 
   public function __destruct()
   {
-    if (isset($this->_rs) && $this->_rs instanceof SQLite3Result) {
+    if ($this->_rs instanceof SQLite3Result) {
       $this->close();
     }
   }

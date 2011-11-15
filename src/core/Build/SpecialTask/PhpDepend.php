@@ -246,9 +246,6 @@ class Build_SpecialTask_PhpDepend extends Framework_DatabaseObjectAbstract imple
       SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
 
-    if (!Database::beginTransaction()) {
-      return false;
-    }
     $sql = 'REPLACE INTO phpdepend' . $this->getProjectId()
          . ' (buildid, date, version, ahh, andc, calls, ccn, ccn2, cloc,'
          . ' clsa, clsc, eloc, fanout, leafs, lloc, loc, maxdit, ncloc,'
@@ -282,13 +279,7 @@ class Build_SpecialTask_PhpDepend extends Framework_DatabaseObjectAbstract imple
     );
 
     if (!Database::execute($sql, $val)) {
-      Database::rollbackTransaction();
       SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
-      return false;
-    }
-
-    if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The object might not have been saved.", __METHOD__);
       return false;
     }
 
