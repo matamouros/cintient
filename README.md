@@ -6,7 +6,12 @@ was written to be simple to setup and straightforward to use - with
 special attention to UI - in order to bring CI practices to most small
 to medium projects that just don't justify the setup of a more complex
 CI solution.
- 
+
+Screenshots
+-----------
+
+![Dashboard](https://img.skitch.com/20111116-8bxbxt7wgt3juh7ri4kj7ba3u.png)
+
 What it does
 ------------
  
@@ -96,6 +101,3 @@ Past contributors:
  *  miguellmanso
 
 Project page: <http://github.com/matamouros/cintient>
-
-![Build history](https://img.skitch.com/20111114-ti75ff372adt3nsrm9h68jicbh.png)
-
