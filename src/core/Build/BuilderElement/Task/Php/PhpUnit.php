@@ -144,29 +144,25 @@ output('Starting unit tests...');
 ";
     }
     if ($this->getCodeCoverageXmlFile()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+      $php .= "
+if (!extension_loaded('xdebug')) {
+  output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+} else {
+	\$args[] = '--coverage-clover';
+	\$args[] = '{$this->getCodeCoverageXmlFile()}';
+}
 ";
-      } else {
-        $php .= "
-\$args[] = '--coverage-clover';
-\$args[] = '{$this->getCodeCoverageXmlFile()}';
-";
-      }
     }
 
     if ($this->getCodeCoverageHtmlDir()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+      $php .= "
+if (!extension_loaded('xdebug')) {
+	output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+} else {
+	\$args[] = '--coverage-html';
+	\$args[] = '{$this->getCodeCoverageHtmlDir()}';
+}
 ";
-      } else {
-        $php .= "
-\$args[] = '--coverage-html';
-\$args[] = '{$this->getCodeCoverageHtmlDir()}';
-";
-      }
     }
 
     if ($this->getFilesets()) {

@@ -185,7 +185,7 @@ class Database
         sleep(1);
       }
       if (empty($values)) {
-        if (($result = $db->exec($query)) === false) {
+        if (($result = $db->query($query)) === false) {
           SystemEvent::raise(SystemEvent::ERROR, "Error executing query. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
         }
       } else {
