@@ -36,6 +36,20 @@ On the other hand, if you're looking for a distributed-builds capable
 CI server, you'll really have to look elsewhere. Cintient will probably
 never try to do this.
     
+Disclaimer
+----------
+
+Cintient is still beta. Please understand that not everything is yet
+perfect. You should keep in mind the following:
+
+ *  I develop mainly in Mac OS X and Linux, using Safari and ocasionally
+    Firefox. Other OS/browser flavours are still pretty much untested.
+    Please help out if you can.
+ *  Setting up a project in Cintient is way simpler than in any other
+    CI server I know of. But it still requires some minimum effort on
+    your part to properly configure it. Don't give up, and let me know
+    if you're having problems with anything.
+
 Requirements
 ------------
 
@@ -82,3 +96,6 @@ Past contributors:
  *  miguellmanso
 
 Project page: <http://github.com/matamouros/cintient>
+
+![Build history](https://img.skitch.com/20111114-ti75ff372adt3nsrm9h68jicbh.png)
+
