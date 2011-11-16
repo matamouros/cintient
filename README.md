@@ -7,10 +7,17 @@ special attention to UI - in order to bring CI practices to most small
 to medium projects that just don't justify the setup of a more complex
 CI solution.
 
-Dashboard (screenshot)
------------
+### Screenshot #1
 
 ![Dashboard](https://img.skitch.com/20111116-8bxbxt7wgt3juh7ri4kj7ba3u.png)
+
+### Screenshot #2
+
+![History](https://img.skitch.com/20111114-dcqk93pm7uxnhgqus5gr8utd4y.png)
+
+### Screenshot #3
+
+![Builder](https://img.skitch.com/20111114-kp5edxr8e3umukuc2srkji6nfw.png)
 
 What it does
 ------------
@@ -40,11 +47,6 @@ users. These are some of the features:
 On the other hand, if you're looking for a distributed-builds capable
 CI server, you'll really have to look elsewhere. Cintient will probably
 never try to do this.
-
-Build history (screenshot)
------------
-
-![History](https://img.skitch.com/20111114-dcqk93pm7uxnhgqus5gr8utd4y.png)
     
 Disclaimer
 ----------
@@ -106,7 +108,3 @@ Past contributors:
  *  miguellmanso
 
 Project page: <http://github.com/matamouros/cintient>
-
-Integration builder
--------------------
-![Builder](https://img.skitch.com/20111114-kp5edxr8e3umukuc2srkji6nfw.png)
