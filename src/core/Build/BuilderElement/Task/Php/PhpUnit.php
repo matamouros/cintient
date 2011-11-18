@@ -37,6 +37,7 @@
  */
 class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
 {
+  protected $_bootstrapFile;
   protected $_codeCoverageXmlFile;
   protected $_codeCoverageHtmlDir;
   protected $_failOnFailure;       // PHPUnit distinguishes failures from errors
@@ -48,6 +49,7 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
   public function __construct()
   {
     parent::__construct();
+    $this->_bootstrapFile = null;
     $this->_codeCoverageXmlFile = null;
     $this->_codeCoverageHtmlDir = null;
     $this->_failOnFailure = true;
@@ -106,6 +108,12 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
     		'value' => '',
     		'checked' => $this->getFailOnSkipped(),
       ),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'bootstrapFile',
+    		'label' => 'Bootstrap file',
+      	'value' => $this->getBootstrapFile()
+      ),
     	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'PhpUnit'), $callbacks);
@@ -162,6 +170,13 @@ if (!extension_loaded('xdebug')) {
 	\$args[] = '--coverage-html';
 	\$args[] = '{$this->getCodeCoverageHtmlDir()}';
 }
+";
+    }
+
+    if ($this->getBootstrapFile()) {
+      $php .= "
+\$args[] = '--bootstrap';
+\$args[] = '{$this->getBootstrapFile()}';
 ";
     }
 
