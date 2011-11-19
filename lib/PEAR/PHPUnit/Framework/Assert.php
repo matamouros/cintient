@@ -51,7 +51,7 @@
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
  * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: 3.5.14
+ * @version    Release: @package_version@
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.0.0
  */
@@ -113,14 +113,15 @@ abstract class PHPUnit_Framework_Assert
      * @param  mixed   $haystack
      * @param  string  $message
      * @param  boolean $ignoreCase
+     * @param  boolean $checkForObjectIdentity
      * @since  Method available since Release 2.1.0
      */
-    public static function assertContains($needle, $haystack, $message = '', $ignoreCase = FALSE)
+    public static function assertContains($needle, $haystack, $message = '', $ignoreCase = FALSE, $checkForObjectIdentity = TRUE)
     {
         if (is_array($haystack) ||
             is_object($haystack) && $haystack instanceof Traversable) {
             $constraint = new PHPUnit_Framework_Constraint_TraversableContains(
-              $needle
+              $needle, $checkForObjectIdentity
             );
         }
 
@@ -148,15 +149,17 @@ abstract class PHPUnit_Framework_Assert
      * @param  mixed   $haystackClassOrObject
      * @param  string  $message
      * @param  boolean $ignoreCase
+     * @param  boolean $checkForObjectIdentity
      * @since  Method available since Release 3.0.0
      */
-    public static function assertAttributeContains($needle, $haystackAttributeName, $haystackClassOrObject, $message = '', $ignoreCase = FALSE)
+    public static function assertAttributeContains($needle, $haystackAttributeName, $haystackClassOrObject, $message = '', $ignoreCase = FALSE, $checkForObjectIdentity = TRUE)
     {
         self::assertContains(
           $needle,
           self::readAttribute($haystackClassOrObject, $haystackAttributeName),
           $message,
-          $ignoreCase
+          $ignoreCase,
+          $checkForObjectIdentity
         );
     }
 
@@ -167,14 +170,17 @@ abstract class PHPUnit_Framework_Assert
      * @param  mixed   $haystack
      * @param  string  $message
      * @param  boolean $ignoreCase
+     * @param  boolean $checkForObjectIdentity
      * @since  Method available since Release 2.1.0
      */
-    public static function assertNotContains($needle, $haystack, $message = '', $ignoreCase = FALSE)
+    public static function assertNotContains($needle, $haystack, $message = '', $ignoreCase = FALSE, $checkForObjectIdentity = TRUE)
     {
         if (is_array($haystack) ||
             is_object($haystack) && $haystack instanceof Traversable) {
             $constraint = new PHPUnit_Framework_Constraint_Not(
-              new PHPUnit_Framework_Constraint_TraversableContains($needle)
+              new PHPUnit_Framework_Constraint_TraversableContains(
+                $needle, $checkForObjectIdentity
+              )
             );
         }
 
@@ -204,15 +210,17 @@ abstract class PHPUnit_Framework_Assert
      * @param  mixed   $haystackClassOrObject
      * @param  string  $message
      * @param  boolean $ignoreCase
+     * @param  boolean $checkForObjectIdentity
      * @since  Method available since Release 3.0.0
      */
-    public static function assertAttributeNotContains($needle, $haystackAttributeName, $haystackClassOrObject, $message = '', $ignoreCase = FALSE)
+    public static function assertAttributeNotContains($needle, $haystackAttributeName, $haystackClassOrObject, $message = '', $ignoreCase = FALSE, $checkForObjectIdentity = TRUE)
     {
         self::assertNotContains(
           $needle,
           self::readAttribute($haystackClassOrObject, $haystackAttributeName),
           $message,
-          $ignoreCase
+          $ignoreCase,
+          $checkForObjectIdentity
         );
     }
 
@@ -319,6 +327,96 @@ abstract class PHPUnit_Framework_Assert
           $type,
           self::readAttribute($haystackClassOrObject, $haystackAttributeName),
           $isNativeType,
+          $message
+        );
+    }
+
+    /**
+     * Asserts the number of elements of an array, Countable or Iterator.
+     *
+     * @param integer $expectedCount
+     * @param mixed   $haystack
+     * @param string  $message
+     */
+    public static function assertCount($expectedCount, $haystack, $message = '')
+    {
+        if (!is_int($expectedCount)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'integer');
+        }
+
+        if (!$haystack instanceof Countable &&
+            !$haystack instanceof Iterator &&
+            !is_array($haystack)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(2, 'countable');
+        }
+
+        self::assertThat(
+          $haystack,
+          new PHPUnit_Framework_Constraint_Count($expectedCount),
+          $message
+        );
+    }
+
+    /**
+     * Asserts the number of elements of an array, Countable or Iterator
+     * that is stored in an attribute.
+     *
+     * @param integer $expectedCount
+     * @param string  $haystackAttributeName
+     * @param mixed   $haystackClassOrObject
+     * @param string  $message
+     * @since Method available since Release 3.6.0
+     */
+    public static function assertAttributeCount($expectedCount, $haystackAttributeName, $haystackClassOrObject, $message = '')
+    {
+        self::assertCount(
+          $expectedCount,
+          self::readAttribute($haystackClassOrObject, $haystackAttributeName),
+          $message
+        );
+    }
+
+    /**
+     * Asserts the number of elements of an array, Countable or Iterator.
+     *
+     * @param integer $expectedCount
+     * @param mixed   $haystack
+     * @param string  $message
+     */
+    public static function assertNotCount($expectedCount, $haystack, $message = '')
+    {
+        if (!is_int($expectedCount)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'integer');
+        }
+
+        if (!$haystack instanceof Countable &&
+            !$haystack instanceof Iterator &&
+            !is_array($haystack)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(2, 'countable');
+        }
+
+        $constraint = new PHPUnit_Framework_Constraint_Not(
+          new PHPUnit_Framework_Constraint_Count($expectedCount)
+        );
+
+        self::assertThat($haystack, $constraint, $message);
+    }
+
+    /**
+     * Asserts the number of elements of an array, Countable or Iterator
+     * that is stored in an attribute.
+     *
+     * @param integer $expectedCount
+     * @param string  $haystackAttributeName
+     * @param mixed   $haystackClassOrObject
+     * @param string  $message
+     * @since Method available since Release 3.6.0
+     */
+    public static function assertAttributeNotCount($expectedCount, $haystackAttributeName, $haystackClassOrObject, $message = '')
+    {
+        self::assertNotCount(
+          $expectedCount,
+          self::readAttribute($haystackClassOrObject, $haystackAttributeName),
           $message
         );
     }
@@ -1195,148 +1293,6 @@ abstract class PHPUnit_Framework_Assert
     }
 
     /**
-     * Asserts that a variable is of a given type.
-     *
-     * @param  string $expected
-     * @param  mixed  $actual
-     * @param  string $message
-     * @deprecated
-     */
-    public static function assertType($expected, $actual, $message = '')
-    {
-        PHPUnit_Util_DeprecatedFeature_Logger::log(
-          'assertType() will be removed in PHPUnit 3.6 and should no longer ' .
-          'be used. assertInternalType() should be used for asserting ' .
-          'internal types such as "integer" or "string" whereas ' .
-          'assertInstanceOf() should be used for asserting that an object is ' .
-          'an instance of a specified class or interface.'
-        );
-
-        if (is_string($expected)) {
-            if (PHPUnit_Util_Type::isType($expected)) {
-                $constraint = new PHPUnit_Framework_Constraint_IsType(
-                  $expected
-                );
-            }
-
-            else if (class_exists($expected) || interface_exists($expected)) {
-                $constraint = new PHPUnit_Framework_Constraint_IsInstanceOf(
-                  $expected
-                );
-            }
-
-            else {
-                throw PHPUnit_Util_InvalidArgumentHelper::factory(
-                  1, 'class or interface name'
-                );
-            }
-        } else {
-            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'string');
-        }
-
-        self::assertThat($actual, $constraint, $message);
-    }
-
-    /**
-     * Asserts that an attribute is of a given type.
-     *
-     * @param  string  $expected
-     * @param  string  $attributeName
-     * @param  mixed   $classOrObject
-     * @param  string  $message
-     * @since  Method available since Release 3.4.0
-     * @deprecated
-     */
-    public static function assertAttributeType($expected, $attributeName, $classOrObject, $message = '')
-    {
-        PHPUnit_Util_DeprecatedFeature_Logger::log(
-          'assertAttributeType() will be removed in PHPUnit 3.6 and should ' .
-          'no longer be used. assertAttributeInternalType() should be used ' .
-          'for asserting internal types such as "integer" or "string" ' .
-          'whereas assertAttributeInstanceOf() should be used for asserting ' .
-          'that an object is an instance of a specified class or interface.'
-        );
-
-        self::assertType(
-          $expected,
-          self::readAttribute($classOrObject, $attributeName),
-          $message
-        );
-    }
-
-    /**
-     * Asserts that a variable is not of a given type.
-     *
-     * @param  string $expected
-     * @param  mixed  $actual
-     * @param  string $message
-     * @since  Method available since Release 2.2.0
-     * @deprecated
-     */
-    public static function assertNotType($expected, $actual, $message = '')
-    {
-        PHPUnit_Util_DeprecatedFeature_Logger::log(
-          'assertNotType() will be removed in PHPUnit 3.6 and should no ' .
-          'longer be used. assertNotInternalType() should be used for ' .
-          'asserting internal types such as "integer" or "string" whereas ' .
-          'assertNotInstanceOf() should be used for asserting that an object ' .
-          'is not an instance of a specified class or interface.'
-        );
-
-        if (is_string($expected)) {
-            if (PHPUnit_Util_Type::isType($expected)) {
-                $constraint = new PHPUnit_Framework_Constraint_Not(
-                  new PHPUnit_Framework_Constraint_IsType($expected)
-                );
-            }
-
-            else if (class_exists($expected) || interface_exists($expected)) {
-                $constraint = new PHPUnit_Framework_Constraint_Not(
-                  new PHPUnit_Framework_Constraint_IsInstanceOf($expected)
-                );
-            }
-
-            else {
-                throw PHPUnit_Util_InvalidArgumentHelper::factory(
-                  1, 'class or interface name'
-                );
-            }
-        } else {
-            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'string');
-        }
-
-        self::assertThat($actual, $constraint, $message);
-    }
-
-    /**
-     * Asserts that an attribute is of a given type.
-     *
-     * @param  string  $expected
-     * @param  string  $attributeName
-     * @param  mixed   $classOrObject
-     * @param  string  $message
-     * @since  Method available since Release 3.4.0
-     * @deprecated
-     */
-    public static function assertAttributeNotType($expected, $attributeName, $classOrObject, $message = '')
-    {
-        PHPUnit_Util_DeprecatedFeature_Logger::log(
-          'assertAttributeNotType() will be removed in PHPUnit 3.6 and ' .
-          'should no longer be used. assertAttributeNotInternalType() should ' .
-          'be used for asserting internal types such as "integer" or ' .
-          '"string" whereas assertAttributeNotInstanceOf() should be used ' .
-          'for asserting that an object is an instance of a specified class ' .
-          'or interface.'
-        );
-
-        self::assertNotType(
-          $expected,
-          self::readAttribute($classOrObject, $attributeName),
-          $message
-        );
-    }
-
-    /**
      * Asserts that a string matches a given regular expression.
      *
      * @param  string $pattern
@@ -1381,6 +1337,64 @@ abstract class PHPUnit_Framework_Assert
         );
 
         self::assertThat($string, $constraint, $message);
+    }
+
+    /**
+     * Assert that the size of two arrays (or `Countable` or `Iterator` objects)
+     * is the same.
+     *
+     * @param integer $expected
+     * @param mixed   $actual
+     * @param string  $message
+     */
+    public function assertSameSize($expected, $actual, $message = '')
+    {
+        if (!$expected instanceof Countable &&
+            !$expected instanceof Iterator &&
+            !is_array($expected)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'countable');
+        }
+
+        if (!$actual instanceof Countable &&
+            !$actual instanceof Iterator &&
+            !is_array($actual)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(2, 'countable');
+        }
+
+        self::assertThat(
+          $actual,
+          new PHPUnit_Framework_Constraint_SameSize($expected),
+          $message
+        );
+    }
+
+    /**
+     * Assert that the size of two arrays (or `Countable` or `Iterator` objects)
+     * is not the same.
+     *
+     * @param integer $expected
+     * @param mixed   $actual
+     * @param string  $message
+     */
+    public function assertNotSameSize($expected, $actual, $message = '')
+    {
+        if (!$expected instanceof Countable &&
+            !$expected instanceof Iterator &&
+            !is_array($expected)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'countable');
+        }
+
+        if (!$actual instanceof Countable &&
+            !$actual instanceof Iterator &&
+            !is_array($actual)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(2, 'countable');
+        }
+
+        $constraint = new PHPUnit_Framework_Constraint_Not(
+          new PHPUnit_Framework_Constraint_SameSize($expected)
+        );
+
+        self::assertThat($actual, $constraint, $message);
     }
 
     /**
@@ -1714,38 +1728,38 @@ abstract class PHPUnit_Framework_Assert
     }
 
     /**
-     * Asserts that a hierarchy of DOMNodes matches.
+     * Asserts that a hierarchy of DOMElements matches.
      *
-     * @param DOMNode $expectedNode
-     * @param DOMNode $actualNode
+     * @param DOMElement $expectedElement
+     * @param DOMElement $actualElement
      * @param boolean $checkAttributes
      * @param string  $message
      * @author Mattis Stordalen Flister <mattis@xait.no>
      * @since  Method available since Release 3.3.0
      */
-    public static function assertEqualXMLStructure(DOMNode $expectedNode, DOMNode $actualNode, $checkAttributes = FALSE, $message = '')
+    public static function assertEqualXMLStructure(DOMElement $expectedElement, DOMElement $actualElement, $checkAttributes = FALSE, $message = '')
     {
         self::assertEquals(
-          $expectedNode->tagName,
-          $actualNode->tagName,
+          $expectedElement->tagName,
+          $actualElement->tagName,
           $message
         );
 
         if ($checkAttributes) {
             self::assertEquals(
-              $expectedNode->attributes->length,
-              $actualNode->attributes->length,
+              $expectedElement->attributes->length,
+              $actualElement->attributes->length,
               sprintf(
                 '%s%sNumber of attributes on node "%s" does not match',
                 $message,
                 !empty($message) ? "\n" : '',
-                $expectedNode->tagName
+                $expectedElement->tagName
               )
             );
 
-            for ($i = 0 ; $i < $expectedNode->attributes->length; $i++) {
-                $expectedAttribute = $expectedNode->attributes->item($i);
-                $actualAttribute   = $actualNode->attributes->getNamedItem(
+            for ($i = 0 ; $i < $expectedElement->attributes->length; $i++) {
+                $expectedAttribute = $expectedElement->attributes->item($i);
+                $actualAttribute   = $actualElement->attributes->getNamedItem(
                   $expectedAttribute->name
                 );
 
@@ -1756,31 +1770,31 @@ abstract class PHPUnit_Framework_Assert
                         $message,
                         !empty($message) ? "\n" : '',
                         $expectedAttribute->name,
-                        $expectedNode->tagName
+                        $expectedElement->tagName
                       )
                     );
                 }
             }
         }
 
-        PHPUnit_Util_XML::removeCharacterDataNodes($expectedNode);
-        PHPUnit_Util_XML::removeCharacterDataNodes($actualNode);
+        PHPUnit_Util_XML::removeCharacterDataNodes($expectedElement);
+        PHPUnit_Util_XML::removeCharacterDataNodes($actualElement);
 
         self::assertEquals(
-          $expectedNode->childNodes->length,
-          $actualNode->childNodes->length,
+          $expectedElement->childNodes->length,
+          $actualElement->childNodes->length,
           sprintf(
             '%s%sNumber of child nodes of "%s" differs',
             $message,
             !empty($message) ? "\n" : '',
-            $expectedNode->tagName
+            $expectedElement->tagName
           )
         );
 
-        for ($i = 0; $i < $expectedNode->childNodes->length; $i++) {
+        for ($i = 0; $i < $expectedElement->childNodes->length; $i++) {
             self::assertEqualXMLStructure(
-              $expectedNode->childNodes->item($i),
-              $actualNode->childNodes->item($i),
+              $expectedElement->childNodes->item($i),
+              $actualElement->childNodes->item($i),
               $checkAttributes,
               $message
             );
@@ -1947,7 +1961,7 @@ abstract class PHPUnit_Framework_Assert
      *
      * // Matcher that asserts that there is a "span" tag with content matching
      * // the regular expression pattern.
-     * $matcher = array('tag' => 'span', 'content' => '/Try P(HP|ython)/');
+     * $matcher = array('tag' => 'span', 'content' => 'regexp:/Try P(HP|ython)/');
      *
      * // Matcher that asserts that there is a "span" with an "list" class
      * // attribute.
@@ -2083,9 +2097,7 @@ abstract class PHPUnit_Framework_Assert
     {
         self::$count += count($constraint);
 
-        if (!$constraint->evaluate($value)) {
-            $constraint->fail($value, $message);
-        }
+        $constraint->evaluate($value, $message);
     }
 
     /**
@@ -2211,13 +2223,14 @@ abstract class PHPUnit_Framework_Assert
      * Returns a PHPUnit_Framework_Constraint_TraversableContains matcher
      * object.
      *
-     * @param  mixed $value
+     * @param  mixed   $value
+     * @param  boolean $checkForObjectIdentity
      * @return PHPUnit_Framework_Constraint_TraversableContains
      * @since  Method available since Release 3.0.0
      */
-    public static function contains($value)
+    public static function contains($value, $checkForObjectIdentity = TRUE)
     {
-        return new PHPUnit_Framework_Constraint_TraversableContains($value);
+        return new PHPUnit_Framework_Constraint_TraversableContains($value, $checkForObjectIdentity);
     }
 
     /**
