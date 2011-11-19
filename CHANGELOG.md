@@ -1,13 +1,29 @@
 Changelog
 =========
 
+2011-11-16 cintient-1.0.0-beta-2
+-----------------------------
+ 
+ *  ADDED: Manual building trigger buttons in the Dashboard, for on
+           demand builds.
+ *  FIXED: Several performance issues.
+ *  FIXED: Serious SQLite database locking issues.
+ *  FIXED: Minor layout issues.
+ *  FIXED: Regression in database handling of some queries.
+ *  FIXED: Issue in the PhpUnit task implementation would cause the
+           integration builder to fail silently if the PHP environment
+           was different from the web server to the console (namely if
+           one had Xdebug loaded and the other didn't).
+
 2011-11-10 cintient-1.0.0-beta-1
 -----------------------------
+ 
  *  CHANGED: Major UI refactoring.
  *  CHANGED: Several other improvements and fixes.
 
 2011-10-02 cintient-0-alpha-8
 -----------------------------
+ 
  *  FIXED: Major bugfixing and improvements.
  *  ADDED: Tooltips to some forms. Still working on improving everything
            with more information.

@@ -146,7 +146,7 @@ var Cintient = {
    */
   alertSuccess : function(msg)
   {
-    if (msg.length == 0) {
+    if (typeof msg == 'undefined' || msg.length == 0) {
       msg = 'Success!';
     }
     Cintient.alert({
@@ -177,42 +177,6 @@ var Cintient = {
       "background-color" : "#eee"//"rgb(248, 248, 248)"
     });
   },
-    
-  /**
-   * Creates a button, styles it and returns it. Whomever calls this,
-   * must then be responsible for appending it to the DOM tree.
-   */
-  createButton: function (text)
-  {
-    var button = document.createElement('button');
-    //
-    // Style it
-    //
-    $(button).each( function() {
-      $(this).hover(
-        function() {
-          $(this).css({
-            "cursor" : "pointer",
-            "border" : "2px solid rgb(255,40,0)",
-            "box-shadow" : "0px 0px 20px rgb(255,40,0)",
-            "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 20px",
-            "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 15px"
-          });
-        },
-        function() {
-          $(this).css({
-            "cursor" : "default",
-            "border" : "2px solid #999",
-            "box-shadow" : "2px 2px 10px #111",
-            "-webkit-box-shadow" : "#111 2px 2px 10px",
-            "-moz-box-shadow" : "#111 2px 2px 10px"
-          });
-        });
-      }
-    );
-    $(button).html("<div>" + text + "</div>");
-    return button;
-  },
   
   initSectionAuthentication: function ()
   {
@@ -231,6 +195,7 @@ var Cintient = {
     
     // Activate the default project
     this.activateListItem($('#dashboard li.project#' + activeProjectId));
+    $('.build', '#dashboard li.project#' + activeProjectId).fadeIn(100);
     
     //
     // Stop propagation on a few special zones
@@ -238,6 +203,17 @@ var Cintient = {
     $('#dashboard li.project a').click(function (e) {
       e.stopPropagation();
     });
+    
+    $('#dashboard li.project .build').hover(
+      function () {
+        $(this).addClass('danger');
+        $(this).removeClass('disabled');
+      },
+      function () {
+        $(this).addClass('disabled');
+        $(this).removeClass('danger');
+      }
+    );
     
     //
     // Hover & click on the project list
@@ -249,9 +225,23 @@ var Cintient = {
         //
         if ($(this).attr('id') != activeProjectId) {
           that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
-          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project          
+          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project
+          $('.build', '#dashboard li.project#' + activeProjectId).fadeOut(50);
+          // Only show the build button if not already building
+          if (!$('.loading', this).is(':visible')) {
+            $('.build', this).fadeIn(100);
+          }
           activeProjectId = $(this).attr('id'); // Update the active project
           activeTabId = $('.tab-content .active').attr('id'); // Fetch the currently active id before it goes away
+          //
+          // The source of a very likely huge future bug... Sometimes the
+          // activeTabId fetching comes out undefined, not really sure
+          // why at this time. Always having a default tab to activate
+          // is right now the best course of action to take.
+          //
+          if (typeof activeTabId == 'undefined') {
+            activeTabId = 'latest';
+          }
 
           // Promptly hide the content
           // TODO: show a waiting indicator
@@ -294,18 +284,24 @@ var Cintient = {
           });
         }
         //e.preventDefault(); // Prevents any real link clicked inside the project to work
+        e.stopPropagation();
       })
       .hover(
         function() {
           // Don't highlight the active project
           if (activeProjectId != $(this).attr('id')) {
             that.hoverListItem($(this));
+            // Only if not already building
+            if (!$('.loading', this).is(':visible')) {
+              $('.build', this).fadeIn(100);
+            }
           }
         },
         function() {
           // Don't un-highlight the active project
           if (activeProjectId != $(this).attr('id')) {
             that.deactivateListItem($(this));
+            $('.build', this).fadeOut(50);
           }
         }
       )

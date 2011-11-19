@@ -54,7 +54,7 @@ class Notification_Notifo extends NotificationHandlerAbstract
       h::label(array('for' => 'username'), 'API Username');
       h::div(array('class' => 'input'), function() use ($o) {
         h::input(array(
-          'class' => 'span4',
+          'class' => 'span6',
           'type'  => 'text',
           'name'  => 'username',
           'value' => $o->getUsername(),
@@ -65,7 +65,7 @@ class Notification_Notifo extends NotificationHandlerAbstract
       h::label(array('for' => 'key'), 'API Secret');
       h::div(array('class' => 'input'), function() use ($o) {
         h::input(array(
-          'class' => 'span4',
+          'class' => 'span6',
           'type'  => 'text',
           'name'  => 'key',
           'value' => $o->getKey(),

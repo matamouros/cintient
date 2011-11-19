@@ -6,7 +6,19 @@ was written to be simple to setup and straightforward to use - with
 special attention to UI - in order to bring CI practices to most small
 to medium projects that just don't justify the setup of a more complex
 CI solution.
- 
+
+### Screenshot #1
+
+![Dashboard](https://img.skitch.com/20111116-8bxbxt7wgt3juh7ri4kj7ba3u.png)
+
+### Screenshot #2
+
+![History](https://img.skitch.com/20111114-dcqk93pm7uxnhgqus5gr8utd4y.png)
+
+### Screenshot #3
+
+![Builder](https://img.skitch.com/20111114-kp5edxr8e3umukuc2srkji6nfw.png)
+
 What it does
 ------------
  
@@ -22,8 +34,8 @@ users. These are some of the features:
  *  easy one-time setup of the application (1 minute)
  *  visual edition for builder tasks, i.e., no messing around with Ant
     XML sources for configuring builds
- *  Notifo.com push notifications on your desktop and mobile (using the
-    free user account)
+ *  Web-based push notifications (currently supports the now deprecated
+    Notifo.com, but it's easily extendable to others)
  *  PHP syntax checking tasks
  *  PHPUnit integration for unit testing
  *  PHPDepend for quality metrics
@@ -36,6 +48,20 @@ On the other hand, if you're looking for a distributed-builds capable
 CI server, you'll really have to look elsewhere. Cintient will probably
 never try to do this.
     
+Disclaimer
+----------
+
+Cintient is still beta. Please understand that not everything is yet
+perfect. You should keep in mind the following:
+
+ *  I develop mainly in Mac OS X and Linux, using Safari and ocasionally
+    Firefox. Other OS/browser flavours are still pretty much untested.
+    Please help out if you can.
+ *  Setting up a project in Cintient is way simpler than in any other
+    CI server I know of. But it still requires some minimum effort on
+    your part to properly configure it. Don't give up, and let me know
+    if you're having problems with anything.
+
 Requirements
 ------------
 

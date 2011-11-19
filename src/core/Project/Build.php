@@ -241,9 +241,6 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
 
-    if (!Database::beginTransaction()) {
-      return false;
-    }
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
          . ' (id, label, description, output, specialtasks, status, scmrevision)'
          . ' VALUES (?,?,?,?,?,?,?)';
@@ -262,23 +259,17 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
-        Database::rollbackTransaction();
         SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
         return false;
       }
       $this->setId($id);
     } else {
       if (!Database::execute($sql, $val)) {
-        Database::rollbackTransaction();
         SystemEvent::raise(SystemEvent::ERROR, "Problems saving to db.", __METHOD__);
         return false;
       }
     }
 
-    if (!Database::endTransaction()) {
-      SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project build might not have been saved. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
-      return false;
-    }
     #if DEBUG
     SystemEvent::raise(SystemEvent::DEBUG, "Saved project build. [PID={$this->getPtrProject()->getId()}]", __METHOD__);
     #endif

@@ -460,11 +460,13 @@ class Project extends Framework_DatabaseObjectAbstract
       'username' => $this->getScmUsername(),
       'password' => $this->getScmPassword(),
     );
-    if (!ScmConnector::checkout($params)) {
+    /*if (!ScmConnector::checkout($params)) {
       $this->setStatus(self::STATUS_UNINITIALIZED);
       return false;
     }
     $this->setStatus(self::STATUS_UNBUILT);
+    */
+    $this->setStatus(self::STATUS_UNINITIALIZED);
     return true;
   }
 
@@ -574,7 +576,6 @@ EOT;
         return false;
       }
     }
-
     // The project users
     Project_User::deleteByProject($this); // Reset it
     foreach ($this->_users as $projectUser) {
@@ -584,7 +585,6 @@ EOT;
         return false;
       }
     }
-
     if (!Database::endTransaction()) {
       SystemEvent::raise(SystemEvent::ERROR, "Something occurred while finishing transaction. The project might not have been saved. [ID={$this->getId()}]", __METHOD__);
       return false;
@@ -659,7 +659,7 @@ EOT;
    *
    * @param string $msg
    */
-  public function log($msg, $username = null, $type = 0)
+  public function log($msg, $username = '', $type = 0)
   {
     $projectLog = new Project_Log($this);
     $projectLog->setType($type);

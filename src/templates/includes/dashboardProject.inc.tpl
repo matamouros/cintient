@@ -19,20 +19,20 @@
 
 *}
             <ul class="tabs" id="{$project->getTitle()}">
-              <li class="active"><a href="#general">General</a></li>
+              <li class="active"><a href="#latest">Latest</a></li>
               <li><a href="#charts">Charts</a></li>
               <li><a href="#log">Log</a></li>
               <li><a href="#releases">Releases</a></li>
             </ul>
 
             <div class="tab-content">
-              <div class="active" id="general">
+              <div class="active" id="latest">
                 <div class="row">
-                  <div class="span2">Current status:</div>
+                  <div class="span2">Status:</div>
                   <div class="span6"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span></div>
                 </div>
                 <div class="row">
-                  <div class="span2">Latest build:</div>
+                  <div class="span2">Build:</div>
                   <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
                 </div>
 {if $project_build instanceof Project_Build}

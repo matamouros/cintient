@@ -6,6 +6,8 @@
 	http://cintient/settings/css/new.css
 	http://cintient/project/history/css/new.css
 	http://cintient/project/edit/css/new.css
+	http://cintient/project/history/css/cintient.css
+	http://cintient/css/cintient.css
 */
 
 /* @group Top Bar */
@@ -129,7 +131,7 @@ body
   width: 100%;
 }
 
-.container > footer, p
+.container > footer p
 {
   line-height: 1.2em;
   text-align: center; /* center align it with the container */
@@ -390,6 +392,15 @@ user-select: none;
 }
 /* ========================= */
 
+.modal-backdrop, .modal-backdrop.fade.in
+{
+  /* An override for the default opacity of the Bootstrap modals */
+  filter: alpha(opacity=40);
+  -khtml-opacity: 0.4;
+  -moz-opacity: 0.4;
+  opacity: 0.4;
+}
+
 /* @end */
 
 
@@ -466,6 +477,26 @@ user-select: none;
      with visibility or display - it seems sparkline.js doesn't play well
      with that. */
   color: transparent;
+  float: left;
+}
+
+#dashboard .build
+{
+  height: 20px;
+  padding-top: 3px;
+}
+
+#dashboard .build, #dashboard .build + .loading
+{
+  float: right;
+  margin-top: 0px;
+  display: none;
+}
+
+#dashboard .build + .loading
+{
+  margin-top: 3px;
+  margin-right: 15px;
 }
 
 #dashboard .projectRevision
@@ -497,6 +528,12 @@ user-select: none;
 #dashboard #log table
 {
   float: left;
+}
+
+#dashboardProject .loading
+{
+  /* Align this loading indicator with the one of the first project on the list at the left */
+  margin-top: 18px;
 }
 
 /* @end */

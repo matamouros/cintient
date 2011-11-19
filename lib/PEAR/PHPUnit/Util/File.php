@@ -55,7 +55,7 @@ if (!defined('T_NAMESPACE')) {
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
  * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: 3.5.14
+ * @version    Release: @package_version@
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.4.0
  */
@@ -276,8 +276,7 @@ class PHPUnit_Util_File
                                 $done = TRUE;
                             }
                         }
-                    }
-                    while (!$done);
+                    } while (!$done);
 
                     if (isset($tokens[$i+2][1])) {
                         $functionName = $tokens[$i+2][1];

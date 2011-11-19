@@ -37,6 +37,7 @@
  */
 class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
 {
+  protected $_bootstrapFile;
   protected $_codeCoverageXmlFile;
   protected $_codeCoverageHtmlDir;
   protected $_failOnFailure;       // PHPUnit distinguishes failures from errors
@@ -48,6 +49,7 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
   public function __construct()
   {
     parent::__construct();
+    $this->_bootstrapFile = null;
     $this->_codeCoverageXmlFile = null;
     $this->_codeCoverageHtmlDir = null;
     $this->_failOnFailure = true;
@@ -106,6 +108,12 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
     		'value' => '',
     		'checked' => $this->getFailOnSkipped(),
       ),
+      array(
+      	'cb' => 'getHtmlInputText',
+      	'name' => 'bootstrapFile',
+    		'label' => 'Bootstrap file',
+      	'value' => $this->getBootstrapFile()
+      ),
     	array('cb' => 'getFilesets'),
     );
     parent::toHtml(array('title' => 'PhpUnit'), $callbacks);
@@ -144,29 +152,32 @@ output('Starting unit tests...');
 ";
     }
     if ($this->getCodeCoverageXmlFile()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+      $php .= "
+if (!extension_loaded('xdebug')) {
+  output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-clover\" disabled.');
+} else {
+	\$args[] = '--coverage-clover';
+	\$args[] = '{$this->getCodeCoverageXmlFile()}';
+}
 ";
-      } else {
-        $php .= "
-\$args[] = '--coverage-clover';
-\$args[] = '{$this->getCodeCoverageXmlFile()}';
-";
-      }
     }
 
     if ($this->getCodeCoverageHtmlDir()) {
-      if (!extension_loaded('xdebug')) {
-        $php .= "
-output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+      $php .= "
+if (!extension_loaded('xdebug')) {
+	output('Code coverage only possible with the Xdebug extension loaded. Option \"--coverage-html\" disabled.');
+} else {
+	\$args[] = '--coverage-html';
+	\$args[] = '{$this->getCodeCoverageHtmlDir()}';
+}
 ";
-      } else {
-        $php .= "
-\$args[] = '--coverage-html';
-\$args[] = '{$this->getCodeCoverageHtmlDir()}';
+    }
+
+    if ($this->getBootstrapFile()) {
+      $php .= "
+\$args[] = '--bootstrap';
+\$args[] = '{$this->getBootstrapFile()}';
 ";
-      }
     }
 
     if ($this->getFilesets()) {

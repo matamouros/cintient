@@ -147,12 +147,13 @@ function phpInstallationVersion()
 
 function phpWithSqlite()
 {
-  $msg[0] = "PHP with sqlite3 version 2.5 or higher required.";
+  $msg[0] = "PHP with SQLite3 required.";
   $ok = false;
-  if (extension_loaded('sqlite3') && function_exists('sqlite_libversion')) {
-    $msg[0] .= " Version " . sqlite_libversion() . " detected.";
-    $msg[1] = "Detected version " . sqlite_libversion() . ".";
-    $ok = extension_loaded('sqlite3') && sqlite_libversion() > '2.5';
+  if (extension_loaded('sqlite3')) {
+    $version = SQLite3::version();
+    $msg[0] .= " Please enable PHP with SQLite3.";
+    $msg[1] = "Detected version " . $version['versionString'] . ".";
+    $ok = extension_loaded('sqlite3');
   }
   return array($ok, $msg[(int)$ok]);
 }
@@ -388,6 +389,15 @@ if (!empty($_GET['c'])) {
     sendResponse($ok, $msg);
   }
 
+  //
+  // Set a special cookie "one-time" cookie so that right after the
+  // installation we can show a message. This is just temporary until
+  // system-user messages are implemented. This cookie will be imediately
+  // erased by webHandler, after a GLOBAL flag is set. Right now a modal
+  // is being shown in header.inc.tpl and this cookie is there removed.
+  //
+  setcookie('cintientInstalled', time());
+
   $ok = true;
   $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
   SystemEvent::raise(1024, "Installation successful.", "Installer");
@@ -481,7 +491,7 @@ list ($ok, $msg) = phpInstallationVersion();
 list ($ok, $msg) = phpWithSqlite();
 ?>
                 <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
-                  <label for="phpWithSqlite">PHP with SQLite3 2.5.x</label>
+                  <label for="phpWithSqlite">PHP with SQLite3</label>
                   <div id="phpWithSqlite" class="input">
                     <span class="help-block"><?php echo $msg; ?></span>
                   </div>

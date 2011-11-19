@@ -43,6 +43,7 @@
   <script type="text/javascript" src="js/lib/tipTipv13/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="js/lib/bootstrap/bootstrap-alerts.js"></script>
   <script type="text/javascript" src="js/lib/bootstrap/bootstrap-dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap/bootstrap-modal.js"></script>
 {foreach $jsIncludes as $jsInclude}
   <script type="text/javascript" src="{$jsInclude}"></script>
 {/foreach}
@@ -105,6 +106,41 @@ $(document).ready(function() {
     </div>
   </div>
   <div id="alertPane"></div>
+{if !empty($smarty.cookies.cintientInstalled)}
+<!-- {setcookie('cintientInstalled', '', time()-3600)} -->
+  <div id="modalPane" class="modal hide fade textLeft clearfix">
+    <div class="modal-header">
+      <a href="#" class="close">×</a>
+      <h3>This is beta software...</h3>
+    </div>
+    <div class="modal-body">
+      <p>
+        Cintient is still beta software. That means you can expect it to
+        still have some issues.
+      </p>
+      <p>
+        Support open source software: get up on GitHub, fork Cintient and throw me some pull requests,
+        or fill in some bug reports.
+      </p>
+      <p>
+        More info here: <a href="http://github.com/matamouros/cintient" target="_blank">http://github.com/matamouros/cintient</a>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" id="modalDismiss" class="btn primary">I understand...</a>
+    </div>
+  </div>
+  <script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+  $('#modalPane').modal({ show: true, backdrop: 'static', keyboard: true});
+  $('#modalDismiss').on('click', function () {
+    $('#modalPane').modal('hide');
+  });
+});
+// ]]>
+  </script>
+{/if}
   <div class="container">
     <div class="mainContent" id="{$subSectionId}">
       <div class="page-header">

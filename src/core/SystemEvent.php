@@ -69,12 +69,12 @@ class SystemEvent extends Log
   static private function _singleton()
   {
     static $instance;
-    if (!isset($instance) || !($instance instanceof SystemEvent)) {
+    if (!isset($instance) || !($instance instanceof Log)) {
       $options = array( 'append'     => true,
                         'locking'    => false,
                         'mode'       => 0640,
                         'timeFormat' => '[%Y-%m-%d %H:%M:%S]',
-                        'lineFormat' => '%1$s [%3$s] %4$s',
+                        'lineFormat' => '%1$s [%3$s] [' . uniqid() . '] %4$s',
                  );
       $instance = parent::singleton('file', LOG_FILE, 'cintient', $options, PEAR_LOG_DEBUG);
     }
