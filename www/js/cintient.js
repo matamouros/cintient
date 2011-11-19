@@ -177,42 +177,6 @@ var Cintient = {
       "background-color" : "#eee"//"rgb(248, 248, 248)"
     });
   },
-    
-  /**
-   * Creates a button, styles it and returns it. Whomever calls this,
-   * must then be responsible for appending it to the DOM tree.
-   */
-  createButton: function (text)
-  {
-    var button = document.createElement('button');
-    //
-    // Style it
-    //
-    $(button).each( function() {
-      $(this).hover(
-        function() {
-          $(this).css({
-            "cursor" : "pointer",
-            "border" : "2px solid rgb(255,40,0)",
-            "box-shadow" : "0px 0px 20px rgb(255,40,0)",
-            "-webkit-box-shadow" : "rgb(255,40,0) 0px 0px 20px",
-            "-moz-box-shadow" : "rgb(255,40,0) 0px 0px 15px"
-          });
-        },
-        function() {
-          $(this).css({
-            "cursor" : "default",
-            "border" : "2px solid #999",
-            "box-shadow" : "2px 2px 10px #111",
-            "-webkit-box-shadow" : "#111 2px 2px 10px",
-            "-moz-box-shadow" : "#111 2px 2px 10px"
-          });
-        });
-      }
-    );
-    $(button).html("<div>" + text + "</div>");
-    return button;
-  },
   
   initSectionAuthentication: function ()
   {
