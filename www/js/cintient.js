@@ -260,6 +260,7 @@ var Cintient = {
               // documentation:
               // http://api.jquery.com/load/
               if (textStatus == 'success' || textStatus == 'notmodified') {
+                $('#dashboard #dashboardProject').hide();
                 $('#dashboard #dashboardProject').html(data); // Update the HTML (replace it)
                 $('ul.tabs > li.active').removeClass('active'); // Throw away the HTML forced active tab
                 $('.tab-content .active').removeClass('active'); // Throw away the HTML forced active content

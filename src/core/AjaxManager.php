@@ -250,9 +250,10 @@ class AjaxManager
     }
 
     //
-    // We need to process a Smarty file... Fuck tha police!
+    // We need to process a Smarty file...
+    // TODO: Centralize this
     //
-    require_once 'lib/Smarty-3.0rc4/Smarty.class.php';
+    require_once CINTIENT_SMARTY_INCLUDE;
     $smarty = new Smarty();
     $smarty->setAllowPhpTag(true);
     $smarty->setCacheLifetime(0);
@@ -491,6 +492,94 @@ EOT;
       );
     }
     exit;
+  }
+
+  /**
+   *
+   */
+  static public function project_history()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project) ||empty($_GET['bid'])) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    //
+    // Viewing project build details
+    //
+    $build = null; // It's possible that no build was triggered yet.
+    if (isset($_GET['bid']) && !empty($_GET['bid'])) {
+      $build = Project_Build::getById($_GET['bid'], $GLOBALS['project'], $GLOBALS['user']);
+    }
+
+    if (!$build instanceof Project_Build) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    //
+    // We need to process a Smarty file...
+    // TODO: Centralize this
+    //
+    require_once CINTIENT_SMARTY_INCLUDE;
+    $smarty = new Smarty();
+    $smarty->setAllowPhpTag(true);
+    $smarty->setCacheLifetime(0);
+    $smarty->setDebugging(SMARTY_DEBUG);
+    $smarty->setForceCompile(SMARTY_FORCE_COMPILE);
+    $smarty->setCompileCheck(SMARTY_COMPILE_CHECK);
+    $smarty->setTemplateDir(SMARTY_TEMPLATE_DIR);
+    $smarty->setCompileDir(SMARTY_COMPILE_DIR);
+    $smarty->error_reporting = error_reporting();
+    Framework_SmartyPlugin::init($smarty);
+
+    //
+    // Special tasks. This is post build, so we're fetching an existing special task (never creating it)
+    //
+    $specialTasks = $build->getSpecialTasks();
+    $smarty->assign('project_specialTasks', $specialTasks);
+    if (!empty($specialTasks)) {
+      foreach ($specialTasks as $task) {
+        if (!class_exists($task)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task. [PID={$GLOBALS['project']->getId()}] [BUILD={$build->getId()}] [TASK={$task}]", __METHOD__);
+          continue;
+        }
+        $o = $task::getById($build, $GLOBALS['user'], Access::READ);
+        //$smarty->assign($task, $o); // Register for s
+        if (!($o instanceof Build_SpecialTaskInterface)) {
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task ID. [PID={$GLOBALS['project']->getId()}] [BUILD={$build->getId()}] [TASK={$task}] [TASKID={$build->getId()}]", __METHOD__);
+          continue;
+        }
+        $viewData = $o->getViewData();
+        if (is_array($viewData)) {
+          foreach ($viewData as $key => $value) {
+            $smarty->assign($key, $value);
+          }
+        }
+        $o = null;
+        unset($o);
+      }
+    }
+
+    // Last assignments
+    $smarty->assign('project_build', $build);
+    $smarty->display('includes/buildHistoryRev.inc.tpl');
   }
 
 	/**

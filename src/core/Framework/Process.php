@@ -42,6 +42,7 @@ class Framework_Process extends Framework_BaseObject
 {
   protected $_executable;
   protected $_args;
+  protected $_returnValue;
   protected $_stdin;
   protected $_stdout;
   protected $_stderr;
@@ -52,6 +53,7 @@ class Framework_Process extends Framework_BaseObject
   {
     $this->setExecutable($exec);
     $this->setArgs($args);
+    $this->_returnValue = null;
     $this->_stdin = null;
     $this->_stdout = null;
     $this->_stderr = null;
@@ -184,13 +186,17 @@ class Framework_Process extends Framework_BaseObject
       fclose($pipes[0]);
     }
 
+    $first_exitcode = null;
+
     while (($buffer = fgets($pipes[1], 1024)) != null ||
            ($errbuf = fgets($pipes[2], 1024)) != null)
     {
       if (!isset($flag)) {
         $pstatus = proc_get_status($ptr);
-        $first_exitcode = $pstatus["exitcode"];
-        $flag = true;
+        if (!$pstatus['running']) {
+          $first_exitcode = $pstatus["exitcode"];
+          $flag = true;
+        }
       }
       if (strlen($buffer)) {
         $this->appendToStdout($buffer);
@@ -228,7 +234,8 @@ class Framework_Process extends Framework_BaseObject
       proc_close($ptr);
     }
 
-    return ($ret + 256) % 256;
+    $this->setReturnValue(($ret + 256) % 256);
+    return $this->getReturnValue();
   }
 
   /**

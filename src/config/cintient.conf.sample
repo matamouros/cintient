@@ -115,6 +115,11 @@ set_include_path(get_include_path() . PATH_SEPARATOR . CINTIENT_INSTALL_DIR);
 define('CINTIENT_SQL_BUSY_RETRIES', 5);
 
 //
+// Smarty
+//
+define('CINTIENT_SMARTY_INCLUDE', 'lib/Smarty-3.0rc4/Smarty.class.php');
+
+//
 // PHP_Depend
 //
 // TODO: check host system and call the .bat version as appropriate.

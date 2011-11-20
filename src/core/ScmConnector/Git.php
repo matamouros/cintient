@@ -47,7 +47,20 @@ class ScmConnector_Git implements ScmConnectorInterface
     return true;
   }
 
+
   static public function isModified(array $args)
+  {
+    if (!($localRev = self::_getLocalRevision($args)) || !($remoteRev = self::_getRemoteRevision($args))) {
+      return false;
+    }
+    #if DEBUG
+    SystemEvent::raise(SystemEvent::DEBUG, "Repository " . ($localRev!=$remoteRev?'':'not ') . "changed. [LOCAL={$localRev}] [REMOTE={$remoteRev}]", __METHOD__);
+    #endif
+    return ($localRev != $remoteRev);
+  }
+
+
+  static private function _getLocalRevision(array $args)
   {
     //
     // Pull up the local revision
@@ -57,7 +70,7 @@ class ScmConnector_Git implements ScmConnectorInterface
     Author: Pedro Mata-Mouros <pedro.matamouros@gmail.com>
     Date:   Sun Sep 18 01:31:31 2011 +0100
 
-        changes to README
+    changes to README
 
     diff --git a/README b/README
     index e69de29..9e3abf0 100644
@@ -70,15 +83,16 @@ class ScmConnector_Git implements ScmConnectorInterface
     $command = "git --git-dir={$args['local']}.git show";
     $lastline = exec($command, $output, $return);
     $outputLocal = implode("\n", $output);
-    if ($return != 0) {
-      //SystemEvent::raise(SystemEvent::ERROR, "Could not check local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+    if ($return != 0 || !preg_match('/^commit ([\da-f]{40})$/m', $outputLocal, $matchesLocal)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check local revision. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
       return false;
     }
-    if (!preg_match('/^commit ([\da-f]{40})$/m', $outputLocal, $matchesLocal)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not check for modifications. [OUTPUT=\"{$outputLocal}\"]", __METHOD__);
-      return false;
-    }
+    return $matchesLocal[1];
+  }
 
+
+  static private function _getRemoteRevision(array $args)
+  {
     //
     // Pull up the remote revision
     //
@@ -90,41 +104,28 @@ class ScmConnector_Git implements ScmConnectorInterface
     $command = "git --git-dir={$args['local']}.git ls-remote";
     $lastline = exec($command, $output, $return);
     $outputRemote = implode("\n", $output);
-    if ($return != 0) {
-      //SystemEvent::raise(SystemEvent::ERROR, "Could not check local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+    if ($return != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $outputRemote, $matchesRemote)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check remote revision. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
       return false;
     }
-    if (!preg_match('/^([\da-f]{40})\s+HEAD$/m', $outputRemote, $matchesRemote)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not check for modifications. [OUTPUT=\"{$outputRemote}\"]", __METHOD__);
-      return false;
-    }
-    #if DEBUG
-    SystemEvent::raise(SystemEvent::DEBUG, "Repository " . ($matchesRemote[1]!=$matchesLocal[1]?'':'not ') . "changed.", __METHOD__);
-    #endif
-    return ($matchesRemote[1] != $matchesLocal[1]);
+    return $matchesRemote[1];
   }
+
 
   static public function update(array $args, &$rev)
   {
-    // --git-dir gives out a permission denied... (??)
-    //$command = "git --git-dir={$args['local']} pull";
-    $command = "cd {$args['local']}; git pull";// &> /tmp/wtf.txt";
-    $lastline = exec($command, $output, $return);
-    if ($return != 0) {
-      $output = implode("\n", $output);
-      SystemEvent::raise(SystemEvent::ERROR, "Could not update local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+    $command = "git --git-dir={$args['local']}.git pull";
+    $proc = new Framework_Process($command);
+    $proc->run();
+    if (($return = $proc->getReturnValue()) != 0) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not update local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);
       return false;
     }
-    // Pull up the revision digest
-    $command = "git --git-dir={$args['local']}.git ls-remote";
-    $lastline = exec($command, $output, $return);
-    $output = implode("\n", $output);
-    if ($return != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $output, $matches)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not get revision number from update. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
-    }
-    $rev = $matches[1];
+    $rev = self::_getLocalRevision($args);
+    SystemEvent::raise(SystemEvent::DEBUG, "Updated local. [REV={$rev}] [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);
     return true;
   }
+
 
   static public function tag(array $args)
   {}
