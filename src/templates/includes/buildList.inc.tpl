@@ -76,6 +76,11 @@ $(document).ready(function() {
   // and still make it look good)
   //
   $('#buildList .row').click(function (e) {
+    // Make the menu promptly disappear, don't set buildListActive to
+    // false yet, so that another click in the dropdown doesn't make the
+    // menu appear again while the ajax request is not complete. After
+    // the ajax response comes, make buildListActive false again.
+    $('#buildList').fadeOut(50);
     //
     // Update the visible active revision
     //
@@ -124,9 +129,11 @@ $(document).ready(function() {
         } else {
           alertUnknown();
         }
+        buildListActive = false;
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
         alertUnknown();
+        buildListActive = false;
       }
     });
   });

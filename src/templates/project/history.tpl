@@ -25,7 +25,7 @@
   subSectionImg=$globals_project->getAvatarUrl()
   subSectionInclude="includes/buildList.inc.tpl"
   backLink="{UrlManager::getForProjectView()}"
-	jsIncludes=['js/lib/highcharts-2.1.6.js',
+	jsIncludes=['js/lib/highcharts.js',
               'js/lib/cintientHighcharts.theme.js',
               'js/cintientHighcharts.js',
 							'js/lib/bootstrap/bootstrap-tabs.js']}

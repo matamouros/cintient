@@ -23,7 +23,7 @@ subSectionDescription="your projects at a glance"
 subSectionId="dashboard"
 jsIncludes=['js/lib/jquery.sparkline.min.js',
             'js/lib/bootstrap/bootstrap-tabs.js',
-            'js/lib/highcharts-2.1.6.js',
+            'js/lib/highcharts.js',
             'js/lib/cintientHighcharts.theme.js',
 						'js/lib/jquery.tablesorter.min.js']}
 {if !empty($dashboard_projectList)}

@@ -1,8 +1,20 @@
 Changelog
 =========
 
+2011-??-?? cintient-1.0.0-beta-3
+--------------------------------
+
+ *  ADDED: Revisions in the project's build history section are loaded
+           via AJAX, instead of demanding a full page reload.
+ *  ADDED: Support for specifying a bootstrap file in PhpUnit tasks.
+ *  FIXED: Wrong SQLite version being checked, at install time. (Thanks
+           lie2815)
+ *  FIXED: Charts problems with hidden data indicators until a page
+           refresh happened.
+
+
 2011-11-16 cintient-1.0.0-beta-2
------------------------------
+--------------------------------
  
  *  ADDED: Manual building trigger buttons in the Dashboard, for on
            demand builds.
@@ -15,11 +27,13 @@ Changelog
            was different from the web server to the console (namely if
            one had Xdebug loaded and the other didn't).
 
+
 2011-11-10 cintient-1.0.0-beta-1
------------------------------
+--------------------------------
  
  *  CHANGED: Major UI refactoring.
  *  CHANGED: Several other improvements and fixes.
+
 
 2011-10-02 cintient-0-alpha-8
 -----------------------------
@@ -31,12 +45,14 @@ Changelog
  *  ADDED: Configuration file now generated at install time.
  *  CHANGED: Delete task now activated.
 
+
 2011-09-21 cintient-0-alpha-7
 -----------------------------
 
  *  ADDED: Git support as an SCM connector. Still very dodgy and
            alpha-ish.
  *  FIXED: Some minor bugs squashed.
+
 
 2011-09-13 cintient-0-alpha-6
 -----------------------------
@@ -46,6 +62,7 @@ Changelog
  *  FIXED: Serious Notification design flaw caused only the logged on
            user to receive notifications, instead of all project
            registered users.
+
 
 2011-09-05 cintient-0-alpha-5
 -----------------------------
@@ -59,6 +76,7 @@ Changelog
  *  FIXED: Integration builder issue would report success on certain
            cases where tasks would generate a fatal error.
  *  FIXED: Several minor tweaks and improvements.
+
   
 2011-08-19 cintient-0-alpha-4
 -----------------------------
