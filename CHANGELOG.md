@@ -15,6 +15,7 @@ Changelog
            refresh happened.
  *  FIXED: Dashboard's Latest tab now shows the status of a project's
            latest build, not the current project status.
+ *  FIXED: Flaw in datetime arithmetic for polling project's SCM.
  *  CHANGED: Builders are now further solidified, now showing whatever
              unflushed output remains at the end of their execution and,
              in that condition, assuming an error occurred.
