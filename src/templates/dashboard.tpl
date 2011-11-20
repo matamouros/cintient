@@ -40,7 +40,7 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
                   <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
                 </div>
                 <div class="col2">
-                  <div class="projectStatus"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}warning{else}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{else}Failed{/if}</span></div>
+                  <div class="projectStatus"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_ERROR}warning{elseif $project->getStatus()==Project::STATUS_FAILED}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{elseif $project->getStatus()==Project::STATUS_ERROR}Error{else}Failed{/if}</span></div>
                   <h3 class="projectTitle"><a href="{UrlManager::getForProjectEdit(['pid' => $project->getId()])}">{$project->getTitle()}</a></h3>
                 </div>
                 <div class="col3">

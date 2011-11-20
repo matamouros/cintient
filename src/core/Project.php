@@ -75,6 +75,7 @@ class Project extends Framework_DatabaseObjectAbstract
   const STATUS_BUILDING = 3;
   const STATUS_MODIFIED = 4;
   const STATUS_UNBUILT = 5;
+  const STATUS_FAILED = 6;
 
   public function __construct()
   {
@@ -215,7 +216,7 @@ class Project extends Framework_DatabaseObjectAbstract
 
     if ($this->getStatus() == self::STATUS_BUILDING) {
       SystemEvent::raise(SystemEvent::INFO, "Project is currently building, or is queued for building. [PROJECTID={$this->getId()}]", __METHOD__);
-      $this->setStatus(self::STATUS_ERROR);
+      //$this->setStatus(self::STATUS_ERROR);
       return false;
     }
 
@@ -267,7 +268,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $build->setScmRevision($rev);
     $this->triggerNotification(NotificationSettings::BUILD_STARTED);
     if (!$build->init()) {
-      $this->setStatus(self::STATUS_ERROR);
+      $this->setStatus(self::STATUS_FAILED);
       SystemEvent::raise(SystemEvent::INFO, "Integration build failed. [PROJECTID={$this->getId()}]", __METHOD__);
       $this->triggerNotification(NotificationSettings::BUILD_FAILED);
       return false;
@@ -773,7 +774,7 @@ EOT;
 
     $ret = array();
     $sql = 'SELECT * FROM project p'
-         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*".CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT.") || ' seconds', 'localtime')"
+         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*".CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT.") || ' minutes', 'localtime')"
          . ' ORDER BY datecheckedforchanges ASC LIMIT ?, ?';
     if ($rs = Database::query($sql, array($options['pageStart'], $options['pageLength']))) {
       while ($rs->nextRow()) {
