@@ -49,6 +49,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/dashboard/project/?' .  http_build_query($params);
   }
 
+  static public function getForAjaxProjectBuildHistory(Array $params = array())
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/history/?' .  http_build_query($params);
+  }
+
   static public function getForAjaxProjectIntegrationBuilderAddElement()
   {
     return CINTIENT_BASE_URL . '/ajax/project/integration-builder-add-element/';

@@ -50,7 +50,7 @@ ob_start();
 header('Content-type: text/html; charset=UTF-8');
 
 require dirname(__FILE__) . '/../config/cintient.conf.php';
-require 'lib/Smarty-3.0rc4/Smarty.class.php';
+require CINTIENT_SMARTY_INCLUDE;
 
 session_start(); // session_start *has* to come after the custom autoloading
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);

@@ -18,19 +18,6 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}
-{* These two captures insure initialization, so that $smarty.capture  *}
-{* array always exists for these vars, even in case no special tasks  *}
-{* were defined for the current build.                                *}
-{capture name="specialTaskLink"}{/capture}
-{capture name="specialTaskPane"}{/capture}
-{$specialTaskPanes=array()}
-{foreach $project_specialTasks as $task}
-  {include file="includes/specialTask/$task.inc.tpl"}
-  {$specialTaskLink[]=$smarty.capture.specialTaskLink}
-  {* We should be using capture append for specialTaskPane, but apparently *}
-  {* it always only holds the last value... Come back to this later.       *}
-  {$specialTaskPanes[]=$smarty.capture.specialTaskPane}
-{/foreach}
 {include file='includes/header.inc.tpl'
 	subSectionId="projectBuildHistory"
   subSectionDescription="build history"
@@ -43,19 +30,8 @@
               'js/cintientHighcharts.js',
 							'js/lib/bootstrap/bootstrap-tabs.js']}
 {if !empty($project_buildList)}
-
-    <ul class="tabs">
-      <li class="active"><a href="#rawOutput">Raw output</a></li>
-{foreach $specialTaskLink as $link}
-      {$link}
-{/foreach}
-    </ul>
-
-    <div class="tab-content">
-      <div class="active" id="rawOutput"><div class="log">{$project_build->getOutput()|raw2html}</div></div>
-{foreach $specialTaskPanes as $taskPane}
-{$taskPane}
-{/foreach}
+    <div id="buildHistoryRev">
+{include file='includes/buildHistoryRev.inc.tpl'}
     </div>
 {else}
     <div>This project has never been built. Come back later.</div>
