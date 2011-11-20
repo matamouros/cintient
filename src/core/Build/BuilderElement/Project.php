@@ -269,6 +269,14 @@ function cleanup()
     \$value = str_replace(PHP_EOL, '" . CINTIENT_NEWLINE_TOKEN . "', \$value);
     fwrite(STDOUT, \"\$key=\$value\\n\");
   }
+  // Flush buffered output to stderr. This also means that almost certainly
+  // something brought the builder to a halt before its end, so just
+  // assume an error.
+  if ((\$buffer = ob_get_clean()) && !empty(\$buffer)) {
+  	\$value = PHP_EOL.\"[ Following is buffered output that wasn't flushed properly ]".PHP_EOL."\$buffer\".PHP_EOL;
+  	fwrite(STDERR, \$value);
+  	fwrite(STDOUT, \"ok=0\");
+  }
   // In case fatal occurred, last task didn't have time to finish and the
   // build could come out successful. Check for errors, to avoid this.
   if (error_get_last() != null) {
