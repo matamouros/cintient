@@ -11,6 +11,9 @@ Changelog
            lie2815)
  *  FIXED: Charts problems with hidden data indicators until a page
            refresh happened.
+ *  CHANGED: Builders are now further solidified, now showing whatever
+             unflushed output remains at the end of their execution and,
+             in that condition, assuming an error occurred.
 
 
 2011-11-16 cintient-1.0.0-beta-2
