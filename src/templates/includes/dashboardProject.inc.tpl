@@ -33,12 +33,13 @@
                 </div>
                 <div class="row">
                   <div class="span2">Build:</div>
-                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}<a href="{UrlManager::getForProjectBuildView($project_build)}">#{$project_build->getId()}</a>{/if}</div>
                 </div>
 {if $project_build instanceof Project_Build}
                 <div class="row">
                   <div class="span2">Commit:</div>
-                  <div class="span6">{$project_build->getScmRevision()}</div>
+{$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $project_build)}
+                  <div class="span6">{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$project_build->getScmRevision()}{if !empty($externalCommitLink)}</a>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
@@ -95,8 +96,10 @@ $(document).ready(function() {
   //
   // Build outcomes
   //
-	chartBuildOutcomes = new Highcharts.Chart({
+  chartBuildOutcomes = new Highcharts.Chart({
     chart: {
+      width: 610,
+      height: 210,
       renderTo: 'chartBuildOutcomesContainer',
       type: 'pie'
     },
@@ -142,6 +145,8 @@ $(document).ready(function() {
   //
   chartBuildTimeline = new Highcharts.Chart({
     chart: {
+      width: 610,
+      height: 260,
       renderTo: 'chartBuildTimelineContainer',
       defaultSeriesType: 'scatter',
       zoomType: 'xy',

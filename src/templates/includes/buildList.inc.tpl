@@ -42,7 +42,7 @@
               <div class="span5"><h5>{$currentDate}</h5></div>
             </div>
 {/if}
-            <div class="row smoothHoverSmall" id="{$build->getId()}">{*<a href="{UrlManager::getForProjectBuildView($globals_project, $build)}">*}
+            <div class="row smoothHoverSmall" id="{$build->getId()}">
               <div class="span1 dataBuildStatus"><span class="label {if $build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span></div>
               <div class="span1 dataBuildStartDate">{$build->getDate()|date_format:"%R"}</div>
               <div class="span1 dataBuildNum">#{$build->getId()}</div>
