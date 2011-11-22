@@ -233,7 +233,6 @@ class Project extends Framework_DatabaseObjectAbstract
           $this->setStatus(self::STATUS_UNINITIALIZED);
           return false;
         }
-        $this->setStatus(self::STATUS_MODIFIED);
       } else {
         if ($this->getStatus() == self::STATUS_UNBUILT) {
           $force = true;

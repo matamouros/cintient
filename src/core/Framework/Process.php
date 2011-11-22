@@ -100,7 +100,7 @@ class Framework_Process extends Framework_BaseObject
     }
   }
 
-  public function setExecutable($filename)
+  public function setExecutable($filename, $escapeShellCmd = true)
   {
     // TODO: We should be able to use is_executable, but it's not working
     // for relative executables in the PATH
@@ -109,7 +109,10 @@ class Framework_Process extends Framework_BaseObject
       SystemEvent::raise(SystemEvent::ERROR, "Invalid executable specified. [FILENAME={$filename}]", __METHOD__);
       return false;
     }*/
-    $this->_executable = escapeshellcmd($filename);
+    if ($escapeShellCmd) {
+      $filename = escapeshellcmd($filename);
+    }
+    $this->_executable = $filename;
   }
 
   public function isRunning()
