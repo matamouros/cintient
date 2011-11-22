@@ -233,7 +233,6 @@ class Project extends Framework_DatabaseObjectAbstract
           $this->setStatus(self::STATUS_UNINITIALIZED);
           return false;
         }
-        $this->setStatus(self::STATUS_MODIFIED);
       } else {
         if ($this->getStatus() == self::STATUS_UNBUILT) {
           $force = true;
@@ -774,7 +773,7 @@ EOT;
 
     $ret = array();
     $sql = 'SELECT * FROM project p'
-         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout*".CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT.") || ' minutes', 'localtime')"
+         . " WHERE datecheckedforchanges < DATETIME('now', -(scmcheckchangestimeout) || ' minutes', 'localtime')"
          . ' ORDER BY datecheckedforchanges ASC LIMIT ?, ?';
     if ($rs = Database::query($sql, array($options['pageStart'], $options['pageLength']))) {
       while ($rs->nextRow()) {

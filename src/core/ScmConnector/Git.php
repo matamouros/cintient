@@ -114,8 +114,10 @@ class ScmConnector_Git implements ScmConnectorInterface
 
   static public function update(array $args, &$rev)
   {
-    $command = "git --git-dir={$args['local']}.git pull";
-    $proc = new Framework_Process($command);
+    // We can't use "git --git-dir={$args['local']} pull", it's wrong
+    $command = "cd {$args['local']}; git pull";
+    $proc = new Framework_Process();
+    $proc->setExecutable($command, false); // false for no escapeshellcmd() (because of the ';')
     $proc->run();
     if (($return = $proc->getReturnValue()) != 0) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not update local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);

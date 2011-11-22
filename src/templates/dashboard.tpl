@@ -35,18 +35,20 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
 {$dashboard_latestBuild=Project_Build::getLatest($project, $globals_user)}
           <li class="project" id="{$project->getId()}">
             <ul>
-              <li>
+              <li class="{$project->getStatus()}">
                 <div class="col1">
                   <div class="projectAvatar40x40"><img src="{$project->getAvatarUrl()}" width="40" height="40"></div>
                 </div>
                 <div class="col2">
-                  <div class="projectStatus"><span class="label {if $project->getStatus()==Project::STATUS_OK}success{elseif $project->getStatus()==Project::STATUS_BUILDING}notice{elseif $project->getStatus()==Project::STATUS_ERROR}warning{elseif $project->getStatus()==Project::STATUS_FAILED}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{elseif $project->getStatus()==Project::STATUS_ERROR}Error{else}Failed{/if}</span></div>
+                  <div class="projectStatus"><span class="label {if $project->getStatus() == Project::STATUS_OK}success{elseif $project->getStatus() == Project::STATUS_BUILDING}notice{elseif $project->getStatus() == Project::STATUS_ERROR}warning{elseif $project->getStatus() == Project::STATUS_FAILED}important{/if}">{if $project->getStatus()==Project::STATUS_OK}Ok{elseif $project->getStatus()==Project::STATUS_BUILDING}Building{elseif $project->getStatus()==Project::STATUS_UNINITIALIZED}Uninitialized{elseif $project->getStatus()==Project::STATUS_ERROR}Error{elseif $project->getStatus()==Project::STATUS_FAILED}Failed{/if}</span></div>
                   <h3 class="projectTitle"><a href="{UrlManager::getForProjectEdit(['pid' => $project->getId()])}">{$project->getTitle()}</a></h3>
                 </div>
+{if $project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}
                 <div class="col3">
                   <button class="disabled build btn small">Build</button>
                   <div class="loading"><img src="imgs/loading-3.gif" /></div>
                 </div>
+{/if}
               </li>
         			{if !empty($dashboard_latestBuild)}<li class="projectRevision"><a href="{UrlManager::getForProjectBuildHistory(['pid' => $project->getId()])}">#{$dashboard_latestBuild->getId()}, rev {$dashboard_latestBuild->getScmRevision()|truncate:8:''}</a></li>{/if}
               <li class="builtOn">{if !empty($dashboard_latestBuild)}Built on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}{else}This project hasn't been built yet{/if}</li>
@@ -86,9 +88,6 @@ $(document).ready(function() {
   Cintient.initSectionDashboard({
     submitUrl : '{UrlManager::getForAjaxDashboardProject()}'
   });
-{if $globals_project->userHasAccessLevel($globals_user, Access::BUILD) || $globals_user->hasCos(UserCos::ROOT)}
-  projectLastKnownStatus = {$globals_project->getStatus()};
-  updateProjectStatus(projectLastKnownStatus);
 
   function hideLoading(pid)
   {
@@ -113,6 +112,7 @@ $(document).ready(function() {
     //
     // XHR trigger the build
     //
+    var that = this;
     $.ajax({
       url: '{UrlManager::getForAjaxProjectBuild()}',
       data: { pid: pid },
@@ -124,13 +124,14 @@ $(document).ready(function() {
           Cintient.alertUnknown();
           data = {
             success: false,
-            projectStatus: projectLastKnownStatus
+            projectStatus: $(that).prop('class')
           };
         } else if (!data.success) {
           Cintient.alertFailed(data.error);
         }
         hideLoading(pid);
         updateProjectStatus(pid, data.projectStatus);
+        $(that).removeClass().addClass(data.projectStatus);
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
         hideLoading(pid);
@@ -159,6 +160,14 @@ $(document).ready(function() {
         .text('building');
       $('#' + pid + ' .projectStatus').fadeIn(300);
       break;
+    case {Project::STATUS_ERROR}:
+      $('#' + pid + ' .projectStatus').hide();
+      $('#' + pid + ' .projectStatus span')
+        .removeClass('success notice important')
+        .addClass('warning')
+        .text('error');
+      $('#' + pid + ' .projectStatus').fadeIn(300);
+      break;
     default:
       projectLastKnownStatus = toStatus;
       $('#' + pid + ' .projectStatus').hide();
@@ -174,7 +183,7 @@ $(document).ready(function() {
   $('#dashboard li.project .build').on('click', function (e) {
     forceBuild(e, $(this).parents('li.project').prop('id'));
   });
-{/if}
+
 });
 // ]]>
 </script>

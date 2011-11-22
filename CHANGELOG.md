@@ -1,19 +1,26 @@
 Changelog
 =========
 
-2011-??-?? cintient-1.0.0-beta-3
+2011-11-20 cintient-1.0.0-beta-3
 --------------------------------
 
  *  ADDED: Revisions in the project's build history section are loaded
            via AJAX, instead of demanding a full page reload.
  *  ADDED: Support for specifying a bootstrap file in PhpUnit tasks.
+ *  ADDED: New Failed status for projects, to help distinguish pure
+           Error states from Failed builds.
  *  FIXED: Wrong SQLite version being checked, at install time. (Thanks
            lie2815)
  *  FIXED: Charts problems with hidden data indicators until a page
            refresh happened.
+ *  FIXED: Dashboard's Latest tab now shows the status of a project's
+           latest build, not the current project status.
+ *  FIXED: Flaw in datetime arithmetic for polling project's SCM.
  *  CHANGED: Builders are now further solidified, now showing whatever
              unflushed output remains at the end of their execution and,
              in that condition, assuming an error occurred.
+ *  CHANGED: Increased project SCM changes polling to 10 minutes.
+ *  CHANGED: Improvements on the reliability of the Git SCM connector.
 
 
 2011-11-16 cintient-1.0.0-beta-2
