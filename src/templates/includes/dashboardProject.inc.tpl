@@ -54,10 +54,10 @@
               <div id="charts">
                 <ul class="media-grid">
                   <li>
-                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
                   </li>
                   <li>
-                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
                   </li>
                 </ul>
               </div>
@@ -98,8 +98,6 @@ $(document).ready(function() {
   //
   chartBuildOutcomes = new Highcharts.Chart({
     chart: {
-      width: 610,
-      height: 210,
       renderTo: 'chartBuildOutcomesContainer',
       type: 'pie'
     },
