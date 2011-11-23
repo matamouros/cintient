@@ -43,7 +43,7 @@
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')}</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')} ago.</div>
                 </div>
 {/if}
                 {*<div class="row">
@@ -118,6 +118,10 @@ $(document).ready(function() {
           enabled: true,
           formatter: function() {
             return this.point.name +': '+ this.y;
+          },
+          style: {
+            color: '#555',
+            font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
           }
         }
       }
@@ -134,7 +138,7 @@ $(document).ready(function() {
           selected: true
         }
       ]
-    }]
+    }],
   });
   $('#chartBuildOutcomesContainer').fadeIn(600);
 
@@ -191,8 +195,8 @@ $(document).ready(function() {
       layout: 'vertical',
       align: 'left',
       verticalAlign: 'top',
-      x: 30,
-      y: 190,
+      x: 35,
+      y: 185,
       floating: true,
       backgroundColor: {
         linearGradient: [0, 0, 0, 50],
