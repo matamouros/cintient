@@ -33,30 +33,31 @@
                 </div>
                 <div class="row">
                   <div class="span2">Build:</div>
-                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}<a href="{UrlManager::getForProjectBuildView($project_build)}">#{$project_build->getId()}</a>{/if}</div>
                 </div>
 {if $project_build instanceof Project_Build}
                 <div class="row">
                   <div class="span2">Commit:</div>
-                  <div class="span6">{$project_build->getScmRevision()}</div>
+{$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $project_build)}
+                  <div class="span6">{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$project_build->getScmRevision()}{if !empty($externalCommitLink)}</a>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')}</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')} ago</div>
                 </div>
 {/if}
                 {*<div class="row">
                   <div class="span2">Duration:</div>
-                  <div class="span3">3 min 56 sec</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(strtotime($project_build->getEndDate())-strtotime($project_build->getDate()), 'ms')}</div>
                 </div>*}
               </div>
               <div id="charts">
                 <ul class="media-grid">
                   <li>
-                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
                   </li>
                   <li>
-                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
                   </li>
                 </ul>
               </div>
@@ -95,7 +96,7 @@ $(document).ready(function() {
   //
   // Build outcomes
   //
-	chartBuildOutcomes = new Highcharts.Chart({
+  chartBuildOutcomes = new Highcharts.Chart({
     chart: {
       renderTo: 'chartBuildOutcomesContainer',
       type: 'pie'
@@ -117,6 +118,10 @@ $(document).ready(function() {
           enabled: true,
           formatter: function() {
             return this.point.name +': '+ this.y;
+          },
+          style: {
+            color: '#555',
+            font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
           }
         }
       }
@@ -133,7 +138,7 @@ $(document).ready(function() {
           selected: true
         }
       ]
-    }]
+    }],
   });
   $('#chartBuildOutcomesContainer').fadeIn(600);
 
@@ -142,6 +147,8 @@ $(document).ready(function() {
   //
   chartBuildTimeline = new Highcharts.Chart({
     chart: {
+      width: 610,
+      height: 260,
       renderTo: 'chartBuildTimelineContainer',
       defaultSeriesType: 'scatter',
       zoomType: 'xy',
@@ -188,8 +195,8 @@ $(document).ready(function() {
       layout: 'vertical',
       align: 'left',
       verticalAlign: 'top',
-      x: 30,
-      y: 190,
+      x: 35,
+      y: 185,
       floating: true,
       backgroundColor: {
         linearGradient: [0, 0, 0, 50],
