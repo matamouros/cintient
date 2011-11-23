@@ -43,12 +43,12 @@
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')} ago.</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')} ago</div>
                 </div>
 {/if}
                 {*<div class="row">
                   <div class="span2">Duration:</div>
-                  <div class="span3">3 min 56 sec</div>
+                  <div class="span6">{Utility::timeDurationToHumanReadable(strtotime($project_build->getEndDate())-strtotime($project_build->getDate()), 'ms')}</div>
                 </div>*}
               </div>
               <div id="charts">
