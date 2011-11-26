@@ -44,19 +44,23 @@
                 <div class="row">
                   <div class="span2">Finished:</div>
 {$time=time()-strtotime($project_build->getDate())}
-{if $time < (60*60)}
-  {* Show seconds if it was less than an hour ago *}
-  {$formatStr='yMdwhms'}
+{if $time < (3600)}
+  {$formatStr='hms'}
 {else}
   {$formatStr='yMdwhm'}
 {/if}
                   <div class="span6">{Utility::timeDurationToHumanReadable($time, $formatStr)} ago</div>
                 </div>
-{/if}
-                {*<div class="row">
+                <div class="row">
                   <div class="span2">Duration:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(strtotime($project_build->getEndDate())-strtotime($project_build->getDate()), 'ms')}</div>
-                </div>*}
+{$durationTime=strtotime($project_build->getEndDate())-strtotime($project_build->getDate())}
+{if $durationTime < 1}
+  {$durationTime=1}
+{/if}
+{$endDate=$project_build->getEndDate()}
+                  <div class="span6">{if !empty($endDate)}{Utility::timeDurationToHumanReadable($durationTime, 'ms')}{else}---{/if}</div>
+                </div>
+{/if}
               </div>
               <div id="charts">
                 <ul class="media-grid">

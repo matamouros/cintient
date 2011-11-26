@@ -99,8 +99,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   public function init()
   {
     //
-    // Get the ID, first and foremost
+    // Get the ID, first and foremost. Also this is the start datetime
     //
+    $this->setDate($this->getNowDatetime());
     if (!$this->_save(true)) {
       return false;
     }
@@ -148,6 +149,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $builderProcess = new Framework_Process();
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
+    $this->setEndDate($this->getNowDatetime()); // Setup the first finish time. If we get to the end of this method, update again at the end
     //
     // Import back into Cintient space the external builder's output
     // TODO: we should probably have this somewhere better than
@@ -181,6 +183,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::DEBUG, "Possible stacktrace: " . print_r($GLOBALS['result'], true), __METHOD__);
       return false;
     }
+
+    $this->setEndDate($this->getNowDatetime()); // New finish datetime update
 
     //
     // Create this build's report dir, backing up an existing one, just in case
@@ -216,6 +220,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
+    $this->setEndDate($this->getNowDatetime()); // Final finish datetime update. This is the final build duration
     return true;
   }
 
@@ -244,8 +249,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status, scmrevision, enddate)'
-         . ' VALUES (?,?,?,?,?,?,?,?)';
+         . ' (id, label, description, output, specialtasks, status, scmrevision, date, enddate)'
+         . ' VALUES (?,?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -258,6 +263,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $specialTasks,
       $this->getStatus(),
       $this->getScmRevision(),
+      $this->getDate(),
       $this->getEndDate(),
     );
     if ($this->_id === null) {
@@ -443,7 +449,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
 DROP TABLE IF EXISTS {$tableName}NEW;
 CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  date DATETIME DEFAULT NULL,
   enddate DATETIME DEFAULT NULL,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
