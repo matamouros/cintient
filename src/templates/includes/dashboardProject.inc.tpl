@@ -29,11 +29,11 @@
               <div class="active" id="latest">
                 <div class="row">
                   <div class="span2">Status:</div>
-                  <div class="span6"><span class="label {if $project_build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $project_build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span></div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}<span class="label {if $project_build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $project_build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Build:</div>
-                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}<a href="{UrlManager::getForProjectBuildView($project_build)}">#{$project_build->getId()}</a>{/if}</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}---{else}<a href="{UrlManager::getForProjectBuildView($project_build)}">#{$project_build->getId()}</a>{/if}</div>
                 </div>
 {if $project_build instanceof Project_Build}
                 <div class="row">
@@ -43,7 +43,14 @@
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')} ago</div>
+{$time=time()-strtotime($project_build->getDate())}
+{if $time < (60*60)}
+  {* Show seconds if it was less than an hour ago *}
+  {$formatStr='yMdwhms'}
+{else}
+  {$formatStr='yMdwhm'}
+{/if}
+                  <div class="span6">{Utility::timeDurationToHumanReadable($time, $formatStr)} ago</div>
                 </div>
 {/if}
                 {*<div class="row">

@@ -37,7 +37,8 @@
 class Project_Build extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
-  protected $_date;         // the build's date
+  protected $_date;         // the build's start date
+  protected $_endDate;      // the build's end date (if any)
   protected $_label;        // the label on the build, also used to name the release package file
   protected $_description;  // a user generated description text (prior or after the build triggered).
   protected $_output;       // the integration builder's output collected
@@ -56,6 +57,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     parent::__construct();
     $this->_id = null;
     $this->_date = null;
+    $this->_endDate = null;
     $this->_label = '';
     $this->_description = '';
     $this->_output = '';
@@ -242,8 +244,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status, scmrevision)'
-         . ' VALUES (?,?,?,?,?,?,?)';
+         . ' (id, label, description, output, specialtasks, status, scmrevision, enddate)'
+         . ' VALUES (?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -256,6 +258,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $specialTasks,
       $this->getStatus(),
       $this->getScmRevision(),
+      $this->getEndDate(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -411,6 +414,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret = new Project_Build($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
+    $ret->setEndDate($rs->getEndDate());
     $ret->setLabel($rs->getLabel());
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
@@ -432,10 +436,15 @@ class Project_Build extends Framework_DatabaseObjectAbstract
 
   static public function install(Project $project)
   {
+    $tableName = "projectbuild{$project->getId()}";
+    SystemEvent::raise(SystemEvent::INFO, "Creating $tableName related tables...", __METHOD__);
+
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  enddate DATETIME DEFAULT NULL,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
@@ -444,14 +453,21 @@ CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
   scmrevision VARCHAR(40) NOT NULL DEFAULT ''
 );
 EOT;
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
       return false;
     }
+
+    // MAJOR TODO: have Project_Build automatically call each special task's install()
     //
     // Install PhpDepend schema
     //
-    return Build_SpecialTask_PhpDepend::install($project);
+    if (!Build_SpecialTask_PhpDepend::install($project)) {
+      return false;
+    }
+
+    SystemEvent::raise(SystemEvent::INFO, "{$tableName} related tables created.", __METHOD__);
+    return true;
   }
 
   static public function uninstall(Project $project)

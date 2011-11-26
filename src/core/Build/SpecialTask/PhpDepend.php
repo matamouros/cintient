@@ -327,8 +327,12 @@ class Build_SpecialTask_PhpDepend extends Framework_DatabaseObjectAbstract imple
 
   static public function install(Project $project)
   {
+    $tableName = "phpdepend{$project->getId()}";
+    SystemEvent::raise(SystemEvent::INFO, "Creating $tableName table...", __METHOD__);
+
     $sql = "
-CREATE TABLE IF NOT EXISTS phpdepend{$project->getId()} (
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   buildid INTEGER PRIMARY KEY,
   date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   version TEXT NOT NULL DEFAULT '" . CINTIENT_DATABASE_SCHEMA_VERSION . "',
@@ -355,10 +359,12 @@ CREATE TABLE IF NOT EXISTS phpdepend{$project->getId()} (
   roots INTEGER UNSIGNED NOT NULL DEFAULT 0
 );
 ";
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
       return false;
     }
+
+    SystemEvent::raise(SystemEvent::INFO, "$tableName table created.", __METHOD__);
     return true;
   }
 

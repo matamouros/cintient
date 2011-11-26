@@ -147,8 +147,12 @@ class Project_Log extends Framework_DatabaseObjectAbstract
 
   static public function install(Project $project)
   {
+    $tableName = "projectlog{$project->getId()}";
+    SystemEvent::raise(SystemEvent::INFO, "Creating $tableName table...", __METHOD__);
+
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectlog{$project->getId()} (
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   type TINYINT DEFAULT 0,
@@ -156,10 +160,12 @@ CREATE TABLE IF NOT EXISTS projectlog{$project->getId()} (
   username VARCHAR(20) NOT NULL DEFAULT ''
 );
 EOT;
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
       return false;
     }
+
+    SystemEvent::raise(SystemEvent::INFO, "$tableName table created.", __METHOD__);
     return true;
   }
 

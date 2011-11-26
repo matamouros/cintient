@@ -35,10 +35,13 @@
  */
 abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
 {
-  protected $_signature;    // Internal flag to control whether a save to database is required
+  protected $_autoSave;  // Auto-saves this object to database
+
+  protected $_signature; // Internal flag to control whether a save to database is required
 
   public function __construct()
   {
+    $this->_autoSave = true;
     $this->_signature = null;
   }
 
@@ -69,7 +72,7 @@ abstract class Framework_DatabaseObjectAbstract extends Framework_BaseObject
       // have this just remove _signature. _ptr should be super's
       // jurisdiction. Probably we need to setup a method in super just
       // for returning the list of to-sign attributes, but yet unsigned.
-      if ($key != '_signature' && strpos($key, '_ptr') !== 0) {
+      if ($key != '_autoSave' && $key != '_signature' && strpos($key, '_ptr') !== 0) {
         $sigVars[$key] = $objVar;
       }
     }
