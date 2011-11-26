@@ -49,7 +49,11 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
                   <div class="loading"><img src="imgs/loading-3.gif" /></div>
                 </div>
 {/if}
-{$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $dashboard_latestBuild)}
+{if $dashboard_latestBuild instanceof Project_Build}
+	{$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $dashboard_latestBuild)}
+{else}
+  {$externalCommitLink=''}
+{/if}
               </li>
         			{if !empty($dashboard_latestBuild)}<li class="projectRevision"><a href="{UrlManager::getForProjectBuildHistory(['pid' => $project->getId()])}">#{$dashboard_latestBuild->getId()}</a>, {if $project->getScmConnectorType() == 'svn'}r{/if}{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$dashboard_latestBuild->getScmRevision()|truncate:14:''}{if !empty($externalCommitLink)}</a>{/if}</li>{/if}
               <li class="builtOn">{if !empty($dashboard_latestBuild)}Built on {$dashboard_latestBuild->getDate()|date_format:"%b %e, %Y at %R"}{else}This project hasn't been built yet{/if}</li>

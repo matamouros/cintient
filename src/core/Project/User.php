@@ -128,9 +128,13 @@ class Project_User extends Framework_DatabaseObjectAbstract
    */
   static public function install()
   {
+    SystemEvent::raise(SystemEvent::INFO, "Creating projectuser table...", __METHOD__);
+
+    $tableName = 'projectuser';
     $access = Access::READ;
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectuser(
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW(
   projectid INTEGER UNSIGNED NOT NULL,
   userid INTEGER UNSIGNED NOT NULL,
   access TINYINT UNSIGNED NOT NULL DEFAULT {$access},
@@ -138,13 +142,13 @@ CREATE TABLE IF NOT EXISTS projectuser(
   PRIMARY KEY (projectid, userid)
 );
 EOT;
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::INFO, "Could not create Project_User related tables.", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up projectuser table.", __METHOD__);
       return false;
-    } else {
-      SystemEvent::raise(SystemEvent::INFO, "Created Project_User related tables.", __METHOD__);
-      return true;
     }
+
+    SystemEvent::raise(SystemEvent::INFO, "Projectuser table created.", __METHOD__);
+    return true;
   }
 
   /**

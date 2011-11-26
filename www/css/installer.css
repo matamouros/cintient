@@ -1,3 +1,5 @@
+/* @override http://cintient/www/css/installer.css */
+
 /*
  * 
  *  Cintient, Continuous Integration made simple.
@@ -30,16 +32,28 @@ label
   font-size: 1.4em;
 }
 
+label small
+{
+  font-size: .98em;
+  color: #bbb;
+}
+
+#password > .input
+{
+  /* Small hack to have the password textfields nicely separated */
+  margin-bottom: 12px;
+}
+
 .help-block
 {
   font-size: 1.1em;
 }
 
-form div.clearfix.success .help-block, form div.clearfix.success .help-inline {
+form div.clearfix.success .help-block, form div.clearfix.success /*.help-inline*/ {
   color: rgb(124,196,0);
 }
 
-form div.clearfix.fail .help-block, form div.clearfix.fail .help-inline {
+form div.clearfix.fail .help-block, form div.clearfix.fail /*.help-inline*/ {
   color: rgb(255,40,0);
 }
 

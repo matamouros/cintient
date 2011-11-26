@@ -150,6 +150,7 @@ function phpWithSqlite()
   $msg[0] = "PHP with SQLite3 required.";
   $ok = false;
   if (extension_loaded('sqlite3')) {
+    // TODO: require >= 3.3.0 for CREATE TABLE IF NOT EXISTS support
     $version = SQLite3::version();
     $msg[0] .= " Please enable PHP with SQLite3.";
     $msg[1] = "Detected version " . $version['versionString'] . ".";
@@ -184,9 +185,17 @@ function appWorkDir($dir)
   if (substr($dir, -1) != DIRECTORY_SEPARATOR) {
     $dir .= DIRECTORY_SEPARATOR;
   }
-  $testDir = $dir . '.install';
-  $ok = (@mkdir($testDir, 0777, true) != false);
-  @rmdir($testDir);
+  //
+  // Test for upgrade or clean install
+  //
+  if (is_file($dir . 'cintient.sqlite')) {
+    $msg[2] = $msg[1];
+    $ok = 2;
+  } else {
+    $testDir = $dir . '.install';
+    $ok = (@mkdir($testDir, 0777, true) != false);
+    @rmdir($testDir);
+  }
   return array($ok, $msg[(int)$ok]);
 }
 
@@ -250,6 +259,9 @@ if (!empty($_GET['c'])) {
   sleep(3); # Avoids a race condition at the end of the installation process while updating UI elements
   define('CINTIENT_INSTALLER_DEFAULT_DIR_MASK', 0700);
 
+  // A date marker to be used in backup filenames and such
+  $dateMarker = date("Ymd") . '_' . time();
+
   //
   // Extract all sent inputs into key/value pairs
   //
@@ -303,7 +315,7 @@ if (!empty($_GET['c'])) {
   fclose($fdSample);
   // If the configuration file already exists, back it up
   if (file_exists($defaults['configurationNewFile'])) {
-    if (!@copy($defaults['configurationNewFile'], $defaults['configurationNewFile'] . '_' . date("Ymd") . '_' . time())) {
+    if (!@copy($defaults['configurationNewFile'], $defaults['configurationNewFile'] . '_' . $dateMarker)) {
       $ok = false;
       $msg = "Couldn't backup an existing configuration file {$defaults['configurationNewFile']}. Check dir permissions.";
       sendResponse($ok, $msg);
@@ -318,6 +330,33 @@ if (!empty($_GET['c'])) {
   require $defaults['configurationNewFile'];
   error_reporting(-1);
   ini_set('display_errors', 'off');
+
+  //
+  // Check for upgrade or clean install
+  //
+  $upgrade = false;
+  list ($ok, $_) = appWorkDir($get['appWorkDir']);
+  if ($ok == 2) {
+    $upgrade = true;
+  }
+  //
+  // Authentication (user must be root)
+  //
+  if ($upgrade) {
+    $_POST = array();
+    $_POST['authenticationForm'] = array();
+    $_POST['authenticationForm']['username'] = array();
+    $_POST['authenticationForm']['username']['value'] = 'root';
+    $_POST['authenticationForm']['password'] = array();
+    $_POST['authenticationForm']['password']['value'] = $get['password'];
+    if (!Auth_Local::authenticate()) {
+      $ok = false;
+      $msg = "The password you specified for the root account was invalid.";
+      SystemEvent::raise(128, $msg, "Installer");
+      sendResponse($ok, $msg);
+    }
+  }
+
   //
   // Create necessary dirs
   //
@@ -345,6 +384,24 @@ if (!empty($_GET['c'])) {
     SystemEvent::raise(128, $msg, "Installer");
     sendResponse($ok, $msg);
   }
+
+  //
+  // Backup a previous version database, if found, and if possible
+  //
+  if ($upgrade && !@copy($get['appWorkDir'] . 'cintient.sqlite', $get['appWorkDir'] . "cintient_{$dateMarker}.sqlite")) {
+    $msg = "Could not backup your previous version database. Continuing the upgrade, nevertheless.";
+    SystemEvent::raise(128, $msg, "Installer");
+  }
+
+  //
+  // Force an exclusive database transaction
+  //
+  if (!Database::beginTransaction(Database::EXCLUSIVE_TRANSACTION)) {
+    $ok = false;
+    $msg = "Problems obtaining an exclusive lock on the database.";
+    SystemEvent::raise(128, $msg, "Installer");
+    sendResponse($ok, $msg);
+  }
   //
   // Setup all objects
   //
@@ -367,16 +424,29 @@ if (!empty($_GET['c'])) {
     sendResponse($ok, $msg);
   }
   //
-  // Root user account
+  // Everything ok!!!
   //
-  $user = new User();
-  $user->setEmail($get['email']);
-  $user->setNotificationEmails($get['email'] . ',');
-  $user->setName('Administrative Account');
-  $user->setUsername('root');
-  $user->setCos(/*UserCos::ROOT*/ 2);
-  $user->init();
-  $user->setPassword($get['password']);
+  if (!Database::endTransaction()) {
+    Database::rollbackTransaction();
+    $ok = false;
+    $msg = "Problems commiting all changes to the database.";
+    SystemEvent::raise(128, $msg, "Installer");
+    sendResponse($ok, $msg);
+  }
+
+  if (!$upgrade) {
+    //
+    // Root user account
+    //
+    $user = new User();
+    $user->setEmail($get['email']);
+    $user->setNotificationEmails($get['email'] . ',');
+    $user->setName('Administrative Account');
+    $user->setUsername('root');
+    $user->setCos(/*UserCos::ROOT*/ 2);
+    $user->init();
+    $user->setPassword($get['password']);
+  }
 
   //
   // Last step: remove the installation file
@@ -399,7 +469,11 @@ if (!empty($_GET['c'])) {
   setcookie('cintientInstalled', time());
 
   $ok = true;
-  $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
+  if ($upgrade) {
+    $msg = "Cintient was successfully updated. Please refresh this page when you're ready.";
+  } else {
+    $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
+  }
   SystemEvent::raise(1024, "Installation successful.", "Installer");
   sendResponse($ok, $msg);
 }
@@ -515,6 +589,18 @@ list ($ok, $msg) = apacheModRewrite();
             <form action class="form-stacked">
               <fieldset>
 <?php
+list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
+?>
+                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="appWorkDir">
+                  <label for="appWorkDir">Data dir</label>
+                  <div class="input">
+                    <input class="span6" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" />
+                    <span class="help-inline">An update will be performed instead, if a previous installation is detected.</span>
+                    <span class="help-block"><?php echo $msg; ?></span>
+                  </div>
+                  <!--div class="help-block">Place for working files and databases, independent from the installation dir.</div-->
+                </div>
+<?php
 list ($ok, $msg) = baseUrl($defaults['baseUrl']);
 ?>
                 <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="baseUrl">
@@ -524,17 +610,6 @@ list ($ok, $msg) = baseUrl($defaults['baseUrl']);
                     <span class="help-block"><?php echo $msg; ?></span>
                   </div>
                   <!--div class="help-block">Cintient tried to guess it. If you are not sure, just go with its suggestion.</div-->
-                </div>
-<?php
-list ($ok, $msg) = appWorkDir($defaults['appWorkDir']);
-?>
-                <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="appWorkDir">
-                  <label for="appWorkDir">Work files dir</label>
-                  <div class="input">
-                    <input class="span6" type="text" name="appWorkDir" value="<?php echo $defaults['appWorkDir']; ?>" />
-                    <span class="help-block"><?php echo $msg; ?></span>
-                  </div>
-                  <!--div class="help-block">Place for working files and databases, independent from the installation dir.</div-->
                 </div>
 <?php
 list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
@@ -564,7 +639,7 @@ list ($ok, $msg) = configurationDir($defaults['configurationDir']);
           <div id="step-2" class="installerStep" title="Administration account">
             <form action class="form-stacked">
               <fieldset>
-                <div class="item clearfix inputCheckOnChange fail" id="email">
+                <div class="item clearfix inputCheckOnChange fail freshOnly" id="email">
                   <label for="email">Email</label>
                   <!--div class="fineprintLabel">(for administration notifications)</div-->
                   <div class="input">
@@ -576,6 +651,7 @@ list ($ok, $msg) = configurationDir($defaults['configurationDir']);
                   <label for="password">Password</label>
                   <div class="input">
                     <input class="span6" type="password" name="password" value="" />
+                    <span class="help-inline upgradeOnly">You are performing an update. Authenticate yourself as root, to continue.</span>
                   </div>
                   <label for="passwordr">Re-type password</label>
                   <div class="input">

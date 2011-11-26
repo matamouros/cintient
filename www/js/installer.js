@@ -27,6 +27,8 @@
  */
 var CintientInstaller = {
     
+  upgrade: false,
+    
   init: function ()
   {
     this.curStepIndex = 0;  // The current step index
@@ -140,12 +142,10 @@ var CintientInstaller = {
       var result = eval(functionName + '()');
       this._updateInputValidation(input, result.ok, result.msg);
       remoteCheck = !result.ok;
-      // Don't remote check passwords or email.
-      if ($(input).prop('name') == 'password' ||
-          $(input).prop('name') == 'passwordr' ||
-          $(input).prop('name') == 'email')
+      // Don't remote check email or passwords (on clean installs).
+      if (key == 'email' || (key == 'password'/* && !this.upgrade*/))
       {
-        remoteCheck = false;
+        return;
       }
     }
     //
@@ -182,6 +182,15 @@ var CintientInstaller = {
     // Refresh the section title
     $(".page-header h1").html($(step).prop('title') + ' <small>step ' + (this.curStepIndex+1) + ' of ' + this.steps.length + '</small>');
     
+    //
+    // Remove fresh only items on upgrade 
+    //
+    if (this.upgrade) {
+      $('.freshOnly', step).remove();
+    } else {
+      $('.upgradeOnly', step).remove();
+    }
+    
     var that = this;
     $('.inputCheckOnChange input', step).change(function() {
       that._checkInput($(this).prop('name'), $(this));
@@ -193,8 +202,8 @@ var CintientInstaller = {
     $(button).prop('type', 'submit');
     $(button).addClass('btn');
     button.style.display = 'none';
-    $("#actionNext", step).append(button);
-  
+    $("#actionNext", step).append(button); 
+    
     // Make it visible
     $(step).fadeIn(150);
       
@@ -250,6 +259,13 @@ var CintientInstaller = {
   _updateInputValidation: function (input, ok, msg)
   {
     var parent = $(input).parents('.clearfix');
+    //
+    // Special case to tell us if this is an update or fresh install
+    //
+    if (ok == 2 && $(input).prop('name') == 'appWorkDir') {
+      this.upgrade = true;
+      ok = true;
+    }
     if (ok == true) {
       $(parent).removeClass('fail');
       $(parent).addClass('success');
@@ -257,7 +273,7 @@ var CintientInstaller = {
       $(parent).removeClass('success');
       $(parent).addClass('fail');
     }
-    $('+ .help-block', input).text(msg);
+    $('~ .help-block', input).text(msg);
     this._refreshProgressionButton();
   },
 };
