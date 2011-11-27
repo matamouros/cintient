@@ -1,6 +1,28 @@
 Changelog
 =========
 
+2011-11-27 cintient-1.0.0-beta-4
+--------------------------------
+
+ *  ADDED: New build duration chart, in the dashboard.
+ *  ADDED: Upgrade support in the installer now properly handles
+           previous Cintient installations.
+ *  ADDED: Database defragmentation at installation time, prevents it
+           growing to double the size after an upgrade.
+ *  ADDED: External link in the dashboard in a given build, to view a
+           GitHub commit on GitHub.com, in case it is detected as
+           origin. Also another quick link to view the current build in
+           the project's build history.
+ *  FIXED: Several issues and inconsistencies with Database logic,
+           namely while handling transactions.
+ *  FIXED: Minor bugs in the dashboard, for never built and recently
+           created projects.
+ *  FIXED: Bug in build dir backup in case of a build already existed.
+ *  FIXED: Issue with build start datetime which was always the build
+           end datetime instead.
+ *  CHANGED: Charts formatting improvements.
+
+
 2011-11-20 cintient-1.0.0-beta-3
 --------------------------------
 
