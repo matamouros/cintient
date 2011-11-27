@@ -448,6 +448,10 @@ if (!empty($_GET['c'])) {
     $user->setPassword($get['password']);
   }
 
+  // Just to make sure everything's neat and tidy, especially after
+  // an upgrade.
+  Database::execute('VACUUM');
+
   //
   // Last step: remove the installation file
   //

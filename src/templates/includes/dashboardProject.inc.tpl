@@ -67,6 +67,9 @@
                     <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
                   </li>
                   <li>
+                    <div id="chartBuildDurationContainer" class="chart" style="display: none;"></div>
+                  </li>
+                  <li>
                     <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
                   </li>
                 </ul>
@@ -101,6 +104,7 @@
 <script type="text/javascript">
 // <![CDATA[
 var chartBuildOutcomes;
+var chartBuildDuration;
 var chartBuildTimeline;
 $(document).ready(function() {
   //
@@ -161,7 +165,7 @@ $(document).ready(function() {
       height: 260,
       renderTo: 'chartBuildTimelineContainer',
       defaultSeriesType: 'scatter',
-      zoomType: 'xy',
+      zoomType: 'x',
     },
     title: {
       text: 'Build timeline'
@@ -206,15 +210,15 @@ $(document).ready(function() {
       align: 'left',
       verticalAlign: 'top',
       x: 35,
-      y: 185,
+      y: 182,
       floating: true,
-      backgroundColor: {
+      backgroundColor: '#eee' /*{
         linearGradient: [0, 0, 0, 50],
         stops: [
           [0, 'rgba(96, 96, 96, .1)'],
           [1, 'rgba(16, 16, 16, .1)']
         ]
-      },
+      }*/,
       borderWidth: 1
     },
     plotOptions: {
@@ -268,6 +272,102 @@ $(document).ready(function() {
     ]
   });
   $('#chartBuildTimelineContainer').fadeIn(600);
+
+
+  //
+  // Build timeline
+  //
+  chartBuildDuration = new Highcharts.Chart({
+    colors: ['rgb(98,207,252)'],
+    chart: {
+      width: 610,
+      height: 180,
+      renderTo: 'chartBuildDurationContainer',
+      zoomType: 'x',
+      backgroundColor: {
+        linearGradient: [0, 0, 0, 180],
+        stops: [
+          [0.16, '#fff'],
+          [0.9, '#eee']
+        ]
+      },
+    },
+    title: {
+      text: 'Build duration'
+    },
+    subtitle: {
+      text: ''
+    },
+    xAxis: {
+      type: 'linear',
+      title: {
+        text: ''
+      },
+      tickLength: 0,
+      labels: {
+        formatter: function() {
+          return '';
+        }
+      },
+      showFirstLabel: false,
+    },
+    yAxis: {
+      title: {
+        text: ''
+      },
+      //showFirstLabel: false,
+    },
+    tooltip: {
+      formatter: function() {
+        return 'Build <span style="color: rgb(98,207,252);">#' + this.x + '</span>: ' + this.y + ' seconds';
+      }
+    },
+    legend: {
+      enabled : false
+    },
+    plotOptions: {
+      area: {
+        fillColor: {
+          linearGradient: [0, 0, 0, 300],
+          stops: [
+            [0, 'rgb(98,207,252)'],
+            [1, 'rgba(2,0,0,0)']
+          ]
+        },
+        lineWidth: 1,
+        lineColor: 'rgb(98,207,252)',
+        marker: {
+          enabled: false,
+          states: {
+            hover: {
+              enabled: true,
+              radius: 5
+            }
+          }
+        },
+        shadow: false,
+        states: {
+          hover: {
+            lineWidth: 1
+          }
+        }
+      }
+    },
+    series: [
+      {
+        type: 'area',
+        name: 'Duration',
+        data: [
+{foreach from=$project_buildStats.buildDuration item=duration}
+{if !$duration@first}
+,
+{/if}
+[Date({$duration.0}), {$duration.1}]
+{/foreach}
+      ]}
+    ]
+  });
+  $('#chartBuildDurationContainer').fadeIn(600);
 });
 
 // ]]>

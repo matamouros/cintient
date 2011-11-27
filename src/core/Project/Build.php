@@ -388,10 +388,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     //
-    // Build timeline
+    // Build timeline and duration
     //
     $ret['buildTimeline'] = array();
-    $sql = 'SELECT status, date'
+    $ret['buildDuration'] = array();
+    $sql = 'SELECT id, status, date, duration'
          . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
          . ' WHERE pu.projectid=?'
          . ' AND pu.userid=?'
@@ -402,6 +403,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $failed = array();
       while ($rs->nextRow()) {
         $date = strtotime($rs->getDate());
+        $ret['buildDuration'][] = array($rs->getId(), $rs->getDuration());
         if ($rs->getStatus() != self::STATUS_FAIL) {
           $ok[] = $date;
         } else {
