@@ -446,6 +446,17 @@ class Database
     return $ret;
   }
 
+  static public function getTableInfo($tableName)
+  {
+    $ret = array();
+    $sql = "pragma table_info({$tableName})";
+    $rs = self::query($sql);
+    while ($rs->nextRow()) {
+      $ret[$rs->getName()] = $rs->getName();
+    }
+    return $ret;
+  }
+
   static public function setupTable($tableName, $sqlCreate)
   {
     if (!self::execute($sqlCreate)) {
@@ -455,19 +466,39 @@ class Database
     }
     $tables = self::getTables();
     if (!empty($tables[$tableName])) {
-      $sql = "pragma table_info({$tableName})";
-      if (!($rs = self::query($sql))) {
+      $attributes = Database::getTableInfo($tableName);
+      if (empty($attributes)) {
         SystemEvent::raise(SystemEvent::ERROR, "Problems accessing old data attributes. This is non recoverable, please fix the problem and try again.", __METHOD__);
         self::rollbackTransaction();
         return false;
       }
-      $attributes = '';
-      while ($rs->nextRow()) {
-        $attributes .= "{$rs->getName()},";
+      $attributesNew = Database::getTableInfo($tableName . 'NEW');
+      if (empty($attributes)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems accessing new data attributes. This is non recoverable, please fix the problem and try again.", __METHOD__);
+        self::rollbackTransaction();
+        return false;
       }
-      $attributes = rtrim($attributes, ',');
+      //
+      // This makes sure that only coincident attributes are corresponded,
+      // i.e., old attributes that don't match anything in the current
+      // schema, or vice-versa, are left out of the migration
+      //
+      $attributesSql = '';
+      foreach ($attributes as $attribute) {
+        if (!empty($attributesNew[$attribute])) {
+          $attributesSql .= "{$attribute},";
+        }
+      }
+      $attributesSqlNew = '';
+      foreach ($attributesNew as $attributeNew) {
+        if (!empty($attributes[$attributeNew])) {
+          $attributesSqlNew .= "{$attributeNew},";
+        }
+      }
+      $attributesSql = rtrim($attributesSql, ',');
+      $attributesSqlNew = rtrim($attributesSqlNew, ',');
 
-      $sql = "INSERT INTO {$tableName}NEW ({$attributes}) SELECT {$attributes} FROM $tableName";
+      $sql = "INSERT INTO {$tableName}NEW ({$attributesSqlNew}) SELECT {$attributesSql} FROM $tableName";
       if (!self::execute($sql)) {
         SystemEvent::raise(SystemEvent::ERROR, "Problems migrating old data. This is non recoverable, please fix the problem and try again.", __METHOD__);
         self::rollbackTransaction();

@@ -53,12 +53,11 @@
                 </div>
                 <div class="row">
                   <div class="span2">Duration:</div>
-{$durationTime=strtotime($project_build->getEndDate())-strtotime($project_build->getDate())}
-{if $durationTime < 1}
-  {$durationTime=1}
+{$duration=$project_build->getDuration()}
+{if $duration < 1}
+  {$duration=1}
 {/if}
-{$endDate=$project_build->getEndDate()}
-                  <div class="span6">{if !empty($endDate)}{Utility::timeDurationToHumanReadable($durationTime, 'ms')}{else}---{/if}</div>
+                  <div class="span6">{if !empty($duration)}{Utility::timeDurationToHumanReadable($duration, 'ms')}{else}---{/if}</div>
                 </div>
 {/if}
               </div>

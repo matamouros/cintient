@@ -38,7 +38,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
   protected $_date;         // the build's start date
-  protected $_endDate;      // the build's end date (if any)
+  protected $_duration;     // the build's duration (if any)
   protected $_label;        // the label on the build, also used to name the release package file
   protected $_description;  // a user generated description text (prior or after the build triggered).
   protected $_output;       // the integration builder's output collected
@@ -57,7 +57,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     parent::__construct();
     $this->_id = null;
     $this->_date = null;
-    $this->_endDate = null;
+    $this->_duration = null;
     $this->_label = '';
     $this->_description = '';
     $this->_output = '';
@@ -149,7 +149,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $builderProcess = new Framework_Process();
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
-    $this->setEndDate($this->getNowDatetime()); // Setup the first finish time. If we get to the end of this method, update again at the end
+    $this->setDuration(time()-strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
     //
     // Import back into Cintient space the external builder's output
     // TODO: we should probably have this somewhere better than
@@ -184,13 +184,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
-    $this->setEndDate($this->getNowDatetime()); // New finish datetime update
+    $this->setDuration(time()-strtotime($this->getDate()));
 
     //
     // Create this build's report dir, backing up an existing one, just in case
     //
     if (is_dir($this->getBuildDir())) {
-      $backupOldBuildDir = $this->getBuildDir() . '_old_' . uniqid() . '/';
+      $backupOldBuildDir = rtrim($this->getBuildDir(), '/') . '_old_' . uniqid() . '/';
       if (!@rename($this->getBuildDir(), $backupOldBuildDir)) {
         SystemEvent::raise(SystemEvent::ERROR, "Couldn't create backup of existing build dir found. [PID={$project->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
         return false;
@@ -220,7 +220,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
-    $this->setEndDate($this->getNowDatetime()); // Final finish datetime update. This is the final build duration
+    $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
     return true;
   }
 
@@ -249,7 +249,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status, scmrevision, date, enddate)'
+         . ' (id, label, description, output, specialtasks, status, scmrevision, date, duration)'
          . ' VALUES (?,?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
@@ -264,7 +264,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $this->getStatus(),
       $this->getScmRevision(),
       $this->getDate(),
-      $this->getEndDate(),
+      $this->getDuration(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -420,7 +420,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret = new Project_Build($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
-    $ret->setEndDate($rs->getEndDate());
+    $ret->setDuration($rs->getDuration());
     $ret->setLabel($rs->getLabel());
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
@@ -450,7 +450,7 @@ DROP TABLE IF EXISTS {$tableName}NEW;
 CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATETIME DEFAULT NULL,
-  enddate DATETIME DEFAULT NULL,
+  duration SMALLINT DEFAULT 1,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
