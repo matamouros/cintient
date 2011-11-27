@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2011-11-27 cintient-1.0.0-beta-4
+2011-11-27 cintient-1.0.0-beta-5
 --------------------------------
 
  *  ADDED: New build duration chart, in the dashboard.
@@ -21,6 +21,16 @@ Changelog
  *  FIXED: Issue with build start datetime which was always the build
            end datetime instead.
  *  CHANGED: Charts formatting improvements.
+
+
+2011-11-21 cintient-1.0.0-beta-4
+--------------------------------
+ 
+ *  FIXED: Serious broken logic with the project status indicators, in
+           the dashboard.
+ *  FIXED: Broken logic with build buttons in the dashboard, as well as
+           build buttons showing up without regard for current user's
+           permissions (or lack).
 
 
 2011-11-20 cintient-1.0.0-beta-3
