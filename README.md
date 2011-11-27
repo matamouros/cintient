@@ -9,7 +9,7 @@ CI solution.
 
 ### Screenshot #1
 
-![Dashboard](https://img.skitch.com/20111116-8bxbxt7wgt3juh7ri4kj7ba3u.png)
+![Dashboard](http://c6.quickcachr.fotos.sapo.pt/i/o0a07b51c/9487527_vZqls.png)
 
 ### Screenshot #2
 
