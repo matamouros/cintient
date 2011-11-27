@@ -37,7 +37,8 @@
 class Project_Build extends Framework_DatabaseObjectAbstract
 {
   protected $_id;           // the build's incremental ID
-  protected $_date;         // the build's date
+  protected $_date;         // the build's start date
+  protected $_duration;     // the build's duration (if any)
   protected $_label;        // the label on the build, also used to name the release package file
   protected $_description;  // a user generated description text (prior or after the build triggered).
   protected $_output;       // the integration builder's output collected
@@ -56,6 +57,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     parent::__construct();
     $this->_id = null;
     $this->_date = null;
+    $this->_duration = null;
     $this->_label = '';
     $this->_description = '';
     $this->_output = '';
@@ -97,8 +99,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   public function init()
   {
     //
-    // Get the ID, first and foremost
+    // Get the ID, first and foremost. Also this is the start datetime
     //
+    $this->setDate($this->getNowDatetime());
     if (!$this->_save(true)) {
       return false;
     }
@@ -146,6 +149,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $builderProcess = new Framework_Process();
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
+    $this->setDuration(time()-strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
     //
     // Import back into Cintient space the external builder's output
     // TODO: we should probably have this somewhere better than
@@ -180,11 +184,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
+    $this->setDuration(time()-strtotime($this->getDate()));
+
     //
     // Create this build's report dir, backing up an existing one, just in case
     //
     if (is_dir($this->getBuildDir())) {
-      $backupOldBuildDir = $this->getBuildDir() . '_old_' . uniqid() . '/';
+      $backupOldBuildDir = rtrim($this->getBuildDir(), '/') . '_old_' . uniqid() . '/';
       if (!@rename($this->getBuildDir(), $backupOldBuildDir)) {
         SystemEvent::raise(SystemEvent::ERROR, "Couldn't create backup of existing build dir found. [PID={$project->getId()}] [DIR={$this->getBuildDir()}] [BUILD={$this->getId()}]", __METHOD__);
         return false;
@@ -214,6 +220,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
+    $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
     return true;
   }
 
@@ -242,8 +249,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status, scmrevision)'
-         . ' VALUES (?,?,?,?,?,?,?)';
+         . ' (id, label, description, output, specialtasks, status, scmrevision, date, duration)'
+         . ' VALUES (?,?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -256,6 +263,8 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $specialTasks,
       $this->getStatus(),
       $this->getScmRevision(),
+      $this->getDate(),
+      $this->getDuration(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -379,10 +388,11 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     //
-    // Build timeline
+    // Build timeline and duration
     //
     $ret['buildTimeline'] = array();
-    $sql = 'SELECT status, date'
+    $ret['buildDuration'] = array();
+    $sql = 'SELECT id, status, date, duration'
          . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
          . ' WHERE pu.projectid=?'
          . ' AND pu.userid=?'
@@ -393,6 +403,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $failed = array();
       while ($rs->nextRow()) {
         $date = strtotime($rs->getDate());
+        $ret['buildDuration'][] = array($rs->getId(), $rs->getDuration());
         if ($rs->getStatus() != self::STATUS_FAIL) {
           $ok[] = $date;
         } else {
@@ -411,6 +422,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret = new Project_Build($project);
     $ret->setId($rs->getId());
     $ret->setDate($rs->getDate());
+    $ret->setDuration($rs->getDuration());
     $ret->setLabel($rs->getLabel());
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
@@ -432,10 +444,15 @@ class Project_Build extends Framework_DatabaseObjectAbstract
 
   static public function install(Project $project)
   {
+    $tableName = "projectbuild{$project->getId()}";
+    SystemEvent::raise(SystemEvent::INFO, "Creating $tableName related tables...", __METHOD__);
+
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  date DATETIME DEFAULT NULL,
+  duration SMALLINT DEFAULT 1,
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
@@ -444,14 +461,21 @@ CREATE TABLE IF NOT EXISTS projectbuild{$project->getId()} (
   scmrevision VARCHAR(40) NOT NULL DEFAULT ''
 );
 EOT;
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Problems creating table. [TABLE={$project->getId()}]", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
       return false;
     }
+
+    // MAJOR TODO: have Project_Build automatically call each special task's install()
     //
     // Install PhpDepend schema
     //
-    return Build_SpecialTask_PhpDepend::install($project);
+    if (!Build_SpecialTask_PhpDepend::install($project)) {
+      return false;
+    }
+
+    SystemEvent::raise(SystemEvent::INFO, "{$tableName} related tables created.", __METHOD__);
+    return true;
   }
 
   static public function uninstall(Project $project)

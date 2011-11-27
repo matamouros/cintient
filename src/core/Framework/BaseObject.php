@@ -82,4 +82,9 @@ class Framework_BaseObject
     }
     return $toSleep;
   }
+
+  public function getNowDatetime()
+  {
+    return date("Y-m-d H:i:s");
+  }
 }

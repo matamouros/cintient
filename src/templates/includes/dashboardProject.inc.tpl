@@ -29,34 +29,48 @@
               <div class="active" id="latest">
                 <div class="row">
                   <div class="span2">Status:</div>
-                  <div class="span6"><span class="label {if $project_build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $project_build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span></div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}<span class="label {if $project_build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $project_build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Build:</div>
-                  <div class="span6">{if !$project_build instanceof Project_Build}This project has never been built.{else}#{$project_build->getId()}{/if}</div>
+                  <div class="span6">{if !$project_build instanceof Project_Build}---{else}<a href="{UrlManager::getForProjectBuildView($project_build)}">#{$project_build->getId()}</a>{/if}</div>
                 </div>
 {if $project_build instanceof Project_Build}
                 <div class="row">
                   <div class="span2">Commit:</div>
-                  <div class="span6">{$project_build->getScmRevision()}</div>
+{$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $project_build)}
+                  <div class="span6">{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$project_build->getScmRevision()}{if !empty($externalCommitLink)}</a>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
-                  <div class="span6">{Utility::timeDurationToHumanReadable(time()-strtotime($project_build->getDate()), 'yMdwhm')}</div>
+{$time=time()-strtotime($project_build->getDate())}
+{if $time < (3600)}
+  {$formatStr='hms'}
+{else}
+  {$formatStr='yMdwhm'}
+{/if}
+                  <div class="span6">{Utility::timeDurationToHumanReadable($time, $formatStr)} ago</div>
+                </div>
+                <div class="row">
+                  <div class="span2">Duration:</div>
+{$duration=$project_build->getDuration()}
+{if $duration < 1}
+  {$duration=1}
+{/if}
+                  <div class="span6">{if !empty($duration)}{Utility::timeDurationToHumanReadable($duration, 'ms')}{else}---{/if}</div>
                 </div>
 {/if}
-                {*<div class="row">
-                  <div class="span2">Duration:</div>
-                  <div class="span3">3 min 56 sec</div>
-                </div>*}
               </div>
               <div id="charts">
                 <ul class="media-grid">
                   <li>
-                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
                   </li>
                   <li>
-                    <div id="chartBuildTimelineContainer" class="chart" style="display: none;"></div>
+                    <div id="chartBuildDurationContainer" class="chart" style="display: none;"></div>
+                  </li>
+                  <li>
+                    <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
                   </li>
                 </ul>
               </div>
@@ -90,12 +104,13 @@
 <script type="text/javascript">
 // <![CDATA[
 var chartBuildOutcomes;
+var chartBuildDuration;
 var chartBuildTimeline;
 $(document).ready(function() {
   //
   // Build outcomes
   //
-	chartBuildOutcomes = new Highcharts.Chart({
+  chartBuildOutcomes = new Highcharts.Chart({
     chart: {
       renderTo: 'chartBuildOutcomesContainer',
       type: 'pie'
@@ -117,6 +132,10 @@ $(document).ready(function() {
           enabled: true,
           formatter: function() {
             return this.point.name +': '+ this.y;
+          },
+          style: {
+            color: '#555',
+            font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
           }
         }
       }
@@ -133,7 +152,7 @@ $(document).ready(function() {
           selected: true
         }
       ]
-    }]
+    }],
   });
   $('#chartBuildOutcomesContainer').fadeIn(600);
 
@@ -142,9 +161,11 @@ $(document).ready(function() {
   //
   chartBuildTimeline = new Highcharts.Chart({
     chart: {
+      width: 610,
+      height: 260,
       renderTo: 'chartBuildTimelineContainer',
       defaultSeriesType: 'scatter',
-      zoomType: 'xy',
+      zoomType: 'x',
     },
     title: {
       text: 'Build timeline'
@@ -188,16 +209,16 @@ $(document).ready(function() {
       layout: 'vertical',
       align: 'left',
       verticalAlign: 'top',
-      x: 30,
-      y: 190,
+      x: 35,
+      y: 182,
       floating: true,
-      backgroundColor: {
+      backgroundColor: '#eee' /*{
         linearGradient: [0, 0, 0, 50],
         stops: [
           [0, 'rgba(96, 96, 96, .1)'],
           [1, 'rgba(16, 16, 16, .1)']
         ]
-      },
+      }*/,
       borderWidth: 1
     },
     plotOptions: {
@@ -251,6 +272,102 @@ $(document).ready(function() {
     ]
   });
   $('#chartBuildTimelineContainer').fadeIn(600);
+
+
+  //
+  // Build timeline
+  //
+  chartBuildDuration = new Highcharts.Chart({
+    colors: ['rgb(98,207,252)'],
+    chart: {
+      width: 610,
+      height: 180,
+      renderTo: 'chartBuildDurationContainer',
+      zoomType: 'x',
+      backgroundColor: {
+        linearGradient: [0, 0, 0, 180],
+        stops: [
+          [0.16, '#fff'],
+          [0.9, '#eee']
+        ]
+      },
+    },
+    title: {
+      text: 'Build duration'
+    },
+    subtitle: {
+      text: ''
+    },
+    xAxis: {
+      type: 'linear',
+      title: {
+        text: ''
+      },
+      tickLength: 0,
+      labels: {
+        formatter: function() {
+          return '';
+        }
+      },
+      showFirstLabel: false,
+    },
+    yAxis: {
+      title: {
+        text: ''
+      },
+      //showFirstLabel: false,
+    },
+    tooltip: {
+      formatter: function() {
+        return 'Build <span style="color: rgb(98,207,252);">#' + this.x + '</span>: ' + this.y + ' seconds';
+      }
+    },
+    legend: {
+      enabled : false
+    },
+    plotOptions: {
+      area: {
+        fillColor: {
+          linearGradient: [0, 0, 0, 300],
+          stops: [
+            [0, 'rgb(98,207,252)'],
+            [1, 'rgba(2,0,0,0)']
+          ]
+        },
+        lineWidth: 1,
+        lineColor: 'rgb(98,207,252)',
+        marker: {
+          enabled: false,
+          states: {
+            hover: {
+              enabled: true,
+              radius: 5
+            }
+          }
+        },
+        shadow: false,
+        states: {
+          hover: {
+            lineWidth: 1
+          }
+        }
+      }
+    },
+    series: [
+      {
+        type: 'area',
+        name: 'Duration',
+        data: [
+{foreach from=$project_buildStats.buildDuration item=duration}
+{if !$duration@first}
+,
+{/if}
+[Date({$duration.0}), {$duration.1}]
+{/foreach}
+      ]}
+    ]
+  });
+  $('#chartBuildDurationContainer').fadeIn(600);
 });
 
 // ]]>

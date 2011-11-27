@@ -34,6 +34,17 @@
  */
 class UrlManager
 {
+  static public function getExternalForScmCommitLink(Project $project, Project_Build $project_build)
+  {
+    //
+    // GitHub
+    //
+    if (preg_match('/(github\.com)[:\/](\w+)\/(\w+)\.git/', $project->getScmRemoteRepository(), $matches)) {
+      return "https://{$matches[1]}/{$matches[2]}/$matches[3]/commit/{$project_build->getScmRevision()}";
+    }
+    return '';
+  }
+
   static public function getForAjaxAuthentication()
   {
     return CINTIENT_BASE_URL . '/ajax/authentication/';
@@ -160,9 +171,9 @@ class UrlManager
     return CINTIENT_BASE_URL . '/project/history/?' .  http_build_query($params);
   }
 
-  static public function getForProjectBuildView(Project $project, Project_Build $build)
+  static public function getForProjectBuildView(Project_Build $build, Project $project = null)
   {
-    return CINTIENT_BASE_URL . "/project/history/?pid={$project->getId()}&bid={$build->getId()}";
+    return CINTIENT_BASE_URL . "/project/history/?bid={$build->getId()}" . ($project instanceof Project ? '&pid='.$project->getId() : '');
   }
 
   static public function getForProjectEdit(Array $params = array())

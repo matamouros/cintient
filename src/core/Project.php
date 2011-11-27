@@ -472,8 +472,12 @@ class Project extends Framework_DatabaseObjectAbstract
 
   static public function install()
   {
+    SystemEvent::raise(SystemEvent::INFO, "Creating project related tables...", __METHOD__);
+
+    $tableName = 'project';
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS project(
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   buildlabel TEXT NOT NULL DEFAULT '',
   datecreation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -498,17 +502,46 @@ CREATE TABLE IF NOT EXISTS project(
   avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
 EOT;
-    if (!Database::execute($sql) || !Project_User::install()) {
-      SystemEvent::raise(SystemEvent::INFO, "Could not create Project related tables.", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up project table.", __METHOD__);
       return false;
-    } else {
-      SystemEvent::raise(SystemEvent::INFO, "Created Project related tables.", __METHOD__);
-      return true;
     }
+
+    if (!Project_User::install()) {
+      return false;
+    }
+
+    //
+    // Upgrade Project_Build tables
+    //
+    $tables = Database::getTables();
+    $dummyProject = new Project();
+    $dummyProject->setAutoSave(false); // Never save this dummy project
+    foreach ($tables as $table) {
+      if (preg_match('/^(projectbuild)(\d+)$/', $table, $matches)) {
+        $dummyProject->setId($matches[2]);
+        if (!Project_Build::install($dummyProject)) {
+          return false;
+        }
+      } elseif (preg_match('/^(projectlog)(\d+)$/', $table, $matches)) {
+        $dummyProject->setId($matches[2]);
+        if (!Project_Log::install($dummyProject)) {
+          return false;
+        }
+      }
+    }
+    $dummyProject = null;
+    unset($dummyProject);
+
+    SystemEvent::raise(SystemEvent::INFO, "All project related tables created.", __METHOD__);
+    return true;
   }
 
   protected function _save($force = false)
   {
+    if (!$this->_autoSave) {
+      return true;
+    }
     if (!$this->hasChanged()) {
       if (!$force) {
         return false;

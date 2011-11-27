@@ -165,21 +165,26 @@ class SystemSettings implements ArrayAccess
 
   static public function install()
   {
+    SystemEvent::raise(SystemEvent::INFO, "Creating systemsettings table...", __METHOD__);
+
+    $tableName = 'systemsettings';
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS systemsettings(
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW(
   key VARCHAR(255) PRIMARY KEY,
   value TEXT NOT NULL DEFAULT ''
 );
 EOT;
-    if (!Database::execute($sql)) {
-      SystemEvent::raise(SystemEvent::INFO, "Could not create SytemSettings related tables.", __METHOD__);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
       return false;
-    } else {
-      $self = new SystemSettings();
-      $self->_save(true); // This allows us to save the default system settings values at install time.
-      SystemEvent::raise(SystemEvent::INFO, "Created SytemSettings related tables.", __METHOD__);
-      return true;
     }
+
+    $self = new SystemSettings();
+    $self->_save(true); // This allows us to save the default system settings values at install time.
+
+    SystemEvent::raise(SystemEvent::INFO, "$tableName table created.", __METHOD__);
+    return true;
   }
 
   public function setSetting($key, $value)

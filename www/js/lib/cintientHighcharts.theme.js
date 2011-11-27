@@ -45,28 +45,29 @@ Highcharts.theme = {
     style: { 
       color: '#555',
       textShadow: 'none',
-      font: '12pt Lucida Grande, Verdana, Arial, Helvetica, sans-serif'
+      font: '12pt Helvetica Neue,Helvetica,Arial,sans-serif'
     }
   },
   subtitle: {
     style: { 
       color: '#555',
-      font: '9pt Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'
+      font: '9pt Helvetica Neue,Helvetica,Arial,sans-serif'
     }
   },
   xAxis: {
     gridLineWidth: 0,
-    lineColor: '#303030',
-    tickColor: '#303030',
+    lineColor: '#555',
+    tickColor: '#555',
     labels: {
       style: {
-        color: '#000'
+        color: '#555',
+        font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
       }
     },
     title: {
       style: {
         color: '#000',
-        font: '9pt Lucida Grande, Verdana, Arial, Helvetica, sans-serif'
+        font: '9pt Helvetica Neue,Helvetica,Arial,sans-serif'
       }        
     }
   },
@@ -78,33 +79,35 @@ Highcharts.theme = {
     tickWidth: 0,
     labels: {
       style: {
-        color: '#000'
+        color: '#555',
+        font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
       }
     },
     title: {
       style: {
         color: '#000',
-        font: '9pt Lucida Grande, Verdana, Arial, Helvetica, sans-serif'
-      }        
+        font: '9pt Helvetica Neue,Helvetica,Arial,sans-serif'
+      }
     }
   },
   legend: {
     itemStyle: {
       color: '#303030',
       textShadow: 'none',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      font: '1em Helvetica Neue,Helvetica,Arial,sans-serif'
     },
     itemHoverStyle: {
-      color: 'rgb(255,60,0)',
+      /*color: 'rgb(255,60,0)',
       textShadow: '0px 0px 6px rgba(255,40,0,1)',
-      textDecoration: 'none'
+      textDecoration: 'none'*/
     },
     itemHiddenStyle: {
       color: '#999',
       textShadow: 'none',
       textDecoration: 'line-through'
     },
-    floating: false,
+    floating: true,
     backgroundColor: {
       linearGradient: [0, 0, 0, 50],
       stops: [
@@ -112,6 +115,7 @@ Highcharts.theme = {
         [1, 'rgba(16, 16, 16, .1)']
       ]
     },
+    borderColor: '#303030'
   },
   labels: {
     style: {
@@ -130,7 +134,8 @@ Highcharts.theme = {
     borderWidth: 0,
     style: {
       color: '#FFF',
-      textShadow: '#000 1px 1px 1px'
+      textShadow: '#000 1px 1px 1px',
+      font: '.92em Helvetica Neue,Helvetica,Arial,sans-serif'
     }
   },
   

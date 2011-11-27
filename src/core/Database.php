@@ -42,7 +42,11 @@
  */
 class Database
 {
-  static private $_transacting;
+  static private $_transacting = 0;
+
+  const DEFERRED_TRANSACTION = 1;
+  const IMMEDIATE_TRANSACTION = 2;
+  const EXCLUSIVE_TRANSACTION = 3;
 
   /**
    * Instantiates a single class instance
@@ -268,40 +272,61 @@ class Database
     return $stmt->execute();
   }
 
-  static public function beginTransaction()
+  static public function beginTransaction($type = self::DEFERRED_TRANSACTION)
   {
+    // Already part of a transaction, just increment the counter so that
+    // only the transaction starter can end it.
+    if (self::$_transacting > 0) {
+      self::$_transacting++;
+      return true;
+    }
     $db = self::_singleton();
     $retries = 0;
     $errorCode = 5; // Just so we can enter the while loop.
-    $query = "BEGIN TRANSACTION";
+    $typeText = '';
+    if ($type == self::IMMEDIATE_TRANSACTION) {
+      $typeText = 'IMMEDIATE ';
+    } elseif ($type == self::EXCLUSIVE_TRANSACTION) {
+      $typeText = 'EXCLUSIVE ';
+    }
+    $query = "BEGIN {$typeText}TRANSACTION";
     // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
-    while (!self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+    while (self::$_transacting == 0 && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
       if ($retries > 0) {
-        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
+        SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorCode()}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
         sleep(1);
       }
-      if (!(self::$_transacting = (bool)@$db->exec($query))) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not begin transaction.", __METHOD__);
+      if (!@$db->exec($query)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not begin transaction. [ERRNO={$db->lastErrorCode()}] [ERRMSG={$db->lastErrorMsg()}]", __METHOD__);
       } else {
+        self::$_transacting++;
         SystemEvent::raise(SystemEvent::DEBUG, "Transaction started.", __METHOD__);
       }
       $retries++;
       $errorCode = $db->lastErrorCode();
     }
-    if ($retries == 0) {
-      SystemEvent::raise(SystemEvent::NOTICE, "Can't begin transaction, there's one pending.", __METHOD__);
-    }
-    return (bool)self::$_transacting;
+    return (self::$_transacting > 0);
   }
 
+  /**
+   * Requests to end a transaction must come from the initial
+   * transaction starter, contrary to rollbackTransaction(), which
+   * stops a transaction immediately and rolls it back.
+   */
   static public function endTransaction()
   {
+    // Already part of a transaction, just decrement the counter so that
+    // only the transaction starter can end it.
+    if (self::$_transacting > 1) {
+      self::$_transacting--;
+      return true;
+    }
     $db = self::_singleton();
     $retries = 0;
     $errorCode = 5; // Just so we can enter the while loop.
     $query = "END TRANSACTION";
     // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
-    while (self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+    while (self::$_transacting == 1 && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
       if ($retries > 0) {
         SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
         sleep(1);
@@ -309,18 +334,19 @@ class Database
       if (!@$db->exec($query)) {
         SystemEvent::raise(SystemEvent::ERROR, "Could not commit transaction.", __METHOD__);
       } else {
-        self::$_transacting = false;
+        self::$_transacting--;
         SystemEvent::raise(SystemEvent::DEBUG, "Transaction commited.", __METHOD__);
       }
       $retries++;
       $errorCode = $db->lastErrorCode();
     }
-    if ($retries == 0) {
-      SystemEvent::raise(SystemEvent::NOTICE, "Couldn't end transaction, there wasn't one pending.", __METHOD__);
-    }
-    return !self::$_transacting;
+    return (self::$_transacting == 0);
   }
 
+  /**
+   * Requests to rollback a transaction are immediately honoured,
+   * regardless of who originally started the current transaction.
+   */
   static public function rollbackTransaction()
   {
     $db = self::_singleton();
@@ -328,7 +354,7 @@ class Database
     $errorCode = 5; // Just so we can enter the while loop.
     $query = "ROLLBACK TRANSACTION";
     // SQLITE_BUSY || SQLITE_IOERR_BLOCKED (@see http://www.sqlite.org/c3ref/busy_timeout.html)
-    while (self::$_transacting && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
+    while (self::$_transacting != 0 && ($errorCode == 5 || $errorCode == (10 | (11<<8))) && $retries < CINTIENT_SQL_BUSY_RETRIES) {
       if ($retries > 0) {
         SystemEvent::raise(SystemEvent::NOTICE, "Database is busy, easing off and retrying. [TRIES={$retries}] [ERRNO={$errorCode}] [ERRMSG={$errorCode}] [QUERY={$query}]".(!empty($values)?' [VALUES='.(implode(' | ',$values)).']':''), __METHOD__);
         sleep(1);
@@ -336,16 +362,13 @@ class Database
       if (!$db->exec($query)) {
         SystemEvent::raise(SystemEvent::ERROR, "Couldn't rollback transaction.", __METHOD__);
       } else {
-        self::$_transacting = false;
+        self::$_transacting = 0;
         SystemEvent::raise(SystemEvent::DEBUG, "Transaction rolled back.", __METHOD__);
       }
       $retries++;
       $errorCode = $db->lastErrorCode();
     }
-    if ($retries == 0) {
-      SystemEvent::raise(SystemEvent::NOTICE, "Couldn't rollback transaction, there wasn't one pending.", __METHOD__);
-    }
-    return !self::$_transacting;
+    return (self::$_transacting == 0);
   }
 
   static private function _prepareAndBindValues(&$query, &$values)
@@ -410,5 +433,90 @@ class Database
       }
     }
     return $stmt;
+  }
+
+  static public function getTables()
+  {
+    $ret = array();
+    $sql = 'SELECT tbl_name AS tblname FROM sqlite_master';
+    $rs = self::query($sql);
+    while ($rs->nextRow()) {
+      $ret[$rs->getTblName()] = $rs->getTblName();
+    }
+    return $ret;
+  }
+
+  static public function getTableInfo($tableName)
+  {
+    $ret = array();
+    $sql = "pragma table_info({$tableName})";
+    $rs = self::query($sql);
+    while ($rs->nextRow()) {
+      $ret[$rs->getName()] = $rs->getName();
+    }
+    return $ret;
+  }
+
+  static public function setupTable($tableName, $sqlCreate)
+  {
+    if (!self::execute($sqlCreate)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems executing table create. This is non recoverable, please fix the problem and try again.", __METHOD__);
+      self::rollbackTransaction();
+      return false;
+    }
+    $tables = self::getTables();
+    if (!empty($tables[$tableName])) {
+      $attributes = Database::getTableInfo($tableName);
+      if (empty($attributes)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems accessing old data attributes. This is non recoverable, please fix the problem and try again.", __METHOD__);
+        self::rollbackTransaction();
+        return false;
+      }
+      $attributesNew = Database::getTableInfo($tableName . 'NEW');
+      if (empty($attributes)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems accessing new data attributes. This is non recoverable, please fix the problem and try again.", __METHOD__);
+        self::rollbackTransaction();
+        return false;
+      }
+      //
+      // This makes sure that only coincident attributes are corresponded,
+      // i.e., old attributes that don't match anything in the current
+      // schema, or vice-versa, are left out of the migration
+      //
+      $attributesSql = '';
+      foreach ($attributes as $attribute) {
+        if (!empty($attributesNew[$attribute])) {
+          $attributesSql .= "{$attribute},";
+        }
+      }
+      $attributesSqlNew = '';
+      foreach ($attributesNew as $attributeNew) {
+        if (!empty($attributes[$attributeNew])) {
+          $attributesSqlNew .= "{$attributeNew},";
+        }
+      }
+      $attributesSql = rtrim($attributesSql, ',');
+      $attributesSqlNew = rtrim($attributesSqlNew, ',');
+
+      $sql = "INSERT INTO {$tableName}NEW ({$attributesSqlNew}) SELECT {$attributesSql} FROM $tableName";
+      if (!self::execute($sql)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems migrating old data. This is non recoverable, please fix the problem and try again.", __METHOD__);
+        self::rollbackTransaction();
+        return false;
+      }
+    }
+    $sql = "DROP TABLE IF EXISTS {$tableName}";
+    if (!self::execute($sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems removing old data. This is non recoverable, please fix the problem and try again.", __METHOD__);
+      self::rollbackTransaction();
+      return false;
+    }
+    $sql = "ALTER TABLE {$tableName}NEW RENAME TO {$tableName}";
+    if (!self::execute($sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up migrated data. This is non recoverable, please fix the problem and try again.", __METHOD__);
+      self::rollbackTransaction();
+      return false;
+    }
+    return true;
   }
 }

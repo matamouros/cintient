@@ -265,8 +265,15 @@ class User extends Framework_DatabaseObjectAbstract
 
   static public function install()
   {
+    SystemEvent::raise(SystemEvent::INFO, "Creating user related tables...", __METHOD__);
+
+    //
+    // USER
+    //
+    $tableName = 'user';
     $sql = <<<EOT
-CREATE TABLE IF NOT EXISTS user(
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username VARCHAR(20),
   enabled TINYINT UNSIGNED NOT NULL DEFAULT 1,
@@ -277,13 +284,30 @@ CREATE TABLE IF NOT EXISTS user(
   notifications TEXT NOT NULL DEFAULT '',
   avatar VARCHAR(255) NOT NULL DEFAULT ''
 );
-CREATE TABLE IF NOT EXISTS userauth(
+EOT;
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
+      return false;
+    }
+
+    //
+    // USERAUTH
+    //
+    $tableName = 'userauth';
+    $sql = <<<EOT
+DROP TABLE IF EXISTS {$tableName}NEW;
+CREATE TABLE IF NOT EXISTS {$tableName}NEW(
   userid INTEGER PRIMARY KEY,
   password VARCHAR(255)
 );
 EOT;
-    SystemEvent::raise(SystemEvent::INFO, "Creating User related tables.", __METHOD__);
-    return Database::execute($sql);
+    if (!Database::setupTable($tableName, $sql)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Problems setting up $tableName table.", __METHOD__);
+      return false;
+    }
+
+    SystemEvent::raise(SystemEvent::INFO, "User related tables created.", __METHOD__);
+    return true;
   }
 
   /**
