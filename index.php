@@ -74,7 +74,7 @@ if ($uriPathInfo['basename'] != 'index.php') {
   $reqUri .= $uriPathInfo['basename'];
 }
 $defaults = array();
-$defaults['appWorkDir'] = realpath(dirname(__FILE__) . '/..') . '/.cintient/';
+$defaults['appWorkDir'] = ''; //;realpath(dirname(__FILE__) . '/..') . '/.cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
 $defaults['configurationDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/config/';
 $defaults['configurationSampleFile'] = $defaults['configurationDir'] . 'cintient.conf.sample';
@@ -182,13 +182,15 @@ function appWorkDir($dir)
 {
   $msg[0] = "Check dir exists and enable write permissions.";
   $msg[1] = "Ready.";
-  if (substr($dir, -1) != DIRECTORY_SEPARATOR) {
+  if (!empty($dir) && substr($dir, -1) != DIRECTORY_SEPARATOR) {
     $dir .= DIRECTORY_SEPARATOR;
   }
   //
   // Test for upgrade or clean install
   //
-  if (is_file($dir . 'cintient.sqlite')) {
+  if (empty($dir)) {
+    $ok = false;
+  } elseif (is_file($dir . 'cintient.sqlite')) {
     $msg[2] = $msg[1];
     $ok = 2;
   } else {
@@ -336,7 +338,7 @@ if (!empty($_GET['c'])) {
   //
   $upgrade = false;
   list ($ok, $_) = appWorkDir($get['appWorkDir']);
-  if ($ok == 2) {
+  if ($ok === 2) {
     $upgrade = true;
   }
   //
