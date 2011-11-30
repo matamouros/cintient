@@ -85,7 +85,9 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
       return true;
     }
     $callbacks = array(
-      array('cb' => 'getHtmlFailOnError'),
+      array(
+      	'cb' => 'getHtmlFailOnError',
+      ),
       array(
         'cb' => 'getHtmlInputText',
       	'name' => 'file',

@@ -771,7 +771,7 @@ EOT;
       }
       $value = filter_var($attributeValue['value'], FILTER_SANITIZE_STRING);
       if ($attributeValue['type'] == 'checkbox') {
-        $value = ($attributeValue['value'] ? true : false);
+        $value = (!empty($attributeValue['value']) ? true : false);
       }
       //
       // Specific handling for filesets

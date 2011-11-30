@@ -79,7 +79,7 @@ class Build_BuilderElement extends Framework_BaseObject
       'help' => 'Check this if you wish the integration builder to immediately stop when this task generates an error.',
       'label' => 'Fail on error?',
       'name' => 'failOnError',
-      'value' => $this->getFailOnError(),
+      'checked' => $this->isFailOnError(),
     );
     $this->getHtmlInputCheckbox($params);
   }
@@ -111,9 +111,12 @@ class Build_BuilderElement extends Framework_BaseObject
         h::ul(array('class' => 'inputs-list'), function () use ($params) {
           h::li(function () use ($params) {
             h::label(function () use ($params) {
-              $inputParams = array('type' => 'checkbox', 'name' => $params['name'], 'value' => $params['value']);
+              $inputParams = array('type' => 'checkbox', 'name' => $params['name']);
               if (!empty($params['checked'])) {
                 $inputParams['checked'] = 'checked';
+              }
+              if (!empty($params['value'])) {
+                $inputParams['value'] = $params['value'];
               }
               h::input($inputParams);
               //h::span('');
