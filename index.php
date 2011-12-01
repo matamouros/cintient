@@ -88,7 +88,7 @@ $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess
 //
 function directiveValueUpdate($str, $directive, $directiveValue)
 {
-  return preg_replace('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.*)((?:\'|")\s*\);)/', '$1' . $directiveValue . '$3', $str);
+  return preg_replace('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|")).*((?:\'|")\s*\);)/', '$1' . $directiveValue . '$2', $str);
 }
 
 //
