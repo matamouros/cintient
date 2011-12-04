@@ -73,6 +73,8 @@ if ($uriPathInfo['basename'] != 'index.php') {
   }
   $reqUri .= $uriPathInfo['basename'];
 }
+$reqUri = str_replace("\\", '/', $reqUri); // Windows is reported putting '\' in this string. This could break some location style paths though... Check it later.
+$reqUri = str_replace('//', '/', $reqUri);
 $defaults = array();
 $defaults['appWorkDir'] = ''; //;realpath(dirname(__FILE__) . '/..') . '/.cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
@@ -288,10 +290,7 @@ if (!empty($_GET['c'])) {
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine on\n");
     fwrite($fd, "RewriteBase {$reqUri}/\n"); # Insert a trailing slash here, it's needed!
-    fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]\n");
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
     fclose($fd);
