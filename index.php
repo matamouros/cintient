@@ -273,8 +273,21 @@ if (!empty($_GET['c'])) {
   foreach ($_POST as $key => $value) {
     // TODO: filter everything
     if ($key != '_' && $key != 's') {
-      if ($key == 'appWorkDir' && substr($value, -1) != DIRECTORY_SEPARATOR) {
-        $value .= DIRECTORY_SEPARATOR;
+      if ($key == 'appWorkDir') {
+        if (substr($value, -1) != DIRECTORY_SEPARATOR) {
+          $value .= DIRECTORY_SEPARATOR;
+        }
+        //
+        // Major issue in Windows platforms, where the '\' character escapes
+        // the $2 in the directiveValueUpdate() call, thus never replacing it
+        // with the proper "');" string and thus creating a syntax error.
+        // That's why we're forced to make sure on the appWorkDir only
+        // '/' are feeded to Cintient, and that this str_replace is *after*
+        // the DIRECTORY_SEPARATOR add above (since in Windows it will end
+        // the appWorkDir value with '\' again).
+        //
+        $value = str_replace('\\', '/', $value);
+        $value = str_replace('//', '/', $value); // Just making sure the first str_replace doesn't add a / to an already existing /.
       } elseif ($key == 'baseUrl' && substr($value, -1) == '/') {
         $value = substr($value, 0, -1);
       }
