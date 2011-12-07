@@ -652,6 +652,15 @@ var Cintient = {
               $(':input', that).filter(':not(:submit)').filter(':not(:button)').each( function() {
                 x[this.name] = { type: this.type, value: this.value };
               });
+              //
+              // The following overwrites the previous "input" iteration and makes
+              // sure that checkboxes have either 'on' or '' as sent values. Chrome
+              // was always sending value as 'on' with the generic this.value used
+              // in 'input' selector above.
+              //
+              $(':checkbox', $(that)).each( function() {
+                x[this.name] = { type: 'checkbox', value: (this.checked == true ? 'on' : '') };
+              });
               return x;
             }();
           });
