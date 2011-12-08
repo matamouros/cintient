@@ -135,6 +135,15 @@ $(document).ready(function() {
       $('input:radio[name=type]:checked', $(that)).each( function() {
     	  x['type'] = { type: 'radio', value: $(this).val() }; // This overwrites the previous input iteration with the correct value for type
       });
+      //
+      // The following overwrites the previous "input" iteration and makes
+      // sure that checkboxes have either 'on' or '' as sent values. Chrome
+      // was always sending value as 'on' with the generic this.value used
+      // in 'input' selector above.
+      //
+      $(':checkbox', $(that)).each( function() {
+    	  x[this.name] = { type: 'checkbox', value: (this.checked == true ? 'on' : '') };
+      });
       return x;
     }();
     $.ajax({

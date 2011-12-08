@@ -771,7 +771,7 @@ EOT;
       }
       $value = filter_var($attributeValue['value'], FILTER_SANITIZE_STRING);
       if ($attributeValue['type'] == 'checkbox') {
-        $value = ($attributeValue['value'] ? true : false);
+        $value = (!empty($attributeValue['value']) ? true : false);
       }
       //
       // Specific handling for filesets
@@ -779,10 +779,14 @@ EOT;
       if (($attributeName == 'include' || $attributeName == 'exclude' ||
            $attributeName == 'defaultExcludes' || $attributeName == 'dir' ||
            $attributeName == 'type' ) &&
-          ($o instanceof Build_BuilderElement_Task_Php_PhpUnit ||
+          ($o instanceof Build_BuilderElement_Task_Perl_PerlSyntax ||
+           $o instanceof Build_BuilderElement_Task_Php_PhpUnit ||
            $o instanceof Build_BuilderElement_Task_Php_PhpLint ||
            $o instanceof Build_BuilderElement_Task_Filesystem_Chmod ||
-           $o instanceof Build_BuilderElement_Task_Filesystem_Delete
+           $o instanceof Build_BuilderElement_Task_Filesystem_Chown ||
+           $o instanceof Build_BuilderElement_Task_Filesystem_Delete ||
+           $o instanceof Build_BuilderElement_Task_Filesystem_Copy ||
+           $o instanceof Build_BuilderElement_Task_ReplaceRegexp
           )
       ) {
         $filesets = $o->getFilesets(); // Only one is expected, for now

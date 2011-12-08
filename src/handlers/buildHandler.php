@@ -24,6 +24,12 @@
 // TODO: centralize the initalization stuff that is common to web, ajax
 // and builder handlers. (this builder could be called by a crontab)
 
+// Temporarily disable the background build handler in Windows, while
+// binaries aren't being dealt with in the installer.
+if (Framework_HostOs::isWindows()) {
+  SystemEvent::raise(SystemEvent::INFO, "Background builds are temporarily disabled in Windows.", 'buildHandler');
+  return false;
+}
 $buildProcess = new Framework_Process(CINTIENT_PHP_BINARY);
 $buildProcess->addArg(CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
 if (!$buildProcess->isRunning()) {

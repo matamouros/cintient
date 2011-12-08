@@ -73,6 +73,8 @@ if ($uriPathInfo['basename'] != 'index.php') {
   }
   $reqUri .= $uriPathInfo['basename'];
 }
+$reqUri = str_replace("\\", '/', $reqUri); // Windows is reported putting '\' in this string. This could break some location style paths though... Check it later.
+$reqUri = str_replace('//', '/', $reqUri);
 $defaults = array();
 $defaults['appWorkDir'] = ''; //;realpath(dirname(__FILE__) . '/..') . '/.cintient/';
 $defaults['baseUrl'] = 'http://' . $_SERVER['HTTP_HOST'] . ($reqUri != '/' ? $reqUri : ''); # No trailing slash
@@ -88,7 +90,7 @@ $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess
 //
 function directiveValueUpdate($str, $directive, $directiveValue)
 {
-  return preg_replace('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|"))(.*)((?:\'|")\s*\);)/', '$1' . $directiveValue . '$3', $str);
+  return preg_replace('/(define\s*\(\s*(?:\'|")' . $directive . '(?:\'|")\s*,\s*(?:\'|")).*((?:\'|")\s*\);)/', '$1' . $directiveValue . '$2', $str);
 }
 
 //
@@ -271,8 +273,21 @@ if (!empty($_GET['c'])) {
   foreach ($_POST as $key => $value) {
     // TODO: filter everything
     if ($key != '_' && $key != 's') {
-      if ($key == 'appWorkDir' && substr($value, -1) != DIRECTORY_SEPARATOR) {
-        $value .= DIRECTORY_SEPARATOR;
+      if ($key == 'appWorkDir') {
+        if (substr($value, -1) != DIRECTORY_SEPARATOR) {
+          $value .= DIRECTORY_SEPARATOR;
+        }
+        //
+        // Major issue in Windows platforms, where the '\' character escapes
+        // the $2 in the directiveValueUpdate() call, thus never replacing it
+        // with the proper "');" string and thus creating a syntax error.
+        // That's why we're forced to make sure on the appWorkDir only
+        // '/' are feeded to Cintient, and that this str_replace is *after*
+        // the DIRECTORY_SEPARATOR add above (since in Windows it will end
+        // the appWorkDir value with '\' again).
+        //
+        $value = str_replace('\\', '/', $value);
+        $value = str_replace('//', '/', $value); // Just making sure the first str_replace doesn't add a / to an already existing /.
       } elseif ($key == 'baseUrl' && substr($value, -1) == '/') {
         $value = substr($value, 0, -1);
       }
@@ -288,10 +303,7 @@ if (!empty($_GET['c'])) {
   if ($fd !== false) {
     fwrite($fd, "RewriteEngine on\n");
     fwrite($fd, "RewriteBase {$reqUri}/\n"); # Insert a trailing slash here, it's needed!
-    fwrite($fd, "RewriteRule (fonts)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (imgs)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (js)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule (css)/(.*) www/\$1/\$2 [L]\n");
+    fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]\n");
     fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]\n");
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
     fclose($fd);

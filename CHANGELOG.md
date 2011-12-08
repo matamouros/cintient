@@ -1,6 +1,30 @@
 Changelog
 =========
 
+
+2011-12-07 cintient-1.0.0-beta-8
+--------------------------------
+
+ *  FIXED: Broken installer in Windows, on some user specified data
+           dirs.
+ *  FIXED: Chrome checkboxes not saving properly. (thanks Luzifer)
+ *  CHANGED: Temporarily disabled background build handler in Windows
+             platforms.
+
+
+2011-11-30 cintient-1.0.0-beta-7
+--------------------------------
+
+ *  FIXED: Fail on error attribute of tasks is now saved properly.
+ *  FIXED: Copy and a few other tasks now properly save their fileset.
+
+
+2011-11-28 cintient-1.0.0-beta-6
+--------------------------------
+
+ *  FIXED: Regression in installer completely broke clean installs.
+
+
 2011-11-27 cintient-1.0.0-beta-5
 --------------------------------
 

@@ -38,10 +38,11 @@ class ScmConnector_Git implements ScmConnectorInterface
   static public function checkout(array $args)
   {
     $command = "git clone {$args['remote']} {$args['local']}";
-    $lastline = exec($command, $output, $return);
-    if ($return != 0) {
-      $output = implode("\n", $output);
-      SystemEvent::raise(SystemEvent::ERROR, "Could not check out remote repository. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+    $proc = new Framework_Process();
+    $proc->setExecutable($command);
+    $proc->run();
+    if (($return = $proc->getReturnValue()) != 0) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check out remote repository. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);
       return false;
     }
     return true;
