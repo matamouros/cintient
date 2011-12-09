@@ -69,6 +69,11 @@
                   <li>
                     <div id="chartBuildDurationContainer" class="chart" style="display: none;"></div>
                   </li>
+{if !empty($project_buildStats.qualityTrend)}
+                  <li>
+                    <div id="chartQualityTrendContainer" class="chart" style="display: none;"></div>
+                  </li>
+{/if}
                   <li>
                     <div id="chartBuildOutcomesContainer" class="chart" style="display: none;"></div>
                   </li>
@@ -106,6 +111,7 @@
 var chartBuildOutcomes;
 var chartBuildDuration;
 var chartBuildTimeline;
+var chartQualityTrend;
 $(document).ready(function() {
   //
   // Build outcomes
@@ -207,19 +213,12 @@ $(document).ready(function() {
     },
     legend: {
       layout: 'vertical',
-      align: 'left',
+      align: 'right',
       verticalAlign: 'top',
-      x: 35,
-      y: 182,
-      floating: true,
-      backgroundColor: '#eee' /*{
-        linearGradient: [0, 0, 0, 50],
-        stops: [
-          [0, 'rgba(96, 96, 96, .1)'],
-          [1, 'rgba(16, 16, 16, .1)']
-        ]
-      }*/,
-      borderWidth: 1
+      x: -10,
+      y: 100,
+      //backgroundColor: '#ddd',
+      borderWidth: 0,
     },
     plotOptions: {
       scatter: {
@@ -247,26 +246,15 @@ $(document).ready(function() {
         color: 'rgba(124,196,0, .4)',
         //color: 'rgba(70,165,70,.4)',
         data: [
-{foreach from=$project_buildStats.buildTimeline.ok item=ok}
-{if !$ok@first}
-,
-{/if}
-{$okMilli=$ok*1000}
-[{$okMilli}, {$ok|date_format:"B"}]
-{/foreach}
-      ]},
+{foreach from=$project_buildStats.buildTimeline.ok item=ok}{$okMilli=$ok*1000}[{$okMilli}, {$ok|date_format:"B"}],{/foreach}
+        ]
+      },
       {
         name: 'Failed',
         color: 'rgba(255,40,0, .4)',
         //color: 'rgba(196,60,53,.4)',
         data: [
-{foreach from=$project_buildStats.buildTimeline.failed item=failed}
-{if !$failed@first}
-,
-{/if}
-{$failedMilli=$failed*1000}
-[{$failedMilli}, {$failed|date_format:"B"}]
-{/foreach}
+{foreach from=$project_buildStats.buildTimeline.failed item=failed}{$failedMilli=$failed*1000}[{$failedMilli}, {$failed|date_format:"B"}],{/foreach}
         ]
       }
     ]
@@ -281,11 +269,11 @@ $(document).ready(function() {
     colors: ['rgb(98,207,252)'],
     chart: {
       width: 610,
-      height: 180,
+      height: 150,
       renderTo: 'chartBuildDurationContainer',
       zoomType: 'x',
       backgroundColor: {
-        linearGradient: [0, 0, 0, 180],
+        linearGradient: [0, 0, 0, 150],
         stops: [
           [0.16, '#fff'],
           [0.9, '#eee']
@@ -312,6 +300,7 @@ $(document).ready(function() {
       showFirstLabel: false,
     },
     yAxis: {
+      maxPadding: 0,
       title: {
         text: ''
       },
@@ -358,16 +347,77 @@ $(document).ready(function() {
         type: 'area',
         name: 'Duration',
         data: [
-{foreach from=$project_buildStats.buildDuration item=duration}
-{if !$duration@first}
-,
-{/if}
-[Date({$duration.0}), {$duration.1}]
-{/foreach}
-      ]}
+{foreach from=$project_buildStats.buildDuration item=duration}[Date({$duration.0}), {$duration.1}],{/foreach}
+        ]
+      }
     ]
   });
   $('#chartBuildDurationContainer').fadeIn(600);
+
+
+{if !empty($project_buildStats.qualityTrend)}
+  //
+  // Quality trend
+  //
+  chartQualityTrend = new Highcharts.Chart({
+    colors: ['#62CFFC', '#46A546', '#F89406', '#EEDC94', '#C43C35', '#BFBFBF'],
+    chart: {
+      renderTo: 'chartQualityTrendContainer',
+      width: 610,
+      height: 260,
+    },
+    title: {
+      text: 'Quality trend',
+    },
+    subtitle: {
+      text: '',
+    },
+    xAxis: {
+      title: {
+        text: ''
+      },
+    },
+    yAxis: {
+      title: {
+        text: ''
+      },
+      min: 0,
+      showFirstLabel: false,
+      maxPadding: 0.0,
+      //type: 'logarithmic'
+    },
+    tooltip: {
+      formatter: function() {
+        return '<b>'+ this.series.name +'</b><br/>Build #'+ this.x +', '+ this.y +'';
+      }
+    },
+    legend: {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'top',
+      x: -10,
+      y: 100,
+      borderWidth: 0,
+      //backgroundColor: '#ddd',
+    },
+    series: [
+{foreach from=$project_buildStats.qualityTrend key=name item=metrics}
+      {
+        name: '{$name}',
+        data: [{foreach from=$metrics key=build item=value}[{$build}, {if empty($value)}0{else}{$value}{/if}],{/foreach}]
+      },
+{/foreach}
+    ],
+    plotOptions: {
+      line: {
+        marker: {
+          enabled: false
+        }
+      }
+    }
+  });
+  $('#chartQualityTrendContainer').fadeIn(600);
+{/if}
 });
 
 // ]]>

@@ -398,4 +398,95 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
     }
     return $ret;
   }
+
+
+  /**
+   * Fetches the trend for collected quality metrics. In order to not
+   * have too much bloat, we're dispatching this through array populated
+   * with all the metrics, instead of full fledged PhpDepend objects.
+   *
+   * @param Project $project
+   * @param User $user
+   * @param int $access
+   * @param array $options
+   */
+  static public function getTrend(Project $project, User $user, $access = Access::READ, array $options = array())
+  {
+    $ret = array();
+    //$ret['ahh'] = array();
+    //$ret['andc'] = array();
+    $ret['calls'] = array();
+    //$ret['ccn'] = array();
+    $ret['ccn2'] = array();
+    $ret['cloc'] = array();
+    //$ret['clsa'] = array();
+    //$ret['clsc'] = array();
+    //$ret['eloc'] = array();
+    $ret['fanout'] = array();
+    //$ret['leafs'] = array();
+    $ret['lloc'] = array();
+    $ret['loc'] = array();
+    //$ret['maxDit'] = array();
+    //$ret['ncloc'] = array();
+    //$ret['noc'] = array();
+    //$ret['nof'] = array();
+    //$ret['noi'] = array();
+    //$ret['nom'] = array();
+    //$ret['nop'] = array();
+    //$ret['roots'] = array();
+
+    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
+    $sql = 'SELECT pd.*'
+         . ' FROM phpdepend' . $project->getId() . ' pd, projectuser pu, projectbuild' . $project->getId() . ' pb'
+         . ' WHERE pu.projectid=?'
+         . ' AND pu.userid=?'
+         . ' AND pu.access & ?'
+         . ' AND pd.buildid=pb.id'
+         . ' AND pb.status<>' . Project_Build::STATUS_FAIL // Only fetch successful builds
+         . ' ORDER BY pd.buildid DESC'
+         . ' LIMIT 1000';
+    $val = array($project->getId(), $user->getId(), $access);
+    $i = 0;
+    if ($rs = Database::query($sql, $val)) {
+      while ($rs->nextRow()) {
+        if ($i % 20 == 0) {
+          //$ret['ahh'][$rs->getBuildId()] = $rs->getAhh();
+          //$ret['andc'][$rs->getBuildId()] = $rs->getAndc();
+          $ret['calls'][$rs->getBuildId()] = $rs->getCalls();
+          //$ret['ccn'][$rs->getBuildId()] = $rs->getCcn();
+          $ret['ccn2'][$rs->getBuildId()] = $rs->getCcn2();
+          $ret['cloc'][$rs->getBuildId()] = $rs->getCloc();
+          //$ret['clsa'][$rs->getBuildId()] = $rs->getClsa();
+          //$ret['clsc'][$rs->getBuildId()] = $rs->getClsc();
+          //$ret['eloc'][$rs->getBuildId()] = $rs->getEloc();
+          $ret['fanout'][$rs->getBuildId()] = $rs->getFanout();
+          //$ret['leafs'][$rs->getBuildId()] = $rs->getLeafs();
+          $ret['lloc'][$rs->getBuildId()] = $rs->getLloc();
+          $ret['loc'][$rs->getBuildId()] = $rs->getLoc();
+          //$ret['maxDit'][$rs->getBuildId()] = $rs->getMaxDit();
+          //$ret['ncloc'][$rs->getBuildId()] = $rs->getNcloc();
+          //$ret['noc'][$rs->getBuildId()] = $rs->getNoc();
+          //$ret['nof'][$rs->getBuildId()] = $rs->getNof();
+          //$ret['noi'][$rs->getBuildId()] = $rs->getNoi();
+          //$ret['nom'][$rs->getBuildId()] = $rs->getNom();
+          //$ret['nop'][$rs->getBuildId()] = $rs->getNop();
+          //$ret['roots'][$rs->getBuildId()] = $rs->getRoots();
+        }
+        $i++;
+      }
+      // We had to get the resultset ordered by DESC, because of the LIMIT,
+      // so now we need to reverse the array so that the most recent
+      // builds get to be on the right hand of the chart.
+      foreach ($ret as $key => $value) {
+        $ret[$key] = array_reverse($value, true);
+      }
+    }
+    // Don't return the empty initialized array in case nothing was
+    // fetched, so that the template logic can easily see that there's
+    // really nothing to show.
+    if ($i == 0) {
+      $ret = false;
+    }
+    return $ret;
+  }
 }
