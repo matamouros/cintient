@@ -414,6 +414,13 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $ret['buildTimeline']['failed'] = $failed;
     }
 
+    //
+    // Quality metrics (PHP_Depend)
+    //
+    $tables = Database::getTables();
+    if (!empty($tables["phpdepend{$project->getId()}"])) {
+      $ret['qualityTrend'] = Build_SpecialTask_PhpDepend::getTrend($project, $user, $access);
+    }
     return $ret;
   }
 

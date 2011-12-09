@@ -221,12 +221,18 @@ var Cintient = {
     $('#dashboard li.project')
       .click(function(e) {
         //
-        // Engage only if an unactive project was clicked
+        // Engage only if an unactive project was clicked. The firstLoad
+        // logic has to do with getting the first project loaded by AJAX
+        // on the very first pageload, instead of coming pre-loaded in
+        // the HTML.
         //
-        if ($(this).attr('id') != activeProjectId) {
-          that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
-          that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project
-          $('.build', '#dashboard li.project#' + activeProjectId).fadeOut(50);
+        if ($(this).attr('id') != activeProjectId || firstLoad) {
+          if (!firstLoad) {
+            that.activateListItem($(this)); // Visual clues: promptly activate the clicked project
+            that.deactivateListItem($('#dashboard li.project#' + activeProjectId)); // ... then deactivate the previously active project
+            $('.build', '#dashboard li.project#' + activeProjectId).fadeOut(50);
+          }
+          firstLoad = false;
           // Only show the build button if not already building
           if (!$('.loading', this).is(':visible')) {
             $('.build', this).fadeIn(100);
@@ -248,7 +254,7 @@ var Cintient = {
           $('#dashboard #dashboardProject').hide();
           $('#dashboard #dashboardProject').html('<div class="loading"><img src="imgs/loading-3.gif" /></div>');
           $('#dashboard #dashboardProject').show();
-          
+
           $.ajax({
             url: options.submitUrl,
             data: { pid : $(this).attr('id') },
