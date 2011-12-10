@@ -227,7 +227,7 @@ class Build_BuilderElement extends Framework_BaseObject
       h::label(array('for' => $params['name']), $params['label']);
       h::div(array('class' => 'input'), function() use ($params) {
         if (empty($params['size'])) {
-          $params['size'] = 'xlarge';
+          $params['size'] = 'large';
         }
         $rows = '3';
         if (!empty($params['rows'])) {

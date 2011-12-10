@@ -206,12 +206,12 @@ var Cintient = {
     
     $('#dashboard li.project .build').hover(
       function () {
-        $(this).addClass('danger');
+        $(this).addClass('primary');
         $(this).removeClass('disabled');
       },
       function () {
         $(this).addClass('disabled');
-        $(this).removeClass('danger');
+        $(this).removeClass('primary');
       }
     );
     
