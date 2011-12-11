@@ -2,6 +2,20 @@ Changelog
 =========
 
 
+2011-12-10 cintient-1.0.0-beta-9
+--------------------------------
+
+ *  ADDED: New quality metrics trend chart, in the dashboard, and for
+           projects that were built using PhpDepend task.
+ *  ADDED: Serious performance improvement in the dashboard, with the
+           first page load deferring the first project details load to
+           an AJAX call.
+ *  ADDED: New help file, from where the future help documentation will
+           derive.
+ *  FIXED: Broken layout bug in builder elements with textareas.
+ *  CHANGED: Other minor layout improvements.
+
+
 2011-12-07 cintient-1.0.0-beta-8
 --------------------------------
 
