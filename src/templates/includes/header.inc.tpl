@@ -67,7 +67,6 @@ $(document).ready(function() {
               {if $globals_user instanceof User}
               <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
               <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
-              {*if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if*}
               <li class="divider"></li>
               {/if}
               <li><a href="#">About</a></li>
@@ -94,6 +93,7 @@ $(document).ready(function() {
             <li class="dropdown{if $globals_subSection == 'settings'} active{/if}">
               <a href="#" class="dropdown-toggle"><img id="avatarImg" src="{$globals_user->getAvatarUrl()}" width="30" height="30"> {$globals_user->getUsername()}</a>
               <ul class="dropdown-menu">
+                {if $globals_user->hasCos(UserCos::ROOT)}<li{if $globals_subSection == 'admin'} class="active"{/if}><a href="{UrlManager::getForAdmin()}">Admin</a></li>{/if}
                 <li{if $globals_subSection == 'settings'} class="active"{/if}><a href="{UrlManager::getForSettings()}">Settings</a></li>
                 <li class="divider"></li>
                 <li><a href="{UrlManager::getForLogout()}">Logout</a></li>

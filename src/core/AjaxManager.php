@@ -41,6 +41,18 @@ class AjaxManager
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
 
+  static public function adminLog()
+  {
+    $lines = Utility::tail(CINTIENT_LOG_FILE, 500);
+    if ($lines === false) {
+      $lines = '[problems accessing log file]';
+    } elseif (empty($lines)) {
+      $lines = '[log file is empty]';
+    }
+    echo $lines;
+    exit;
+  }
+
   static public function authentication()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);

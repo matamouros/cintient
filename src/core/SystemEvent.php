@@ -76,7 +76,7 @@ class SystemEvent extends Log
                         'timeFormat' => '[%Y-%m-%d %H:%M:%S]',
                         'lineFormat' => '%1$s [%3$s] [' . uniqid() . '] %4$s',
                  );
-      $instance = parent::singleton('file', LOG_FILE, 'cintient', $options, PEAR_LOG_DEBUG);
+      $instance = parent::singleton('file', CINTIENT_LOG_FILE, 'cintient', $options, PEAR_LOG_DEBUG);
     }
     return $instance;
   }

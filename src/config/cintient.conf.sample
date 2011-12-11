@@ -42,7 +42,7 @@ define('CINTIENT_TEMP_UNIT_TESTS_DEFAULT_INCLUDE_MATCH', '*Test.php');
 
 define('CINTIENT_INSTALL_DIR', realpath(dirname(__FILE__) . '/../..') . '/');
 define('CINTIENT_WORK_DIR', '/www/.cintient/');
-define('LOG_FILE', CINTIENT_WORK_DIR . 'cintient.log');
+define('CINTIENT_LOG_FILE', CINTIENT_WORK_DIR . 'cintient.log');
 define('CINTIENT_JUNIT_REPORT_FILENAME', 'log-junit.xml');
 define('CINTIENT_CODECOVERAGE_XML_REPORT_FILENAME', 'codecoverage.xml');
 define('CINTIENT_CODECOVERAGE_HTML_DIR', 'codecoverage/');
