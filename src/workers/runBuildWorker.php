@@ -26,6 +26,7 @@
 // and builder handlers. (this builder could be called by a crontab)
 require_once dirname(__FILE__) . '/../config/cintient.conf.php';
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
+$GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {

@@ -45,6 +45,21 @@ class UrlManager
     return '';
   }
 
+  static public function getForAdmin()
+  {
+    return CINTIENT_BASE_URL . '/admin/';
+  }
+
+  static public function getForAjaxAdminSettings()
+  {
+    return CINTIENT_BASE_URL . '/ajax/admin/settings/';
+  }
+
+  static public function getForAjaxAdminLog()
+  {
+    return CINTIENT_BASE_URL . '/ajax/admin/log/';
+  }
+
   static public function getForAjaxAuthentication()
   {
     return CINTIENT_BASE_URL . '/ajax/authentication/';

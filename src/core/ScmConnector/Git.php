@@ -33,11 +33,11 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class ScmConnector_Git implements ScmConnectorInterface
+class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInterface
 {
-  static public function checkout(array $args)
+  public function checkout()
   {
-    $command = "git clone {$args['remote']} {$args['local']}";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} clone {$this->getRemote()} {$this->getLocal()}";
     $proc = new Framework_Process();
     $proc->setExecutable($command);
     $proc->run();
@@ -48,10 +48,9 @@ class ScmConnector_Git implements ScmConnectorInterface
     return true;
   }
 
-
-  static public function isModified(array $args)
+  public function isModified()
   {
-    if (!($localRev = self::_getLocalRevision($args)) || !($remoteRev = self::_getRemoteRevision($args))) {
+    if (!($localRev = $this->_getLocalRevision()) || !($remoteRev = $this->_getRemoteRevision())) {
       return false;
     }
     #if DEBUG
@@ -60,8 +59,7 @@ class ScmConnector_Git implements ScmConnectorInterface
     return ($localRev != $remoteRev);
   }
 
-
-  static private function _getLocalRevision(array $args)
+  private function _getLocalRevision()
   {
     //
     // Pull up the local revision
@@ -81,7 +79,7 @@ class ScmConnector_Git implements ScmConnectorInterface
     +Ola
     \ No newline at end of file
     */
-    $command = "git --git-dir={$args['local']}.git show";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git show";
     $lastline = exec($command, $output, $return);
     $outputLocal = implode("\n", $output);
     if ($return != 0 || !preg_match('/^commit ([\da-f]{40})$/m', $outputLocal, $matchesLocal)) {
@@ -91,8 +89,7 @@ class ScmConnector_Git implements ScmConnectorInterface
     return $matchesLocal[1];
   }
 
-
-  static private function _getRemoteRevision(array $args)
+  private function _getRemoteRevision()
   {
     //
     // Pull up the remote revision
@@ -102,7 +99,7 @@ class ScmConnector_Git implements ScmConnectorInterface
     0e02ce25ab768f1364575c86e055b89235c64573	HEAD
     0e02ce25ab768f1364575c86e055b89235c64573	refs/heads/master
     */
-    $command = "git --git-dir={$args['local']}.git ls-remote";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git ls-remote";
     $lastline = exec($command, $output, $return);
     $outputRemote = implode("\n", $output);
     if ($return != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $outputRemote, $matchesRemote)) {
@@ -112,11 +109,10 @@ class ScmConnector_Git implements ScmConnectorInterface
     return $matchesRemote[1];
   }
 
-
-  static public function update(array $args, &$rev)
+  public function update(&$rev)
   {
-    // We can't use "git --git-dir={$args['local']} pull", it's wrong
-    $command = "cd {$args['local']}; git pull";
+    // We can't use "git --git-dir={$this->getLocal()} pull", it's wrong
+    $command = "cd {$this->getLocal()}; {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false); // false for no escapeshellcmd() (because of the ';')
     $proc->run();
@@ -124,12 +120,11 @@ class ScmConnector_Git implements ScmConnectorInterface
       SystemEvent::raise(SystemEvent::ERROR, "Could not update local working copy. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);
       return false;
     }
-    $rev = self::_getLocalRevision($args);
+    $rev = $this->_getLocalRevision();
     SystemEvent::raise(SystemEvent::DEBUG, "Updated local. [REV={$rev}] [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [STDOUT=\"{$proc->getStdout()}\"]", __METHOD__);
     return true;
   }
 
-
-  static public function tag(array $args)
+  public function tag()
   {}
 }

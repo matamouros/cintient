@@ -146,7 +146,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     SystemEvent::raise(SystemEvent::DEBUG, "Integration builder source code:" . PHP_EOL . print_r($builderCode, true), __METHOD__);
     // Execute as an external process in order to have a clean sandboxed
     // environment. eval($builderCode) is no more.
-    $builderProcess = new Framework_Process();
+    $builderProcess = new Framework_Process($GLOBALS['settings'][SystemSettings::EXECUTABLE_PHP]);
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
     $this->setDuration(time()-strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end

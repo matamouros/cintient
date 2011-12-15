@@ -81,6 +81,41 @@ class Utility
   }
 
   /**
+   * Provides the tail of a given file.
+   *
+   * @param string $file
+   * @param string $nol The number of lines to access
+   * @return boolean|string False if anything goes wrong, the string if
+   * successful.
+   */
+  static public function tail($file, $nol = 10)
+  {
+    if (!is_readable($file)) {
+      return false;
+    }
+    if (!($fd = @fopen($file, 'r'))) {
+      return false;
+    }
+    $lines = '';
+    $line = '';
+    $last2Chars = '';
+    for ($i = 0, $fpos = -1; fseek($fd, $fpos, SEEK_END) !== -1 && $i < $nol; $fpos--) {
+      $char = fgetc($fd);
+      $line .= $char;
+      $last2Chars .= $char;
+      $last2Chars = substr($last2Chars, -2);
+      if ($char == PHP_EOL || $last2Chars == PHP_EOL) {
+        $lines .= strrev($line);
+        $line = '';
+        $i++;
+      }
+    }
+    @fclose($fd);
+    return trim($lines);
+
+  }
+
+  /**
    * A function for making time periods readable
    *
    * @author      Aidan Lister <aidan@php.net>

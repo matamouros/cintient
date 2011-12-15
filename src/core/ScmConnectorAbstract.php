@@ -22,7 +22,7 @@
  */
 
 /**
- * This needs to be implemented by all concrete SCM type classes.
+ * This needs to be extended by all concrete SCM type classes.
  *
  * @package     Scm
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
@@ -33,13 +33,18 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-interface ScmConnectorInterface
+abstract class ScmConnectorAbstract extends Framework_BaseObject
 {
-  public function checkout();
+  protected $_local;       // the local working copy to act upon
+  protected $_remote;      // the remote repository
+  protected $_username;    // the authorized username to interact with the repository
+  protected $_password;    // the password of the authorized username
 
-  public function isModified();
-
-  public function update(&$rev);
-
-  public function tag();
+  public function __construct($local, $remote, $username = null, $password = null)
+  {
+    $this->_local = $local;
+    $this->_remote = $remote;
+    $this->_username = $username;
+    $this->_password = $password;
+  }
 }

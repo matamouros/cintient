@@ -154,11 +154,8 @@ class Project extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Could not recreate sources dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    // Don't checkout the project here, or else the request might timeout
-    //if (!ScmConnector::checkout($params)) {
-      $this->setStatus(self::STATUS_UNINITIALIZED);
-    //  return false;
-    //}
+    SystemEvent::raise(SystemEvent::INFO, "Project sources dir reset. [PID={$this->getId()}]", __METHOD__);
+    $this->setStatus(self::STATUS_UNINITIALIZED);
     return true;
   }
 
@@ -202,11 +199,7 @@ class Project extends Framework_DatabaseObjectAbstract
   public function build($force = false)
   {
     $params = array();
-    $params['type'] = $this->getScmConnectorType();
-    $params['remote'] = $this->getScmRemoteRepository();
-    $params['local'] = $this->getScmLocalWorkingCopy();
-    $params['username'] = $this->getScmUsername();
-    $params['password'] = $this->getScmPassword();
+    $scm = new ScmConnector($this->getScmConnectorType(), $this->getScmLocalWorkingCopy(), $this->getScmRemoteRepository(), $this->getScmUsername(), $this->getScmPassword());
 
     if ($this->getStatus() == self::STATUS_ERROR && !$force) {
       $this->touchDateCheckedForChanges();
@@ -228,7 +221,7 @@ class Project extends Framework_DatabaseObjectAbstract
       if ($this->getStatus() == self::STATUS_UNINITIALIZED ||
           !file_exists($this->getScmLocalWorkingCopy()))
       {
-        if (!ScmConnector::checkout($params)) {
+        if (!$scm->checkout()) {
           SystemEvent::raise(SystemEvent::INFO, "Couldn't checkout sources. [PROJECTID={$this->getId()}]", __METHOD__);
           $this->setStatus(self::STATUS_UNINITIALIZED);
           return false;
@@ -237,7 +230,7 @@ class Project extends Framework_DatabaseObjectAbstract
         if ($this->getStatus() == self::STATUS_UNBUILT) {
           $force = true;
         }
-        if (!ScmConnector::isModified($params)) {
+        if (!$scm->isModified()) {
           SystemEvent::raise(SystemEvent::INFO, "No modifications detected. [PROJECTID={$this->getId()}]", __METHOD__);
           if (!$force) {
             //$this->setStatus(self::STATUS_OK);
@@ -248,7 +241,7 @@ class Project extends Framework_DatabaseObjectAbstract
     }
     $this->setStatus(self::STATUS_MODIFIED);
     $rev = null; // Keep this for now, add it to the project build later.
-    if (!ScmConnector::update($params, $rev)) {
+    if (!$scm->update($rev)) {
       SystemEvent::raise(SystemEvent::INFO, "Couldn't update local sources. [PROJECTID={$this->getId()}]", __METHOD__);
       if (!$force) {
         $this->setStatus(self::STATUS_ERROR);
@@ -304,7 +297,7 @@ class Project extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project. [ID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!ScmConnector::delete(array('local' => $this->getScmLocalWorkingCopy()))) {
+    if (!ScmConnector::delete($this->getScmLocalWorkingCopy())) {
       SystemEvent::raise(SystemEvent::ERROR, "Couldn't delete project sources. [ID={$this->getId()}] [DIR={$this->getScmLocalWorkingCopy()}]", __METHOD__);
     }
     if (!Project_Build::uninstall($this)) {
@@ -449,23 +442,7 @@ class Project extends Framework_DatabaseObjectAbstract
       $this->delete();
       return false;
     }
-    //
-    // SCM checkout of the project. If not possible to checkout now,
-    // we'll just try at a later time.
-    //
-    $params = array(
-      'type'     => $this->getScmConnectorType(),
-      'remote'   => $this->getScmRemoteRepository(),
-      'local'    => $this->getScmLocalWorkingCopy(),
-      'username' => $this->getScmUsername(),
-      'password' => $this->getScmPassword(),
-    );
-    /*if (!ScmConnector::checkout($params)) {
-      $this->setStatus(self::STATUS_UNINITIALIZED);
-      return false;
-    }
-    $this->setStatus(self::STATUS_UNBUILT);
-    */
+
     $this->setStatus(self::STATUS_UNINITIALIZED);
     return true;
   }

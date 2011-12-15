@@ -67,7 +67,7 @@ $(document).ready(function() {
               {if $globals_user instanceof User}
               <li><a href="{UrlManager::getForDashboard()}">Dashboard</a></li>
               <li><a href="{UrlManager::getForProjectNew()}">New project</a></li>
-              {*if $globals_user->hasCos(UserCos::ROOT)}<li><a href="{UrlManager::getForDashboard()}">Admin</a></li>{/if*}
+              {if $globals_user->hasCos(UserCos::ROOT)}<li class="divider"></li><li{if $globals_subSection == 'admin'} class="active"{/if}><a href="{UrlManager::getForAdmin()}">Administration</a></li>{/if}
               <li class="divider"></li>
               {/if}
               <li><a href="#">About</a></li>

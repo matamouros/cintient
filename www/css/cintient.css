@@ -8,6 +8,7 @@
 	http://cintient/project/edit/css/new.css
 	http://cintient/project/history/css/cintient.css
 	http://cintient/css/cintient.css
+	http://cintient/admin/css/cintient.css
 */
 
 /* @group Top Bar */
@@ -399,6 +400,37 @@ user-select: none;
   -khtml-opacity: 0.4;
   -moz-opacity: 0.4;
   opacity: 0.4;
+}
+
+/* @end */
+
+
+
+
+
+/* @group Admin */
+
+#admin p
+{
+  clear: none;
+  float: left;
+  margin-right: 10px;
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+#admin #btnLogRefresh
+{
+  clear: none;
+  float: left;
+}
+
+#admin .loading
+{
+  clear: none;
+  float: left;
+  margin-top: 7px;
+  margin-left: 10px;
 }
 
 /* @end */

@@ -41,6 +41,64 @@ class AjaxManager
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
 
+  static public function admin_log()
+  {
+    //TODO: HTML, not JSON!
+    if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+    $lines = Utility::tail(CINTIENT_LOG_FILE, 500);
+    if ($lines === false) {
+      $lines = '[problems accessing log file]';
+    } elseif (empty($lines)) {
+      $lines = '[log file is empty]';
+    }
+    echo $lines;
+    exit;
+  }
+
+  static public function admin_settings()
+  {
+    if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized!';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $settings = new SystemSettings();
+    foreach ($_POST['settingsForm'] as $key => $value) {
+      $settingsValue = $value['value'];
+      if ($value['type'] == 'checkbox') {
+        $settingsValue = ($value['value'] ? '1' : '0');
+      }
+      $settings->setSetting($key, $settingsValue);
+    }
+    $GLOBALS['settings'] = $settings;
+
+    SystemEvent::raise(SystemEvent::DEBUG, "System settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+  			'error' => 'System settings saved.',
+      )
+    );
+    exit;
+  }
+
   static public function authentication()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
@@ -1035,15 +1093,16 @@ EOT;
     }
 
     $project = $GLOBALS['project'];
+    $resetMsg = '.';
+    if ($project->resetScmConnector()) {
+      $resetMsg = ', and sources were reset.';
+    }
     $project->setScmConnectorType($postVars['scmConnectorType']['value']);
     $project->setScmRemoteRepository($postVars['scmRemoteRepository']['value']);
     $project->setScmUsername($postVars['scmUsername']['value']);
     $project->setScmPassword($postVars['scmPassword']['value']);
-    if ($postVars['scmConnectorType']['value'] != $project->getScmConnectorType()) {
-      $project->resetScmConnector();
-    }
     $GLOBALS['project'] = $project;
-    $msg = "Project SCM settings edited.";
+    $msg = "Project SCM settings edited{$resetMsg}";
     $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
     SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
     echo json_encode(

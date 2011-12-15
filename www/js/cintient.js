@@ -178,6 +178,11 @@ var Cintient = {
     });
   },
   
+  initSectionAdmin: function ()
+  {
+    this._setupTabs();
+  },
+  
   initSectionAuthentication: function ()
   {
     $('#authentication form').fadeIn(300);
@@ -709,7 +714,7 @@ var Cintient = {
   _setupTabs: function()
   {
     //
-    // Tabs for the projects
+    // Tabs for the projects. Don't forget to include bootstrap-tabs.js
     //
     $('.tabs').tabs();
     $('.mainContent').on('change', '.tabs', function (e) {

@@ -538,6 +538,9 @@ EOT;
   |* | DEFAULT                                                        | *|
   \* +----------------------------------------------------------------+ */
 
+
+  static public function admin() {}
+
   static public function asset()
   {
     if (!isset($_GET['f']) || empty($_GET['f'])) {

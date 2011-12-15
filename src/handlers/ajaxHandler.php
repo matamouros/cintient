@@ -53,6 +53,7 @@ $GLOBALS['uri'] = substr($currentUrl, strlen(CINTIENT_BASE_URL));
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "ajaxHandler");
 $GLOBALS['ajaxMethod'] = null;
 $GLOBALS['section'] = null;
+$GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 $GLOBALS['subSection'] = null;
 session_start();
 $GLOBALS['user'] = (isset($_SESSION['userId']) ? User::getById($_SESSION['userId']) : null);
