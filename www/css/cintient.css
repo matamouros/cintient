@@ -408,7 +408,7 @@ user-select: none;
 
 
 
-/* @group Dashboard */
+/* @group Admin */
 
 #admin p
 {
@@ -419,7 +419,7 @@ user-select: none;
   margin-bottom: 18px;
 }
 
-#admin .btn
+#admin #btnLogRefresh
 {
   clear: none;
   float: left;

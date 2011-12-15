@@ -66,7 +66,7 @@ if (substr($GLOBALS['uri'], -1) != '/') {
 }
 SystemEvent::raise(SystemEvent::DEBUG, "Handling request. [URI={$GLOBALS['uri']}" . (empty($_SERVER['QUERY_STRING'])?'':'?'.html_entity_decode($_SERVER['QUERY_STRING'])) . "]", "WebHandler");
 $GLOBALS['section'] = null;
-$GLOBALS['settings'] = SystemSettings::get(); // Pull up system settings
+$GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 $GLOBALS['smarty'] = null;
 $GLOBALS['subSection'] = null;
 $GLOBALS['templateFile'] = null;

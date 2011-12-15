@@ -49,7 +49,7 @@ class Framework_Process extends Framework_BaseObject
   protected $_stdoutCallbacks;
   protected $_stderrCallbacks;
 
-  public function __construct($exec = CINTIENT_PHP_BINARY, Array $args = array())
+  public function __construct($exec = null, Array $args = array())
   {
     $this->setExecutable($exec);
     $this->setArgs($args);

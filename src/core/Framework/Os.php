@@ -26,6 +26,8 @@
  * from a given uname() signature. Originally taken from PEAR, now with
  * a few modifications.
  *
+ * For a quick use you are probably looking for Framework_HostOs.
+ *
  * @package     Framework
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
  * @author      Stig Bakken <ssb@php.net>

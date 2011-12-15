@@ -24,18 +24,36 @@ subSectionDescription=""
 jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
     <ul class="tabs">
       <li class="active"><a href="#log">Log</a></li>
+      <li><a href="#settings">System settings</a></li>
     </ul>
 
     <div class="tab-content">
+
       <div class="active" id="log">
         <p>Last refresh was at <span id="dateLastRefresh">...</span></p> <a href="{UrlManager::getForAdmin()}" id="btnLogRefresh" class="btn primary">Refresh</a> <div class="loading" style="display: none;"><img src="imgs/loading-3.gif" /></div>
         <div class="log"></div>
       </div>
+
+      <div id="settings">
+        <form action class="form" id="settingsForm">
+          <fieldset>
+{$globals_settings->getView()}
+            <div class="actions">
+              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
     </div>
+
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
   Cintient.initSectionAdmin();
+  Cintient.initGenericForm({
+    submitUrl : '{UrlManager::getForAjaxAdminSettings()}'
+  });
 
   $('#btnLogRefresh').click(function (e) {
     e.preventDefault();

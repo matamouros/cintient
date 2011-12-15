@@ -33,19 +33,12 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class ScmConnector_Svn implements ScmConnectorInterface
+class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInterface
 {
-  static public function checkout(array $args)
+  public function checkout()
   {
-    $username = '';
-    $password = '';
-    if (!empty($args['username'])) {
-      $username = "--username {$args['username']} ";
-      if (!empty($args['password'])) {
-        $password = "--password \"{$args['password']}\" ";
-      }
-    }
-    $command = "svn co {$username}{$password}--non-interactive {$args['remote']} {$args['local']}";
+    $credentials = $this->_getCredentialsArgs();
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} co {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
     $lastline = exec($command, $output, $return);
     if ($return != 0) {
       $output = implode("\n", $output);
@@ -55,19 +48,12 @@ class ScmConnector_Svn implements ScmConnectorInterface
     return true;
   }
 
-  static public function isModified(array $args)
+  public function isModified()
   {
+    $credentials = $this->_getCredentialsArgs();
     //
     // svn info the local sources
     //
-    $username = '';
-    $password = '';
-    if (!empty($args['username'])) {
-      $username = "--username {$args['username']} ";
-      if (!empty($args['password'])) {
-        $password = "--password \"{$args['password']}\" ";
-      }
-    }
     /*
     # svn info http://cintient.googlecode.com/svn/trunk/ ./
     svn: warning: cannot set LC_CTYPE locale
@@ -94,7 +80,7 @@ class ScmConnector_Svn implements ScmConnectorInterface
     Last Changed Rev: 358
     Last Changed Date: 2011-09-18 11:30:30 +0100 (Sun, 18 Sep 2011)
     */
-    $command = "svn info {$username}{$password}--non-interactive {$args['remote']} {$args['local']}";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} info {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
     $lastline = exec($command, $output, $return);
     $output = implode("\n", $output);
     if ($return != 0) {
@@ -111,17 +97,10 @@ class ScmConnector_Svn implements ScmConnectorInterface
     return ($matches[1][0] != $matches[1][1]);
   }
 
-  static public function update(array $args, &$rev)
+  public function update(&$rev)
   {
-    $username = '';
-    $password = '';
-    if (!empty($args['username'])) {
-      $username = "--username {$args['username']} ";
-      if (!empty($args['password'])) {
-        $password = "--password \"{$args['password']}\" ";
-      }
-    }
-    $command = "svn up {$username}{$password}--non-interactive {$args['local']}";
+    $credentials = $this->_getCredentialsArgs();
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} up {$credentials}--non-interactive {$this->getLocal()}";
     $lastline = exec($command, $output, $return);
     if ($return != 0) {
       $output = implode("\n", $output);
@@ -137,6 +116,24 @@ class ScmConnector_Svn implements ScmConnectorInterface
     return true;
   }
 
-  static public function tag(array $args)
+  public function tag()
   {}
+
+  /**
+   * Prepares a credentials string to be used across all svn command
+   * invocations.
+   *
+   * @return string
+   */
+  private function _getCredentialsArgs()
+  {
+    $credentials = '';
+    if (!empty($this->_username)) {
+      $username = "--username {$this->getUsername()} ";
+      if (!empty($this->_password)) {
+        $password = "--password \"{$this->getPassword()}\" ";
+      }
+    }
+    return $credentials;
+  }
 }

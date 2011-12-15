@@ -22,8 +22,9 @@
  */
 
 /**
- * A proxy class for use when dealing with SCM endpoints. All SCM
- * handlers should be properly registered here.
+ * A proxy class for use when dealing with SCM. Everything is managed
+ * through here, no need to call (or even know) the concrete SCM
+ * classes.
  *
  * @package     Scm
  * @author      Pedro Mata-Mouros Fonseca <pedro.matamouros@gmail.com>
@@ -34,76 +35,97 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class ScmConnector
+class ScmConnector implements ScmConnectorInterface
 {
-  static public function delete(array $params = array())
+  private $_connector;
+
+  /**
+   * Constructor
+   *
+   * @param string $type git|svn as possible values
+   * @return boolean
+   */
+  public function __construct($type, $local, $remote, $username, $password)
   {
-    if (isset($params['local']) && !empty($params['local'])) {
-      $ret = Framework_Filesystem::removeDir($params['local']);
+    $scmConnectorType = 'ScmConnector_' . ucfirst($type);
+    if (!class_exists($scmConnectorType)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Unknown connector specified [CONNECTOR={$scmConnectorType}]", __METHOD__);
+      return false;
+    }
+    $this->_connector = new $scmConnectorType($local, $remote, $username, $password);
+  }
+
+  /**
+   * Deletes a local dir used to manage a remote SCM repository. This is
+   * tipically used for resetting the sources of a project (good for
+   * when the user changes SCM settings).
+   *
+   * @param string $local
+   */
+  static public function delete($local)
+  {
+    $ret = false;
+    if (!empty($local)) {
+      $ret = Framework_Filesystem::removeDir($local);
     }
     #if DEBUG
     if ($ret) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Deleted local working copy. [DIR={$params['local']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Deleted local working copy. [DIR={$local}]", __METHOD__);
     } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "Could not delete local working copy. [DIR={$params['local']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Could not delete local working copy. [DIR={$local}]", __METHOD__);
     }
     #endif
     return $ret;
   }
 
-  static public function checkout(array $params = array())
+
+  public function checkout()
   {
-    isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
-    if (!isset($params['remote']) || !isset($params['local']) ||
-         empty($params['remote']) ||  empty($params['local']) )
-    {
+    $local = $this->_connector->getLocal();
+    $remote = $this->_connector->getRemote();
+    if (empty($remote) || empty($local)) {
       return false;
     }
-    SystemEvent::raise(SystemEvent::DEBUG, "Trying to check out remote repository... [REPOSITORY={$params['remote']}]", __METHOD__);
-    if (!file_exists($params['local'])) {
-      if (!mkdir($params['local'], DEFAULT_DIR_MASK, true)) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not create local working copy dir. [DIR={$params['local']}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Trying to check out remote repository... [REPOSITORY={$remote}]", __METHOD__);
+    if (!file_exists($local)) {
+      if (!mkdir($local, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create local working copy dir. [DIR={$local}]", __METHOD__);
         return false;
       }
     }
-    $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    if (!$scmConnectorObject::checkout($params)) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Could not check out remote repository. [REPOSITORY={$params['remote']}]", __METHOD__);
+    if (!$this->_connector->checkout()) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Could not check out remote repository. [REPOSITORY={$remote}]", __METHOD__);
       return false;
     } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "Checked out remote repository. [REPOSITORY={$params['remote']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Checked out remote repository. [REPOSITORY={$remote}]", __METHOD__);
       return true;
     }
   }
 
-  static public function isModified(array $params = array())
+  public function isModified()
   {
-    isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
-    $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    SystemEvent::raise(SystemEvent::DEBUG, "Checking remote repository for modifications... [REPOSITORY={$params['remote']}]", __METHOD__);
-    if (!$scmConnectorObject::isModified($params)) {
-      SystemEvent::raise(SystemEvent::DEBUG, "No modifications found. [REPOSITORY={$params['remote']}]", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Checking remote repository for modifications... [REPOSITORY={$this->_connector->getRemote()}]", __METHOD__);
+    if (!$this->_connector->isModified()) {
+      SystemEvent::raise(SystemEvent::DEBUG, "No modifications found. [REPOSITORY={$this->_connector->getRemote()}]", __METHOD__);
       return false;
     } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "Modifications were found! [REPOSITORY={$params['remote']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Modifications were found! [REPOSITORY={$this->_connector->getRemote()}]", __METHOD__);
       return true;
     }
   }
 
-  static public function update(array $params = array(), &$rev)
+  public function update(&$rev)
   {
-    isset($params['type'])?:$params['type']=SCM_DEFAULT_CONNECTOR;
-    $scmConnectorObject = 'ScmConnector_' . ucfirst($params['type']);
-    if (!$scmConnectorObject::update($params, $rev)) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Could not update local working copy. [DIR={$params['local']}]", __METHOD__);
+    if (!$this->_connector->update($rev)) {
+      SystemEvent::raise(SystemEvent::DEBUG, "Could not update local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
       return false;
     } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "Updated local working copy. [DIR={$params['local']}]", __METHOD__);
+      SystemEvent::raise(SystemEvent::DEBUG, "Updated local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
       return true;
     }
   }
 
-  static public function tag() {}
+  public function tag() {}
 
   /**
    * Gets available connectors installed in the ScmConnector dir.

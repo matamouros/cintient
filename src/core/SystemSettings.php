@@ -39,55 +39,103 @@
  * Changed by   $LastChangedBy$
  * Changed on   $LastChangedDate$
  */
-class SystemSettings implements ArrayAccess
+class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAccess
 {
   private $_settings;
-  private $_signature; // Internal flag to control whether a save to database is required
 
   const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
+  const EXECUTABLE_GIT          = 'executableGit';
+  const EXECUTABLE_PHP          = 'executablePhp';
+  const EXECUTABLE_SVN          = 'executableSvn';
   const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
-
-  /**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
-   */
-  public function __call($name, $args)
-  {
-    if (strpos($name, 'get') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      return $this->$var;
-    } elseif (strpos($name, 'set') === 0) {
-      $var = '_' . lcfirst(substr($name, 3));
-      if ($this->$var !== null) {
-        $this->_changed = true;
-      }
-      $this->$var = $args[0];
-      return true;
-    }
-    return false;
-  }
 
   public function __construct()
   {
-    $this->_signature = null;
+    parent::__construct();
+
     //
     // Make sure that bool valued settings are cast to ints.
     //
     $this->_settings = array(
       self::ALLOW_USER_REGISTRATION => 1,
+      self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
+      self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : ''),
+      self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
     );
   }
 
-  public function __destruct()
+  public function getView()
   {
-    $this->_save();
+    require_once 'lib/lib.htmlgen.php';
+    $o = $this;
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::ul(array('class' => 'inputs-list'), function () use ($o) {
+          h::li(function () use ($o) {
+            h::label(function () use ($o) {
+              $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::ALLOW_USER_REGISTRATION);
+              if ($o[SystemSettings::ALLOW_USER_REGISTRATION]) {
+                $inputParams['checked'] = 'checked';
+              }
+              h::input($inputParams);
+              h::span(array('class' => 'help-block'), "Allows user registration on the authentication prompt.");
+            });
+          });
+        });
+      });
+    });
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::ul(array('class' => 'inputs-list'), function () use ($o) {
+          h::li(function () use ($o) {
+            h::label(function () use ($o) {
+              $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::INTERNAL_BUILDER_ACTIVE);
+              if ($o[SystemSettings::INTERNAL_BUILDER_ACTIVE]) {
+                $inputParams['checked'] = 'checked';
+              }
+              h::input($inputParams);
+              h::span(array('class' => 'help-block'), "Activates the internal automatic integration builder. Use this if you can't setup supervise or similar on the host system.");
+            });
+          });
+        });
+      });
+    });
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::EXECUTABLE_PHP), 'PHP executable');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_PHP, 'value' => $o[SystemSettings::EXECUTABLE_PHP]));
+        h::span(array('class' => 'help-block'), "The full path to the host system's PHP executable.");
+      });
+    });
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::EXECUTABLE_GIT), 'Git executable');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_GIT, 'value' => $o[SystemSettings::EXECUTABLE_GIT]));
+        h::span(array('class' => 'help-block'), "The full path to the host system's Git executable. Required in order to allow Git as the configured SCM for projects.");
+      });
+    });
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::EXECUTABLE_SVN), 'SVN executable');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_SVN, 'value' => $o[SystemSettings::EXECUTABLE_SVN]));
+        h::span(array('class' => 'help-block'), "The full path to the host system's SVN executable. Required in order to allow SVN as the configured SCM for projects.");
+      });
+    });
   }
 
+  public function init() {}
+
+  /**
+   * Overloading for @see ArrayAccess::offsetSet()
+   */
   public function offsetSet($offset, $value)
   {
     if (is_null($offset)) {
@@ -97,26 +145,40 @@ class SystemSettings implements ArrayAccess
     }
   }
 
+  /**
+   * Overloading for @see ArrayAccess::offsetExists()
+   */
   public function offsetExists($offset)
   {
     return isset($this->_settings[$offset]);
   }
 
+  /**
+   * Overloading for @see ArrayAccess::offsetUnset()
+   */
   public function offsetUnset($offset)
   {
     unset($this->_settings[$offset]);
   }
 
+  /**
+   * Overload for @see ArrayAccess::offsetGet()
+   */
   public function offsetGet($offset)
   {
     return isset($this->_settings[$offset]) ? $this->_settings[$offset] : null;
   }
 
-  private function _save($force = false)
+  protected function _save($force = false)
   {
-    if ($this->_getCurrentSignature() == $this->_signature && !$force) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Save called, but no saving is required.", __METHOD__);
-      return false;
+    if (!$this->_autoSave) {
+      return true;
+    }
+    if (!$this->hasChanged()) {
+      if (!$force) {
+        return false;
+      }
+      SystemEvent::raise(SystemEvent::DEBUG, "Forced object save.", __METHOD__);
     }
 
     if (!$stmt = Database::stmtPrepare("REPLACE INTO systemsettings (key, value) VALUES (?,?)")) {
@@ -132,14 +194,13 @@ class SystemSettings implements ArrayAccess
       }
     }
 
-    #if DEBUG
     SystemEvent::raise(SystemEvent::DEBUG, "Saved system settings.", __METHOD__);
-    #endif
-    $this->updateSignature();
+
+    $this->resetSignature();
     return true;
   }
 
-  static public function get()
+  static public function load()
   {
     $ret = false;
     $sql = 'SELECT * FROM systemsettings';
@@ -159,7 +220,7 @@ class SystemSettings implements ArrayAccess
     while ($rs->NextRow()) {
       $ret->setSetting($rs->getKey(),$rs->getValue());
     }
-    $ret->updateSignature();
+    $ret->resetSignature();
     return $ret;
   }
 
@@ -189,19 +250,9 @@ EOT;
 
   public function setSetting($key, $value)
   {
-    $this->_settings[$key] = $value;
-  }
-
-  public function updateSignature()
-  {
-    $this->setSignature($this->_getCurrentSignature());
-  }
-
-  private function _getCurrentSignature()
-  {
-    $arr = get_object_vars($this);
-    $arr['_signature'] = null;
-    unset($arr['_signature']);
-    return md5(serialize($arr));
+    // Validate if new setting is valid (must have been set in the constructor)
+    if (isset($this->_settings[$key])) {
+      $this->_settings[$key] = $value;
+    }
   }
 }
