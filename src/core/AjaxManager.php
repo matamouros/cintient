@@ -65,7 +65,41 @@ class AjaxManager
     exit;
   }
 
-    static public function authentication()
+  static public function admin_settings()
+  {
+    if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized!';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $settings = new SystemSettings();
+    foreach ($_POST['settingsForm'] as $key => $value) {
+      $settingsValue = $value['value'];
+      if ($value['type'] == 'checkbox') {
+        $settingsValue = ($value['value'] ? '1' : '0');
+      }
+      $settings->setSetting($key, $settingsValue);
+    }
+    $GLOBALS['settings'] = $settings;
+
+    SystemEvent::raise(SystemEvent::DEBUG, "System settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+  			'error' => 'System settings saved.',
+      )
+    );
+    exit;
+  }
+
+  static public function authentication()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
 
