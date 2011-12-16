@@ -27,7 +27,7 @@ class FrameworkProcessTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
-    $this->sharedFixture = new Framework_Process();
+    $this->sharedFixture = new Framework_Process(CINTIENT_PHP_BINARY);
   }
 
   public function testSmallStdout()
