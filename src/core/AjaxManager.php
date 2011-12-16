@@ -55,7 +55,9 @@ class AjaxManager
       );
       exit;
     }
-    $lines = Utility::tail(CINTIENT_LOG_FILE, 500);
+    // The following makes sure that the records don't break on newline,
+    // but rather on the datetime markers.
+    $lines = Utility::tail(CINTIENT_LOG_FILE, 500, '[', ']', '^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]$');
     if ($lines === false) {
       $lines = '[problems accessing log file]';
     } elseif (empty($lines)) {

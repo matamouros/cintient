@@ -81,14 +81,47 @@ class Utility
   }
 
   /**
-   * Provides the tail of a given file.
+   * Provides the tail of a given file. It features two different
+   * behaviours for dealing with record breaks:
    *
-   * @param string $file
-   * @param string $nol The number of lines to access
-   * @return boolean|string False if anything goes wrong, the string if
-   * successful.
+   * 1. if the $tokStartChar is not provided, it defaults to PHP_EOL,
+   *    and a newline is considered a record break. When tailing a file,
+   *    which is written from top to bottom, newest lines will thus
+   *    appear on top.
+   *
+   * 2. if your tailed file has atomic records which span multiple
+   *    lines, like a log file where each entry is a datetime stamp but
+   *    it can span multiple lines, using the simple behaviour will
+   *    cause newest records to appear on top yes, but the multiple
+   *    lines of a single record will appear switched (newest at the
+   *    bottom and oldest on top). In this case you don't want a record
+   *    to break on newline, but rather on the datetime markers. So, if
+   *    you consider the following log file:
+   *
+   *    [2011-12-15 22:47:57] [info] [4eea5e7060046] Framework_Process::
+   *    run: Executing 'git --git-dir=/www/.cintient/projects/4eb1d5861b
+   *    bfb6.53900422/sources/.git ls-remote' [CALLER=Git.php] [LINE=105
+   *    ]
+   *    [2011-12-15 22:47:57] [info] [4eea5e7060046] runBuildWorker:
+   *    Starting project build. [PID=7] [CALLER=N/A] [LINE=N/A]
+   *
+   *    You would want to have the following params set, in order to
+   *    have multiple lines displaying correctly:
+   *    . $tokStartChar:  '['
+   *    . $tokEndChar:    ']'
+   *    . $tokMatchRegex: '^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]$'
+   *
+   * @param string $file The file to access
+   * @param string $nol The number of "lines" to access
+   * @param string $tokStartChar The token start char. If this is not
+   * specified, it defaults to PHP_EOL and makes tail() assume the
+   * simple newline breaking behaviour.
+   * @param string $tokEndChar The token end char
+   * @param string $tokMatchRegex The token matching regex
+   * @return boolean|string False if anything goes wrong, the tail
+   * string if successful.
    */
-  static public function tail($file, $nol = 10)
+  static public function tail($file, $nol = 10, $tokStartChar = PHP_EOL, $tokEndChar = null, $tokMatchRegex = null)
   {
     if (!is_readable($file)) {
       return false;
@@ -98,21 +131,45 @@ class Utility
     }
     $lines = '';
     $line = '';
+    $tokenChars = '';
     $last2Chars = '';
     for ($i = 0, $fpos = -1; fseek($fd, $fpos, SEEK_END) !== -1 && $i < $nol; $fpos--) {
       $char = fgetc($fd);
       $line .= $char;
-      $last2Chars .= $char;
-      $last2Chars = substr($last2Chars, -2);
-      if ($char == PHP_EOL || $last2Chars == PHP_EOL) {
-        $lines .= strrev($line);
-        $line = '';
-        $i++;
+
+      if (!is_null($tokEndChar) && $tokEndChar !== '') {
+        if ($char == $tokEndChar) { // Start accumulating the token chars
+          $tokenChars = $char;
+          continue;
+        }
+        if (!empty($tokenChars)) { // Keep accumulating the token chars until the start token char is found
+          $tokenChars .= $char;
+        }
+        if ($char == $tokStartChar) { // Arrived at the end of the token, this could be our "newline"
+          $tokenChars = strrev($tokenChars);
+          if (preg_match('/'.$tokMatchRegex.'/', $tokenChars)) {
+            $lines .= strrev($line);
+            $line = '';
+            $i++;
+          }
+          $tokenChars = '';
+        }
+      } else {
+        $last2Chars .= $char;
+        // The $last2Chars logic deals with the possibility that there
+        // are systems where a newline is actually 2 chars long, such
+        // as "\n\r" or "\r\n".
+        //TODO: testcase this properly
+        $last2Chars = substr($last2Chars, -2);
+        if ($char == PHP_EOL || $last2Chars == PHP_EOL) {
+          $lines .= strrev($line);
+          $line = '';
+          $i++;
+        }
       }
     }
     @fclose($fd);
     return trim($lines);
-
   }
 
   /**

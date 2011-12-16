@@ -100,10 +100,11 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     0e02ce25ab768f1364575c86e055b89235c64573	refs/heads/master
     */
     $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git ls-remote";
-    $lastline = exec($command, $output, $return);
-    $outputRemote = implode("\n", $output);
-    if ($return != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $outputRemote, $matchesRemote)) {
-      SystemEvent::raise(SystemEvent::ERROR, "Could not check remote revision. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+    $proc = new Framework_Process();
+    $proc->setExecutable($command);
+    $proc->run();
+    if (($return = $proc->getReturnValue()) != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $proc->getStdout(), $matchesRemote)) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check remote revision. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [OUTPUT=\"{$proc->getStdout()}\"]", __METHOD__);
       return false;
     }
     return $matchesRemote[1];
