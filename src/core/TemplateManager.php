@@ -874,7 +874,9 @@ EOT;
     unset($it);
 
     // Closure to help sort this multi-dimensional array with the tasks.
-    // It makes sure that all tasks/subtasks are properly sorted.
+    // It makes sure that all tasks/subtasks are properly sorted, across
+    // all operating systems - while it was properly sorted in Mac OS,
+    // it was not so in a Linux flavour.
     $f = function ($arr) use (&$f) {
       foreach ($arr as $key => $value) {
         if (is_array($value)) {

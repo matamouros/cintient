@@ -88,8 +88,12 @@ class SystemEvent extends Log
 
   static private function _getBacktraceInfo()
   {
-    $bt = debug_backtrace();
-    return (' [CALLER=' . (isset($bt[2]['file'])?basename($bt[2]['file']):'N/A') . '] [LINE=' . (isset($bt[2]['line'])?(string)$bt[2]['line']:'N/A') . ']');
+    $ret = '';
+    if (self::$severityLevel == self::DEBUG) {
+      $bt = debug_backtrace();
+      $ret = (' [CALLER=' . (isset($bt[2]['file'])?basename($bt[2]['file']):'N/A') . '] [LINE=' . (isset($bt[2]['line'])?(string)$bt[2]['line']:'N/A') . ']');
+    }
+    return $ret;
   }
 
   /**

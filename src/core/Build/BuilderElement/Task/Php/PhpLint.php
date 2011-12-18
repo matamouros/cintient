@@ -136,7 +136,7 @@ output('Starting...');
     \$output = array();
     exec(\"" . CINTIENT_PHP_BINARY . " -l \$entry\", \$output, \$ret);
     if (\$ret > 0) {
-      output('Errors parsing ' . substr(\$entry, strlen(\$baseDir)) . '.');
+      output(str_replace(\$baseDir, '', implode(PHP_EOL, \$output)));
       \$ret = false;
     } else {
       output('No syntax errors detected in ' . substr(\$entry, strlen(\$baseDir)) . '.');
