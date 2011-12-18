@@ -30,7 +30,12 @@
                   {*<ul class="builderElementDepth_{$depth}">*}
       {$element=current($element)}
     {/if}
-    {foreach $element as $key => $value}
+    {* We have split the following into two foreachs, the first one deals
+       with only the root elements (put into Generic) and the last one
+       deals with grouped elements. This is a quick and easy fix for the
+       problem with root tasks appearing after grouped ones. Case in
+       point the ReplaceRegexp task, which appeared inside the Php group. *}
+    {*foreach $element as $key => $value}
       {if is_array($value)}
         {$originalContext=$context}
         {$context="{$context}_$key"}
@@ -38,6 +43,20 @@
         {$context=$originalContext}
       {else}
                     <li class="task smoothHoverSmall"><a href="#" class="{$context}">{$value}</a></li>
+      {/if}
+    {/foreach*}
+    {foreach $element as $key => $value}
+      {if !is_array($value)}
+                    <li class="task smoothHoverSmall"><a href="#" class="{$context}">{$value}</a></li>
+        {$element[$key]=null}
+      {/if}
+    {/foreach}
+    {foreach $element as $key => $value}
+      {if is_array($value)}
+        {$originalContext=$context}
+        {$context="{$context}_$key"}
+        {builderElement element=[$key => $value] depth=$depth+1 context=$context}
+        {$context=$originalContext}
       {/if}
     {/foreach}
     {if $depth!=0}
