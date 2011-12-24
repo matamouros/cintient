@@ -36,15 +36,15 @@
  */
 class Project_Build extends Framework_DatabaseObjectAbstract
 {
-  protected $_id;           // the build's incremental ID
-  protected $_date;         // the build's start date
-  protected $_duration;     // the build's duration (if any)
-  protected $_label;        // the label on the build, also used to name the release package file
-  protected $_description;  // a user generated description text (prior or after the build triggered).
-  protected $_output;       // the integration builder's output collected
-  protected $_status;       // indicates: failure | no_release | release
-  protected $_scmRevision;  // The corresponding SCM revision on the remote repository
-  protected $_specialTasks; // Array with the build's class names of the integration builder elements that are special tasks
+  protected $_id;            // the build's incremental ID
+  protected $_date;          // the build's start date
+  protected $_duration;      // the build's duration (if any)
+  protected $_label;         // the label on the build, also used to name the release package file
+  protected $_description;   // a user generated description text (prior or after the build triggered).
+  protected $_output;        // the integration builder's output collected
+  protected $_status;        // indicates: failure | no_release | release
+  protected $_scmRevision;   // The corresponding SCM revision on the remote repository
+  protected $_specialTasks;  // Array with the build's class names of the integration builder elements that are special tasks
 
   protected $_ptrProject;
 
@@ -209,7 +209,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if (!empty($specialTasks)) {
       foreach ($specialTasks as $task) {
         if (!class_exists($task)) {
-          SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
           continue;
         }
         $o = new $task($this);
@@ -222,6 +222,24 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
     $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
     return true;
+  }
+
+  public function generateReleasePackage()
+  {
+    $ret = false;
+    if ($this->getStatus() != self::STATUS_FAIL) {
+      $project = $this->getPtrProject(); // Easier handling
+
+      $filename = "{$project->getReleasesDir()}{$project->getBuildLabel()}-{$this->getId()}";
+
+      $command = str_replace(array('%archive', '%sources'), array($filename, $project->getScmLocalWorkingCopy()), $GLOBALS['settings'][SystemSettings::EXECUTABLE_ARCHIVER]);
+      SystemEvent::raise(SystemEvent::DEBUG, "Generating release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
+      $proc = new Framework_Process($command);
+      $proc->run();
+
+      $ret = true;
+    }
+    return $ret;
   }
 
   public function isOk()
@@ -463,6 +481,7 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
+  releasenumber VARCHAR(20) NOT NULL DEFAULT '',
   specialtasks TEXT NOT NULL DEFAULT '',
   status TINYINT UNSIGNED NOT NULL DEFAULT 0,
   scmrevision VARCHAR(40) NOT NULL DEFAULT ''
