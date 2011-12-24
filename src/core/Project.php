@@ -44,9 +44,7 @@ class Project extends Framework_DatabaseObjectAbstract
   protected $_dateCreation;
   protected $_description;
   protected $_id;
-  protected $_releaseMajor;            // The current release major number
-  protected $_releaseMinor;            // The current release minor number
-  protected $_releaseCounter;          // the *last* number assigned to a successful created release package. Should be incremental
+  protected $_releaseNumber;           // The current release number
   protected $_scmCheckChangesTimeout;  // In minutes.
   protected $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
   protected $_scmPassword;
@@ -83,6 +81,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->_avatar = null;
     $this->_buildLabel = '';
     $this->_description = '';
+    $this->_releaseNumber = '';
     $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
     $this->_scmRemoteRepository = '';
@@ -268,17 +267,12 @@ class Project extends Framework_DatabaseObjectAbstract
 
     $this->setStatus(self::STATUS_OK);
     $this->incrementStatsNumBuilds();
-    $this->incrementReleaseCounter();
     $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
+    $build->generateReleasePackage();
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     $this->triggerNotification(NotificationSettings::BUILD_SUCCESS);
     return true;
-  }
-
-  public function incrementReleaseCounter()
-  {
-    $this->_releaseCounter++;
   }
 
   public function incrementStatsNumBuilds()
@@ -288,7 +282,7 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function getCurrentReleaseLabel()
   {
-    return ($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
+    return ($this->getBuildLabel() . '-' . $this->getReleaseNumber());
   }
 
   public function delete()
@@ -352,12 +346,41 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function getScmLocalWorkingCopy()
   {
-    return $this->getWorkDir() . 'sources/';
+    $dir = "{$this->getWorkDir()}sources/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getReleasesDir()
+  {
+    $dir = "{$this->getWorkDir()}releases/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create releases dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created releases dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
   }
 
   public function getReportsWorkingDir()
   {
-    return $this->getWorkDir() . 'reports/';
+    $dir = "{$this->getWorkDir()}reports/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
   }
 
   public function getAvatarUrl()
@@ -384,17 +407,21 @@ class Project extends Framework_DatabaseObjectAbstract
     // Create all the working directories
     //
     $this->setWorkDir(CINTIENT_PROJECTS_DIR . uniqid($this->getId(), true) . '/'); // Don't forget the trailing '/'!
-    if (!mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
+    if (!@mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
       $this->setWorkDir(null);
       SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
+    if (!file_exists($this->getScmLocalWorkingCopy())) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create sources dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!mkdir($this->getReportsWorkingDir(), DEFAULT_DIR_MASK, true)) {
+    if (!file_exists($this->getReportsWorkingDir())) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!file_exists($this->getReleasesDir())) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create releases dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
     //
@@ -462,9 +489,7 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   deploymentbuilder TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
   integrationbuilder TEXT NOT NULL DEFAULT '',
-  releasemajor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  releaseminor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  releasecounter INT UNSIGNED NOT NULL DEFAULT 0,
+  releasenumber VARCHAR(20) NOT NULL DEFAULT '',
   scmcheckchangestimeout MEDIUMINT UNSIGNED NOT NULL DEFAULT 30,
   scmconnectortype VARCHAR(20) NOT NULL DEFAULT '',
   scmpassword VARCHAR(255) NOT NULL DEFAULT '',
@@ -545,8 +570,8 @@ EOT;
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
          . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
-         . ' datecheckedforchanges, specialtasks)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' datecheckedforchanges, specialtasks, releasenumber)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -571,6 +596,7 @@ EOT;
       $this->getScmCheckChangesTimeout(),
       $this->getDateCheckedForChanges(),
       $specialTasks,
+      $this->getReleaseNumber(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -813,9 +839,7 @@ EOT;
     $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
-    $ret->setReleaseMajor($rs->getReleaseMajor());
-    $ret->setReleaseMinor($rs->getReleaseMinor());
-    $ret->setReleaseCounter($rs->getReleaseCounter());
+    $ret->setReleaseNumber($rs->getReleaseNumber());
     $specialTasks = @unserialize($rs->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = array();
