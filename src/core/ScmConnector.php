@@ -102,6 +102,11 @@ class ScmConnector implements ScmConnectorInterface
     }
   }
 
+  public function export($toDir)
+  {
+    return $this->_connector->export($toDir);
+  }
+
   public function isModified()
   {
     SystemEvent::raise(SystemEvent::DEBUG, "Checking remote repository for modifications... [REPOSITORY={$this->_connector->getRemote()}]", __METHOD__);
