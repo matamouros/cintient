@@ -230,7 +230,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if ($this->getStatus() != self::STATUS_FAIL) {
       $project = $this->getPtrProject(); // Easier handling
 
-      $filename = "{$project->getReleasesDir()}{$project->getBuildLabel()}-{$this->getId()}";
+      $filename = "{$project->getReleasesDir()}{$project->getReleaseLabel()}-{$this->getId()}";
 
       $command = str_replace(array('%archive', '%sources'), array($filename, $project->getScmLocalWorkingCopy()), $GLOBALS['settings'][SystemSettings::EXECUTABLE_ARCHIVER]);
       SystemEvent::raise(SystemEvent::DEBUG, "Generating release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);

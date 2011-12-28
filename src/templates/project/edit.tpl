@@ -32,7 +32,16 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
     <ul class="tabs">
 {if $globals_project->userHasAccessLevel($globals_user, Access::READ) || $globals_user->hasCos(UserCos::ROOT)}
 {* The links appear for READ access. But submitting should only be allowed for WRITE *}
-      <li><a href="#integration">Integration builder</a></li>
+      <li><a href="#integration">Build</a></li>
+      <li><a href="#release">Release</a></li>
+      {*<li><a href="#deployment">Deployment build</a></li>*}
+      {*<li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">Builders</a>
+        <ul class="dropdown-menu">
+          <li><a href="#integration">Integration</a></li>
+          <li><a href="#release">Release</a></li>
+        </ul>
+      </li>*}
       <li class="active"><a href="#general">General</a></li>
       <li><a href="#scm">SCM</a></li>
       <li><a href="#notifications">Notifications</a></li>
@@ -66,12 +75,6 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
               <label for="title">Project title</label>
               <div class="input">
                 <input class="span7" type="text" name="title" value="{$globals_project->getTitle()}" />
-              </div>
-            </div>
-            <div class="clearfix">
-              <label for="buildLabel" class="tooltip" title="This will be used to name the release package files.">A build label</label>
-              <div class="input">
-                <input class="span6" type="text" name="buildLabel" value="{$globals_project->getBuildLabel()}" />
               </div>
             </div>
             <div class="clearfix">
@@ -239,12 +242,46 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
       </div>
 {/if}
       <div id="integration">
-        {*<form action class="form" id="integrationForm">*}
-          <fieldset>
+        <fieldset>
 {include file='includes/builderEditor.inc.tpl'}
-          </fieldset>
-        {*</form>*}
+        </fieldset>
       </div>
+
+      <div id="release">
+        <form action class="form" id="releaseForm">
+          <fieldset>
+            <div class="clearfix">
+              <label>Generate packages?</label>
+              <div class="input">
+                <ul class="inputs-list">
+                  <li>
+                    <label>
+                      <input type="checkbox" name="active" checked="checked">
+                      <span class="help-block">A release package will be automatically generated after every successful build, and made available on the dashboard.</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="clearfix">
+              <label for="releaseLabel" title="">Release label</label>
+              <div class="input">
+                <input class="span6" type="text" name="releaseLabel" value="{$globals_project->getReleaseLabel()}" />
+                <span class="help-block">This will be used to name the release package files, suffixed by an internal incremental build number. e.g., on the 2154<sup>th</sup> project build the label "cintient-1.0.0" would generate the package "cintient-1.0.0-2154.tar.gz"</span>
+              </div>
+            </div>
+            <div class="actions">
+              <input type="submit" class="btn primary" value="Save changes" />&nbsp;<button type="reset" class="btn">Cancel</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+{*      <div id="deployment">
+        <fieldset>
+{include file='includes/builderEditor.inc.tpl'}
+        </fieldset>
+      </div>*}
 
     </div>
 <script type="text/javascript">

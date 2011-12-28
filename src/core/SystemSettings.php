@@ -44,6 +44,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
   private $_settings;
 
   const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
+  const EXECUTABLE_ARCHIVER     = 'executableArchiver'; // With USE_EXTERNAL_ARCHIVER
   const EXECUTABLE_GIT          = 'executableGit';
   const EXECUTABLE_PHP          = 'executablePhp';
   const EXECUTABLE_SVN          = 'executableSvn';
@@ -58,6 +59,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     //
     $this->_settings = array(
       self::ALLOW_USER_REGISTRATION => 1,
+      self::EXECUTABLE_ARCHIVER => (Framework_HostOs::isWindows() ? '' : 'tar -czf %archive %sources'), // Don't know a ubiquitous/native command line archiver
       self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
@@ -71,7 +73,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     $o = $this;
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration');
+      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration?');
       h::div(array('class' => 'input'), function () use ($o) {
         h::ul(array('class' => 'inputs-list'), function () use ($o) {
           h::li(function () use ($o) {
@@ -89,7 +91,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     });
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder');
+      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder?');
       h::div(array('class' => 'input'), function () use ($o) {
         h::ul(array('class' => 'inputs-list'), function () use ($o) {
           h::li(function () use ($o) {
@@ -103,6 +105,14 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
             });
           });
         });
+      });
+    });
+
+    h::div(array('class' => 'clearfix'), function () use ($o) {
+      h::label(array('for' => SystemSettings::EXECUTABLE_ARCHIVER), 'Archiver executable');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_ARCHIVER, 'value' => $o[SystemSettings::EXECUTABLE_ARCHIVER]));
+        h::span(array('class' => 'help-block'), "Will be used to generate all release packages. Use %archive to mark the archive filename argument and %sources to mark the sources dir argument.");
       });
     });
 

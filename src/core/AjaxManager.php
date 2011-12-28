@@ -1022,7 +1022,7 @@ EOT;
 
     $postVars = $_POST['generalForm'];
 
-    if (empty($postVars['title']['value']) || empty($postVars['buildLabel']['value'])) {
+    if (empty($postVars['title']['value']) || empty($postVars['releaseLabel']['value'])) {
       // TODO: visual clue for required attributes, in the interface
       $msg = 'Required attributes were empty.';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -1037,7 +1037,7 @@ EOT;
 
     $project = $GLOBALS['project'];
     $project->setTitle($postVars['title']['value']);
-    $project->setBuildLabel($postVars['buildLabel']['value']);
+    $project->setReleaseLabel($postVars['releaseLabel']['value']);
     $project->setDescription($postVars['description']['value']);
     $GLOBALS['project'] = $project;
     $msg = "Project general settings edited.";
@@ -1128,8 +1128,8 @@ EOT;
     //
     if (!isset($postVars['title']) ||
          empty($postVars['title']) ||
-        !isset($postVars['buildLabel']) ||
-         empty($postVars['buildLabel']) ||
+        !isset($postVars['releaseLabel']) ||
+         empty($postVars['releaseLabel']) ||
         !isset($postVars['scmConnectorType']) ||
          empty($postVars['scmConnectorType']) ||
         !isset($postVars['scmRemoteRepository']) ||
@@ -1150,7 +1150,7 @@ EOT;
       $GLOBALS['project'] = null;
       $project = new Project();
       $project->setTitle($postVars['title']);
-      $project->setBuildLabel($postVars['buildLabel']);
+      $project->setReleaseLabel($postVars['releaseLabel']);
       $project->setScmConnectorType($postVars['scmConnectorType']);
       $project->setScmRemoteRepository($postVars['scmRemoteRepository']);
       $project->setScmUsername($postVars['scmUsername']);

@@ -55,6 +55,9 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     if (!$this->getDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);
       return false;
@@ -88,6 +91,9 @@ class Build_BuilderElement_Task_Filesystem_Mkdir extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getDir()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Dir not set for mkdir task.', __METHOD__);

@@ -29,12 +29,6 @@ subSectionId="projectNew"}
             </div>
           </div>
           <div class="clearfix">
-            <label for="buildLabel" class="tooltip" title="This will be used to name the release package files.">A build label</label>
-            <div class="input">
-              <input class="span6" type="text" name="buildLabel" value="{if isset($formData['buildLabel'])}{$formData['buildLabel']}{/if}" />
-            </div>
-          </div>
-          <div class="clearfix">
             <label for="scmConnectorType">The SCM connector</label>
             <div class="input">
               <select class="span2" name="scmConnectorType">

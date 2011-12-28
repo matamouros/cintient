@@ -39,12 +39,11 @@
 class Project extends Framework_DatabaseObjectAbstract
 {
   protected $_avatar;                  // The avatar's location
-  protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
+  protected $_releaseLabel;            // The label to be used in the packages' nomenclature (together with the incremental build counter)
   protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
   protected $_dateCreation;
   protected $_description;
   protected $_id;
-  protected $_releaseNumber;           // The current release number
   protected $_scmCheckChangesTimeout;  // In minutes.
   protected $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
   protected $_scmPassword;
@@ -65,7 +64,7 @@ class Project extends Framework_DatabaseObjectAbstract
   //
   // Options
   //
-  protected $_optionPackageOnSuccess;  // Generate a release package on every successful build?
+  protected $_optionReleasePackage;  // Generate a release package on every successful build?
 
   const STATUS_UNINITIALIZED = 0;
   const STATUS_ERROR = 1;
@@ -79,9 +78,8 @@ class Project extends Framework_DatabaseObjectAbstract
   {
     parent::__construct();
     $this->_avatar = null;
-    $this->_buildLabel = '';
+    $this->_releaseLabel = '';
     $this->_description = '';
-    $this->_releaseNumber = '';
     $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
     $this->_scmRemoteRepository = '';
@@ -101,7 +99,7 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     // Options
     //
-    $this->_optionPackageOnSuccess = false;
+    $this->_optionReleasePackage = false;
   }
 
   public function __destruct()
@@ -267,7 +265,7 @@ class Project extends Framework_DatabaseObjectAbstract
 
     $this->setStatus(self::STATUS_OK);
     $this->incrementStatsNumBuilds();
-    $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
+    $build->setLabel($this->getReleaseLabel()); // make sure the project's release counter was incremented
     $build->generateReleasePackage();
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
@@ -278,11 +276,6 @@ class Project extends Framework_DatabaseObjectAbstract
   public function incrementStatsNumBuilds()
   {
     $this->_statsNumBuilds++;
-  }
-
-  public function getCurrentReleaseLabel()
-  {
-    return ($this->getBuildLabel() . '-' . $this->getReleaseNumber());
   }
 
   public function delete()
@@ -368,6 +361,14 @@ class Project extends Framework_DatabaseObjectAbstract
       }
     }
     return $dir;
+  }
+
+  public function getReleaseLabel()
+  {
+    if (empty($this->_releaseLabel) && !empty($this->_title)) {
+      $this->_releaseLabel = str_replace(' ', '-', strtolower($this->_title));
+    }
+    return $this->_releaseLabel;
   }
 
   public function getReportsWorkingDir()
@@ -483,13 +484,13 @@ class Project extends Framework_DatabaseObjectAbstract
 DROP TABLE IF EXISTS {$tableName}NEW;
 CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  buildlabel TEXT NOT NULL DEFAULT '',
+  releaselabel TEXT NOT NULL DEFAULT '',
   datecreation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   datecheckedforchanges DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deploymentbuilder TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
   integrationbuilder TEXT NOT NULL DEFAULT '',
-  releasenumber VARCHAR(20) NOT NULL DEFAULT '',
+  optionsreleasepackage TINYINT UNSIGNED NOT NULL DEFAULT 0,
   scmcheckchangestimeout MEDIUMINT UNSIGNED NOT NULL DEFAULT 30,
   scmconnectortype VARCHAR(20) NOT NULL DEFAULT '',
   scmpassword VARCHAR(255) NOT NULL DEFAULT '',
@@ -568,9 +569,9 @@ EOT;
     $sql = 'REPLACE INTO project'
          . ' (id,avatar,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
+         . ' releaselabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
-         . ' datecheckedforchanges, specialtasks, releasenumber)'
+         . ' datecheckedforchanges, specialtasks, optionreleasepackage)'
          . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
@@ -586,7 +587,7 @@ EOT;
       /*SQLite3::escapeString*/($serializedIntegrationBuilder),
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
       $this->getStatus(),
-      $this->getBuildLabel(),
+      $this->getReleaseLabel(),
       $this->getStatsNumBuilds(),
       $this->getScmPassword(),
       $this->getScmUsername(),
@@ -596,7 +597,7 @@ EOT;
       $this->getScmCheckChangesTimeout(),
       $this->getDateCheckedForChanges(),
       $specialTasks,
-      $this->getReleaseNumber(),
+      $this->getOptionReleasePackage(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -834,12 +835,11 @@ EOT;
     $ret->setScmPassword($rs->getScmPassword());
     $ret->setScmCheckChangesTimeout($rs->getScmCheckChangesTimeout());
     $ret->setWorkDir($rs->getWorkDir());
-    $ret->setBuildLabel($rs->getBuildLabel());
+    $ret->setReleaseLabel($rs->getReleaseLabel());
     $ret->setDateCreation($rs->getDateCreation());
     $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
-    $ret->setReleaseNumber($rs->getReleaseNumber());
     $specialTasks = @unserialize($rs->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = array();
@@ -849,6 +849,7 @@ EOT;
     $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
+    $ret->setOptionReleasePackage($rs->getOptionReleasePackage());
     //
     // Builders
     //

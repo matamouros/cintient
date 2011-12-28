@@ -75,7 +75,12 @@ class Build_BuilderElement_Task_Php_PhpCodeSniffer extends Build_BuilderElement
   }
 
   // TODO
-  public function toAnt() {}
+  public function toAnt()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
 
   public function toHtml(Array $_ = array(), Array $__ = array())
   {
@@ -115,10 +120,18 @@ class Build_BuilderElement_Task_Php_PhpCodeSniffer extends Build_BuilderElement
   }
 
   // TODO
-  public function toPhing() {}
+  public function toPhing()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFiles()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files/dirs not set for task PHPCodeSniffer.', __METHOD__);
