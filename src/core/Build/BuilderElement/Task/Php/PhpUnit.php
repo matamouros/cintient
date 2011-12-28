@@ -176,7 +176,7 @@ if (!extension_loaded('xdebug')) {
     if ($this->getBootstrapFile()) {
       $php .= "
 \$args[] = '--bootstrap';
-\$args[] = '{$this->getBootstrapFile()}';
+\$args[] = expandStr('{$this->getBootstrapFile()}');
 ";
     }
 
