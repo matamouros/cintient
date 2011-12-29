@@ -122,12 +122,22 @@ class ScmConnector implements ScmConnectorInterface
   public function update(&$rev)
   {
     if (!$this->_connector->update($rev)) {
-      SystemEvent::raise(SystemEvent::DEBUG, "Could not update local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
-      return false;
-    } else {
-      SystemEvent::raise(SystemEvent::DEBUG, "Updated local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
-      return true;
+      SystemEvent::raise(SystemEvent::INFO, "Could not update local working copy, trying a few tricks before quiting. [DIR={$this->_connector->getLocal()}]", __METHOD__);
+      if (!is_writable($this->_connector->getLocal()) && !@mkdir($this->_connector->getLocal(), DEFAULT_DIR_MASK, true))  {
+        SystemEvent::raise(SystemEvent::INFO, "Could not update local working copy, dir was either not writable or didn't exist. [DIR={$this->_connector->getLocal()}]", __METHOD__);
+        return false;
+      }
+      if (!$this->checkout()) {
+        SystemEvent::raise(SystemEvent::INFO, "Could not update local working copy, trying 'checking out' the sources again, but couldn't. [DIR={$this->_connector->getLocal()}]", __METHOD__);
+        return false;
+      }
+      if (!$this->_connector->update($rev)) {
+        SystemEvent::raise(SystemEvent::INFO, "Definitely could not update local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
+        return false;
+      }
     }
+    SystemEvent::raise(SystemEvent::DEBUG, "Updated local working copy. [DIR={$this->_connector->getLocal()}]", __METHOD__);
+    return true;
   }
 
   public function tag() {}

@@ -125,6 +125,11 @@ class UrlManager
     return CINTIENT_BASE_URL . '/ajax/project/edit-general/';
   }
 
+  static public function getForAjaxProjectEditRelease()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/edit-release/';
+  }
+
   static public function getForAjaxProjectEditScm()
   {
     return CINTIENT_BASE_URL . '/ajax/project/edit-scm/';

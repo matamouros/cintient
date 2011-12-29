@@ -102,7 +102,28 @@
 {/if}
               </div>
               <div id="releases">
-                Soon!
+{if !empty($project_builds)}
+                <table class="zebra-striped">
+                  <thead>
+                    <tr>
+                      {*<th class="header yellow headerSortDown">Datetime</th>*}
+                      <th class="header green headerSortDown">Build</th>
+                      <th class="header blue">Release</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+{foreach from=$project_builds item=build}
+                    <tr>
+                      {*<td>{$build->getDate()|date_format:"%Y/%m/%d - %H:%M:%S"}</td>*}
+                      <td><a href="{UrlManager::getForProjectBuildHistory(['bid' => $build->getId()])}">#{$build->getId()}</a></td>
+                      <td><a href="{UrlManager::getForAsset($build->getId(), ['r' => 1, 'bid' => $build->getId()])}">{$build->getReleaseFile()}</a></td>
+                    </tr>
+{/foreach}
+                  </tbody>
+                </table>
+{else}
+              <p>To enable project build release packages, please <a href="{UrlManager::getForProjectEdit()}">edit your project's settings</a>.</p>
+{/if}
               </div>
             </div>
 

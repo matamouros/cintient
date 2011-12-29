@@ -279,6 +279,7 @@ var Cintient = {
                 $('.tab-content #' + activeTabId).addClass('active'); // Honor the previously user active content
                 $('.tabs').tabs(); // Init the Bootstrap tabs
                 $("#log table").tablesorter({ sortList: [[0,1]] }); // Init the project log table sorter, sort the first column, DESC
+                $("#releases table").tablesorter({ sortList: [[0,1]] }); // Init the releases table sorter, sort the first column, DESC
                 $('#dashboard #dashboardProject').fadeIn(300); // Show it all
                 //
                 // Change the active project in the menu
@@ -333,10 +334,6 @@ var Cintient = {
     // Tabs for the projects
     //
     this._setupTabs();
-    //
-    // Project log table sorting
-    //
-    $("#log table").tablesorter({ sortList: [[0,1]] }); // Sort the first column, DESC
   },
   
   initSectionHeader: function ()

@@ -256,7 +256,7 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
                 <ul class="inputs-list">
                   <li>
                     <label>
-                      <input type="checkbox" name="active" checked="checked">
+                      <input type="checkbox" name="optionReleasePackage"{if $globals_project->getOptionReleasePackage()} checked="checked"{/if}>
                       <span class="help-block">A release package will be automatically generated after every successful build, and made available on the dashboard.</span>
                     </label>
                   </li>
@@ -314,6 +314,10 @@ $(document).ready(function() {
     formSelector : '#delete form',
     onSuccessRedirectUrl : '{UrlManager::getForDashboard()}',
     submitUrl : '{UrlManager::getForAjaxProjectDelete()}',
+  });
+  Cintient.initGenericForm({
+    formSelector : '#release form',
+    submitUrl : '{UrlManager::getForAjaxProjectEditRelease()}',
   });
   //
   // The project avatar uploader

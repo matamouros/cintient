@@ -591,18 +591,27 @@ EOT;
         exit;
       }
       if (!empty($_GET['cc'])) { // code coverage asset
-        $filename = $build->getBuildDir() . CINTIENT_CODECOVERAGE_HTML_DIR . $_GET['f'];
+        $filepath = $build->getBuildDir() . CINTIENT_CODECOVERAGE_HTML_DIR . $_GET['f'];
+        $filename = $_GET['f'];
+      } elseif (!empty($_GET['r'])) { // Release file
+        $filepath = ''; // will always return false on file_exists() check
+        if ($build->getReleaseFile() != '') {
+          $filepath = $GLOBALS['project']->getReleasesDir() . $build->getReleaseFile();
+          $filename = $build->getReleaseFile();
+        }
       } else { // Normal file
-        $filename = $build->getBuildDir() . $_GET['f'];
+        $filepath = $build->getBuildDir() . $_GET['f'];
+        $filename = $_GET['f'];
       }
-      if (!file_exists($filename)) {
-        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}] [FILE={$filename}]", __METHOD__);
-        //TODO: Redirect and exit?
+      if (!file_exists($filepath)) {
+        SystemEvent::raise(SystemEvent::INFO, "Requested asset not found. [PID={$GLOBALS['project']->getId()}] [BID={$build->getId()}] [FILE={$filepath}]", __METHOD__);
+        // TODO: Add an error message to the user in this redirect
+        Redirector::redirectToUri(UrlManager::getForDashboard());
         exit;
       }
-      $pos = strrpos($filename, '.');
+      $pos = strrpos($filepath, '.');
       if ($pos) {
-        $extension   = strtolower(substr($filename, $pos+1));
+        $extension   = strtolower(substr($filepath, $pos+1));
         $ext['jpg']  = 'image/jpeg';
         $ext['jpeg'] = 'image/jpeg';
         $ext['gif']  = 'image/gif';
@@ -611,13 +620,22 @@ EOT;
         $ext['css']  = 'text/css';
         $ext['xml']  = 'text/xml';
         $ext['svg']  = 'image/svg+xml';
+        $ext['gz']   = 'application/x-gzip'; // Extension should be tar.gz but I don't want to change the strrpos() above
+        $ext['tgz']  = 'application/x-gzip'; // @see http://www.yolinux.com/TUTORIALS/LinuxTutorialMimeTypesAndApplications.html
+        $ext['zip']  = 'application/zip';    // @see http://www.yolinux.com/TUTORIALS/LinuxTutorialMimeTypesAndApplications.html
         if (isset($ext[$extension])) {
-          header('Content-type: '.$ext[$extension]);
+          header('Content-Type: '.$ext[$extension]);
         }
       }
-      header('Last-Modified: '.date('r',filectime($filename)));
-      header('Content-Length: '.filesize($filename));
-      readfile($filename);
+      header('Last-Modified: '.date('r',filectime($filepath)));
+      header('Content-Length: '.filesize($filepath));
+      if ($extension == 'gz' || $extension == 'tgz' || $extension == 'zip') {
+        header("Cache-Control: public");
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename={$filename}");
+        header("Content-Transfer-Encoding: binary");
+      }
+      readfile($filepath);
     }
     exit;
   }

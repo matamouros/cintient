@@ -124,10 +124,10 @@ class Framework_Filesystem
                  $defaultExcludes
                ) as $entry)
       {
-        $entry = $entry->getRealPath();
-        $dest = $dst . substr($entry, strlen($src));
+        $source = $entry->getRealPath();
+        $dest = $dst . substr($source, strlen($src));
         if ($entry->isFile()) {
-          $ret = @copy($entry, $dest);
+          $ret = @copy($source, $dest);
         } elseif ($entry->isDir()) {
         	if (!file_exists($dest) && !@mkdir($dest, DEFAULT_DIR_MASK, true)) {
         	  return false;

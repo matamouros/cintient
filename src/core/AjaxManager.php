@@ -327,6 +327,7 @@ class AjaxManager
     $smarty->assign('project_buildStats', Project_Build::getStats($project, $GLOBALS['user']));
     $smarty->assign('project_log', Project_Log::getList($project, $GLOBALS['user']));
     $smarty->assign('project_build', Project_Build::getLatest($project, $GLOBALS['user']));
+    $smarty->assign('project_builds', Project_Build::getList($project, $GLOBALS['user'], Access::READ, array('buildStatus' => Project_Build::STATUS_OK_WITH_PACKAGE, 'pageLength' => 5)));
     $smarty->assign('project', $project);
     $smarty->display('includes/dashboardProject.inc.tpl');
     exit;
@@ -1047,6 +1048,64 @@ EOT;
       array(
   			'success' => true,
       )
+    );
+    exit;
+  }
+
+  static public function project_editRelease()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+      array(
+            'success' => false,
+            'error' => $msg,
+      )
+      );
+      exit;
+    }
+
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+      array(
+            'success' => false,
+            'error' => $msg,
+      )
+      );
+      exit;
+    }
+
+    $postVars = $_POST['releaseForm'];
+
+    if (empty($postVars['releaseLabel']['value'])) {
+      // TODO: visual clue for required attributes, in the interface
+      $msg = 'Required attributes were empty.';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $project = $GLOBALS['project'];
+    $project->setReleaseLabel($postVars['releaseLabel']['value']);
+    $project->setOptionReleasePackage($postVars['optionReleasePackage']['value']);
+    $GLOBALS['project'] = $project;
+    $msg = "Project release settings edited.";
+    $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
+    SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
+    echo json_encode(
+    array(
+    			'success' => true,
+    )
     );
     exit;
   }

@@ -195,6 +195,15 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function build($force = false)
   {
+    //
+    // Since some SCM operations might take a while, put the project on
+    // BUILDING status right away
+    //
+    $status = $this->getStatus();
+    $this->setStatus(self::STATUS_BUILDING);
+    $this->_save(true); // We want the building status to update imediatelly
+    $this->setStatus($status);
+
     $params = array();
     $scm = new ScmConnector($this->getScmConnectorType(), $this->getScmLocalWorkingCopy(), $this->getScmRemoteRepository(), $this->getScmUsername(), $this->getScmPassword());
 
@@ -246,9 +255,18 @@ class Project extends Framework_DatabaseObjectAbstract
       }
     }
 
+    //
+    // Clean up sources dir and fresh populate it with the new SCM sources
+    //
+    if (!Framework_Filesystem::emptyDir($this->getSourcesDir()) || !$scm->export($this->getSourcesDir())) {
+      SystemEvent::raise(SystemEvent::INFO, "Couldn't refresh the sources dir. [PROJECTID={$this->getId()}]", __METHOD__);
+      $this->setStatus(self::STATUS_ERROR);
+      return false;
+    }
+
     // We're now building
     $this->setStatus(self::STATUS_BUILDING);
-    $this->_save(true); // We want the building status to update imediatelly
+    //$this->_save(true); // We want the building status to update imediatelly
 
     //
     // Scm stuff done, setup a new build for the project
@@ -266,7 +284,9 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->setStatus(self::STATUS_OK);
     $this->incrementStatsNumBuilds();
     $build->setLabel($this->getReleaseLabel()); // make sure the project's release counter was incremented
-    $build->generateReleasePackage();
+    if ($this->getOptionReleasePackage()) {
+      $build->generateReleasePackage();
+    }
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     $this->triggerNotification(NotificationSettings::BUILD_SUCCESS);
@@ -339,12 +359,25 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function getScmLocalWorkingCopy()
   {
-    $dir = "{$this->getWorkDir()}sources/";
+    $dir = "{$this->getWorkDir()}wc/";
     if (!file_exists($dir)) {
       if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
         SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
       } else {
         SystemEvent::raise(SystemEvent::DEBUG, "Created working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getSourcesDir()
+  {
+    $dir = "{$this->getWorkDir()}sources/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create sources dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created sources dir for project. [PID={$this->getId()}]", __METHOD__);
       }
     }
     return $dir;
@@ -369,6 +402,14 @@ class Project extends Framework_DatabaseObjectAbstract
       $this->_releaseLabel = str_replace(' ', '-', strtolower($this->_title));
     }
     return $this->_releaseLabel;
+  }
+
+  public function setReleaseLabel($label)
+  {
+    if (empty($label)) {
+      $label = $this->getReleaseLabel(); // Yeah, weird code...
+    }
+    $this->_releaseLabel = $label;
   }
 
   public function getReportsWorkingDir()
@@ -490,7 +531,7 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   deploymentbuilder TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
   integrationbuilder TEXT NOT NULL DEFAULT '',
-  optionsreleasepackage TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  optionreleasepackage TINYINT UNSIGNED NOT NULL DEFAULT 0,
   scmcheckchangestimeout MEDIUMINT UNSIGNED NOT NULL DEFAULT 30,
   scmconnectortype VARCHAR(20) NOT NULL DEFAULT '',
   scmpassword VARCHAR(255) NOT NULL DEFAULT '',
