@@ -67,7 +67,7 @@ class AjaxManager
     exit;
   }
 
-  static public function admin_settings()
+  static public function admin_globalSettings()
   {
     if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized!';
@@ -91,11 +91,45 @@ class AjaxManager
     }
     $GLOBALS['settings'] = $settings;
 
-    SystemEvent::raise(SystemEvent::DEBUG, "System settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Global settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
     echo json_encode(
       array(
   			'success' => true,
-  			'error' => 'System settings saved.',
+  			'error' => 'Global settings saved.',
+      )
+    );
+    exit;
+  }
+
+  static public function admin_executables()
+  {
+    if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized!';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $settings = new SystemSettings();
+    foreach ($_POST['executablesForm'] as $key => $value) {
+      $settingsValue = $value['value'];
+      if ($value['type'] == 'checkbox') {
+        $settingsValue = ($value['value'] ? '1' : '0');
+      }
+      $settings->setSetting($key, $settingsValue);
+    }
+    $GLOBALS['settings'] = $settings;
+
+    SystemEvent::raise(SystemEvent::DEBUG, "Executables settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+  			'error' => 'Executables settings saved.',
       )
     );
     exit;

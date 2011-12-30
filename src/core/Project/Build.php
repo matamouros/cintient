@@ -241,7 +241,18 @@ class Project_Build extends Framework_DatabaseObjectAbstract
         SystemEvent::raise(SystemEvent::ERROR, "Problems creating release dir. [BUILD={$this->getId()}] [PID={$project->getId()}]", __METHOD__);
         return false;
       }
-      $command = str_replace(array('${tmpDir}', '${releaseLabel}', '${sourcesDir}'), array($project->getTempDir(), $filename, $releaseDirName), $GLOBALS['settings'][SystemSettings::EXECUTABLE_ARCHIVER]);
+      //
+      // TODO: For now only tar is available. As soon as more are implemented,
+      // it is required that Project keeps it's preferred archiver, so
+      // that it can be fetched here and fed into getCmdForPackageGeneration()
+      //
+      $params = array(
+        'tmpDir' => $project->getTempDir(),
+        'archiverExecutable' => SystemSettings::EXECUTABLE_TAR,
+        'releaseLabel' => $filename,
+        'sourcesDir' => $releaseDirName,
+      );
+      $command = $GLOBALS['settings']->getCmdForPackageGeneration($params);
       $command = str_replace('\\', '/', $command);
       $command = str_replace('//', '/', $command);
       if (preg_match("/({$project->getReleaseLabel()}-{$this->getId()}[.\w]+) /", $command, $matches)) {

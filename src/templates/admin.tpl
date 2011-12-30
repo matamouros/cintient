@@ -25,6 +25,7 @@ jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
     <ul class="tabs">
       <li class="active"><a href="#log">Log</a></li>
       <li><a href="#settings">Global settings</a></li>
+      <li><a href="#executables">Executables</a></li>
     </ul>
 
     <div class="tab-content">
@@ -37,11 +38,22 @@ jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
       <div id="settings">
         <form action class="form" id="settingsForm">
           <fieldset>
-{$globals_settings->getView()}
+{$globals_settings->getViewGlobalSettings()}
             <div class="actions">
               <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
             </div>
           </fieldset>
+        </form>
+      </div>
+
+      <div id="executables">
+        <form action class="form" id="executablesForm">
+          {*<fieldset>*}
+{$globals_settings->getViewExecutables()}
+            <div class="actions">
+              <input type="submit" class="btn primary" value="Save changes">&nbsp;<button type="reset" class="btn">Cancel</button>
+            </div>
+          {*</fieldset>*}
         </form>
       </div>
 
@@ -50,55 +62,17 @@ jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
 <script type="text/javascript">
 // <![CDATA[
 $(document).ready(function() {
-  Cintient.initSectionAdmin();
+  Cintient.initSectionAdmin({
+    submitUrl : '{UrlManager::getForAjaxAdminLog()}'
+  });
   Cintient.initGenericForm({
-    submitUrl : '{UrlManager::getForAjaxAdminSettings()}'
+    formSelector : '#settings form',
+    submitUrl : '{UrlManager::getForAjaxAdminGlobalSettings()}'
   });
-
-  $('#btnLogRefresh').click(function (e) {
-    e.preventDefault();
-    $('#btnLogRefresh')
-      .removeClass('primary')
-      .addClass('disabled')
-      .text('Please wait...');
-    $('.loading').fadeIn(300);
-
-    $.ajax({
-      url: '{UrlManager::getForAjaxAdminLog()}',
-      type: 'GET',
-      dataType: 'html',
-      success: function(data, textStatus, XMLHttpRequest) {
-        // Following condition according to jQuery's .load() method
-        // documentation:
-        // http://api.jquery.com/load/
-        if (textStatus == 'success' || textStatus == 'notmodified') {
-          $('.log')
-            .hide()
-            .html(data); // Update the HTML (replace it)
-          $('.log').fadeIn(300); // Show it all
-        } else {
-          Cintient.alertUnknown();
-        }
-        $('.loading').fadeOut(100);
-        $('#btnLogRefresh')
-          .removeClass('disabled')
-          .addClass('primary')
-          .text('Refresh');
-        date = new Date();
-        $('#dateLastRefresh').html(date.toTimeString());
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        Cintient.alertUnknown();
-        $('.loading').fadeOut(100);
-        $('#btnLogRefresh')
-          .removeClass('disabled')
-          .addClass('primary')
-          .text('Refresh');
-      }
-    });
+  Cintient.initGenericForm({
+    formSelector : '#executables form',
+    submitUrl : '{UrlManager::getForAjaxAdminExecutables()}'
   });
-
-  $('#btnLogRefresh').trigger('click'); // First load
 });
 // ]]>
 </script>

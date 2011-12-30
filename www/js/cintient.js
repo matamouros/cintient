@@ -180,6 +180,52 @@ var Cintient = {
   
   initSectionAdmin: function ()
   {
+    var options = $.extend({}, arguments[0] || {});
+    $('#btnLogRefresh').click(function (e) {
+      e.preventDefault();
+      $('#btnLogRefresh')
+        .removeClass('primary')
+        .addClass('disabled')
+        .text('Please wait...');
+      $('.loading').fadeIn(300);
+
+      $.ajax({
+        url: options.submitUrl,
+        type: 'GET',
+        dataType: 'html',
+        success: function(data, textStatus, XMLHttpRequest) {
+          // Following condition according to jQuery's .load() method
+          // documentation:
+          // http://api.jquery.com/load/
+          if (textStatus == 'success' || textStatus == 'notmodified') {
+            $('.log')
+              .hide()
+              .html(data); // Update the HTML (replace it)
+            $('.log').fadeIn(300); // Show it all
+          } else {
+            Cintient.alertUnknown();
+          }
+          $('.loading').fadeOut(100);
+          $('#btnLogRefresh')
+            .removeClass('disabled')
+            .addClass('primary')
+            .text('Refresh');
+          date = new Date();
+          $('#dateLastRefresh').html(date.toTimeString());
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          Cintient.alertUnknown();
+          $('.loading').fadeOut(100);
+          $('#btnLogRefresh')
+            .removeClass('disabled')
+            .addClass('primary')
+            .text('Refresh');
+        }
+      });
+    });
+
+    $('#btnLogRefresh').trigger('click'); // First load
+    
     this._setupTabs();
   },
   
