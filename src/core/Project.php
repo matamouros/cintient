@@ -425,6 +425,19 @@ class Project extends Framework_DatabaseObjectAbstract
     return $dir;
   }
 
+  public function getTempDir()
+  {
+    $dir = "{$this->getWorkDir()}temp/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create temp dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created temp dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
   public function getAvatarUrl()
   {
     if (($pos = strpos($this->getAvatar(), 'local:')) === 0) {

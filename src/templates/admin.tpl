@@ -24,7 +24,7 @@ subSectionDescription=""
 jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
     <ul class="tabs">
       <li class="active"><a href="#log">Log</a></li>
-      <li><a href="#settings">System settings</a></li>
+      <li><a href="#settings">Global settings</a></li>
     </ul>
 
     <div class="tab-content">

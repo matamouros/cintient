@@ -59,7 +59,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     //
     $this->_settings = array(
       self::ALLOW_USER_REGISTRATION => 1,
-      self::EXECUTABLE_ARCHIVER => (Framework_HostOs::isWindows() ? '' : 'tar -czf ${releaseLabel}.tar.gz ${sourcesDir}/*'), // Don't know a ubiquitous/native command line archiver
+      self::EXECUTABLE_ARCHIVER => (Framework_HostOs::isWindows() ? '' : 'cd ${tmpDir} && tar -czf ${releaseLabel}.tar.gz ${sourcesDir}'), // Don't know a ubiquitous/native command line archiver
       self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),

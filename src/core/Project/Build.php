@@ -232,7 +232,16 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if ($this->getStatus() != self::STATUS_FAIL) {
       $project = $this->getPtrProject(); // Easier handling
       $filename = "{$project->getReleasesDir()}{$project->getReleaseLabel()}-{$this->getId()}";
-      $command = str_replace(array('${releaseLabel}', '${sourcesDir}'), array($filename, $project->getSourcesDir()), $GLOBALS['settings'][SystemSettings::EXECUTABLE_ARCHIVER]);
+      //
+      // Rename the sources dir to the new dir that will be archived
+      //
+      $releaseDirName = "{$project->getReleaseLabel()}-{$this->getId()}";
+      $releaseDirPath = "{$project->getTempDir()}{$releaseDirName}";
+      if (!@rename($project->getSourcesDir(), $releaseDirPath)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems creating release dir. [BUILD={$this->getId()}] [PID={$project->getId()}]", __METHOD__);
+        return false;
+      }
+      $command = str_replace(array('${tmpDir}', '${releaseLabel}', '${sourcesDir}'), array($project->getTempDir(), $filename, $releaseDirName), $GLOBALS['settings'][SystemSettings::EXECUTABLE_ARCHIVER]);
       $command = str_replace('\\', '/', $command);
       $command = str_replace('//', '/', $command);
       if (preg_match("/({$project->getReleaseLabel()}-{$this->getId()}[.\w]+) /", $command, $matches)) {
@@ -247,8 +256,10 @@ class Project_Build extends Framework_DatabaseObjectAbstract
         $ret = true;
         SystemEvent::raise(SystemEvent::DEBUG, "Generated release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
       } else {
-        SystemEvent::raise(SystemEvent::DEBUG, "Problems generating release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
+        SystemEvent::raise(SystemEvent::ERROR, "Problems generating release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
       }
+      // Remove the release dir
+      Framework_Filesystem::removeDir($releaseDirPath);
     }
     return $ret;
   }
