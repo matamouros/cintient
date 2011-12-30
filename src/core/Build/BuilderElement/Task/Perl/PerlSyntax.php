@@ -60,6 +60,9 @@ class Build_BuilderElement_Task_Perl_PerlSyntax extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('apply');
     if (!$this->getFilesets()) {
@@ -96,10 +99,18 @@ class Build_BuilderElement_Task_Perl_PerlSyntax extends Build_BuilderElement
   }
 
   // TODO
-  public function toPhing() {}
+  public function toPhing()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task Perl syntax.', __METHOD__);

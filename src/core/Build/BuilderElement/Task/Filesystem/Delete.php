@@ -63,6 +63,9 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('delete');
     if (!$this->getFilesets()) {
@@ -111,6 +114,9 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task delete.', __METHOD__);

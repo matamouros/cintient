@@ -48,6 +48,19 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
     return true;
   }
 
+  public function export($toDir)
+  {
+    $credentials = $this->_getCredentialsArgs();
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} export {$credentials}--non-interactive {$this->getLocal()} {$toDir}";
+    $lastline = exec($command, $output, $return);
+    if ($return != 0) {
+      $output = implode("\n", $output);
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check out remote repository. [COMMAND=\"{$command}\"] [RET={$return}] [OUTPUT=\"{$output}\"]", __METHOD__);
+      return false;
+    }
+    return true;
+  }
+
   public function isModified()
   {
     $credentials = $this->_getCredentialsArgs();

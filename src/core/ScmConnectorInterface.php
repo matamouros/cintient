@@ -37,6 +37,8 @@ interface ScmConnectorInterface
 {
   public function checkout();
 
+  public function export($toDir);
+
   public function isModified();
 
   public function update(&$rev);

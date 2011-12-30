@@ -109,7 +109,12 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
   }
 
   // TODO
-  public function toAnt() {}
+  public function toAnt()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
 
   public function toHtml(Array $_ = array(), Array $__ = array())
   {
@@ -144,13 +149,21 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
   }
 
   // TODO
-  public function toPhing() {}
+  public function toPhing()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php              = '';
     $getFailedOnError = $this->getFailOnError() ? "true" : "false";
-    
+
     if (!$this->getIncludeDirs()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No include dirs set for task PhpDepend.', __METHOD__);
       return false;

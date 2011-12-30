@@ -56,6 +56,9 @@ class Build_BuilderElement_Type_Properties extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     if (!$this->getText()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);
       return false;
@@ -95,6 +98,9 @@ class Build_BuilderElement_Type_Properties extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getText()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Empty properties text.', __METHOD__);

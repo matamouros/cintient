@@ -969,7 +969,7 @@ padding: 4px;
   padding: 0px;
 }
 
-#projectEdit #builderElementsChosen ul
+#projectEdit #builderElementsChosen > ul
 {
   margin-left: 19px;
 }

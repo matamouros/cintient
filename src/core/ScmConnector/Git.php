@@ -48,6 +48,21 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     return true;
   }
 
+  /**
+   * "Exports" the local working copy to a fresh dir, without any SCM
+   * artifacts like .git
+   *
+   * @see ScmConnectorInterface::export()
+   */
+  public function export($toDir)
+  {
+    //TODO: export a tag
+    if (!Framework_Filesystem::copy($this->getLocal(), $toDir)) {
+      SystemEvent::raise(SystemEvent::INFO, "Could not export local working copy. [LOCAL={$this->getLocal()}] [DIR={$toDir}]", __METHOD__);
+    }
+    return true;
+  }
+
   public function isModified()
   {
     if (!($localRev = $this->_getLocalRevision()) || !($remoteRev = $this->_getRemoteRevision())) {

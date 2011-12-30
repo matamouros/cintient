@@ -61,6 +61,9 @@ class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('chmod');
     if (!$this->getFile() && !$this->getFilesets()) {
@@ -105,6 +108,9 @@ class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
 
   public function toPhing()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('chmod');
     if (!$this->getFile() && !$this->getFilesets()) {
@@ -131,6 +137,9 @@ class Build_BuilderElement_Task_Filesystem_Chmod extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFile() && !$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task chmod.', __METHOD__);

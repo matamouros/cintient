@@ -271,6 +271,13 @@ class Build_BuilderElement extends Framework_BaseObject
             h::div(array('class' => 'content'), function () use ($o, $innerCallbacks) {
               h::form(array('class' => 'form', 'action' => ''), function () use ($o, $innerCallbacks) {
                 h::fieldset(function () use ($o, $innerCallbacks) {
+                  $params = array(
+                    'help' => "Uncheck this if you don't want this task to execute at all.",
+                    'label' => 'Active?',
+                    'name' => 'active',
+                    'checked' => $o->isActive(),
+                  );
+                  $o->getHtmlInputCheckbox($params);
                   foreach ($innerCallbacks as $cb) {
                     //
                     // Filesets are special cases, because we might need to

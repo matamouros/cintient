@@ -59,6 +59,9 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     if (!$this->getMessage()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);
       return false;
@@ -110,6 +113,9 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getMessage()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Message not set for echo task.', __METHOD__);

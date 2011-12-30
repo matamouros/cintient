@@ -301,11 +301,11 @@ if (!empty($_GET['c'])) {
   $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
   $fd = @fopen($file, 'w');
   if ($fd !== false) {
-    fwrite($fd, "RewriteEngine on\n");
-    fwrite($fd, "RewriteBase {$reqUri}/\n"); # Insert a trailing slash here, it's needed!
-    fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]\n");
-    fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]\n");
-    fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]\n");
+    fwrite($fd, "RewriteEngine on" . PHP_EOL);
+    fwrite($fd, "RewriteBase {$reqUri}" . (substr($reqUri, -1)=='/'?'':'/') . PHP_EOL); # Insert a trailing slash here, it's needed!
+    fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]" . PHP_EOL);
+    fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]" . PHP_EOL);
+    fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]" . PHP_EOL);
     fclose($fd);
   } else {
     $ok = false;
