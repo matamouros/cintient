@@ -67,7 +67,7 @@ class AjaxManager
     exit;
   }
 
-  static public function admin_settings()
+  static public function admin_globalSettings()
   {
     if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
       $msg = 'Not authorized!';
@@ -91,11 +91,45 @@ class AjaxManager
     }
     $GLOBALS['settings'] = $settings;
 
-    SystemEvent::raise(SystemEvent::DEBUG, "System settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    SystemEvent::raise(SystemEvent::DEBUG, "Global settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
     echo json_encode(
       array(
   			'success' => true,
-  			'error' => 'System settings saved.',
+  			'error' => 'Global settings saved.',
+      )
+    );
+    exit;
+  }
+
+  static public function admin_executables()
+  {
+    if (!$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized!';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $settings = new SystemSettings();
+    foreach ($_POST['executablesForm'] as $key => $value) {
+      $settingsValue = $value['value'];
+      if ($value['type'] == 'checkbox') {
+        $settingsValue = ($value['value'] ? '1' : '0');
+      }
+      $settings->setSetting($key, $settingsValue);
+    }
+    $GLOBALS['settings'] = $settings;
+
+    SystemEvent::raise(SystemEvent::DEBUG, "Executables settings changed. {$GLOBALS['user']->getUsername()}.", __METHOD__);
+    echo json_encode(
+      array(
+  			'success' => true,
+  			'error' => 'Executables settings saved.',
       )
     );
     exit;
@@ -327,6 +361,7 @@ class AjaxManager
     $smarty->assign('project_buildStats', Project_Build::getStats($project, $GLOBALS['user']));
     $smarty->assign('project_log', Project_Log::getList($project, $GLOBALS['user']));
     $smarty->assign('project_build', Project_Build::getLatest($project, $GLOBALS['user']));
+    $smarty->assign('project_builds', Project_Build::getList($project, $GLOBALS['user'], Access::READ, array('buildStatus' => Project_Build::STATUS_OK_WITH_PACKAGE, 'pageLength' => 5)));
     $smarty->assign('project', $project);
     $smarty->display('includes/dashboardProject.inc.tpl');
     exit;
@@ -1022,7 +1057,7 @@ EOT;
 
     $postVars = $_POST['generalForm'];
 
-    if (empty($postVars['title']['value']) || empty($postVars['buildLabel']['value'])) {
+    if (empty($postVars['title']['value']) || empty($postVars['releaseLabel']['value'])) {
       // TODO: visual clue for required attributes, in the interface
       $msg = 'Required attributes were empty.';
       SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
@@ -1037,7 +1072,7 @@ EOT;
 
     $project = $GLOBALS['project'];
     $project->setTitle($postVars['title']['value']);
-    $project->setBuildLabel($postVars['buildLabel']['value']);
+    $project->setReleaseLabel($postVars['releaseLabel']['value']);
     $project->setDescription($postVars['description']['value']);
     $GLOBALS['project'] = $project;
     $msg = "Project general settings edited.";
@@ -1047,6 +1082,64 @@ EOT;
       array(
   			'success' => true,
       )
+    );
+    exit;
+  }
+
+  static public function project_editRelease()
+  {
+    SystemEvent::raise(SystemEvent::DEBUG, "Called.", __METHOD__);
+
+    if (empty($GLOBALS['project']) || !($GLOBALS['project'] instanceof Project)) {
+      $msg = 'Invalid request';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+      array(
+            'success' => false,
+            'error' => $msg,
+      )
+      );
+      exit;
+    }
+
+    if (!$GLOBALS['project']->userHasAccessLevel($GLOBALS['user'], Access::WRITE) && !$GLOBALS['user']->hasCos(UserCos::ROOT)) {
+      $msg = 'Not authorized';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+      array(
+            'success' => false,
+            'error' => $msg,
+      )
+      );
+      exit;
+    }
+
+    $postVars = $_POST['releaseForm'];
+
+    if (empty($postVars['releaseLabel']['value'])) {
+      // TODO: visual clue for required attributes, in the interface
+      $msg = 'Required attributes were empty.';
+      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      echo json_encode(
+        array(
+          'success' => false,
+          'error' => $msg,
+        )
+      );
+      exit;
+    }
+
+    $project = $GLOBALS['project'];
+    $project->setReleaseLabel($postVars['releaseLabel']['value']);
+    $project->setOptionReleasePackage($postVars['optionReleasePackage']['value']);
+    $GLOBALS['project'] = $project;
+    $msg = "Project release settings edited.";
+    $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
+    SystemEvent::raise(SystemEvent::DEBUG, $msg, __METHOD__);
+    echo json_encode(
+    array(
+    			'success' => true,
+    )
     );
     exit;
   }
@@ -1128,8 +1221,8 @@ EOT;
     //
     if (!isset($postVars['title']) ||
          empty($postVars['title']) ||
-        !isset($postVars['buildLabel']) ||
-         empty($postVars['buildLabel']) ||
+        !isset($postVars['releaseLabel']) ||
+         empty($postVars['releaseLabel']) ||
         !isset($postVars['scmConnectorType']) ||
          empty($postVars['scmConnectorType']) ||
         !isset($postVars['scmRemoteRepository']) ||
@@ -1150,7 +1243,7 @@ EOT;
       $GLOBALS['project'] = null;
       $project = new Project();
       $project->setTitle($postVars['title']);
-      $project->setBuildLabel($postVars['buildLabel']);
+      $project->setReleaseLabel($postVars['releaseLabel']);
       $project->setScmConnectorType($postVars['scmConnectorType']);
       $project->setScmRemoteRepository($postVars['scmRemoteRepository']);
       $project->setScmUsername($postVars['scmUsername']);

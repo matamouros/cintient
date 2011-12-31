@@ -39,14 +39,11 @@
 class Project extends Framework_DatabaseObjectAbstract
 {
   protected $_avatar;                  // The avatar's location
-  protected $_buildLabel;              // The build label to be used in the packages' and builds' nomenclature (together with the counter)
+  protected $_releaseLabel;            // The label to be used in the packages' nomenclature (together with the incremental build counter)
   protected $_dateCheckedForChanges;   // Last status check on the project (not necessarily originating a build)
   protected $_dateCreation;
   protected $_description;
   protected $_id;
-  protected $_releaseMajor;            // The current release major number
-  protected $_releaseMinor;            // The current release minor number
-  protected $_releaseCounter;          // the *last* number assigned to a successful created release package. Should be incremental
   protected $_scmCheckChangesTimeout;  // In minutes.
   protected $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
   protected $_scmPassword;
@@ -67,7 +64,7 @@ class Project extends Framework_DatabaseObjectAbstract
   //
   // Options
   //
-  protected $_optionPackageOnSuccess;  // Generate a release package on every successful build?
+  protected $_optionReleasePackage;  // Generate a release package on every successful build?
 
   const STATUS_UNINITIALIZED = 0;
   const STATUS_ERROR = 1;
@@ -81,7 +78,7 @@ class Project extends Framework_DatabaseObjectAbstract
   {
     parent::__construct();
     $this->_avatar = null;
-    $this->_buildLabel = '';
+    $this->_releaseLabel = '';
     $this->_description = '';
     $this->_scmCheckChangesTimeout = CINTIENT_PROJECT_CHECK_CHANGES_TIMEOUT_DEFAULT;
     $this->_scmConnectorType = SCM_DEFAULT_CONNECTOR;
@@ -102,7 +99,7 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     // Options
     //
-    $this->_optionPackageOnSuccess = false;
+    $this->_optionReleasePackage = false;
   }
 
   public function __destruct()
@@ -127,8 +124,14 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     if (empty($id)) {
       if ($element instanceof Build_BuilderElement_Type_Property) {
+        //
+        // We need to pull the whole $properties attribute because of the
+        // auto-save. Using the addProperty is a mangled no-man's land
+        // that basically never triggers the auto-save (arrays and references
+        // are fucked up...)
+        //
         $properties = $this->getIntegrationBuilder()->getProperties();
-        $properties[] = $element;
+        $properties[$element->getName()] = $element; // Existing property gets overwritten
         $this->getIntegrationBuilder()->setProperties($properties);
       } else {
         $targets = $this->getIntegrationBuilder()->getTargets();
@@ -198,6 +201,15 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function build($force = false)
   {
+    //
+    // Since some SCM operations might take a while, put the project on
+    // BUILDING status right away
+    //
+    $status = $this->getStatus();
+    $this->setStatus(self::STATUS_BUILDING);
+    $this->_save(true); // We want the building status to update imediatelly
+    $this->setStatus($status);
+
     $params = array();
     $scm = new ScmConnector($this->getScmConnectorType(), $this->getScmLocalWorkingCopy(), $this->getScmRemoteRepository(), $this->getScmUsername(), $this->getScmPassword());
 
@@ -249,9 +261,18 @@ class Project extends Framework_DatabaseObjectAbstract
       }
     }
 
+    //
+    // Clean up sources dir and fresh populate it with the new SCM sources
+    //
+    if (!Framework_Filesystem::emptyDir($this->getSourcesDir()) || !$scm->export($this->getSourcesDir())) {
+      SystemEvent::raise(SystemEvent::INFO, "Couldn't refresh the sources dir. [PROJECTID={$this->getId()}]", __METHOD__);
+      $this->setStatus(self::STATUS_ERROR);
+      return false;
+    }
+
     // We're now building
     $this->setStatus(self::STATUS_BUILDING);
-    $this->_save(true); // We want the building status to update imediatelly
+    //$this->_save(true); // We want the building status to update imediatelly
 
     //
     // Scm stuff done, setup a new build for the project
@@ -268,27 +289,19 @@ class Project extends Framework_DatabaseObjectAbstract
 
     $this->setStatus(self::STATUS_OK);
     $this->incrementStatsNumBuilds();
-    $this->incrementReleaseCounter();
-    $build->setLabel($this->getCurrentReleaseLabel()); // make sure the project's release counter was incremented
+    $build->setLabel($this->getReleaseLabel()); // make sure the project's release counter was incremented
+    if ($this->getOptionReleasePackage()) {
+      $build->generateReleasePackage();
+    }
 
     SystemEvent::raise(SystemEvent::INFO, "Integration build successful. [PROJECTID={$this->getId()}]", __METHOD__);
     $this->triggerNotification(NotificationSettings::BUILD_SUCCESS);
     return true;
   }
 
-  public function incrementReleaseCounter()
-  {
-    $this->_releaseCounter++;
-  }
-
   public function incrementStatsNumBuilds()
   {
     $this->_statsNumBuilds++;
-  }
-
-  public function getCurrentReleaseLabel()
-  {
-    return ($this->getBuildLabel() . '-' . $this->getReleaseMajor() . '.' . $this->getReleaseMinor() . '.' . $this->getReleaseCounter());
   }
 
   public function delete()
@@ -352,12 +365,83 @@ class Project extends Framework_DatabaseObjectAbstract
 
   public function getScmLocalWorkingCopy()
   {
-    return $this->getWorkDir() . 'sources/';
+    $dir = "{$this->getWorkDir()}wc/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created working root dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getSourcesDir()
+  {
+    $dir = "{$this->getWorkDir()}sources/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create sources dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created sources dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getReleasesDir()
+  {
+    $dir = "{$this->getWorkDir()}releases/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create releases dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created releases dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getReleaseLabel()
+  {
+    if (empty($this->_releaseLabel) && !empty($this->_title)) {
+      $this->_releaseLabel = str_replace(' ', '-', strtolower($this->_title));
+    }
+    return $this->_releaseLabel;
+  }
+
+  public function setReleaseLabel($label)
+  {
+    if (empty($label)) {
+      $label = $this->getReleaseLabel(); // Yeah, weird code...
+    }
+    $this->_releaseLabel = $label;
   }
 
   public function getReportsWorkingDir()
   {
-    return $this->getWorkDir() . 'reports/';
+    $dir = "{$this->getWorkDir()}reports/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
+  }
+
+  public function getTempDir()
+  {
+    $dir = "{$this->getWorkDir()}temp/";
+    if (!file_exists($dir)) {
+      if (!@mkdir($dir, DEFAULT_DIR_MASK, true)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Could not create temp dir for project. [PID={$this->getId()}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::DEBUG, "Created temp dir for project. [PID={$this->getId()}]", __METHOD__);
+      }
+    }
+    return $dir;
   }
 
   public function getAvatarUrl()
@@ -384,17 +468,21 @@ class Project extends Framework_DatabaseObjectAbstract
     // Create all the working directories
     //
     $this->setWorkDir(CINTIENT_PROJECTS_DIR . uniqid($this->getId(), true) . '/'); // Don't forget the trailing '/'!
-    if (!mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
+    if (!@mkdir($this->getWorkDir(), DEFAULT_DIR_MASK, true)) {
       $this->setWorkDir(null);
       SystemEvent::raise(SystemEvent::ERROR, "Could not create working root dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
+    if (!file_exists($this->getScmLocalWorkingCopy())) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create sources dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!mkdir($this->getReportsWorkingDir(), DEFAULT_DIR_MASK, true)) {
+    if (!file_exists($this->getReportsWorkingDir())) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not create reports dir for project. [PID={$this->getId()}]", __METHOD__);
+      return false;
+    }
+    if (!file_exists($this->getReleasesDir())) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not create releases dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
     //
@@ -402,32 +490,12 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     $echo = new Build_BuilderElement_Task_Echo();
     $echo->setMessage("hello, world");
-    $propertyProjectDir = new Build_BuilderElement_Type_Property();
-    $propertyProjectDir->setName('projectDir');
-    $propertyProjectDir->setValue($this->getWorkDir());
-    $propertyProjectDir->setFailOnError(false);
-    $propertyProjectDir->setEditable(false);
-    $propertyProjectDir->setDeletable(false);
-    $propertyProjectDir->setVisible(false);
-    $propertySourcesDir = new Build_BuilderElement_Type_Property();
-    $propertySourcesDir->setName('sourcesDir');
-    $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
-    $propertySourcesDir->setFailOnError(false);
-    $propertySourcesDir->setEditable(false);
-    $propertySourcesDir->setDeletable(false);
-    $propertySourcesDir->setVisible(false);
     $target = new Build_BuilderElement_Target();
     $target->setName('build');
-    // Following is commented out so that all tasks are added through the new addToIntegrationBuilder()
-    //$target->addTask($propertyProjectDir);
-    //$target->addTask($propertySourcesDir);
-    //$target->addTask($echo);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
-    $this->addToIntegrationBuilder($propertyProjectDir);
-    $this->addToIntegrationBuilder($propertySourcesDir);
+    $this->setDefaultPropertiesForIntegrationBuilder();
     $this->addToIntegrationBuilder($echo);
-    //$this->_integrationBuilder->setBaseDir($this->getWorkDir());
     //
     // Save the project and take care of all database dependencies.
     //
@@ -447,6 +515,26 @@ class Project extends Framework_DatabaseObjectAbstract
     return true;
   }
 
+  public function setDefaultPropertiesForIntegrationBuilder()
+  {
+    $propertyProjectDir = new Build_BuilderElement_Type_Property();
+    $propertyProjectDir->setName('projectDir');
+    $propertyProjectDir->setValue($this->getWorkDir());
+    $propertyProjectDir->setFailOnError(false);
+    $propertyProjectDir->setEditable(false);
+    $propertyProjectDir->setDeletable(false);
+    $propertyProjectDir->setVisible(false);
+    $this->addToIntegrationBuilder($propertyProjectDir);
+    $propertySourcesDir = new Build_BuilderElement_Type_Property();
+    $propertySourcesDir->setName('sourcesDir');
+    $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
+    $propertySourcesDir->setFailOnError(false);
+    $propertySourcesDir->setEditable(false);
+    $propertySourcesDir->setDeletable(false);
+    $propertySourcesDir->setVisible(false);
+    $this->addToIntegrationBuilder($propertySourcesDir);
+  }
+
   static public function install()
   {
     SystemEvent::raise(SystemEvent::INFO, "Creating project related tables...", __METHOD__);
@@ -456,15 +544,13 @@ class Project extends Framework_DatabaseObjectAbstract
 DROP TABLE IF EXISTS {$tableName}NEW;
 CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  buildlabel TEXT NOT NULL DEFAULT '',
+  releaselabel TEXT NOT NULL DEFAULT '',
   datecreation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   datecheckedforchanges DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deploymentbuilder TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
   integrationbuilder TEXT NOT NULL DEFAULT '',
-  releasemajor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  releaseminor MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  releasecounter INT UNSIGNED NOT NULL DEFAULT 0,
+  optionreleasepackage TINYINT UNSIGNED NOT NULL DEFAULT 0,
   scmcheckchangestimeout MEDIUMINT UNSIGNED NOT NULL DEFAULT 30,
   scmconnectortype VARCHAR(20) NOT NULL DEFAULT '',
   scmpassword VARCHAR(255) NOT NULL DEFAULT '',
@@ -543,10 +629,10 @@ EOT;
     $sql = 'REPLACE INTO project'
          . ' (id,avatar,datecreation,'
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
-         . ' buildlabel,statsnumbuilds,scmpassword,scmusername,workdir,'
+         . ' releaselabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
-         . ' datecheckedforchanges, specialtasks)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' datecheckedforchanges, specialtasks, optionreleasepackage)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -561,7 +647,7 @@ EOT;
       /*SQLite3::escapeString*/($serializedIntegrationBuilder),
       /*SQLite3::escapeString*/($serializedDeploymentBuilder),
       $this->getStatus(),
-      $this->getBuildLabel(),
+      $this->getReleaseLabel(),
       $this->getStatsNumBuilds(),
       $this->getScmPassword(),
       $this->getScmUsername(),
@@ -571,6 +657,7 @@ EOT;
       $this->getScmCheckChangesTimeout(),
       $this->getDateCheckedForChanges(),
       $specialTasks,
+      $this->getOptionReleasePackage(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -808,14 +895,11 @@ EOT;
     $ret->setScmPassword($rs->getScmPassword());
     $ret->setScmCheckChangesTimeout($rs->getScmCheckChangesTimeout());
     $ret->setWorkDir($rs->getWorkDir());
-    $ret->setBuildLabel($rs->getBuildLabel());
+    $ret->setReleaseLabel($rs->getReleaseLabel());
     $ret->setDateCreation($rs->getDateCreation());
     $ret->setDateCheckedForChanges($rs->getDateCheckedForChanges());
     $ret->setDescription($rs->getDescription());
     $ret->setId($rs->getId());
-    $ret->setReleaseMajor($rs->getReleaseMajor());
-    $ret->setReleaseMinor($rs->getReleaseMinor());
-    $ret->setReleaseCounter($rs->getReleaseCounter());
     $specialTasks = @unserialize($rs->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = array();
@@ -825,6 +909,7 @@ EOT;
     $ret->setStatus($rs->getStatus());
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
+    $ret->setOptionReleasePackage($rs->getOptionReleasePackage());
     //
     // Builders
     //

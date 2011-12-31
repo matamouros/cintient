@@ -50,9 +50,14 @@ class UrlManager
     return CINTIENT_BASE_URL . '/admin/';
   }
 
-  static public function getForAjaxAdminSettings()
+  static public function getForAjaxAdminGlobalSettings()
   {
-    return CINTIENT_BASE_URL . '/ajax/admin/settings/';
+    return CINTIENT_BASE_URL . '/ajax/admin/global-settings/';
+  }
+
+  static public function getForAjaxAdminExecutables()
+  {
+    return CINTIENT_BASE_URL . '/ajax/admin/executables/';
   }
 
   static public function getForAjaxAdminLog()
@@ -123,6 +128,11 @@ class UrlManager
   static public function getForAjaxProjectEditGeneral()
   {
     return CINTIENT_BASE_URL . '/ajax/project/edit-general/';
+  }
+
+  static public function getForAjaxProjectEditRelease()
+  {
+    return CINTIENT_BASE_URL . '/ajax/project/edit-release/';
   }
 
   static public function getForAjaxProjectEditScm()

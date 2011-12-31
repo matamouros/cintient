@@ -47,7 +47,12 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
   const EXECUTABLE_GIT          = 'executableGit';
   const EXECUTABLE_PHP          = 'executablePhp';
   const EXECUTABLE_SVN          = 'executableSvn';
+  const EXECUTABLE_TAR          = 'executableTar';
   const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
+
+  static public $packageGenerationCmd = array(
+  	self::EXECUTABLE_TAR => 'cd ${tmpDir} && ${archiverExecutable} -czf ${releaseLabel}.tar.gz ${sourcesDir}',
+  );
 
   public function __construct()
   {
@@ -58,6 +63,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     //
     $this->_settings = array(
       self::ALLOW_USER_REGISTRATION => 1,
+      self::EXECUTABLE_TAR => (Framework_HostOs::isWindows() ? '' : 'tar'),
       self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
@@ -65,13 +71,34 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     );
   }
 
-  public function getView()
+  public function getCmdForPackageGeneration(array $params = array())
+  {
+    $command = self::$packageGenerationCmd[$params['archiverExecutable']];
+    preg_match_all('/\$\{(\w+)\}/', $command, $matches);
+    $search = array();
+    $replace = array();
+    foreach ($matches[1] as $property) {
+      if (!array_key_exists($property, $params)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Missing required parameter for package generation command.", __METHOD__);
+        $params[$property] = '';
+      }
+      $search[] = '${' . $property . '}';
+      if ($property == 'archiverExecutable') {
+        $replace[] = $this[$params['archiverExecutable']]; // fetch the executable of the provided archiver
+      } else {
+        $replace[] = $params[$property];
+      }
+    }
+    return str_replace($search, $replace, $command);
+  }
+
+  public function getViewGlobalSettings()
   {
     require_once 'lib/lib.htmlgen.php';
     $o = $this;
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration');
+      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration?');
       h::div(array('class' => 'input'), function () use ($o) {
         h::ul(array('class' => 'inputs-list'), function () use ($o) {
           h::li(function () use ($o) {
@@ -89,7 +116,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     });
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder');
+      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder?');
       h::div(array('class' => 'input'), function () use ($o) {
         h::ul(array('class' => 'inputs-list'), function () use ($o) {
           h::li(function () use ($o) {
@@ -105,28 +132,47 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
         });
       });
     });
+  }
 
-    h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::EXECUTABLE_PHP), 'PHP executable');
-      h::div(array('class' => 'input'), function () use ($o) {
-        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_PHP, 'value' => $o[SystemSettings::EXECUTABLE_PHP]));
-        h::span(array('class' => 'help-block'), "The full path to the host system's PHP executable.");
+  public function getViewExecutables()
+  {
+    require_once 'lib/lib.htmlgen.php';
+    $o = $this;
+
+    h::fieldset(function () use ($o) {
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_PHP), 'PHP');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_PHP, 'value' => $o[SystemSettings::EXECUTABLE_PHP]));
+          h::span(array('class' => 'help-block'), "The path to the host system's PHP executable.");
+        });
       });
-    });
 
-    h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::EXECUTABLE_GIT), 'Git executable');
-      h::div(array('class' => 'input'), function () use ($o) {
-        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_GIT, 'value' => $o[SystemSettings::EXECUTABLE_GIT]));
-        h::span(array('class' => 'help-block'), "The full path to the host system's Git executable. Required in order to allow Git as the configured SCM for projects.");
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_GIT), 'Git');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_GIT, 'value' => $o[SystemSettings::EXECUTABLE_GIT]));
+          h::span(array('class' => 'help-block'), "The path to the host system's Git executable. Required in order to allow Git as the configured SCM for projects.");
+        });
       });
-    });
 
-    h::div(array('class' => 'clearfix'), function () use ($o) {
-      h::label(array('for' => SystemSettings::EXECUTABLE_SVN), 'SVN executable');
-      h::div(array('class' => 'input'), function () use ($o) {
-        h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_SVN, 'value' => $o[SystemSettings::EXECUTABLE_SVN]));
-        h::span(array('class' => 'help-block'), "The full path to the host system's SVN executable. Required in order to allow SVN as the configured SCM for projects.");
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_SVN), 'SVN');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_SVN, 'value' => $o[SystemSettings::EXECUTABLE_SVN]));
+          h::span(array('class' => 'help-block'), "The path to the host system's SVN executable. Required in order to allow SVN as the configured SCM for projects.");
+        });
+      });
+/*    });
+
+    h::fieldset(function () use ($o) {
+      h::legend('Archivers');*/
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_TAR), 'tar');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_TAR, 'value' => $o[SystemSettings::EXECUTABLE_TAR]));
+          h::span(array('class' => 'help-block'), "The path to the host system's tar executable. Will be used to generate all release packages.");
+        });
       });
     });
   }

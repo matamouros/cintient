@@ -68,21 +68,21 @@ class Framework_FilesystemFilterIterator extends FilterIterator
     '**/.bzr/**',
     '**/.bzrignore',
   );
-
   private $_dir;
-
   private $_exclude;
-
   private $_include;
+  private $_type;
+
+  const FILE = 0;
+  const DIR  = 1;
+  const BOTH = 2;
 
 
 	/**
-   * Magic method implementation for calling vanilla getters and setters. This
-   * is rigged to work only with private/protected non-static class variables
-   * whose nomenclature follows the Zend Coding Standard.
-   *
-   * @param $name
-   * @param $args
+	 * Due to the single inheritance model of PHP and traits being
+	 * available only on 5.4 and up, we can't extend Framework_BaseObject.
+	 *
+   * @see Framework_BaseObject
    */
   public function __call($name, $args)
   {
@@ -93,20 +93,45 @@ class Framework_FilesystemFilterIterator extends FilterIterator
       $var = '_' . lcfirst(substr($name, 3));
       $this->$var = $args[0];
       return true;
+    } elseif (strpos($name, 'is') === 0) {
+      $var = '_' . lcfirst(substr($name, 2));
+      return (bool)$this->$var;
+    } elseif (strpos($name, 'getDate') === 0) {
+      $var = '_' . lcfirst(substr($name, 3));
+      if (empty($this->$var)) {
+        $this->$var = date('Y-m-d H:i:s');
+      }
+      return $this->$var;
+    } elseif (strpos($name, 'empty') === 0) {
+      $var = '_' . lcfirst(substr($name, 5));
+      return empty($this->$var);
+    } else {
+      trigger_error("No valid method available for calling", E_USER_ERROR);
+      exit;
     }
-    return false;
   }
 
-  public function __construct(Iterator $it, $dir, Array $include = array(), Array $exclude = array())
+  public function __construct(Iterator $it, $dir, Array $include = array(), Array $exclude = array(), $type = self::BOTH, $defaultExcludes = true)
   {
     parent::__construct($it);
     $this->_dir = $dir;
     $this->_include = $include;
     $this->_exclude = $exclude;
+    $this->_type = $type;
+    if (!$defaultExcludes) {
+      $this->_defaultExcludes = array();
+    }
   }
 
   public function accept()
   {
+    // Check for type, first of all
+    if (($this->_type == self::FILE && !is_file($this->current())) ||
+        ($this->_type == self::DIR  && !is_dir($this->current())))
+    {
+      return false;
+    }
+
     // if it is default excluded promptly return false
     foreach ($this->_defaultExcludes as $exclude) {
       if ($this->_isMatch($exclude)) {

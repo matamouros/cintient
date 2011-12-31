@@ -63,7 +63,7 @@ class Build_BuilderElement_Project extends Build_BuilderElement
 
   public function addProperty(Build_BuilderElement_Type_Property $o)
   {
-    $this->_properties[] = $o;
+    $this->_properties[$o->getName()] = $o; // Existing property gets overwritten
   }
 
   public function addTarget(Build_BuilderElement_Target $o)

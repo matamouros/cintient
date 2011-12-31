@@ -110,6 +110,13 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
     parent::toHtml(array('title' => 'Copy'), $callbacks);
   }
 
+  public function toAnt()
+  {
+    if (!$this->isActive()) {
+      return true;
+    }
+  }
+
   public function toPhing()
   {
     return $this->toAnt();
@@ -117,6 +124,9 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFile() && !$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No source files set for task copy.', __METHOD__);

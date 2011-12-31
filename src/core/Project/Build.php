@@ -36,15 +36,16 @@
  */
 class Project_Build extends Framework_DatabaseObjectAbstract
 {
-  protected $_id;           // the build's incremental ID
-  protected $_date;         // the build's start date
-  protected $_duration;     // the build's duration (if any)
-  protected $_label;        // the label on the build, also used to name the release package file
-  protected $_description;  // a user generated description text (prior or after the build triggered).
-  protected $_output;       // the integration builder's output collected
-  protected $_status;       // indicates: failure | no_release | release
-  protected $_scmRevision;  // The corresponding SCM revision on the remote repository
-  protected $_specialTasks; // Array with the build's class names of the integration builder elements that are special tasks
+  protected $_id;            // the build's incremental ID
+  protected $_date;          // the build's start date
+  protected $_duration;      // the build's duration (if any)
+  protected $_label;         // the label on the build, also used to name the release package file
+  protected $_description;   // a user generated description text (prior or after the build triggered).
+  protected $_output;        // the integration builder's output collected
+  protected $_releaseFile;   // the release filename - if any
+  protected $_status;        // indicates: failure | no_release | release
+  protected $_scmRevision;   // The corresponding SCM revision on the remote repository
+  protected $_specialTasks;  // Array with the build's class names of the integration builder elements that are special tasks
 
   protected $_ptrProject;
 
@@ -61,6 +62,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->_label = '';
     $this->_description = '';
     $this->_output = '';
+    $this->_releaseFile = '';
     $this->_specialTasks = $project->getSpecialTasks();
     $this->_status = self::STATUS_FAIL;
     $this->_scmRevision = '';
@@ -209,7 +211,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     if (!empty($specialTasks)) {
       foreach ($specialTasks as $task) {
         if (!class_exists($task)) {
-          SystemEvent::raise(SystemEvent::ERROR, "Unexisting complex task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
+          SystemEvent::raise(SystemEvent::ERROR, "Unexisting special task. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
           continue;
         }
         $o = new $task($this);
@@ -222,6 +224,55 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
     $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
     return true;
+  }
+
+  public function generateReleasePackage()
+  {
+    $ret = false;
+    if ($this->getStatus() != self::STATUS_FAIL) {
+      $project = $this->getPtrProject(); // Easier handling
+      $filename = "{$project->getReleasesDir()}{$project->getReleaseLabel()}-{$this->getId()}";
+      //
+      // Rename the sources dir to the new dir that will be archived
+      //
+      $releaseDirName = "{$project->getReleaseLabel()}-{$this->getId()}";
+      $releaseDirPath = "{$project->getTempDir()}{$releaseDirName}";
+      if (!@rename($project->getSourcesDir(), $releaseDirPath)) {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems creating release dir. [BUILD={$this->getId()}] [PID={$project->getId()}]", __METHOD__);
+        return false;
+      }
+      //
+      // TODO: For now only tar is available. As soon as more are implemented,
+      // it is required that Project keeps it's preferred archiver, so
+      // that it can be fetched here and fed into getCmdForPackageGeneration()
+      //
+      $params = array(
+        'tmpDir' => $project->getTempDir(),
+        'archiverExecutable' => SystemSettings::EXECUTABLE_TAR,
+        'releaseLabel' => $filename,
+        'sourcesDir' => $releaseDirName,
+      );
+      $command = $GLOBALS['settings']->getCmdForPackageGeneration($params);
+      $command = str_replace('\\', '/', $command);
+      $command = str_replace('//', '/', $command);
+      if (preg_match("/({$project->getReleaseLabel()}-{$this->getId()}[.\w]+) /", $command, $matches)) {
+        $filename = $matches[1]; // Get the filename extension
+      }
+      $proc = new Framework_Process();
+      $proc->setExecutable($command, false);
+      $proc->run();
+      if ($proc->getReturnValue() == 0) {
+        $this->setReleaseFile($filename);
+        $this->setStatus(self::STATUS_OK_WITH_PACKAGE);
+        $ret = true;
+        SystemEvent::raise(SystemEvent::DEBUG, "Generated release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
+      } else {
+        SystemEvent::raise(SystemEvent::ERROR, "Problems generating release package for build. [BUILD={$this->getId()}] [PID={$project->getId()}] [COMMAND={$command}]", __METHOD__);
+      }
+      // Remove the release dir
+      Framework_Filesystem::removeDir($releaseDirPath);
+    }
+    return $ret;
   }
 
   public function isOk()
@@ -249,8 +300,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status, scmrevision, date, duration)'
-         . ' VALUES (?,?,?,?,?,?,?,?,?)';
+         . ' (id, label, description, output, specialtasks, status,'
+         . ' scmrevision, date, duration, releasefile)'
+         . ' VALUES (?,?,?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -265,6 +317,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       $this->getScmRevision(),
       $this->getDate(),
       $this->getDuration(),
+      $this->getReleaseFile(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -326,6 +379,14 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     return $ret;
   }
 
+  /**
+   * Fetches a list of project builds.
+   *
+   * @param Project $project
+   * @param User $user
+   * @param int $access
+   * @param array $options
+   */
   static public function getList(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
@@ -339,6 +400,9 @@ class Project_Build extends Framework_DatabaseObjectAbstract
          . ' WHERE pu.projectid=?'
          . ' AND pu.userid=?'
          . ' AND pu.access & ?';
+    if (isset($options['buildStatus'])) {
+      $sql .= ' AND pb.status=' . (int)$options['buildStatus'];
+    }
     if ($options['sort'] != Sort::NONE) {
       $sql .= ' ORDER BY';
       switch ($options['sort']) {
@@ -433,6 +497,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret->setLabel($rs->getLabel());
     $ret->setDescription($rs->getDescription());
     $ret->setOutput($rs->getOutput());
+    $ret->setReleaseFile($rs->getReleaseFile());
     $specialTasks = @unserialize($rs->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = array();
@@ -463,6 +528,7 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   label VARCHAR(255) NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   output TEXT NOT NULL DEFAULT '',
+  releasefile TEXT NOT NULL DEFAULT '',
   specialtasks TEXT NOT NULL DEFAULT '',
   status TINYINT UNSIGNED NOT NULL DEFAULT 0,
   scmrevision VARCHAR(40) NOT NULL DEFAULT ''

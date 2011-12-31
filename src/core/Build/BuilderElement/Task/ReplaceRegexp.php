@@ -72,6 +72,9 @@ class Build_BuilderElement_Task_ReplaceRegexp extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('replaceregexp');
     if (empty($this->_filesets) && empty($this->_file)) {
@@ -150,6 +153,9 @@ class Build_BuilderElement_Task_ReplaceRegexp extends Build_BuilderElement
 
   public function toPhing()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $str = <<<EOT
 
 <!--
@@ -165,6 +171,9 @@ EOT;
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = "
 \$GLOBALS['result']['task'] = 'replaceregexp';
 ";

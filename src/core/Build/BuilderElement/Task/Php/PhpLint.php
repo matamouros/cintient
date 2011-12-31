@@ -60,6 +60,9 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
 
   public function toAnt()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('apply');
     if (!$this->getFilesets()) {
@@ -97,6 +100,9 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
 
   public function toPhing()
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $xml = new XmlDoc();
     $xml->startElement('phplint');
     if (!$this->getFilesets()) {
@@ -118,6 +124,9 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
 
   public function toPhp(Array &$context = array())
   {
+    if (!$this->isActive()) {
+      return true;
+    }
     $php = '';
     if (!$this->getFilesets()) {
       SystemEvent::raise(SystemEvent::ERROR, 'No files not set for task PHP lint.', __METHOD__);
