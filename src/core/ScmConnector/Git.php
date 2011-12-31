@@ -107,18 +107,31 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
   private function _getRemoteRevision()
   {
     //
+    // Check locally what is the current branch
+    //
+    /*
+    $ cat HEAD
+    ref: refs/heads/develop
+    */
+    $file = "{$this->getLocal()}.git/HEAD";
+    if (!preg_match('/^ref: ([\w\/\-_]+)$/', file_get_contents($file), $matches) || empty($matches[1])) {
+      SystemEvent::raise(SystemEvent::ERROR, "Could not check local branch on HEAD file. [FILE={$file}] [LOCAL={$this->getLocal()}]", __METHOD__);
+      return false;
+    }
+    $branch = $matches[1];
+
+    //
     // Pull up the remote revision
     //
     /*
-    From git://github.com/matamouros/Test.git
-    0e02ce25ab768f1364575c86e055b89235c64573	HEAD
-    0e02ce25ab768f1364575c86e055b89235c64573	refs/heads/master
+    $ git ls-remote git://github.com/matamouros/cintient.git refs/heads/develop
+    0fb200fffe72b7d1c4aaf1c0cbd35c0b070b33bb	refs/heads/develop
     */
-    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} ls-remote {$this->getLocal()}.git";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} ls-remote {$this->getRemote()} {$branch}";
     $proc = new Framework_Process();
     $proc->setExecutable($command);
     $proc->run();
-    if (($return = $proc->getReturnValue()) != 0 || !preg_match('/^([\da-f]{40})\s+HEAD$/m', $proc->getStdout(), $matchesRemote)) {
+    if (($return = $proc->getReturnValue()) != 0 || !preg_match('/^([\da-f]{40})\s+/', $proc->getStdout(), $matchesRemote)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not check remote revision. [COMMAND=\"{$command}\"] [RET={$return}] [STDERR=\"{$proc->getStderr()}\"] [OUTPUT=\"{$proc->getStdout()}\"]", __METHOD__);
       return false;
     }
