@@ -368,7 +368,7 @@ $(document).ready(function() {
         type: 'area',
         name: 'Duration',
         data: [
-{foreach from=$project_buildStats.buildDuration item=duration}[Date({$duration.0}), {$duration.1}],{/foreach}
+{foreach from=$project_buildStats.buildDuration item=duration}[{$duration.0}, {$duration.1}],{/foreach}
         ]
       }
     ]
