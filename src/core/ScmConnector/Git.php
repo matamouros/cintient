@@ -114,7 +114,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     0e02ce25ab768f1364575c86e055b89235c64573	HEAD
     0e02ce25ab768f1364575c86e055b89235c64573	refs/heads/master
     */
-    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git ls-remote";
+    $command = "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} ls-remote {$this->getLocal()}.git";
     $proc = new Framework_Process();
     $proc->setExecutable($command);
     $proc->run();

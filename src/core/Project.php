@@ -124,8 +124,14 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     if (empty($id)) {
       if ($element instanceof Build_BuilderElement_Type_Property) {
+        //
+        // We need to pull the whole $properties attribute because of the
+        // auto-save. Using the addProperty is a mangled no-man's land
+        // that basically never triggers the auto-save (arrays and references
+        // are fucked up...)
+        //
         $properties = $this->getIntegrationBuilder()->getProperties();
-        $properties[] = $element;
+        $properties[$element->getName()] = $element; // Existing property gets overwritten
         $this->getIntegrationBuilder()->setProperties($properties);
       } else {
         $targets = $this->getIntegrationBuilder()->getTargets();
@@ -484,32 +490,12 @@ class Project extends Framework_DatabaseObjectAbstract
     //
     $echo = new Build_BuilderElement_Task_Echo();
     $echo->setMessage("hello, world");
-    $propertyProjectDir = new Build_BuilderElement_Type_Property();
-    $propertyProjectDir->setName('projectDir');
-    $propertyProjectDir->setValue($this->getWorkDir());
-    $propertyProjectDir->setFailOnError(false);
-    $propertyProjectDir->setEditable(false);
-    $propertyProjectDir->setDeletable(false);
-    $propertyProjectDir->setVisible(false);
-    $propertySourcesDir = new Build_BuilderElement_Type_Property();
-    $propertySourcesDir->setName('sourcesDir');
-    $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
-    $propertySourcesDir->setFailOnError(false);
-    $propertySourcesDir->setEditable(false);
-    $propertySourcesDir->setDeletable(false);
-    $propertySourcesDir->setVisible(false);
     $target = new Build_BuilderElement_Target();
     $target->setName('build');
-    // Following is commented out so that all tasks are added through the new addToIntegrationBuilder()
-    //$target->addTask($propertyProjectDir);
-    //$target->addTask($propertySourcesDir);
-    //$target->addTask($echo);
     $this->_integrationBuilder->addTarget($target);
     $this->_integrationBuilder->setDefaultTarget($target->getName());
-    $this->addToIntegrationBuilder($propertyProjectDir);
-    $this->addToIntegrationBuilder($propertySourcesDir);
+    $this->setDefaultPropertiesForIntegrationBuilder();
     $this->addToIntegrationBuilder($echo);
-    //$this->_integrationBuilder->setBaseDir($this->getWorkDir());
     //
     // Save the project and take care of all database dependencies.
     //
@@ -527,6 +513,26 @@ class Project extends Framework_DatabaseObjectAbstract
 
     $this->setStatus(self::STATUS_UNINITIALIZED);
     return true;
+  }
+
+  public function setDefaultPropertiesForIntegrationBuilder()
+  {
+    $propertyProjectDir = new Build_BuilderElement_Type_Property();
+    $propertyProjectDir->setName('projectDir');
+    $propertyProjectDir->setValue($this->getWorkDir());
+    $propertyProjectDir->setFailOnError(false);
+    $propertyProjectDir->setEditable(false);
+    $propertyProjectDir->setDeletable(false);
+    $propertyProjectDir->setVisible(false);
+    $this->addToIntegrationBuilder($propertyProjectDir);
+    $propertySourcesDir = new Build_BuilderElement_Type_Property();
+    $propertySourcesDir->setName('sourcesDir');
+    $propertySourcesDir->setValue($this->getScmLocalWorkingCopy());
+    $propertySourcesDir->setFailOnError(false);
+    $propertySourcesDir->setEditable(false);
+    $propertySourcesDir->setDeletable(false);
+    $propertySourcesDir->setVisible(false);
+    $this->addToIntegrationBuilder($propertySourcesDir);
   }
 
   static public function install()
