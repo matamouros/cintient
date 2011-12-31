@@ -3,7 +3,7 @@
  * $Header$
  * $Horde: horde/lib/Log/composite.php,v 1.2 2000/06/28 21:36:13 jon Exp $
  *
- * @version $Revision: 303597 $
+ * @version $Revision: 305990 $
  * @package Log
  */
 
@@ -246,7 +246,7 @@ class Log_composite extends Log
             return false;
         }
 
-        $this->_children[$child->_id] = &$child;
+        $this->_children[$child->_id] = $child;
 
         return true;
     }
