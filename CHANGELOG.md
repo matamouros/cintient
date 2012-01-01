@@ -2,6 +2,45 @@ Changelog
 =========
 
 
+2011-12-31 cintient-1.0.0-beta-11
+---------------------------------
+
+ *  ADDED: Package generation for successful builds. Packages are a
+           build's sources exported to an archive. For now only tar is
+           supported for package generation.
+ *  ADDED: Active attribute to tasks. Unactive tasks can still be edited
+           and seen, but they will not be executed.
+ *  FIXED: Git connector's update method on Windows platforms.
+ *  FIXED: ReplaceRegexp task was wrongly categorized as a PHP task.
+ *  FIXED: PhpLint task now outputs syntax error details (in the Raw
+           tab of the Build history).
+ *  FIXED: Broken property expansion on "bootstrap" attribute of PhpUnit
+           task.
+ *  FIXED: Several other fixes and improvements, both layout and core.
+ *  FIXED: A few newline compatibility issues in the installer.
+ *  FIXED: Double slash issue in empty URI cases, in the installer.
+ *  FIXED: Rogue notices in third party logging library.
+ *  FIXED: Improved Git connector's modified sources verification.
+ *  CHANGED: Improved log output.
+ *  CHANGED: Project build race condition now much harder to occur.
+ *  CHANGED: Much improved update method for SCM connectors, now trying
+             much harder before giving up, on error.
+ *  CHANGED: System settings tab in the Administration area was divided
+             into Global settings and Executables tabs.
+ *  CHANGED: Builder properties are now unique - specifying already
+             existing properties overwrites the previous ones.
+
+
+2011-12-16 cintient-1.0.0-beta-10
+---------------------------------
+
+ *  ADDED: New Administration area, complete with a reverse tail to the
+           application log file and the possibility to configure the
+           paths of several required third party command line
+           executables.
+ *  FIXED: Projects would break if SCM settings were changed.
+
+
 2011-12-10 cintient-1.0.0-beta-9
 --------------------------------
 

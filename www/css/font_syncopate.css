@@ -1,7 +1,7 @@
 /*
  * 
  *  Cintient, Continuous Integration made simple.
- *  Copyright (c) 2010, 2011, Pedro Mata-Mouros Fonseca
+ *  Copyright (c) 2010-2012, Pedro Mata-Mouros <pedro.matamouros@gmail.com>
  *
  *  This file is part of Cintient.
  *
