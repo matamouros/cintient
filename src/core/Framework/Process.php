@@ -113,12 +113,23 @@ class Framework_Process extends Framework_BaseObject
       $filename = escapeshellcmd($filename);
     }
     $this->_executable = $filename;
+    
+    if (Framework_HostOs::isWindows()) {
+      if (preg_match('/php(\.exe)?$/i', trim($this->_executable))) {
+         $_phpini = php_ini_loaded_file();
+         if ($_phpini){
+           $_phpini = preg_replace('/\/\/+/', '/', str_replace('\\', '/', $_phpini));
+           $this->_executable .= " -c $_phpini";
+         }
+      }
+    }
+    
   }
 
   public function isRunning()
   {
     if (Framework_HostOs::isWindows()) {
-      //(@pclose(popen("start /B ". $this->_executable, "r"));
+      return Framework_WinProcess::isRunning();
     } else {
       $output = array();
       $ret = 1;
