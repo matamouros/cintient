@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  Cintient, Continuous Integration made simple.
@@ -36,6 +37,7 @@
  */
 class Project_Build extends Framework_DatabaseObjectAbstract
 {
+
   protected $_id;            // the build's incremental ID
   protected $_date;          // the build's start date
   protected $_duration;      // the build's duration (if any)
@@ -46,7 +48,6 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   protected $_status;        // indicates: failure | no_release | release
   protected $_scmRevision;   // The corresponding SCM revision on the remote repository
   protected $_specialTasks;  // Array with the build's class names of the integration builder elements that are special tasks
-
   protected $_ptrProject;
 
   const STATUS_FAIL = 0;
@@ -109,7 +110,6 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $project = $this->getPtrProject(); // Easier handling
-
     //
     // A few more sanity checks
     //
@@ -151,7 +151,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $builderProcess = new Framework_Process($GLOBALS['settings'][SystemSettings::EXECUTABLE_PHP]);
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
-    $this->setDuration(time()-strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
+    $this->setDuration(time() - strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
     //
     // Import back into Cintient space the external builder's output
     // TODO: we should probably have this somewhere better than
@@ -160,15 +160,18 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     // Also check BuilderElement_Project for the expected
     // $GLOBALS['result'] vars...
     //
-    $output = explode(PHP_EOL, $builderProcess->getStdout());
+    $output = explode("\n", str_replace("\r", "", $builderProcess->getStdout()));
     $GLOBALS['result'] = array();
     $GLOBALS['result']['ok'] = false;
     foreach ($output as $line) {
+      $line = trim($line);
       $neck = strpos($line, '=');
       $key = substr($line, 0, $neck);
-      $value = substr($line, $neck+1);
-      $value = str_replace(CINTIENT_NEWLINE_TOKEN, PHP_EOL, $value);
-      $GLOBALS['result'][$key] = $value;
+      $value = substr($line, $neck + 1);
+      $value = str_replace(CINTIENT_NEWLINE_TOKEN, "\n", $value);
+      if (!empty($key)) {
+        $GLOBALS['result'][$key] = $value;
+      }
     }
     if (!empty($GLOBALS['result']['stacktrace'])) {
       $this->addToOutput($GLOBALS['result']['stacktrace']);
@@ -186,7 +189,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
-    $this->setDuration(time()-strtotime($this->getDate()));
+    $this->setDuration(time() - strtotime($this->getDate()));
 
     //
     // Create this build's report dir, backing up an existing one, just in case
@@ -222,7 +225,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
-    $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
+    $this->setDuration(time() - strtotime($this->getDate())); // Final duration time refresh
     return true;
   }
 
@@ -247,10 +250,10 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       // that it can be fetched here and fed into getCmdForPackageGeneration()
       //
       $params = array(
-        'tmpDir' => $project->getTempDir(),
-        'archiverExecutable' => SystemSettings::EXECUTABLE_TAR,
-        'releaseLabel' => $filename,
-        'sourcesDir' => $releaseDirName,
+          'tmpDir' => $project->getTempDir(),
+          'archiverExecutable' => SystemSettings::EXECUTABLE_TAR,
+          'releaseLabel' => $filename,
+          'sourcesDir' => $releaseDirName,
       );
       $command = $GLOBALS['settings']->getCmdForPackageGeneration($params);
       $command = str_replace('\\', '/', $command);
@@ -300,24 +303,24 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     }
 
     $sql = 'REPLACE INTO projectbuild' . $this->getPtrProject()->getId()
-         . ' (id, label, description, output, specialtasks, status,'
-         . ' scmrevision, date, duration, releasefile)'
-         . ' VALUES (?,?,?,?,?,?,?,?,?,?)';
+            . ' (id, label, description, output, specialtasks, status,'
+            . ' scmrevision, date, duration, releasefile)'
+            . ' VALUES (?,?,?,?,?,?,?,?,?,?)';
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
     }
     $val = array(
-      $this->getId(),
-      $this->getLabel(),
-      $this->getDescription(),
-      $this->getOutput(),
-      $specialTasks,
-      $this->getStatus(),
-      $this->getScmRevision(),
-      $this->getDate(),
-      $this->getDuration(),
-      $this->getReleaseFile(),
+        $this->getId(),
+        $this->getLabel(),
+        $this->getDescription(),
+        $this->getOutput(),
+        $specialTasks,
+        $this->getStatus(),
+        $this->getScmRevision(),
+        $this->getDate(),
+        $this->getDuration(),
+        $this->getReleaseFile(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -342,14 +345,14 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   static public function getById($buildId, Project $project, User $user, $access = Access::READ, array $options = array())
   {
     $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
-    $buildId = (int)$buildId;
+    $access = (int) $access; // Unfortunately, no enums, no type hinting, no cry.
+    $buildId = (int) $buildId;
     $sql = 'SELECT pb.*'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' AND pb.id=?';
+            . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+            . ' WHERE pu.projectid=?'
+            . ' AND pu.userid=?'
+            . ' AND pu.access & ?'
+            . ' AND pb.id=?';
     $val = array($project->getId(), $user->getId(), $access, $buildId);
     if ($rs = Database::query($sql, $val)) {
       if ($rs->nextRow()) {
@@ -362,14 +365,14 @@ class Project_Build extends Framework_DatabaseObjectAbstract
   static public function getLatest(Project $project, User $user, $access = Access::READ, array $options = array())
   {
     $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
+    $access = (int) $access; // Unfortunately, no enums, no type hinting, no cry.
     $sql = 'SELECT pb.*'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' ORDER BY pb.id DESC'
-         . ' LIMIT 1';
+            . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+            . ' WHERE pu.projectid=?'
+            . ' AND pu.userid=?'
+            . ' AND pu.access & ?'
+            . ' ORDER BY pb.id DESC'
+            . ' LIMIT 1';
     $val = array($project->getId(), $user->getId(), $access);
     if ($rs = Database::query($sql, $val)) {
       if ($rs->nextRow()) {
@@ -389,19 +392,19 @@ class Project_Build extends Framework_DatabaseObjectAbstract
    */
   static public function getList(Project $project, User $user, $access = Access::READ, array $options = array())
   {
-    isset($options['sort'])?:$options['sort']=Sort::DATE_DESC;
-    isset($options['pageStart'])?:$options['pageStart']=0;
-    isset($options['pageLength'])?:$options['pageLength']=CINTIENT_BUILDS_PAGE_LENGTH;
+    isset($options['sort'])? : $options['sort'] = Sort::DATE_DESC;
+    isset($options['pageStart'])? : $options['pageStart'] = 0;
+    isset($options['pageLength'])? : $options['pageLength'] = CINTIENT_BUILDS_PAGE_LENGTH;
 
     $ret = false;
-    $access = (int)$access; // Unfortunately, no enums, no type hinting, no cry.
+    $access = (int) $access; // Unfortunately, no enums, no type hinting, no cry.
     $sql = 'SELECT pb.*'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?';
+            . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+            . ' WHERE pu.projectid=?'
+            . ' AND pu.userid=?'
+            . ' AND pu.access & ?';
     if (isset($options['buildStatus'])) {
-      $sql .= ' AND pb.status=' . (int)$options['buildStatus'];
+      $sql .= ' AND pb.status=' . (int) $options['buildStatus'];
     }
     if ($options['sort'] != Sort::NONE) {
       $sql .= ' ORDER BY';
@@ -433,20 +436,20 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     // Build outcomes
     //
     $sql = 'SELECT status, COUNT(pb.status) AS c'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?'
-         . ' GROUP BY status';
+            . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+            . ' WHERE pu.projectid=?'
+            . ' AND pu.userid=?'
+            . ' AND pu.access & ?'
+            . ' GROUP BY status';
     $val = array($project->getId(), $user->getId(), $access);
     if ($rs = Database::query($sql, $val)) {
       $r = array(0, 0);
       while ($rs->nextRow()) {
-        $i = (int)$rs->getStatus();
+        $i = (int) $rs->getStatus();
         if ($i != self::STATUS_FAIL) {
           $i = 1;
         }
-        $r[$i] += (int)$rs->getC();
+        $r[$i] += (int) $rs->getC();
       }
       $ret['buildOutcomes'] = $r;
     }
@@ -457,10 +460,10 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $ret['buildTimeline'] = array();
     $ret['buildDuration'] = array();
     $sql = 'SELECT id, status, date, duration'
-         . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
-         . ' WHERE pu.projectid=?'
-         . ' AND pu.userid=?'
-         . ' AND pu.access & ?';
+            . ' FROM projectbuild' . $project->getId() . ' pb, projectuser pu'
+            . ' WHERE pu.projectid=?'
+            . ' AND pu.userid=?'
+            . ' AND pu.access & ?';
     $val = array($project->getId(), $user->getId(), $access);
     if ($rs = Database::query($sql, $val)) {
       $ok = array();
@@ -560,4 +563,5 @@ EOT;
     }
     return true;
   }
+
 }
