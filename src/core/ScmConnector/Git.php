@@ -141,7 +141,13 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
   public function update(&$rev)
   {
     // We can't use "git --git-dir={$this->getLocal()} pull", it's wrong
-    $command = "cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
+    
+    if (Framework_HostOs::isWindows()){
+        $drive = substr($this->getLocal(), 0,  strpos($this->getLocal(),':')+1);
+        $command = "$drive && cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
+    } else {
+        $command = "cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
+    }
     $proc = new Framework_Process();
     $proc->setExecutable($command, false); // false for no escapeshellcmd() (because of the ';')
     $proc->run();

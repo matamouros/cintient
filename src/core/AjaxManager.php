@@ -1221,8 +1221,10 @@ EOT;
     //
     if (!isset($postVars['title']) ||
          empty($postVars['title']) ||
-        !isset($postVars['releaseLabel']) ||
-         empty($postVars['releaseLabel']) ||
+      /*  
+	    !isset($postVars['releaseLabel']) ||
+         empty($postVars['releaseLabel']) || 
+	  */
         !isset($postVars['scmConnectorType']) ||
          empty($postVars['scmConnectorType']) ||
         !isset($postVars['scmRemoteRepository']) ||

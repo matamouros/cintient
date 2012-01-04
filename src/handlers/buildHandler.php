@@ -27,12 +27,7 @@ require_once dirname(__FILE__) . '/../config/cintient.conf.php';
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 $GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 
-// Temporarily disable the background build handler in Windows, while
-// binaries aren't being dealt with in the installer.
-if (Framework_HostOs::isWindows()) {
-  SystemEvent::raise(SystemEvent::INFO, "Background builds are temporarily disabled in Windows.", 'buildHandler');
-  return false;
-}
+
 $buildProcess = new Framework_Process($GLOBALS['settings'][SystemSettings::EXECUTABLE_PHP]);
 $buildProcess->addArg(CINTIENT_INSTALL_DIR . 'src/workers/runBuildWorker.php');
 if (!$buildProcess->isRunning()) {
