@@ -1,5 +1,4 @@
 <?php
-
 /*
  *
  *  Cintient, Continuous Integration made simple.
@@ -42,18 +41,17 @@
  */
 class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAccess
 {
-
   private $_settings;
 
   const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
-  const EXECUTABLE_GIT = 'executableGit';
-  const EXECUTABLE_PHP = 'executablePhp';
-  const EXECUTABLE_SVN = 'executableSvn';
-  const EXECUTABLE_TAR = 'executableTar';
+  const EXECUTABLE_GIT          = 'executableGit';
+  const EXECUTABLE_PHP          = 'executablePhp';
+  const EXECUTABLE_SVN          = 'executableSvn';
+  const EXECUTABLE_TAR          = 'executableTar';
   const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
 
   static public $packageGenerationCmd = array(
-      self::EXECUTABLE_TAR => 'cd ${tmpDir} && ${archiverExecutable} -czf ${releaseLabel}.tar.gz ${sourcesDir}',
+  	self::EXECUTABLE_TAR => 'cd ${tmpDir} && ${archiverExecutable} -czf ${releaseLabel}.tar.gz ${sourcesDir}',
   );
 
   public function __construct()
@@ -64,13 +62,13 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     // Make sure that bool valued settings are cast to ints.
     //
     $this->_settings = array(
-        self::ALLOW_USER_REGISTRATION => 1,
-        self::EXECUTABLE_TAR => (Framework_HostOs::isWindows() ? '' : 'tar'),
-        self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
-        self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : '')
-        . (php_ini_loaded_file()) ? ' -c ' . php_ini_loaded_file() : '',
-        self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
-        self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
+      self::ALLOW_USER_REGISTRATION => 1,
+      self::EXECUTABLE_TAR => (Framework_HostOs::isWindows() ? '' : 'tar'),
+      self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
+      self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : '')
+      . (php_ini_loaded_file()) ? ' -c '.php_ini_loaded_file() : '',
+      self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
+      self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
     );
   }
 
@@ -101,40 +99,40 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     $o = $this;
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-              h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration?');
-              h::div(array('class' => 'input'), function () use ($o) {
-                        h::ul(array('class' => 'inputs-list'), function () use ($o) {
-                                  h::li(function () use ($o) {
-                                            h::label(function () use ($o) {
-                                                      $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::ALLOW_USER_REGISTRATION);
-                                                      if ($o[SystemSettings::ALLOW_USER_REGISTRATION]) {
-                                                        $inputParams['checked'] = 'checked';
-                                                      }
-                                                      h::input($inputParams);
-                                                      h::span(array('class' => 'help-block'), "Allows user registration on the authentication prompt.");
-                                                    });
-                                          });
-                                });
-                      });
+      h::label(array('for' => SystemSettings::ALLOW_USER_REGISTRATION), 'Allow registration?');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::ul(array('class' => 'inputs-list'), function () use ($o) {
+          h::li(function () use ($o) {
+            h::label(function () use ($o) {
+              $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::ALLOW_USER_REGISTRATION);
+              if ($o[SystemSettings::ALLOW_USER_REGISTRATION]) {
+                $inputParams['checked'] = 'checked';
+              }
+              h::input($inputParams);
+              h::span(array('class' => 'help-block'), "Allows user registration on the authentication prompt.");
             });
+          });
+        });
+      });
+    });
 
     h::div(array('class' => 'clearfix'), function () use ($o) {
-              h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder?');
-              h::div(array('class' => 'input'), function () use ($o) {
-                        h::ul(array('class' => 'inputs-list'), function () use ($o) {
-                                  h::li(function () use ($o) {
-                                            h::label(function () use ($o) {
-                                                      $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::INTERNAL_BUILDER_ACTIVE);
-                                                      if ($o[SystemSettings::INTERNAL_BUILDER_ACTIVE]) {
-                                                        $inputParams['checked'] = 'checked';
-                                                      }
-                                                      h::input($inputParams);
-                                                      h::span(array('class' => 'help-block'), "Activates the internal automatic integration builder. Use this if you can't setup supervise or similar on the host system.");
-                                                    });
-                                          });
-                                });
-                      });
+      h::label(array('for' => SystemSettings::INTERNAL_BUILDER_ACTIVE), 'Internal builder?');
+      h::div(array('class' => 'input'), function () use ($o) {
+        h::ul(array('class' => 'inputs-list'), function () use ($o) {
+          h::li(function () use ($o) {
+            h::label(function () use ($o) {
+              $inputParams = array('type' => 'checkbox', 'name' => SystemSettings::INTERNAL_BUILDER_ACTIVE);
+              if ($o[SystemSettings::INTERNAL_BUILDER_ACTIVE]) {
+                $inputParams['checked'] = 'checked';
+              }
+              h::input($inputParams);
+              h::span(array('class' => 'help-block'), "Activates the internal automatic integration builder. Use this if you can't setup supervise or similar on the host system.");
             });
+          });
+        });
+      });
+    });
   }
 
   public function getViewExecutables()
@@ -143,47 +141,44 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
     $o = $this;
 
     h::fieldset(function () use ($o) {
-              h::div(array('class' => 'clearfix'), function () use ($o) {
-                        h::label(array('for' => SystemSettings::EXECUTABLE_PHP), 'PHP');
-                        h::div(array('class' => 'input'), function () use ($o) {
-                                  h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_PHP, 'value' => $o[SystemSettings::EXECUTABLE_PHP]));
-                                  h::span(array('class' => 'help-block'), "The path to the host system's PHP executable.");
-                                });
-                      });
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_PHP), 'PHP');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_PHP, 'value' => $o[SystemSettings::EXECUTABLE_PHP]));
+          h::span(array('class' => 'help-block'), "The path to the host system's PHP executable.");
+        });
+      });
 
-              h::div(array('class' => 'clearfix'), function () use ($o) {
-                        h::label(array('for' => SystemSettings::EXECUTABLE_GIT), 'Git');
-                        h::div(array('class' => 'input'), function () use ($o) {
-                                  h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_GIT, 'value' => $o[SystemSettings::EXECUTABLE_GIT]));
-                                  h::span(array('class' => 'help-block'), "The path to the host system's Git executable. Required in order to allow Git as the configured SCM for projects.");
-                                });
-                      });
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_GIT), 'Git');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_GIT, 'value' => $o[SystemSettings::EXECUTABLE_GIT]));
+          h::span(array('class' => 'help-block'), "The path to the host system's Git executable. Required in order to allow Git as the configured SCM for projects.");
+        });
+      });
 
-              h::div(array('class' => 'clearfix'), function () use ($o) {
-                        h::label(array('for' => SystemSettings::EXECUTABLE_SVN), 'SVN');
-                        h::div(array('class' => 'input'), function () use ($o) {
-                                  h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_SVN, 'value' => $o[SystemSettings::EXECUTABLE_SVN]));
-                                  h::span(array('class' => 'help-block'), "The path to the host system's SVN executable. Required in order to allow SVN as the configured SCM for projects.");
-                                });
-                      });
-              /*    });
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_SVN), 'SVN');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_SVN, 'value' => $o[SystemSettings::EXECUTABLE_SVN]));
+          h::span(array('class' => 'help-block'), "The path to the host system's SVN executable. Required in order to allow SVN as the configured SCM for projects.");
+        });
+      });
+/*    });
 
-                h::fieldset(function () use ($o) {
-                h::legend('Archivers'); */
-              h::div(array('class' => 'clearfix'), function () use ($o) {
-                        h::label(array('for' => SystemSettings::EXECUTABLE_TAR), 'tar');
-                        h::div(array('class' => 'input'), function () use ($o) {
-                                  h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_TAR, 'value' => $o[SystemSettings::EXECUTABLE_TAR]));
-                                  h::span(array('class' => 'help-block'), "The path to the host system's tar executable. Will be used to generate all release packages.");
-                                });
-                      });
-            });
+    h::fieldset(function () use ($o) {
+      h::legend('Archivers');*/
+      h::div(array('class' => 'clearfix'), function () use ($o) {
+        h::label(array('for' => SystemSettings::EXECUTABLE_TAR), 'tar');
+        h::div(array('class' => 'input'), function () use ($o) {
+          h::input(array('type' => 'text', 'class' => 'span6', 'name' => SystemSettings::EXECUTABLE_TAR, 'value' => $o[SystemSettings::EXECUTABLE_TAR]));
+          h::span(array('class' => 'help-block'), "The path to the host system's tar executable. Will be used to generate all release packages.");
+        });
+      });
+    });
   }
 
-  public function init()
-  {
-    
-  }
+  public function init() {}
 
   /**
    * Overloading for @see ArrayAccess::offsetSet()
@@ -270,7 +265,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
   {
     $ret = new self();
     while ($rs->NextRow()) {
-      $ret->setSetting($rs->getKey(), $rs->getValue());
+      $ret->setSetting($rs->getKey(),$rs->getValue());
     }
     $ret->resetSignature();
     return $ret;
@@ -307,5 +302,4 @@ EOT;
       $this->_settings[$key] = $value;
     }
   }
-
 }
