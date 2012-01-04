@@ -858,7 +858,7 @@ EOT;
   static public function providerAvailableBuilderElements()
   {
     $dir = CINTIENT_INSTALL_DIR . 'src/core/Build/BuilderElement/';
-    $dir = preg_replace('/\/\/+/','/',str_replace('\\', '/',$dir));
+    $dir = str_replace(array('\\','//'), '/',$dir);
     
     $elements = array();
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST);
@@ -867,7 +867,7 @@ EOT;
     //
     $exceptions = array('**/Target.php', '**/Project.php', '**/Fileset.php');
     foreach (new Framework_FilesystemFilterIterator($it, $dir, array('**/*'), $exceptions) as $entry) {
-      $levels = explode('/', preg_replace('/\/\/+/','/',str_replace('\\', '/',substr($entry, strlen($dir)))));
+      $levels = explode('/', str_replace(array('\\','//'), '/',substr($entry, strlen($dir))));
       $basename = basename($entry);
       $levelsPath = '$elements';
       if (strrpos($basename, '.php') !== false) {
