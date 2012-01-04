@@ -115,7 +115,7 @@ class Framework_FilesystemFilterIterator extends FilterIterator
   {
     parent::__construct($it);
     $this->_dir = $dir;
-    $this->_dir = preg_replace('/\/\/+/','/',  str_replace('\\', '/',$this->_dir));
+    $this->_dir = str_replace(array('\\','//'), '/',$this->_dir);
     $this->_include = $include;
     $this->_exclude = $exclude;
     $this->_type = $type;
@@ -157,7 +157,7 @@ class Framework_FilesystemFilterIterator extends FilterIterator
   private function _isMatch($pattern)
   {
     $current = $this->current();
-    $current = preg_replace('/\/\/+/','/',  str_replace('\\', '/',$current));
+    $current = str_replace(array('\\','//'), '/',$current);
     $dir = $this->_dir;
     if (substr($dir, -1) != '/') {
       $dir .= '/';
