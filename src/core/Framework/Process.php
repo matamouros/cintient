@@ -82,14 +82,14 @@ class Framework_Process extends Framework_BaseObject
     foreach ($this->_args as $arg) {
       $key = array_shift($arg);
       $value = array_shift($arg);
-      $args .=  $key . (!empty($value)?' ' . $value:'');
+      $args .= $key . (!empty($value) ? ' ' . $value : '');
     }
     return $args;
   }
 
   public function getCmd()
   {
-    return $this->getExecutable() . ($this->getArgs()?' ' . $this->getArgs():'');
+    return $this->getExecutable() . ($this->getArgs() ? ' ' . $this->getArgs() : '');
   }
 
   public function setArgs(Array $args = array())
@@ -162,7 +162,7 @@ class Framework_Process extends Framework_BaseObject
     // Get windows run-in-background out of the way
     if (Framework_HostOs::isWindows() && $inBg) {
       SystemEvent::raise(SystemEvent::INFO, "Executing '{$this->getCmd()}'", __METHOD__);
-      return (bool)(@pclose(@popen("start /B ". $this->getCmd(), "r")) !== -1);
+      return (bool)(@pclose(@popen("start /B " . $this->getCmd(), "r")) !== -1);
     }
 
     $descriptorSpec = array(
@@ -171,7 +171,7 @@ class Framework_Process extends Framework_BaseObject
       2 => array("pipe", "w"), # STDERR
     );
 
-    $cmd = $this->getCmd() . ($inBg?' &':'');
+    $cmd = $this->getCmd() . ($inBg ? ' &' : '');
     SystemEvent::raise(SystemEvent::INFO, "Executing '{$cmd}'", __METHOD__);
     $ptr = proc_open($cmd, $descriptorSpec, $pipes, null);
     if (!is_resource($ptr)) {
@@ -248,7 +248,7 @@ class Framework_Process extends Framework_BaseObject
   public function runInBackground($output = self::STDOUT)
   {
     if (Framework_HostOs::isWindows()) {
-      @pclose(@popen("start /B ". $this->getCmd(), "r"));
+      @pclose(@popen("start /B " . $this->getCmd(), "r"));
     } else {
       $outputSupression = '';
       switch ($output) {
