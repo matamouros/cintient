@@ -151,7 +151,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     $builderProcess = new Framework_Process($GLOBALS['settings'][SystemSettings::EXECUTABLE_PHP]);
     $builderProcess->setStdin($builderCode);
     $builderProcess->run();
-    $this->setDuration(time()-strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
+    $this->setDuration(time() - strtotime($this->getDate())); // Setup the first finish time. If we get to the end of this method, update again at the end
     //
     // Import back into Cintient space the external builder's output
     // TODO: we should probably have this somewhere better than
@@ -160,15 +160,18 @@ class Project_Build extends Framework_DatabaseObjectAbstract
     // Also check BuilderElement_Project for the expected
     // $GLOBALS['result'] vars...
     //
-    $output = explode(PHP_EOL, $builderProcess->getStdout());
+    $output = explode("\n", str_replace("\r", "", $builderProcess->getStdout()));
     $GLOBALS['result'] = array();
     $GLOBALS['result']['ok'] = false;
     foreach ($output as $line) {
+      $line = trim($line);
       $neck = strpos($line, '=');
       $key = substr($line, 0, $neck);
-      $value = substr($line, $neck+1);
-      $value = str_replace(CINTIENT_NEWLINE_TOKEN, PHP_EOL, $value);
-      $GLOBALS['result'][$key] = $value;
+      $value = substr($line, $neck + 1);
+      $value = str_replace(CINTIENT_NEWLINE_TOKEN, "\n", $value);
+      if (!empty($key)) {
+        $GLOBALS['result'][$key] = $value;
+      }
     }
     if (!empty($GLOBALS['result']['stacktrace'])) {
       $this->addToOutput($GLOBALS['result']['stacktrace']);
@@ -186,7 +189,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       return false;
     }
 
-    $this->setDuration(time()-strtotime($this->getDate()));
+    $this->setDuration(time() - strtotime($this->getDate()));
 
     //
     // Create this build's report dir, backing up an existing one, just in case
@@ -222,7 +225,7 @@ class Project_Build extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Special task's post build execution had problems. [PID={$project->getId()}] [BUILD={$this->getId()}] [TASK={$task}]", __METHOD__);
     }
     $this->setStatus(self::STATUS_OK_WITHOUT_PACKAGE);
-    $this->setDuration(time()-strtotime($this->getDate())); // Final duration time refresh
+    $this->setDuration(time() - strtotime($this->getDate())); // Final duration time refresh
     return true;
   }
 

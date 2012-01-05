@@ -65,7 +65,8 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
       self::ALLOW_USER_REGISTRATION => 1,
       self::EXECUTABLE_TAR => (Framework_HostOs::isWindows() ? '' : 'tar'),
       self::EXECUTABLE_GIT => 'git' . (Framework_HostOs::isWindows() ? '.exe' : ''),
-      self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : ''),
+      self::EXECUTABLE_PHP => 'php' . (Framework_HostOs::isWindows() ? '.exe' : '')
+                                    . (php_ini_loaded_file() ? ' -c '. htmlentities(str_replace(array('\\', '//'), '/', php_ini_loaded_file())) : ''), // htmlentities because of lib.htmlgen.php
       self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
     );
