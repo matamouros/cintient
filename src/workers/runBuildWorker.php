@@ -30,7 +30,7 @@ $GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
-  Framework_WinProcess::refreshPIDFile();  
+  Framework_Process::refreshPIDFile();  
   $ret = true;
   $projects = Project::getNextToBuild();
   foreach ($projects as &$project) {
