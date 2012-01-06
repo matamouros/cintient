@@ -117,24 +117,29 @@ class Framework_Process extends Framework_BaseObject
     $this->_executable = $filename;
   }
 
-  public function isRunning()
+  public static function isRunning()
   {
-    if (Framework_HostOs::isWindows()) {
-      return Framework_WinProcess::isRunning();
-    } else {
-      $output = array();
-      $ret = 1;
-      $cmd = 'ps ax | grep "' . $this->getExecutable() . '";';
-      @exec($cmd, $output, $ret);
-      if ($ret !== 0) {
-        SystemEvent::raise(SystemEvent::ERROR, "Could not query system for running executable. [EXECUTABLE={$this->getExecutable()}]", __METHOD__);
-        return true; // Seriously, don't assume it's not running. Better that the user fixes this first.
-      }
-      if (isset($output[0]) && !preg_match('/( ps ax \| | grep )/', $output[0])) {
-        return true;
+    $result = false;
+    $processInfo = self::_readPIDFile();
+    if (is_array($processInfo) && isset($processInfo['pid'])) {
+      if (self::_isPIDRunning($processInfo['pid'])) {
+        $result = true;
       }
     }
-    return false;
+    return $result;
+  }
+
+  public static function refreshPIDFile()
+  {
+    $result = false;
+    $filename = self::_getPIDFile();
+    if ($filename) {
+      $data = getmypid() . '|' . date('H.i.s.d.m.Y');
+      if (false !== file_put_contents($filename, $data)) {
+        $result = true;
+      }
+    }
+    return $result;
   }
 
   public function registerStdoutCallback($callback)
@@ -305,6 +310,56 @@ class Framework_Process extends Framework_BaseObject
     } else {
       return $argument;
     }
+  }
+
+  private static function _workersDir()
+  {
+    $result = false;
+    $dir = dirname(dirname(dirname(__FILE__))) . '/workers';
+    $dir = str_replace(array('\\', '//'), '/', $dir);
+    if (is_dir($dir) && is_writable($dir)) {
+      $result = $dir;
+    } else {
+      SystemEvent::raise(SystemEvent::ERROR, " The workers dir is not writable!", __METHOD__);
+    }
+    return $result;
+  }
+
+  private static function _getPIDFile()
+  {
+    $result = false;
+    $dir = self::_workersDir();
+    if ($dir) {
+      $result = $dir . '/' . strtolower(str_replace('.php', '.pid', basename(__FILE__)));
+    }
+    return $result;
+  }
+
+  private static function _readPIDFile()
+  {
+    $result = false;
+
+    $pidFile = self::_getPIDFile();
+    if ($pidFile && is_readable($pidFile)) {
+      list($pid, $_time) = explode('|', trim(file_get_contents($pidFile)));
+      list($H, $i, $s, $m, $d, $Y) = explode('.', $_time);
+      $time = mktime($H, $i, $s, $m, $d, $Y);
+      $result = array('pid' => $pid, 'time' => $time);
+    }
+
+    return $result;
+  }
+
+  private static function _isPIDRunning($pid)
+  {
+    $pid = (int) sprintf('%d', $pid);
+    if (0 === stripos(PHP_OS, 'win')) {
+      $cmd = "wmic PROCESS where (ProcessId=$pid) get ProcessId /VALUE | grep \"ProcessId=$pid\" -c";
+    } else {
+      $cmd = 'ps -eo pid | grep -E "^[ ]*' . $pid . '$" -c';
+    }
+    $result = ($pid > 0) ? (bool) sprintf('%d', shell_exec($cmd)) : false;
+    return $result;
   }
 
 }
