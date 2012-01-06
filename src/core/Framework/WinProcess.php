@@ -61,7 +61,11 @@ class Framework_WinProcess
   public static function isPIDRunning($pid)
   {
     $pid = (int) sprintf('%d', $pid);
-    $cmd = "wmic PROCESS where (ProcessId=$pid) get ProcessId /VALUE | grep \"ProcessId=$pid\" -c";
+    if (0 === stripos(PHP_OS, 'win')) {
+      $cmd = "wmic PROCESS where (ProcessId=$pid) get ProcessId /VALUE | grep \"ProcessId=$pid\" -c";
+    } else {
+      $cmd = 'ps -eo pid | grep -E "^[ ]*' . $pid . '$" -c';
+    }
     $result = ($pid > 0) ? (bool) sprintf('%d', shell_exec($cmd)) : false;
     return $result;
   }
