@@ -60,21 +60,9 @@ class Framework_WinProcess
 
   public static function isPIDRunning($pid)
   {
-    $result = false;
     $pid = (int) sprintf('%d', $pid);
-    if (Framework_HostOs::isWindows()) {
-      $lines = explode("\n", shell_exec('ps -W'));
-      foreach ($lines as $line) {
-        $match = array();
-        if (preg_match('/^\s+(\d+)\s+(.*?)/', $line, $match)) {
-          $_pid = (int) $match[1];
-          if ($_pid == $pid) {
-            $result = true;
-            break;
-          }
-        }
-      }
-    }
+    $cmd = "wmic PROCESS where (ProcessId=$pid) get ProcessId /VALUE | grep \"ProcessId=$pid\" -c";
+    $result = ($pid > 0) ? (bool) sprintf('%d', shell_exec($cmd)) : false;
     return $result;
   }
 
