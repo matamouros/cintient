@@ -121,20 +121,26 @@ class Framework_Process extends Framework_BaseObject
   {
     $result = false;
     $processInfo = self::_readPIDFile();
-    if (is_array($processInfo) && isset($processInfo['pid'])) {
-      if (self::_isPIDRunning($processInfo['pid'])) {
+    if (is_array($processInfo) && isset($processInfo['pid']) && isset($processInfo['time'])) {
+      if ($processInfo['time'] < 5) {
         $result = true;
+      } else {
+        if (self::_isPIDRunning($processInfo['pid'])) {
+          $result = true;
+          self::refreshPIDFile($processInfo['pid']);
+        }
       }
     }
     return $result;
   }
 
-  public static function refreshPIDFile()
+  public static function refreshPIDFile($pid='')
   {
     $result = false;
     $filename = self::_getPIDFile();
     if ($filename) {
-      $data = getmypid() . '|' . date('H.i.s.d.m.Y');
+      $pid = (int) empty($pid) ? getmypid() : $pid;
+      $data = $pid . '|' . date('H.i.s.d.m.Y');
       if (false !== file_put_contents($filename, $data)) {
         $result = true;
       }
@@ -342,8 +348,9 @@ class Framework_Process extends Framework_BaseObject
     $pidFile = self::_getPIDFile();
     if ($pidFile && is_readable($pidFile)) {
       list($pid, $_time) = explode('|', trim(file_get_contents($pidFile)));
-      list($H, $i, $s, $m, $d, $Y) = explode('.', $_time);
-      $time = mktime($H, $i, $s, $m, $d, $Y);
+      list($H, $i, $s, $d, $m, $Y) = explode('.', $_time);
+      /* time in seconds */
+      $time = (int) (time() - mktime($H, $i, $s, $m, $d, $Y));
       $result = array('pid' => $pid, 'time' => $time);
     }
 
