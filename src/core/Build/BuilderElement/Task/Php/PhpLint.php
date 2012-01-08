@@ -101,7 +101,7 @@ class Build_BuilderElement_Task_Php_PhpLint extends Build_BuilderElement
   public function toPhing()
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $xml = new XmlDoc();
     $xml->startElement('phplint');

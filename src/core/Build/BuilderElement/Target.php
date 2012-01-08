@@ -203,7 +203,7 @@ EOT;
       $php .= <<<EOT
 output("No tasks available to run.");
 EOT;
-    }
+      }
       $php .= <<<EOT
 }
 EOT;

@@ -54,7 +54,7 @@ define('CINTIENT_PROJECTS_DIR', CINTIENT_WORK_DIR . 'projects/');
 define('CINTIENT_ASSETS_DIR', CINTIENT_WORK_DIR . 'assets/');
 define('CINTIENT_AVATARS_DIR', CINTIENT_ASSETS_DIR . 'avatars/');
 
-define('CINTIENT_AVATAR_MAX_SIZE', 50 * 1024); // bytes
+define('CINTIENT_AVATAR_MAX_SIZE', 200 * 1024); // bytes
 
 define('CINTIENT_AVATAR_WIDTH', 50);
 define('CINTIENT_AVATAR_HEIGHT', 50);

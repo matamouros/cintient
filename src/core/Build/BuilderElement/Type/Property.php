@@ -101,7 +101,7 @@ class Build_BuilderElement_Type_Property extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php = '';
     if (!$this->getName() || !$this->getValue()) {

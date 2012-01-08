@@ -115,7 +115,7 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php = '';
     if (!$this->getFilesets()) {
@@ -138,7 +138,7 @@ class Build_BuilderElement_Task_Filesystem_Delete extends Build_BuilderElement
         $php .= "
 \$callback = function (\$entry) {
   \$ret = true;
-  if (is_file(\$entry)) { // includeemptydirs
+  if (is_file(\$entry) || is_link(\$entry)) { // includeemptydirs
     \$ret = @unlink(\$entry);
   } elseif({$this->getIncludeEmptyDirs()} && is_dir(\$entry)) {
     \$ret = @rmdir(\$entry);

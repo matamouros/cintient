@@ -975,7 +975,7 @@ EOT;
     // Make sure the user knows what he is deleting
     if ($GLOBALS['project']->getId() != $postVars['pid']) {
       $msg = 'Trying to delete a different project from the current active one is not allowed.';
-      SystemEvent::raise(SystemEvent::INFO, $msg, __METHOD__);
+      SystemEvent::raise(SystemEvent::INFO, $msg . " [USRID={$GLOBALS['user']->getId()}] [CURPID={$GLOBALS['project']->getId()}] [PID={$postVars['pid']}]", __METHOD__);
       echo json_encode(
         array(
           'success' => false,
@@ -1196,6 +1196,7 @@ EOT;
     $project->setScmRemoteRepository($postVars['scmRemoteRepository']['value']);
     $project->setScmUsername($postVars['scmUsername']['value']);
     $project->setScmPassword($postVars['scmPassword']['value']);
+    $project->setScmEnvVars($postVars['scmEnvVars']['value']);
     $GLOBALS['project'] = $project;
     $msg = "Project SCM settings edited{$resetMsg}";
     $GLOBALS['project']->log($msg, $GLOBALS['user']->getUsername());
