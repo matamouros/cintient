@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  Cintient, Continuous Integration made simple.
@@ -28,9 +29,11 @@ require_once dirname(__FILE__) . '/../config/cintient.conf.php';
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
 $GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
 
+Framework_Process::ifRunningThenExits();
+
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
-  Framework_Process::refreshPIDFile();  
+  Framework_Process::refreshPIDFile();
   $ret = true;
   $projects = Project::getNextToBuild();
   foreach ($projects as &$project) {
@@ -44,7 +47,7 @@ do {
     $project = null;
     unset($project);
     // Take the chance to look if we're close to breaking the mem limit
-    if (memory_get_usage(true) > ((int)(Utility::phpIniSizeToBytes(ini_get('memory_limit'))*0.9))) {
+    if (memory_get_usage(true) > ((int) (Utility::phpIniSizeToBytes(ini_get('memory_limit')) * 0.9))) {
       SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
       exit(0);
     }
