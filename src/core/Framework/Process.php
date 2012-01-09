@@ -134,6 +134,16 @@ class Framework_Process extends Framework_BaseObject
     return $result;
   }
 
+  public static function ifRunningThenExits()
+  {
+    $alreadyRunnig = self::isRunning();
+    if ($alreadyRunnig) {
+      exit;
+    } else {
+      self::refreshPIDFile();
+    }
+  }
+
   public static function refreshPIDFile($pid='')
   {
     $result = false;
