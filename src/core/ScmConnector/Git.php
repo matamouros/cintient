@@ -37,7 +37,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
 {
   public function checkout()
   {
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} clone {$this->getRemote()} {$this->getLocal()}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} clone {$this->getRemote()} {$this->getLocal()}";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false);
     $proc->run();
@@ -94,7 +94,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     +Ola
     \ No newline at end of file
     */
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git show";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} --git-dir={$this->getLocal()}.git show";
     $lastline = exec($command, $output, $return);
     $outputLocal = implode("\n", $output);
     if ($return != 0 || !preg_match('/^commit ([\da-f]{40})$/m', $outputLocal, $matchesLocal)) {
@@ -113,7 +113,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     $ cat HEAD
     ref: refs/heads/develop
     */
-    $file = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$this->getLocal()}.git/HEAD";
+    $file = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$this->getLocal()}.git/HEAD";
     if (!preg_match('/^ref: ([\w\/\-_]+)$/', file_get_contents($file), $matches) || empty($matches[1])) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not check local branch on HEAD file. [FILE={$file}] [LOCAL={$this->getLocal()}]", __METHOD__);
       return false;
@@ -127,7 +127,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     $ git ls-remote git://github.com/matamouros/cintient.git refs/heads/develop
     0fb200fffe72b7d1c4aaf1c0cbd35c0b070b33bb	refs/heads/develop
     */
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} ls-remote {$this->getRemote()} {$branch}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} ls-remote {$this->getRemote()} {$branch}";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false);
     $proc->run();
@@ -145,7 +145,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     if (Framework_HostOs::isWindows()){
       $drive = substr($this->getLocal(), 0,  strpos($this->getLocal(), ':') + 1) . ' && ';
     }
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "$drive cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "$drive cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false); // false for no escapeshellcmd() (because of the ';')
     $proc->run();

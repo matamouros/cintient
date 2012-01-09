@@ -38,7 +38,7 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
   public function checkout()
   {
     $credentials = $this->_getCredentialsArgs();
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} co {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} co {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false);
     $proc->run();
@@ -52,7 +52,7 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
   public function export($toDir)
   {
     $credentials = $this->_getCredentialsArgs();
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} export {$credentials}--non-interactive --force {$this->getLocal()} {$toDir}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} export {$credentials}--non-interactive --force {$this->getLocal()} {$toDir}";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false);
     $proc->run();
@@ -95,7 +95,7 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
     Last Changed Rev: 358
     Last Changed Date: 2011-09-18 11:30:30 +0100 (Sun, 18 Sep 2011)
     */
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} info {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} info {$credentials}--non-interactive {$this->getRemote()} {$this->getLocal()}";
     $proc = new Framework_Process();
     $proc->setExecutable($command, false);
     $proc->run();
@@ -117,7 +117,7 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
   public function update(&$rev)
   {
     $credentials = $this->_getCredentialsArgs();
-    $command = (empty($this->_envVars)?:$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} up {$credentials}--non-interactive {$this->getLocal()}";
+    $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "{$GLOBALS['settings'][SystemSettings::EXECUTABLE_SVN]} up {$credentials}--non-interactive {$this->getLocal()}";
     $lastline = exec($command, $output, $return);
     if ($return != 0) {
       $output = implode("\n", $output);
