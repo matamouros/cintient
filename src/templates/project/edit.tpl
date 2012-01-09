@@ -136,6 +136,13 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
                 <span class="help-block">This field is optional.</span>
               </div>
             </div>
+            <div class="clearfix">
+              <label for="scmEnvVars">Environment vars (root only)</label>
+              <div class="input">
+                <input class="span6{if !$globals_user->hasCos(UserCos::ROOT)} disabled{/if}" type="text" name="scmEnvVars" value="{$globals_project->getScmEnvVars()}" {if !$globals_user->hasCos(UserCos::ROOT)}disabled="disabled"{/if}/>
+                <span class="help-block">Set environment variables for the SCM executable to use. Only an administrator can edit this.</span>
+              </div>
+            </div>
             <div class="actions">
               <input type="submit" class="btn primary" value="Save changes" />&nbsp;<button type="reset" class="btn">Cancel</button>
             </div>
@@ -153,7 +160,8 @@ jsIncludes=['js/lib/jquery-ui-1.8.16.custom.min.js',
                 <ul class="inputs-list">
                   <li>
                     <label>
-                      <input type="checkbox" id="pid" name="pid" value="{$globals_project->getId()}" />
+                      <input type="checkbox" id="pid" />
+                      <input type="hidden" name="pid" value="{$globals_project->getId()}" />
                       <span>I understand this action is irreversible.</span>
                     </label>
                   </li>

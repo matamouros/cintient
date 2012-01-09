@@ -48,6 +48,7 @@ class Project extends Framework_DatabaseObjectAbstract
   protected $_scmConnectorType;        // * Always * loaded from the available modules on core/ScmConnector
   protected $_scmPassword;
   protected $_scmRemoteRepository;
+  protected $_scmEnvVars;
   protected $_scmUsername;
   protected $_specialTasks;            // Array with the current class names of the integration builder elements that are special tasks
   protected $_statsNumBuilds;          // Aggregated stats for the total number of project builds (to avoid summing Project_Build table)
@@ -85,6 +86,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->_scmRemoteRepository = '';
     $this->_scmUsername = '';
     $this->_scmPassword = '';
+    $this->_scmEnvVars = '';
     $this->_specialTasks = array();
     $this->_statsNumBuilds = 0;
     $this->_status = self::STATUS_UNINITIALIZED;
@@ -153,7 +155,7 @@ class Project extends Framework_DatabaseObjectAbstract
       SystemEvent::raise(SystemEvent::ERROR, "Could not remove existing sources working copy. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
-    if (!mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
+    if (!@mkdir($this->getScmLocalWorkingCopy(), DEFAULT_DIR_MASK, true)) {
       SystemEvent::raise(SystemEvent::ERROR, "Could not recreate sources dir for project. [PID={$this->getId()}]", __METHOD__);
       return false;
     }
@@ -211,7 +213,7 @@ class Project extends Framework_DatabaseObjectAbstract
     $this->setStatus($status);
 
     $params = array();
-    $scm = new ScmConnector($this->getScmConnectorType(), $this->getScmLocalWorkingCopy(), $this->getScmRemoteRepository(), $this->getScmUsername(), $this->getScmPassword());
+    $scm = new ScmConnector($this->getScmConnectorType(), $this->getScmLocalWorkingCopy(), $this->getScmRemoteRepository(), $this->getScmUsername(), $this->getScmPassword(), $this->getScmEnvVars());
 
     if ($this->getStatus() == self::STATUS_ERROR && !$force) {
       $this->touchDateCheckedForChanges();
@@ -556,6 +558,7 @@ CREATE TABLE IF NOT EXISTS {$tableName}NEW (
   scmpassword VARCHAR(255) NOT NULL DEFAULT '',
   scmremoterepository VARCHAR(255) NOT NULL DEFAULT '',
   scmusername VARCHAR(255) NOT NULL DEFAULT '',
+  scmenvvars VARCHAR(255) NOT NULL DEFAULT '',
   specialtasks TEXT NOT NULL DEFAULT '',
   statsnumbuilds INTEGER UNSIGNED NOT NULL DEFAULT 0,
   status TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -631,8 +634,9 @@ EOT;
          . ' description,title,visits,integrationbuilder,deploymentbuilder,status,'
          . ' releaselabel,statsnumbuilds,scmpassword,scmusername,workdir,'
          . ' scmremoterepository,scmconnectortype,scmcheckchangestimeout,'
-         . ' datecheckedforchanges, specialtasks, optionreleasepackage)'
-         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         . ' datecheckedforchanges, specialtasks, optionreleasepackage,'
+         . ' scmenvvars)'
+         . " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $specialTasks = @serialize($this->getSpecialTasks());
     if ($specialTasks === false) {
       $specialTasks = serialize(array());
@@ -658,6 +662,7 @@ EOT;
       $this->getDateCheckedForChanges(),
       $specialTasks,
       $this->getOptionReleasePackage(),
+      $this->getScmEnvVars(),
     );
     if ($this->_id === null) {
       if (!($id = Database::insert($sql, $val)) || !is_numeric($id)) {
@@ -910,6 +915,7 @@ EOT;
     $ret->setTitle($rs->getTitle());
     $ret->setVisits($rs->getVisits());
     $ret->setOptionReleasePackage($rs->getOptionReleasePackage());
+    $ret->setScmEnvVars($rs->getScmEnvVars());
     //
     // Builders
     //

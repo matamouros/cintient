@@ -114,7 +114,7 @@ class Build_BuilderElement_Task_Echo extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php = '';
     if (!$this->getMessage()) {

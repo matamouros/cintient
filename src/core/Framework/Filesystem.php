@@ -155,18 +155,18 @@ class Framework_Filesystem
     $ret = true;
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($iterator as $path) {
-      if ($path->isDir()) {
-        if ($res = @rmdir($path->__toString())) {
-          SystemEvent::raise(SystemEvent::DEBUG, "Removed dir {$path->__toString()}", __METHOD__);
+      if ($path->isDir() && !$path->isLink()) {
+        if ($res = @rmdir($path->getPathName())) {
+          SystemEvent::raise(SystemEvent::DEBUG, "Removed dir {$path->getPathName()}", __METHOD__);
         } else {
-          SystemEvent::raise(SystemEvent::ERROR, "Couldn't remove dir {$path->__toString()}", __METHOD__);
+          SystemEvent::raise(SystemEvent::ERROR, "Couldn't remove dir {$path->getPathName()}", __METHOD__);
         }
         $ret = $ret & $res;
       } else {
-        if ($res = @unlink($path->__toString())) {
-          SystemEvent::raise(SystemEvent::DEBUG, "Removed file {$path->__toString()}", __METHOD__);
+        if ($res = @unlink($path->getPathName())) {
+          SystemEvent::raise(SystemEvent::DEBUG, "Removed file {$path->getPathName()}", __METHOD__);
         } else {
-          SystemEvent::raise(SystemEvent::ERROR, "Couldn't remove file {$path->__toString()}", __METHOD__);
+          SystemEvent::raise(SystemEvent::ERROR, "Couldn't remove file {$path->getPathName()}", __METHOD__);
         }
         $ret = $ret & $res;
       }
@@ -182,6 +182,6 @@ class Framework_Filesystem
    */
   static public function removeDir($dir)
   {
-    return (self::emptyDir($dir) && @rmdir($dir));
+    return (self::emptyDir($dir) && (@rmdir($dir) || @unlink($dir)));
   }
 }

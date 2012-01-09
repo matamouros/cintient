@@ -39,12 +39,14 @@ abstract class ScmConnectorAbstract extends Framework_BaseObject
   protected $_remote;      // the remote repository
   protected $_username;    // the authorized username to interact with the repository
   protected $_password;    // the password of the authorized username
+  protected $_envVars;
 
-  public function __construct($local, $remote, $username = null, $password = null)
+  public function __construct($local, $remote, $username = null, $password = null, $envVars = '')
   {
     $this->_local = $local;
     $this->_remote = $remote;
     $this->_username = $username;
     $this->_password = $password;
+    $this->_envVars = $envVars;
   }
 }

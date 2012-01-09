@@ -159,7 +159,7 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php              = '';
     $getFailedOnError = $this->getFailOnError() ? "true" : "false";

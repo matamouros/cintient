@@ -125,7 +125,7 @@ class Build_BuilderElement_Task_Filesystem_Copy extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php = '';
     if (!$this->getFile() && !$this->getFilesets()) {

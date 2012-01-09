@@ -135,7 +135,7 @@ class Build_BuilderElement_Task_Php_PhpUnit extends Build_BuilderElement
   public function toPhp(Array &$context = array())
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     $php = '';
     if (!$this->getFilesets()) {

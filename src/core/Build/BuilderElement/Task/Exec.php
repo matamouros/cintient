@@ -153,7 +153,7 @@ class Build_BuilderElement_Task_Exec extends Build_BuilderElement
   public function toPhing()
   {
     if (!$this->isActive()) {
-      return true;
+      return '';
     }
     if (!$this->getExecutable()) {
       SystemEvent::raise(SystemEvent::ERROR, 'Executable not set for exec task.', __METHOD__);

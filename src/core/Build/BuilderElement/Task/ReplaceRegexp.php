@@ -114,7 +114,7 @@ class Build_BuilderElement_Task_ReplaceRegexp extends Build_BuilderElement
   public function toHtml(Array $_ = array(), Array $__ = array())
   {
     if (!$this->isVisible()) {
-      return true;
+      return '';
     }
     $callbacks = array(
       array('cb' => 'getHtmlFailOnError'),

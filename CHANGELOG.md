@@ -2,6 +2,26 @@ Changelog
 =========
 
 
+ *  ADDED: Every PHP executable invocation now runs with the same ini
+           configuration file as the webserver, by default.
+           (thanks @rasismeiro)
+ *  ADDED: SCM environment vars, in case the SCM executables need to be
+           fed some configuration of some sort.
+ *  FIXED: Regression on project creation. (thanks @rasismeiro)
+ *  FIXED: Fatal error in the integration builder, in case a task was
+           inactive.
+ *  FIXED: Removal of symlinks pointing to directories now works
+           properly, both internally and on the Delete task.
+ *  FIXED: Available builder tasks not showing up, on Windows.
+           (thanks @rasismeiro)
+ *  FIXED: Several path issues, on Windows. (thanks @rasismeiro)
+ *  FIXED: Problem with output of the integration builder, on Windows.
+           (thanks @rasismeiro)
+ *  FIXED: Issue that prevented project deletion.
+ *  CHANGED: Max avatar upload size increased to 200KB.
+ *  CHANGED: SCM SVN connector is now more verbose on errors.
+
+
 2011-12-31 cintient-1.0.0-beta-11
 ---------------------------------
 
@@ -60,7 +80,7 @@ Changelog
 
  *  FIXED: Broken installer in Windows, on some user specified data
            dirs.
- *  FIXED: Chrome checkboxes not saving properly. (thanks Luzifer)
+ *  FIXED: Chrome checkboxes not saving properly. (thanks @Luzifer)
  *  CHANGED: Temporarily disabled background build handler in Windows
              platforms.
 
@@ -118,8 +138,8 @@ Changelog
  *  ADDED: Support for specifying a bootstrap file in PhpUnit tasks.
  *  ADDED: New Failed status for projects, to help distinguish pure
            Error states from Failed builds.
- *  FIXED: Wrong SQLite version being checked, at install time. (Thanks
-           lie2815)
+ *  FIXED: Wrong SQLite version being checked, at install time. (thanks
+           @franzliedke)
  *  FIXED: Charts problems with hidden data indicators until a page
            refresh happened.
  *  FIXED: Dashboard's Latest tab now shows the status of a project's

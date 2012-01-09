@@ -45,14 +45,14 @@ class ScmConnector implements ScmConnectorInterface
    * @param string $type git|svn as possible values
    * @return boolean
    */
-  public function __construct($type, $local, $remote, $username, $password)
+  public function __construct($type, $local, $remote, $username, $password, $envVars)
   {
     $scmConnectorType = 'ScmConnector_' . ucfirst($type);
     if (!class_exists($scmConnectorType)) {
       SystemEvent::raise(SystemEvent::ERROR, "Unknown connector specified [CONNECTOR={$scmConnectorType}]", __METHOD__);
       return false;
     }
-    $this->_connector = new $scmConnectorType($local, $remote, $username, $password);
+    $this->_connector = new $scmConnectorType($local, $remote, $username, $password, $envVars);
   }
 
   /**
