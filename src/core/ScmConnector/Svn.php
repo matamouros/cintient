@@ -146,9 +146,9 @@ class ScmConnector_Svn extends ScmConnectorAbstract implements ScmConnectorInter
   {
     $credentials = '';
     if (!empty($this->_username)) {
-      $username = "--username {$this->getUsername()} ";
+      $credentials = "--username {$this->getUsername()} ";
       if (!empty($this->_password)) {
-        $password = "--password \"{$this->getPassword()}\" ";
+        $credentials .= "--password \"{$this->getPassword()}\" ";
       }
     }
     return $credentials;
