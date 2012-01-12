@@ -33,7 +33,8 @@
   <link rel="stylesheet" href="{$cssInclude}" />
 {/foreach}
   <link rel="stylesheet" href="css/cintient.css" />
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="www/imgs/favicon.ico" />
+  <link rel="apple-touch-icon" href="www/imgs/favicon.ico" />
   <!--[if lt IE 9]>
   <script src="js/lib/html5.js"></script>
   <![endif]-->

@@ -305,6 +305,7 @@ if (!empty($_GET['c'])) {
     fwrite($fd, "RewriteBase {$reqUri}" . (substr($reqUri, -1)=='/'?'':'/') . PHP_EOL); # Insert a trailing slash here, it's needed!
     fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]" . PHP_EOL);
     fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]" . PHP_EOL);
+    fwrite($fd, "RewriteRule favicon\\.ico www/imgs/favicon.ico [L]" . PHP_EOL);
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]" . PHP_EOL);
     fclose($fd);
   } else {
@@ -469,13 +470,13 @@ if (!empty($_GET['c'])) {
   //
   // Last step: remove the installation file
   //
-  /*if (!@unlink(__FILE__)) {
+  if (!@unlink(__FILE__)) {
     $ok = false;
     $msg = "Couldn't remove the installation 'index.php' file. You need "
          . "to remove this manually before refreshing this page, or else"
          . " Cintient won't be able to start";
     sendResponse($ok, $msg);
-  }*/
+  }
 
   //
   // Set a special cookie "one-time" cookie so that right after the
@@ -530,7 +531,8 @@ $greetings = array(
   <link rel="stylesheet" href="www/css/lib/bootstrap-1.3.0.min.css" />
   <link rel="stylesheet" href="www/css/cintient.css">
   <link rel="stylesheet" href="www/css/installer.css" />
-  <link rel="icon" href="www/favicon.ico">
+  <link rel="icon" href="www/imgs/favicon.ico">
+  <link rel="apple-touch-icon" href="www/imgs/favicon.ico" />
   <!--[if lt IE 9]>
   <script src="www/js/lib/html5.js"></script>
   <![endif]-->
