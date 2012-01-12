@@ -41,7 +41,7 @@
  */
 class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAccess
 {
-  private $_settings;
+  protected $_settings;
 
   const ALLOW_USER_REGISTRATION = 'allowUserRegistration'; // bool
   const EXECUTABLE_GIT          = 'executableGit';
@@ -49,6 +49,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
   const EXECUTABLE_SVN          = 'executableSvn';
   const EXECUTABLE_TAR          = 'executableTar';
   const INTERNAL_BUILDER_ACTIVE = 'internalBuilderActive'; // bool
+  const VERSION                 = 'version';
 
   static public $packageGenerationCmd = array(
   	self::EXECUTABLE_TAR => 'cd ${tmpDir} && ${archiverExecutable} -czf ${releaseLabel}.tar.gz ${sourcesDir}',
@@ -69,6 +70,7 @@ class SystemSettings extends Framework_DatabaseObjectAbstract implements ArrayAc
                                     . (php_ini_loaded_file() ? ' -c '. htmlentities(str_replace(array('\\', '//'), '/', php_ini_loaded_file())) : ''), // htmlentities because of lib.htmlgen.php
       self::EXECUTABLE_SVN => 'svn' . (Framework_HostOs::isWindows() ? '.exe' : ''),
       self::INTERNAL_BUILDER_ACTIVE => CINTIENT_INTERNAL_BUILDER_ACTIVE,
+      self::VERSION => '',
     );
   }
 

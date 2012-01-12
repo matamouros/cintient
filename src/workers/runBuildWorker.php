@@ -26,10 +26,18 @@
 // and builder handlers. (this builder could be called by a crontab)
 require_once dirname(__FILE__) . '/../config/cintient.conf.php';
 SystemEvent::setSeverityLevel(CINTIENT_LOG_SEVERITY);
-$GLOBALS['settings'] = SystemSettings::load(); // Pull up system settings
+$initialVersion = '';
 
 sleep(5); // defer it a little, to give it's [possibly] web-request-father process a chance to go away fast.
 do {
+  $GLOBALS['settings'] = SystemSettings::load(); // Pull up refreshed system settings
+  if ($initialVersion == '') {
+    $initialVersion = $GLOBALS['settings'][SystemSettings::VERSION];
+  }
+  if ($GLOBALS['settings'][SystemSettings::VERSION] != $initialVersion) {
+    SystemEvent::raise(SystemEvent::INFO, "Detected a new Cintient version. Terminating this old worker, so that the updated one can run...", 'runBuildWorker');
+    exit(0);
+  }
   $ret = true;
   $projects = Project::getNextToBuild();
   foreach ($projects as &$project) {
@@ -44,7 +52,7 @@ do {
     unset($project);
     // Take the chance to look if we're close to breaking the mem limit
     if (memory_get_usage(true) > ((int)(Utility::phpIniSizeToBytes(ini_get('memory_limit'))*0.9))) {
-      SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", __METHOD__);
+      SystemEvent::raise(SystemEvent::WARNING, "Getting close to system memory usage hard limit. Shutting down gracefully, while we can. [MEM_USAGE=" . Utility::bytesToHumanReadable(memory_get_usage(true)) . "] [MEM_PEAK=" . Utility::bytesToHumanReadable(memory_get_peak_usage(true)) . "]", 'runBuildWorker');
       exit(0);
     }
   }

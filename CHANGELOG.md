@@ -2,11 +2,18 @@ Changelog
 =========
 
 
+2012-01-12 cintient-1.0.0-RC1
+-----------------------------
+
  *  ADDED: Every PHP executable invocation now runs with the same ini
            configuration file as the webserver, by default.
            (thanks @rasismeiro)
  *  ADDED: SCM environment vars, in case the SCM executables need to be
            fed some configuration of some sort.
+ *  ADDED: Favicon support.
+ *  ADDED: Cintient release version number on the database.
+ *  ADDED: Automated builder now detects an upgraded installation's
+           database and quits itself.
  *  FIXED: Regression on project creation. (thanks @rasismeiro)
  *  FIXED: Fatal error in the integration builder, in case a task was
            inactive.
@@ -19,6 +26,7 @@ Changelog
            (thanks @rasismeiro)
  *  FIXED: Issue that prevented project deletion.
  *  FIXED: Regression that broke SVN authentication. (thanks @jpfaria)
+ *  FIXED: Issue with installer's logging severity level.
  *  CHANGED: Max avatar upload size increased to 200KB.
  *  CHANGED: SCM SVN connector is now more verbose on errors.
  *  CHANGED: PhpDepend task now has a default includes dir.

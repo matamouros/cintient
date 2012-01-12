@@ -112,23 +112,24 @@ $(document).ready(function() {
   <div id="modalPane" class="modal hide fade textLeft clearfix">
     <div class="modal-header">
       <a href="#" class="close">×</a>
-      <h3>This is beta software...</h3>
+      <h3>All ready to begin...</h3>
     </div>
     <div class="modal-body">
       <p>
-        Cintient is still beta software. That means you can expect it to
-        still have some issues.
+        Thank you for trying out Cintient, an open source software made
+        with some generous people's free time. This is an on-going effort,
+        and we need all the help we can get.
       </p>
       <p>
-        Support open source software: get up on GitHub, fork Cintient and throw me some pull requests,
+        Support open source software: get up on GitHub.com, fork Cintient and contribute some pull requests,
         or fill in some bug reports.
       </p>
       <p>
-        More info here: <a href="http://github.com/matamouros/cintient" target="_blank">http://github.com/matamouros/cintient</a>
+        More info here: <a href="https://github.com/matamouros/cintient" target="_blank">https://github.com/matamouros/cintient</a>
       </p>
     </div>
     <div class="modal-footer">
-      <a href="#" id="modalDismiss" class="btn primary">I understand...</a>
+      <a href="#" id="modalDismiss" class="btn primary">Sure thing!</a>
     </div>
   </div>
   <script type="text/javascript">
