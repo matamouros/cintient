@@ -469,13 +469,13 @@ if (!empty($_GET['c'])) {
   //
   // Last step: remove the installation file
   //
-  if (!@unlink(__FILE__)) {
+  /*if (!@unlink(__FILE__)) {
     $ok = false;
     $msg = "Couldn't remove the installation 'index.php' file. You need "
          . "to remove this manually before refreshing this page, or else"
          . " Cintient won't be able to start";
     sendResponse($ok, $msg);
-  }
+  }*/
 
   //
   // Set a special cookie "one-time" cookie so that right after the

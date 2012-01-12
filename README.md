@@ -96,6 +96,7 @@ Authored by:
 
 Past contributors:
 
+ *  rasismeiro
  *  voxmachina
  *  miguellmanso
 

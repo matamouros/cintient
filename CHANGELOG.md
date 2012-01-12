@@ -18,8 +18,10 @@ Changelog
  *  FIXED: Problem with output of the integration builder, on Windows.
            (thanks @rasismeiro)
  *  FIXED: Issue that prevented project deletion.
+ *  FIXED: Regression that broke SVN authentication. (thanks @jpfaria)
  *  CHANGED: Max avatar upload size increased to 200KB.
  *  CHANGED: SCM SVN connector is now more verbose on errors.
+ *  CHANGED: PhpDepend task now has a default includes dir.
 
 
 2011-12-31 cintient-1.0.0-beta-11
