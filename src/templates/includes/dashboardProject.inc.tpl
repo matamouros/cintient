@@ -39,7 +39,7 @@
                 <div class="row">
                   <div class="span2">Commit:</div>
 {$externalCommitLink=UrlManager::getExternalForScmCommitLink($project, $project_build)}
-                  <div class="span6">{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$project_build->getScmRevision()}{if !empty($externalCommitLink)}</a>{/if}</div>
+                  <div class="span6">{if !empty($externalCommitLink)}<a href="{$externalCommitLink}" target="_blank">{/if}{$project_build->getScmRevision()|truncate:10:''}{if !empty($externalCommitLink)}</a>{/if}</div>
                 </div>
                 <div class="row">
                   <div class="span2">Finished:</div>
@@ -108,6 +108,7 @@
                     <tr>
                       {*<th class="header yellow headerSortDown">Datetime</th>*}
                       <th class="header green headerSortDown">Build</th>
+                      <th class="header yellow">Revision</th>
                       <th class="header blue">Release</th>
                     </tr>
                   </thead>
@@ -116,6 +117,7 @@
                     <tr>
                       {*<td>{$build->getDate()|date_format:"%Y/%m/%d - %H:%M:%S"}</td>*}
                       <td><a href="{UrlManager::getForProjectBuildHistory(['bid' => $build->getId()])}">#{$build->getId()}</a></td>
+                      <td>{if $project->getScmConnectorType() == 'svn'}r{/if}{$build->getScmRevision()|truncate:10:''}</td>
                       <td><a href="{UrlManager::getForAsset($build->getId(), ['r' => 1, 'bid' => $build->getId()])}">{$build->getReleaseFile()}</a></td>
                     </tr>
 {/foreach}
