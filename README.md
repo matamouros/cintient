@@ -61,7 +61,7 @@ perfect. You should keep in mind the following:
 Requirements
 ------------
  *  Apache HTTPD with mod_rewrite (for the automatic installation)
- *  PHP 5.3.0 or later
+ *  PHP 5.3.3 or later
  *  PHP with sqlite3 version 3.3.0 or later
  *  [Optional] Xdebug (for PHP code coverage support)
 
@@ -96,6 +96,7 @@ Authored by:
 
 Past contributors:
 
+ *  rasismeiro
  *  voxmachina
  *  miguellmanso
 

@@ -102,6 +102,7 @@ class Build_BuilderElement_Task_Php_PhpDepend extends Build_BuilderElement
     // Let the user specify the include dirs, so that we don't end up
     // PhpDepend processing the whole project (and possibly 3rd party
     // libs) by default
+    $o->setIncludeDirs('${sourcesDir}');
     $o->setJdependChartFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_JDEPEND_CHART_FILENAME);
     $o->setOverviewPyramidFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_OVERVIEW_PYRAMID_FILENAME);
     $o->setSummaryFile($GLOBALS['project']->getReportsWorkingDir() . CINTIENT_PHPDEPEND_SUMMARY_FILENAME);

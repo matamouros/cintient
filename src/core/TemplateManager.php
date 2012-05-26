@@ -844,6 +844,7 @@ EOT;
     // Last assignments
     $GLOBALS['smarty']->assign('project_buildList', Project_Build::getList($GLOBALS['project'], $GLOBALS['user']));
     $GLOBALS['smarty']->assign('project_build', $build);
+    $GLOBALS['smarty']->assign('project', $GLOBALS['project']);
   }
 
   static public function project_new()

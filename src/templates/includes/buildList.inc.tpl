@@ -21,7 +21,7 @@
 {if !empty($project_build)}
       <div id="buildListDropdownLink">
         <div class="dropdownArrowDark"></div><span id="activeRevision"><span class="label {if $project_build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $project_build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span>
-        #{$project_build->getId()}, rev {$project_build->getScmRevision()},
+        #{$project_build->getId()}, {if $project->getScmConnectorType() == 'svn'}r{/if}{$project_build->getScmRevision()|truncate:10:''},
         on {$project_build->getDate()|date_format:"%b %e, %Y at %R"}</span>
       </div>
 
@@ -46,7 +46,7 @@
               <div class="span1 dataBuildStatus"><span class="label {if $build->getStatus()!=Project_Build::STATUS_FAIL}success{else}important{/if}">{if $build->getStatus()!=Project_Build::STATUS_FAIL}Ok{else}Failed{/if}</span></div>
               <div class="span1 dataBuildStartDate">{$build->getDate()|date_format:"%R"}</div>
               <div class="span1 dataBuildNum">#{$build->getId()}</div>
-              <div class="span2 dataBuildRev"><span class="{$build->getScmRevision()}">{$build->getScmRevision()|truncate:8:''}</span></div>
+              <div class="span2 dataBuildRev"><span class="{$build->getScmRevision()}">{if $project->getScmConnectorType() == 'svn'}r{/if}{$build->getScmRevision()|truncate:10:''}</span></div>
               </a>
             </div>
 

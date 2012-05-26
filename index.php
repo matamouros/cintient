@@ -82,6 +82,7 @@ $defaults['configurationDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/c
 $defaults['configurationSampleFile'] = $defaults['configurationDir'] . 'cintient.conf.sample';
 $defaults['configurationNewFile'] = $defaults['configurationDir'] . 'cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
+define('CINTIENT_INSTALLER_VERSION', '1.0.0-RC1');
 
 //
 // Utility functions
@@ -305,6 +306,7 @@ if (!empty($_GET['c'])) {
     fwrite($fd, "RewriteBase {$reqUri}" . (substr($reqUri, -1)=='/'?'':'/') . PHP_EOL); # Insert a trailing slash here, it's needed!
     fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]" . PHP_EOL);
     fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]" . PHP_EOL);
+    fwrite($fd, "RewriteRule favicon\\.ico www/imgs/favicon.ico [L]" . PHP_EOL);
     fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]" . PHP_EOL);
     fclose($fd);
   } else {
@@ -344,6 +346,7 @@ if (!empty($_GET['c'])) {
   require $defaults['configurationNewFile'];
   error_reporting(-1);
   ini_set('display_errors', 'off');
+  SystemEvent::setSeverityLevel(SystemEvent::INFO);
 
   //
   // Check for upgrade or clean install
@@ -366,7 +369,7 @@ if (!empty($_GET['c'])) {
     if (!Auth_Local::authenticate()) {
       $ok = false;
       $msg = "The password you specified for the root account was invalid.";
-      SystemEvent::raise(128, $msg, "Installer");
+      SystemEvent::raise(CINTIENT_LOG_SEVERITY_INFO, $msg, "Installer");
       sendResponse($ok, $msg);
     }
   }
@@ -377,25 +380,25 @@ if (!empty($_GET['c'])) {
   if (!file_exists(CINTIENT_WORK_DIR) && !@mkdir(CINTIENT_WORK_DIR, DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create working dir. Check your permissions.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_PROJECTS_DIR) && !@mkdir(CINTIENT_PROJECTS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create projects dir. Check your permissions.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_ASSETS_DIR) && !@mkdir(CINTIENT_ASSETS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create assets dir. Check your permissions.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!file_exists(CINTIENT_AVATARS_DIR) && !@mkdir(CINTIENT_AVATARS_DIR, CINTIENT_INSTALLER_DEFAULT_DIR_MASK, true)) {
     $ok = false;
     $msg = "Could not create avatars dir. Check your permissions.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
 
@@ -404,7 +407,7 @@ if (!empty($_GET['c'])) {
   //
   if ($upgrade && !@copy($get['appWorkDir'] . 'cintient.sqlite', $get['appWorkDir'] . "cintient_{$dateMarker}.sqlite")) {
     $msg = "Could not backup your previous version database. Continuing the upgrade, nevertheless.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
   }
 
   //
@@ -413,7 +416,7 @@ if (!empty($_GET['c'])) {
   if (!Database::beginTransaction(Database::EXCLUSIVE_TRANSACTION)) {
     $ok = false;
     $msg = "Problems obtaining an exclusive lock on the database.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   //
@@ -422,19 +425,19 @@ if (!empty($_GET['c'])) {
   if (!User::install()) {
     $ok = false;
     $msg = "Could not setup User object.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!Project::install()) {
     $ok = false;
     $msg = "Could not setup Project object.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   if (!SystemSettings::install()) {
     $ok = false;
     $msg = "Could not setup SystemSettings object.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
   //
@@ -444,9 +447,12 @@ if (!empty($_GET['c'])) {
     Database::rollbackTransaction();
     $ok = false;
     $msg = "Problems commiting all changes to the database.";
-    SystemEvent::raise(128, $msg, "Installer");
+    SystemEvent::raise(CINTIENT_LOG_SEVERITY_ERROR, $msg, "Installer");
     sendResponse($ok, $msg);
   }
+
+  $settings = SystemSettings::load();
+  $settings->setSetting(SystemSettings::VERSION, CINTIENT_INSTALLER_VERSION);
 
   if (!$upgrade) {
     //
@@ -492,7 +498,7 @@ if (!empty($_GET['c'])) {
   } else {
     $msg = "Use 'root' and the password you provided to login. Please refresh this page when you're ready.";
   }
-  SystemEvent::raise(1024, "Installation successful.", "Installer");
+  SystemEvent::raise(CINTIENT_LOG_SEVERITY_INFO, "Installation successful.", "Installer");
   sendResponse($ok, $msg);
 }
 
@@ -530,7 +536,8 @@ $greetings = array(
   <link rel="stylesheet" href="www/css/lib/bootstrap-1.3.0.min.css" />
   <link rel="stylesheet" href="www/css/cintient.css">
   <link rel="stylesheet" href="www/css/installer.css" />
-  <link rel="icon" href="www/favicon.ico">
+  <link rel="icon" href="www/imgs/favicon.ico">
+  <link rel="apple-touch-icon" href="www/imgs/favicon.ico" />
   <!--[if lt IE 9]>
   <script src="www/js/lib/html5.js"></script>
   <![endif]-->
