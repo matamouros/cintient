@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+2012-05-26 cintient-1.0.0
+-------------------------
+ *  ADDED: Revision column in the Releases tab of the Dashboard.
+ *  FIXED: Some issues with paths in Linux.
+ *  CHANGED: Git commit hashes are now 10 chars long everywhere.
+ *  CHANGED: Minimum PHP version bumped to 5.3.3.
+
+
 2012-01-12 cintient-1.0.0-RC1
 -----------------------------
 
