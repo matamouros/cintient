@@ -290,8 +290,13 @@ class Log_file extends Log
         $message = $this->_extractMessage($message);
 
         /* Build the string containing the complete log line. */
+        //
+        // matamouros 2012.05.03: the following is hacked to provide
+        // milliseconds to logs.
+        //
+        $m = microtime(true);
         $line = $this->_format($this->_lineFormat,
-                               strftime($this->_timeFormat),
+                               strftime($this->_timeFormat) . '.' . str_pad((int)substr(round(($m - intval($m)), 3), 2), 3, '0', STR_PAD_LEFT) . ']',
                                $priority, $message) . $this->_eol;
 
         /* If locking is enabled, acquire an exclusive lock on the file. */

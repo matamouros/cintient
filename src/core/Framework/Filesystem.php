@@ -46,7 +46,7 @@ class Framework_Filesystem
    * @param string $src The source of the copy operation. If it's a
    * dir, make sure it ends with your system's DIRECTORY_SEPARATOR, or
    * else it will be considered a file.
-
+   *
    * @param string $dst The destination of the copy operation. If it's a
    * dir, make sure it ends with your system's DIRECTORY_SEPARATOR, or
    * else it will be considered a file.

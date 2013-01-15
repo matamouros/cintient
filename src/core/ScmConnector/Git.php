@@ -143,7 +143,7 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
     // We can't use "git --git-dir={$this->getLocal()} pull", it's wrong
     $drive = '';
     if (Framework_HostOs::isWindows()){
-      $drive = substr($this->getLocal(), 0,  strpos($this->getLocal(), ':') + 1) . ' && ';
+      $drive = substr($this->getLocal(), 0, strpos($this->getLocal(), ':') + 1) . ' && ';
     }
     $command = (empty($this->_envVars)?'':$this->getEnvVars() . ' && ') . "$drive cd {$this->getLocal()} && {$GLOBALS['settings'][SystemSettings::EXECUTABLE_GIT]} pull";
     $proc = new Framework_Process();
