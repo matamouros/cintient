@@ -140,7 +140,7 @@ var CintientInstaller = {
     var functionName = 'inputCheckOnChange' + key.charAt(0).toUpperCase() + key.slice(1);
     if (typeof window[functionName] === 'function') {
       var result = eval(functionName + '()');
-      this._updateInputValidation(input, result.ok, result.msg);
+      this._updateInputValidation(input, result.ok, result.desc);
       remoteCheck = !result.ok;
       // Don't remote check email or passwords (on clean installs).
       if (key == 'email' || (key == 'password'/* && !this.upgrade*/))
@@ -162,7 +162,7 @@ var CintientInstaller = {
           if (data == null || data.ok == null) {
             Cintient.alertUnknown();
           } else {
-            self._updateInputValidation(input, data.ok, data.msg);
+            self._updateInputValidation(input, data.ok, data.desc);
             return true;
           }
         },
@@ -237,14 +237,14 @@ var CintientInstaller = {
       cache: false,
       dataType: 'json',
       success: function(data, textStatus, XMLHttpRequest) {
-        var result = 'Failed. Sorry about that...'
+        var result = 'Failed. Sorry about that...';
         if (data != null && data.ok != null && data.ok) {
           result = 'Finished!';
         } else {
-          data.msg = '';
+          data.desc = '';
         }
         $('#finished').fadeOut(100, function () {
-          $('#finished').html('<h1>' + result + '</h1><h4>' + data.msg + '</h4>');
+          $('#finished').html('<h1>' + result + '</h1><h4>' + data.desc + '</h4>');
           $('#finished').fadeIn(300);
         });
         return true;
