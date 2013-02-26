@@ -45,6 +45,9 @@ ini_set('display_errors', 'off');
 // error or because of normal script execution.
 $exited = false;
 
+// Holds previously checked items
+$report = array();
+
 //
 // Make sure no previous .htaccess file is present here and refuse to
 // run if we can't delete it. If present, our DOCUMENT_ROOT and
@@ -82,7 +85,7 @@ $defaults['configurationDir'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'src/c
 $defaults['configurationSampleFile'] = $defaults['configurationDir'] . 'cintient.conf.sample';
 $defaults['configurationNewFile'] = $defaults['configurationDir'] . 'cintient.conf.php';
 $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
-define('CINTIENT_INSTALLER_VERSION', '1.0.0-RC1');
+define('CINTIENT_INSTALLER_VERSION', '1.5.0-dev');
 
 //
 // Utility functions
@@ -104,8 +107,8 @@ function sendResponse($ok, $msg)
   echo htmlspecialchars(
     json_encode(
       array(
-        'ok'  => $ok,
-        'msg' => $msg,
+        'ok'   => $ok,
+        'desc' => $msg,
       )
     ),
     ENT_NOQUOTES
@@ -162,13 +165,22 @@ function phpWithSqlite()
   return array($ok, $msg[(int)$ok]);
 }
 
-function apacheModRewrite()
+function modRewrite()
 {
-  $msg[0] = "Apache mod_rewrite is required.";
+  global $report;
+  $msg[0] = "Apache or Lighttpd mod_rewrite is required.";
   $msg[1] = "Detected.";
   $ok = false;
-  if (function_exists('apache_get_modules')) {
+  if (function_exists('apache_get_modules'))
+  {
     $ok = in_array("mod_rewrite", apache_get_modules());
+    $report['server'] = 'apache';
+  }
+  else if (strpos($_SERVER['SERVER_SOFTWARE'], 'lighttpd') !== false)
+  {
+    $ok = true;
+    $msg[1] .= " Make sure you follow the instructions given to you a few screens down the road, in order to have Lighttpd working properly.";
+    $report['server'] = 'lighttpd';
   }
   return array($ok, $msg[(int)$ok]);
 }
@@ -206,9 +218,16 @@ function appWorkDir($dir)
 
 function htaccessFile($dir)
 {
+  global $report, $defaults;
   $msg[0] = "You cannot change the dir, just enable write permissions there.";
   $msg[1] = "Ready.";
-  $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess', 'a+');
+  $file = '.htaccess';
+  if ($report['server'] == 'lighttpd')
+  {
+    $file = '.cintient-lighttpd.conf';
+  }
+  $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . $file;
+  $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . $file, 'a+');
   if ($fd === false) {
     $ok = false;
   } else {
@@ -299,20 +318,41 @@ if (!empty($_GET['c'])) {
   //
   // Write the .htaccess file
   //
-  $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
-  $fd = @fopen($file, 'w');
-  if ($fd !== false) {
-    fwrite($fd, "RewriteEngine on" . PHP_EOL);
-    fwrite($fd, "RewriteBase {$reqUri}" . (substr($reqUri, -1)=='/'?'':'/') . PHP_EOL); # Insert a trailing slash here, it's needed!
-    fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]" . PHP_EOL);
-    fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]" . PHP_EOL);
-    fwrite($fd, "RewriteRule favicon\\.ico www/imgs/favicon.ico [L]" . PHP_EOL);
-    fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]" . PHP_EOL);
-    fclose($fd);
-  } else {
-    $ok = false;
-    $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
-    sendResponse($ok, $msg);
+  if ($report['server'] == 'apache'/*function_exists('apache_get_modules')*/) {
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
+    $fd = @fopen($file, 'w');
+    if ($fd !== false) {
+      fwrite($fd, "RewriteEngine on" . PHP_EOL);
+      fwrite($fd, "RewriteBase {$reqUri}" . (substr($reqUri, -1)=='/'?'':'/') . PHP_EOL); # Insert a trailing slash here, it's needed!
+      fwrite($fd, "RewriteRule (fonts|imgs|js|css)/(.*) www/\$1/\$2 [L]" . PHP_EOL);
+      fwrite($fd, "RewriteRule ajax src/handlers/ajaxHandler.php [L]" . PHP_EOL);
+      fwrite($fd, "RewriteRule favicon\\.ico www/imgs/favicon.ico [L]" . PHP_EOL);
+      fwrite($fd, "RewriteRule .* src/handlers/webHandler.php [L]" . PHP_EOL);
+      fclose($fd);
+    } else {
+      $ok = false;
+      $msg = "Couldn't create the .htaccess file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+      sendResponse($ok, $msg);
+    }
+  }
+  else
+  {
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.cintient-lighttpd.conf';
+    $fd = @fopen($file, 'w');
+    if ($fd !== false) {
+      $dirSep = DIRECTORY_SEPARATOR;
+      fwrite($fd, "url.rewrite-once = (" . PHP_EOL);
+      fwrite($fd, "\t\"{$reqUri}(?:.*)(fonts|imgs|js|css)/(.*)?\" => \"{$reqUri}{$dirSep}www{$dirSep}\$1{$dirSep}\$2\"," . PHP_EOL);
+      fwrite($fd, "\t\"{$reqUri}(?:.*)ajax(?:[^?]*)(\?.*)?\" => \"{$reqUri}{$dirSep}src{$dirSep}handlers{$dirSep}ajaxHandler.php$1\"," . PHP_EOL);
+      fwrite($fd, "\t\"{$reqUri}(?:.*)favicon\\.ico\" => \"{$reqUri}{$dirSep}www{$dirSep}imgs{$dirSep}favicon.ico\"," . PHP_EOL);
+      fwrite($fd, "\t\"{$reqUri}(.*)\" => \"{$reqUri}{$dirSep}src{$dirSep}handlers{$dirSep}webHandler.php$1\"," . PHP_EOL);
+      fwrite($fd, ")" . PHP_EOL);
+      fclose($fd);
+    } else {
+      $ok = false;
+      $msg = "Couldn't create the .cintient-lighttpd.conf file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+      sendResponse($ok, $msg);
+    }
   }
 
   //
@@ -596,11 +636,11 @@ list ($ok, $msg) = phpWithSqlite();
                   </div>
                 </div>
 <?php
-list ($ok, $msg) = apacheModRewrite();
+list ($ok, $msg) = modRewrite();
 ?>
                 <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
-                  <label for="apacheModRewrite">Apache mod_rewrite</label>
-                  <div id="apacheModRewrite" class="input">
+                  <label for="modRewrite">Apache/Lighttpd mod_rewrite</label>
+                  <div id="modRewrite" class="input">
                     <span class="help-block"><?php echo $msg; ?></span>
                   </div>
                 </div>
@@ -640,7 +680,7 @@ list ($ok, $msg) = baseUrl($defaults['baseUrl']);
 list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
 ?>
                 <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="htaccessFile">
-                  <label for="htaccessFile">.htaccess</label>
+                  <label for="htaccessFile"><?php if ($report['server'] == 'apache') { ?>.htaccess<?php } else { ?>.cintient-lighttpd.conf<?php } ?></label>
                   <div class="input">
                     <input class="span6" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" disabled="disabled" />
                     <span class="help-block"><?php echo $msg; ?></span>
