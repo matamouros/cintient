@@ -318,6 +318,7 @@ if (!empty($_GET['c'])) {
   //
   // Write the .htaccess file
   //
+  modRewrite();
   if ($report['server'] == 'apache'/*function_exists('apache_get_modules')*/) {
     $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.htaccess';
     $fd = @fopen($file, 'w');
