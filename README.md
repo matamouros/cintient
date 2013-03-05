@@ -60,7 +60,8 @@ perfect. You should keep in mind the following:
 
 Requirements
 ------------
- *  Apache HTTPD with mod_rewrite (for the automatic installation)
+ *  Apache HTTPD with mod_rewrite (for the automatic installation). Supports
+    Lighttpd with minimum manual setup.
  *  PHP 5.3.3 or later
  *  PHP with sqlite3 version 3.3.0 or later
  *  [Optional] Xdebug (for PHP code coverage support)
@@ -70,16 +71,22 @@ Installing
 Check the requirements above. You need them in order to perform an easy
 install. Go through the following steps:
 
- 1.  Your web server's configuration must allow you to specify per
+ 1.  Your Apache web server's configuration must allow you to specify per
      directory .htaccess files and mod_rewrite directives within them.
      For this you need to have at least "AllowOverride FileInfo". Also,
      enable "Options FollowSymLinks" and "DirectoryIndex index.php". If
      you've changed these just now, don't forget to restart your Apache
-     server. 
+     server. If you are using Lighttpd instead, don't do anything now and
+     follow the instructions.
  2.  Open up a browser window, navigate to the directory where you
      unpacked Cintient. You should see the installer coming up.
  3.  Follow the instructions. It should only take you a minute to
-     finish.
+     finish. If you are not using Lighttpd, you're done. Have fun.
+ 4.  If you are using Lighttpd, don't refresh the page after the
+     install runs, just yet. Before that, make sure that you place the
+     contents of the .cintient-lighttpd.conf file in your web server's
+     configuration and restart it. Then, and only then, you can refresh
+     the browser at the end of the install run. You're done now. Have fun.
 
 Contributing
 ------------
