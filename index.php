@@ -168,7 +168,7 @@ function phpWithSqlite()
 function modRewrite()
 {
   global $report;
-  $msg[0] = "Apache or Lighttpd mod_rewrite is required.";
+  $msg[0] = "Apache, Lighttpd or NGiNX is required.";
   $msg[1] = "Detected.";
   $ok = false;
   if (function_exists('apache_get_modules'))
@@ -181,6 +181,12 @@ function modRewrite()
     $ok = true;
     $msg[1] .= " Make sure you follow the instructions given to you a few screens down the road, in order to have Lighttpd working properly.";
     $report['server'] = 'lighttpd';
+  }
+  else if (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false)
+  {
+    $ok = true;
+    $msg[1] .= " Make sure you follow the instructions given to you a few screens down the road, in order to have NGiNX working properly.";
+    $report['server'] = 'nginx';
   }
   return array($ok, $msg[(int)$ok]);
 }
@@ -224,7 +230,11 @@ function htaccessFile($dir)
   $file = '.htaccess';
   if ($report['server'] == 'lighttpd')
   {
-    $file = '.cintient-lighttpd.conf';
+    $file = 'cintient-lighttpd.conf';
+  }
+  else if ($report['server'] == 'nginx')
+  {
+    $file = 'cintient-nginx.conf';
   }
   $defaults['htaccessFile'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . $file;
   $fd = @fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . $file, 'a+');
@@ -336,9 +346,9 @@ if (!empty($_GET['c'])) {
       sendResponse($ok, $msg);
     }
   }
-  else
+  else if ($report['server'] == 'lighttpd')
   {
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.cintient-lighttpd.conf';
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cintient-lighttpd.conf';
     $fd = @fopen($file, 'w');
     if ($fd !== false) {
       $dirSep = DIRECTORY_SEPARATOR;
@@ -351,7 +361,28 @@ if (!empty($_GET['c'])) {
       fclose($fd);
     } else {
       $ok = false;
-      $msg = "Couldn't create the .cintient-lighttpd.conf file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+      $msg = "Couldn't create the cintient-lighttpd.conf file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
+      sendResponse($ok, $msg);
+    }
+  }
+  else if ($report['server'] == 'nginx')
+  {
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cintient-nginx.conf';
+    $fd = @fopen($file, 'w');
+    if ($fd !== false) {
+      $dirSep = DIRECTORY_SEPARATOR;
+      fwrite($fd, "# Add this config snippet inside your NGiNX server declaration." . PHP_EOL);
+      fwrite($fd, "location {$reqUri} {" . PHP_EOL);
+      $baseReqUri = $reqUri . ($reqUri[strlen($reqUri)-1] != '/'? '/': '');
+      fwrite($fd, "\trewrite  (fonts|imgs|js|css)/(.*)   {$baseReqUri}www{$dirSep}\$1{$dirSep}\$2                     break;" . PHP_EOL);
+      fwrite($fd, "\trewrite  favicon\\.ico               {$baseReqUri}www{$dirSep}imgs{$dirSep}favicon.ico          break;" . PHP_EOL);
+      fwrite($fd, "\trewrite  ajax                       {$baseReqUri}src{$dirSep}handlers{$dirSep}ajaxHandler.php  last;"  . PHP_EOL);
+      fwrite($fd, "\trewrite  .*                         {$baseReqUri}src{$dirSep}handlers{$dirSep}webHandler.php   last;"  . PHP_EOL);
+      fwrite($fd, "}" . PHP_EOL);
+      fclose($fd);
+    } else {
+      $ok = false;
+      $msg = "Couldn't create the cintient-nginx.conf file in " . dirname(__FILE__) . DIRECTORY_SEPARATOR;
       sendResponse($ok, $msg);
     }
   }
@@ -640,7 +671,7 @@ list ($ok, $msg) = phpWithSqlite();
 list ($ok, $msg) = modRewrite();
 ?>
                 <div class="item clearfix<?php echo ($ok ? ' success' : ' fail'); ?>">
-                  <label for="modRewrite">Apache/Lighttpd mod_rewrite</label>
+                  <label for="modRewrite">Apache, Lighttpd or NGiNX</label>
                   <div id="modRewrite" class="input">
                     <span class="help-block"><?php echo $msg; ?></span>
                   </div>
@@ -681,7 +712,7 @@ list ($ok, $msg) = baseUrl($defaults['baseUrl']);
 list ($ok, $msg) = htaccessFile($defaults['htaccessFile']);
 ?>
                 <div class="item clearfix inputCheckOnChange<?php echo ($ok ? ' success' : ' fail'); ?>" id="htaccessFile">
-                  <label for="htaccessFile"><?php if ($report['server'] == 'apache') { ?>.htaccess<?php } else { ?>.cintient-lighttpd.conf<?php } ?></label>
+                  <label for="htaccessFile"><?php if ($report['server'] == 'apache') { ?>.htaccess<?php } else if ($report['server'] == 'lighttpd') { ?>cintient-lighttpd.conf<?php } else if ($report['server'] == 'nginx') { ?>cintient-nginx.conf<?php } ?></label>
                   <div class="input">
                     <input class="span6" type="text" name="htaccessFile" value="<?php echo $defaults['htaccessFile']; ?>" disabled="disabled" />
                     <span class="help-block"><?php echo $msg; ?></span>
