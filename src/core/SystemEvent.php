@@ -41,6 +41,7 @@ class SystemEvent extends Log
    * These consts are rigged to directly map to the existing PEAR::Log
    * event raising methods.
    */
+  const TRACE     = 4096;
   const DEBUG     = 2048;
   const INFO      = 1024;
   const NOTICE    = 512;
@@ -50,18 +51,37 @@ class SystemEvent extends Log
   const ALERT     = 32;
   const EMERGENCY = 16;
 
-  static $map = array(
+  /**
+   * The string placeholder which will get replaced for the provided vars.
+   * WARNING: this placeholder must be regexp special chars escaped!
+   */
+  const STRING_PLACEHOLDER = '\{\}';
+
+  static $mapConstToDesc = array (
+    self::TRACE     => 'trace',
     self::DEBUG     => 'debug',
     self::INFO      => 'info',
     self::NOTICE    => 'notice',
-    self::WARNING   => 'warning',
+    self::WARNING   => 'warn',
     self::ERROR     => 'err',
     self::CRITICAL  => 'crit',
     self::ALERT     => 'alert',
     self::EMERGENCY => 'emerg',
   );
 
-  static $severityLevel = self::DEBUG;
+  static $mapDescToConst = array (
+    'trace'   => self::TRACE,
+    'debug'   => self::DEBUG,
+    'info'    => self::INFO,
+    'notice'  => self::NOTICE,
+    'warn'    => self::WARNING,
+    'err'     => self::ERROR,
+    'crit'    => self::CRITICAL,
+    'alert'   => self::ALERT,
+    'emerg'   => self::EMERGENCY,
+  );
+
+  static $severityLevel = self::INFO;
 
   /**
    *
@@ -73,7 +93,8 @@ class SystemEvent extends Log
       $options = array( 'append'     => true,
                         'locking'    => false,
                         'mode'       => 0640,
-                        'timeFormat' => '[%Y-%m-%d %H:%M:%S]',
+                        //'timeFormat' => '[%Y-%m-%d %H:%M:%S]',
+                        'timeFormat' => '[%Y-%m-%d %H:%M:%S', // An ending ']' is missing on purpose, because of the hack done on PEAR::Log (file.php), in order to have milliseconds on logs
                         'lineFormat' => '%1$s [%3$s] [' . uniqid() . '] %4$s',
                  );
       $instance = parent::singleton('file', CINTIENT_LOG_FILE, 'cintient', $options, PEAR_LOG_DEBUG);
@@ -86,44 +107,90 @@ class SystemEvent extends Log
     self::$severityLevel = (int)$severityLevel;
   }
 
-  static private function _getBacktraceInfo()
-  {
-    $ret = '';
-    if (self::$severityLevel == self::DEBUG) {
-      $bt = debug_backtrace();
-      $ret = (' [CALLER=' . (isset($bt[2]['file'])?basename($bt[2]['file']):'N/A') . '] [LINE=' . (isset($bt[2]['line'])?(string)$bt[2]['line']:'N/A') . ']');
-    }
-    return $ret;
-  }
-
   /**
-   *
-   * @param unknown_type $severity
-   * @param string $msg
-   * @param string $location
+   * The actual logging method. You can call this directly, or you could access
+   * the more user-friendly magical methods, the latter being the recommended.
+   * @see __callStatic
+   * 
+   * @param int $severity The severity level to log the message with.
+   * @param string | array $args Either the string with the message or an array
+   *        with the message on the first position and values to replace
+   *        placeholders within the message string. Placeholders are defined by
+   *        self::STRING_PLACEHOLDER.
+   * @param @deprecated string | null $location The location where the call
+   *        occurred. It is now deprecated because we infer this automagically
+   *        through debug_backtrace(). Although it comes a bit more expensive,
+   *        it's preferable in terms of readability and maintainability.
    */
-  public static function raise($severity, $msg, $location = null)
+  public static function raise($severity, $args, $location = null)
   {
     if (self::$severityLevel < $severity) {
       return false;
     }
     $instance = self::_singleton();
-    /*
-    if ($severity == self::EMERGENCY) {
-      //
-      // TODO: an email is probably pretty much appropriate...
-      //
-    } elseif ($severity == self::ALERT) {
-    } elseif ($severity == self::CRITICAL) {
-    } elseif ($severity == self::ERROR) {
-    } elseif ($severity == self::WARNING) {
-    } elseif ($severity == self::NOTICE) {
-    } elseif ($severity == self::INFO) {
-    } elseif ($severity == self::DEBUG) {
+
+    //
+    // Access class and method where the log happened automagically, instead of
+    // having the caller have to provide this everytime. Do this with a pretty
+    // "Class::method: " format on the message string.
+    //
+    $bt = debug_backtrace();
+    $class = '';
+    $method = '';
+    if (!empty($bt[0]['function'])) {
+      $function = $bt[0]['function'] . ': ';
+    }
+    if (!empty($bt[0]['class'])) {
+      $class = $bt[0]['class'] . '::';
+    }
+
+    //
+    // Logic to substitute all placeholders found in the message string with
+    // their appropriate values.
+    // 
+    if (!is_array($args)) {
+      $msg = $args; // No placeholders assumed
     } else {
-      //$severity = self::INFO;
-    }*/
-    $method = self::$map[$severity];
-    $instance->$method((empty($location)?'':$location.': ') . $msg . self::_getBacktraceInfo());
+      $i = 0;
+      $msg = array_shift($args); // Remove the message from the first position
+      $msg = preg_replace_callback( // And now for a bit of black magic...
+        '/(%)?' . self::STRING_PLACEHOLDER . '(%)?/',
+        function ($m) use (&$i, &$args) {
+          $r = $args[$i];
+          $i++;
+          return $r;
+        },
+        $msg,
+        -1
+      );
+    }
+
+    //
+    // Backtrace stuff, for debug levels only
+    //
+    $btInfo = '';
+    if (self::$severityLevel >= self::DEBUG) {
+      $btInfo = (' [CALLER=' . (isset($bt[2]['file'])?basename($bt[2]['file']):'N/A') . '] [LINE=' . (isset($bt[2]['line'])?(string)$bt[2]['line']:'N/A') . ']');
+    }
+
+    $method = self::$mapConstToDesc[$severity];
+    $instance->$method($class . $function . $msg . $btInfo);
+  }
+
+  /**
+   * Magic method implementation for calling unexisting static methods.
+   *
+   * @param $name The name of the log method being accessed. Also corresponds to
+   *        the severity level of the message being logged.
+   * @param $args Arguments passed in by the magic __callStatic() call
+   *
+   * @return mixed
+   */
+  public static function __callStatic($name, $args)
+  {
+    if (empty($mapDescToConst[strtolower($name)])) {
+      trigger_error("No valid method available for calling", E_USER_ERROR);
+    }
+    self::raise($mapDescToConst[$name], $args);
   }
 }

@@ -160,4 +160,21 @@ class ScmConnector_Git extends ScmConnectorAbstract implements ScmConnectorInter
 
   public function tag()
   {}
+
+  /**
+   * Prepares a credentials string to be used across all git command invocations.
+   *
+   * @return string
+   */
+  private function _getCredentialsArgs()
+  {
+    $credentials = '';
+    if (!empty($this->_username)) {
+      $credentials = "-c user={$this->getUsername()} ";
+      if (!empty($this->_password)) {
+        $credentials .= "-password=\"{$this->getPassword()}\" ";
+      }
+    }
+    return $credentials;
+  }
 }
