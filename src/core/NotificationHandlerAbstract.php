@@ -21,7 +21,7 @@
  *
  */
 
-require_once 'lib/lib.htmlgen.php';
+require_once '../lib/lib.htmlgen.php';
 
 /**
  * Abstract class for all Notification handlers to extend.

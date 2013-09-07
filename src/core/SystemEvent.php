@@ -21,7 +21,7 @@
  *
  */
 
-require 'lib/PEAR/Log.php';
+require '../lib/PEAR/Log.php';
 
 /**
  * Class for handling logging.
