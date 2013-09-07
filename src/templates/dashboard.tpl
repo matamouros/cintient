@@ -25,7 +25,8 @@ jsIncludes=['js/lib/jquery.sparkline.min.js',
             'js/lib/bootstrap/bootstrap-tabs.js',
             'js/lib/highcharts.js',
             'js/lib/cintientHighcharts.theme.js',
-						'js/lib/jquery.tablesorter.min.js']}
+						'js/lib/jquery.tablesorter.min.js']
+cssIncludes=[]}
 {if !empty($dashboard_projectList)}
     <div class="row">
       <div class="span5 leftRow">

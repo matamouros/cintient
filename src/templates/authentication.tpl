@@ -20,7 +20,9 @@
 *}{include file='includes/header.inc.tpl'
 subSectionTitle="Authentication"
 subSectionId='authentication'
-subSectionDescription="log in with your username and password"}
+subSectionDescription="log in with your username and password"
+jsIncludes=[]
+cssIncludes=[]}
     <form action class="form" id="authenticationForm" style="display:none;">
       <fieldset>
         <div class="clearfix">

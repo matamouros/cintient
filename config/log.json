@@ -1,0 +1,6 @@
+{
+	"log" : {
+		"file" : "${base.work_dir}cintient.log",
+		"severity" : 1024
+	}
+}

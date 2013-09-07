@@ -1,0 +1,12 @@
+{
+	"auth" : {
+		"password_salt" : "rOTA4spNYI3yXvAL"
+	},
+	"base" : {
+		"database_file" : "${base.work_dir}cintient.sqlite",
+		"install_dir"  : "/Users/pfonseca/www/cintient/",
+		"null_byte_token" : "=0=",
+		"url" : "http://cintient",
+		"work_dir" : "/Users/pfonseca/.cintient/"
+	}
+}

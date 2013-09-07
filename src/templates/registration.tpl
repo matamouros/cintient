@@ -20,7 +20,9 @@
 *}{include file='includes/header.inc.tpl'
 subSectionTitle="Registration"
 subSectionId="registration"
-subSectionDescription="create a new user"}
+subSectionDescription="create a new user"
+jsIncludes=[]
+cssIncludes=[]}
     <form action class="form" id="registrationForm">
       <fieldset>
         <div class="clearfix">

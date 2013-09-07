@@ -21,7 +21,8 @@
 subSectionTitle="Administration"
 subSectionId="admin"
 subSectionDescription=""
-jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']}
+jsIncludes=['js/lib/bootstrap/bootstrap-tabs.js']
+cssIncludes=[]}
     <ul class="tabs">
       <li class="active"><a href="#log">Log</a></li>
       <li><a href="#settings">Global settings</a></li>

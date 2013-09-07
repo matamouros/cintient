@@ -20,6 +20,7 @@
 *}{include file='includes/header.inc.tpl'
   subSectionId="settings"
   subSectionTitle="Settings"
+  subSectionDescription=""
   jsIncludes=['js/lib/avataruploader.js',
               'js/lib/bootstrap/bootstrap-tabs.js']
   cssIncludes=['css/lib/avataruploader.css']}

@@ -46,7 +46,8 @@ class Framework_SmartyPlugin
   {
     // Register plugin for HTML friendly raw output from builds.
     // Use registerPlugin() on an earlier Smarty version.
-    $smarty->register->modifier('raw2html', array('Framework_SmartyPlugin', 'raw2html'));
+    // $smarty->register->modifier('raw2html', array('Framework_SmartyPlugin', 'raw2html'));
+    $smarty->registerPlugin('function', 'raw2html', array('Framework_SmartyPlugin', 'raw2html'));
   }
 
   /**

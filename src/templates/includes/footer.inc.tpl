@@ -22,7 +22,7 @@
     </div>
     <footer>
       <p>Cintient is free software distributed under the GNU General Public License version 3 or later terms.</p>
-      {if !isset($onlyLicense)}{TemplateManager::providerInstallationStats()}{$buildsTotal={Project::getCountTotalBuilds()}}<div id="installationStats">Sentient since {$providerInstallationStats_installDate|date_format}. Monitoring {$providerInstallationStats_projectsCount} project{if $providerInstallationStats_projectsCount != 1}s{/if}, with {$providerInstallationStats_usersCount} user{if $providerInstallationStats_usersCount != 1}s{/if}, built {$buildsTotal} time{if $buildsTotal != 1}s{/if}.</div>{/if}
+      {if !isset($onlyLicense)}{$buildsTotal={Project::getCountTotalBuilds()}}<div id="installationStats">Sentient since {$providerInstallationStats_installDate|date_format}. Monitoring {$providerInstallationStats_projectsCount} project{if $providerInstallationStats_projectsCount != 1}s{/if}, with {$providerInstallationStats_usersCount} user{if $providerInstallationStats_usersCount != 1}s{/if}, built {$buildsTotal} time{if $buildsTotal != 1}s{/if}.</div>{/if}
       {*<p>&copy; 2010, 2011, Pedro Mata-Mouros Fonseca. All rights reserved.</p>*}
     </footer>
   </div>

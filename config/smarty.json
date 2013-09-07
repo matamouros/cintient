@@ -1,0 +1,9 @@
+{
+	"smarty" : {
+		"compile_check" : 1,
+		"compile_dir"   : "/tmp/",
+		"debug"         : 0,
+		"force_compile" : 1,
+		"template_dir"  : "${base.install_dir}src/templates/"
+	}
+}

@@ -28,7 +28,8 @@
 	jsIncludes=['js/lib/highcharts.js',
               'js/lib/cintientHighcharts.theme.js',
               'js/cintientHighcharts.js',
-							'js/lib/bootstrap/bootstrap-tabs.js']}
+							'js/lib/bootstrap/bootstrap-tabs.js']
+  cssIncludes=[]}
 {if !empty($project_buildList)}
     <div id="buildHistoryRev">
 {include file='includes/buildHistoryRev.inc.tpl'}

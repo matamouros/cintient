@@ -18,8 +18,11 @@
     along with Cintient. If not, see <http://www.gnu.org/licenses/>.
 
 *}{include file='includes/header.inc.tpl'
+subSectionDescription=""
 subSectionTitle="New project"
-subSectionId="projectNew"}
+subSectionId="projectNew"
+jsIncludes=[]
+cssIncludes=[]}
       <form action class="form" id="newProjectContainer">
         <fieldset>
           <div class="clearfix">
