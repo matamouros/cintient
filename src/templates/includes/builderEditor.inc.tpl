@@ -68,7 +68,6 @@
   {/if}
 {/function}
               <ul class="builderElementDepth_0">
-{TemplateManager::providerAvailableBuilderElements()}
 {builderElement element=$providerAvailableBuilderElements_elements}
               </ul>
 
