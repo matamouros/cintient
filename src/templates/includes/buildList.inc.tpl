@@ -37,7 +37,7 @@
 <div class="tablex">
 {foreach from=$project_buildList item=build}
 {$currentDate=$build->getDate()|date_format:"%B %e, %Y"}
-{if $currentDate != $lastDate}
+{if empty($lastDate) || $currentDate != $lastDate}
             <div class="row date">
               <div class="span5"><h5>{$currentDate}</h5></div>
             </div>
