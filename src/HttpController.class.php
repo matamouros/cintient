@@ -848,7 +848,7 @@ EOT;
 			exit;
 		}
 		$GLOBALS['smarty']->assign('project_availableConnectors', ScmConnector::getAvailableConnectors());
-		
+		self::providerAvailableBuilderElements();
 		$this->_render();
 	}
 
